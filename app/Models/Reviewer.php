@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class Reviewer extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -24,16 +23,32 @@ class Reviewer extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Relationship: Reviewer has reviewed many applications
+     */
+    public function applications()
     {
-        return [
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Application::class, 'reviewer_id');
     }
 
-    // Relationships
-    public function reviewedApplications()
+    /**
+     * Check if reviewer is active
+     */
+    public function isActive()
     {
-        return $this->hasMany(Application::class, 'reviewed_by');
+        return $this->status === 'active';
+    }
+
+    /**
+     * Scope: Only active reviewers
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }

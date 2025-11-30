@@ -230,7 +230,7 @@
                 <!-- Copyright -->
                 <div class="text-center mt-4">
                     <small class="text-white opacity-75">
-                        © 2024 Recruitment Management System. All rights reserved.
+                        © 2025 Recruitment Management System. All rights reserved.
                     </small>
                 </div>
             </div>

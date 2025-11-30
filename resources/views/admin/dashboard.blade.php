@@ -3,10 +3,10 @@
 @section('title', 'Admin Dashboard')
 
 @section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-lock')
+@section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'Super Administrator')
+@section('user-role', 'System Administrator')
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -15,29 +15,29 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
-        <span>Job Management</span>
+        <span>Post Vacancy</span>
+        <span class="badge bg-primary ms-auto">{{ $stats['total_jobs'] }}</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Applications</span>
+        <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending_applications'] }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-people"></i>
         <span>Candidates</span>
+        <span class="badge bg-info ms-auto">{{ $stats['total_candidates'] }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
         <span>Reviewers</span>
+        <span class="badge bg-success ms-auto">{{ $stats['active_reviewers'] }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
-        <span>Analytics</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-envelope"></i>
-        <span>Messages</span>
+        <span>Reports</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
@@ -47,425 +47,444 @@
 
 @section('custom-styles')
 <style>
-    /* Admin-specific gradient backgrounds */
-    .admin-gradient-card {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    .admin-header {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        border-radius: 12px;
+        padding: 2rem;
         color: white;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
 
-    .admin-stat-card {
+    .admin-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+        height: 100%;
         position: relative;
         overflow: hidden;
     }
 
-    .admin-stat-card::before {
+    .stat-card::before {
         content: '';
         position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--accent-color) 0%, transparent 100%);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card.primary::before { --accent-color: #6366f1; }
+    .stat-card.success::before { --accent-color: #10b981; }
+    .stat-card.warning::before { --accent-color: #f59e0b; }
+    .stat-card.info::before { --accent-color: #3b82f6; }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .growth-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .growth-indicator.positive {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .growth-indicator.negative {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        transition: background 0.2s;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-item:hover {
+        background: #f9fafb;
+    }
+
+    .job-card {
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .job-card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+    }
+
+    .reviewer-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .reviewer-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .chart-container {
         background: white;
         border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .activity-item {
-        padding: 1rem;
-        border-left: 3px solid transparent;
-        transition: all 0.3s ease;
-    }
-
-    .activity-item:hover {
-        background: #f8fafc;
-        border-left-color: #2563eb;
-    }
-
-    .metric-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: rgba(37, 99, 235, 0.1);
-        border-radius: 50px;
-        font-weight: 600;
-        color: #2563eb;
-    }
-
-    .admin-action-btn {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        border: none;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-
-    .admin-action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        border: 1px solid #e5e7eb;
     }
 </style>
 @endsection
 
 @section('content')
-    <!-- Admin Header with Gradient -->
-    <div class="admin-gradient-card rounded-3 p-4 mb-4 shadow">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="h2 fw-bold mb-2">Welcome back, {{ Auth::guard('admin')->user()->name }}! 👋</h1>
-                <p class="mb-0 opacity-90">Here's your recruitment system overview for today, {{ now()->format('F d, Y') }}</p>
+<!-- Header -->
+<div class="admin-header">
+    <div class="hero-content">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold mb-1">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Welcome back, {{ Auth::guard('admin')->user()->name }}! 👋
+                </h4>
+                <p class="mb-0 opacity-90">Here's what's happening with your recruitment system today</p>
             </div>
-            {{-- <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <button class="btn btn-light btn-lg px-4">
-                    <i class="bi bi-plus-circle me-2"></i>Post New Job
-                </button>
-            </div> --}}
-        </div>
-    </div>
-
-    <!-- Stats Grid - Different Layout -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card admin-stat-card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
-                <div class="card-body text-white position-relative">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <p class="mb-1 opacity-90">Active Jobs</p>
-                            <h2 class="fw-bold mb-0">24</h2>
-                        </div>
-                        <div class="bg-white bg-opacity-25 p-3 rounded">
-                            <i class="bi bi-briefcase-fill fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-up-short"></i>
-                        <small>12% increase</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card admin-stat-card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
-                <div class="card-body text-white position-relative">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <p class="mb-1 opacity-90">Applications</p>
-                            <h2 class="fw-bold mb-0">1,847</h2>
-                        </div>
-                        <div class="bg-white bg-opacity-25 p-3 rounded">
-                            <i class="bi bi-file-earmark-text-fill fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-up-short"></i>
-                        <small>8% increase</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card admin-stat-card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <div class="card-body text-white position-relative">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <p class="mb-1 opacity-90">Total Candidates</p>
-                            <h2 class="fw-bold mb-0">5,234</h2>
-                        </div>
-                        <div class="bg-white bg-opacity-25 p-3 rounded">
-                            <i class="bi bi-people-fill fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-up-short"></i>
-                        <small>15% increase</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card admin-stat-card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                <div class="card-body text-white position-relative">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <p class="mb-1 opacity-90">Pending Reviews</p>
-                            <h2 class="fw-bold mb-0">45</h2>
-                        </div>
-                        <div class="bg-white bg-opacity-25 p-3 rounded">
-                            <i class="bi bi-clock-history fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-exclamation-circle"></i>
-                        <small>Needs attention</small>
-                    </div>
-                </div>
+            <div class="text-end">
+                <h6 class="mb-1 fw-bold">{{ now()->format('l') }}</h6>
+                <p class="mb-0 opacity-90">{{ now()->format('F d, Y') }}</p>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Charts and Analytics Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-lg-8">
-            <div class="chart-container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h5 class="fw-bold mb-1">Application Trends</h5>
-                        <p class="text-muted small mb-0">Monthly overview of applications received</p>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-primary active">6M</button>
-                        <button type="button" class="btn btn-sm btn-outline-primary">1Y</button>
-                        <button type="button" class="btn btn-sm btn-outline-primary">All</button>
-                    </div>
-                </div>
-                <!-- Placeholder for chart -->
-                <div class="bg-light rounded p-5 text-center">
-                    <i class="bi bi-graph-up tex                t-muted" style="font-size: 4rem;"></i>
-                    <p class="text-muted mt-3 mb-0">Application Trends Chart</p>
-                    <small class="text-muted">Integration with Chart.js available</small>
-                </div>
+<!-- Main Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-briefcase-fill"></i>
             </div>
-        </div>
-
-        <div class="col-12 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold">Department Overview</h5>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['active_jobs'] }}</h3>
+                    <p class="text-muted mb-0 small">Active Vacancy</p>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Engineering</span>
-                            <span class="fw-bold">45%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" style="width: 45%; background: #2563eb;"></div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Design</span>
-                            <span class="fw-bold">25%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" style="width: 25%; background: #8b5cf6;"></div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Marketing</span>
-                            <span class="fw-bold">18%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" style="width: 18%; background: #10b981;"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Operations</span>
-                            <span class="fw-bold">12%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" style="width: 12%; background: #f59e0b;"></div>
-                        </div>
-                    </div>
-
-                    <hr class="my-4">
-
-                    <div class="d-grid gap-2">
-                        <button class="btn admin-action-btn">
-                            <i class="bi bi-bar-chart-line me-2"></i>View Full Analytics
-                        </button>
-                    </div>
-                </div>
+                @if($growth['jobs_posted'] != 0)
+                <span class="growth-indicator {{ $growth['jobs_posted'] > 0 ? 'positive' : 'negative' }}">
+                    <i class="bi bi-arrow-{{ $growth['jobs_posted'] > 0 ? 'up' : 'down' }}"></i>
+                    {{ abs($growth['jobs_posted']) }}%
+                </span>
+                @endif
             </div>
+            <small class="text-muted">
+                <i class="bi bi-plus-circle me-1"></i>{{ $thisMonth['jobs_posted'] }} posted this month
+            </small>
         </div>
     </div>
 
-    <!-- Recent Activity & Quick Stats -->
-    <div class="row g-4">
-        <div class="col-12 col-lg-7">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0 py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold">
-                            <i class="bi bi-activity text-primary me-2"></i>Recent Activity
-                        </h5>
-                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['pending_applications'] }}</h3>
+                    <p class="text-muted mb-0 small">Pending Reviews</p>
+                </div>
+                @if($growth['applications'] != 0)
+                <span class="growth-indicator {{ $growth['applications'] > 0 ? 'positive' : 'negative' }}">
+                    <i class="bi bi-arrow-{{ $growth['applications'] > 0 ? 'up' : 'down' }}"></i>
+                    {{ abs($growth['applications']) }}%
+                </span>
+                @endif
+            </div>
+            <small class="text-muted">
+                <i class="bi bi-inbox me-1"></i>{{ $thisMonth['applications'] }} received this month
+            </small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <div class="stat-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['total_candidates'] }}</h3>
+                    <p class="text-muted mb-0 small">Total Candidates</p>
+                </div>
+                @if($growth['candidates_registered'] != 0)
+                <span class="growth-indicator {{ $growth['candidates_registered'] > 0 ? 'positive' : 'negative' }}">
+                    <i class="bi bi-arrow-{{ $growth['candidates_registered'] > 0 ? 'up' : 'down' }}"></i>
+                    {{ abs($growth['candidates_registered']) }}%
+                </span>
+                @endif
+            </div>
+            <small class="text-muted">
+                <i class="bi bi-person-plus me-1"></i>{{ $thisMonth['candidates_registered'] }} registered this month
+            </small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['active_reviewers'] }}</h3>
+                    <p class="text-muted mb-0 small">Active Reviewers</p>
+                </div>
+            </div>
+            <small class="text-muted">
+                <i class="bi bi-check-circle me-1"></i>{{ $stats['total_reviewers'] }} total reviewers
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row g-3">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+        <!-- Recent Applications -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="bi bi-clock-history text-primary me-2"></i>Recent Applications
+                    </h6>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @forelse($recentApplications as $application)
+                <div class="activity-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex gap-3 flex-grow-1">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px; flex-shrink: 0;">
+                                <span class="fw-bold text-primary">
+                                    {{ strtoupper(substr($application->candidate->name, 0, 1)) }}
+                                </span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-semibold">{{ $application->candidate->name }}</h6>
+                                <p class="mb-1 small text-muted">
+                                    Applied for <strong>{{ $application->job->title }}</strong>
+                                </p>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>{{ $application->created_at->diffForHumans() }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            @php
+                                $statusBadge = match($application->status) {
+                                    'pending' => 'bg-warning text-dark',
+                                    'under_review' => 'bg-info text-white',
+                                    'shortlisted' => 'bg-success text-white',
+                                    'rejected' => 'bg-danger text-white',
+                                    default => 'bg-secondary text-white'
+                                };
+                            @endphp
+                            <span class="badge {{ $statusBadge }}">
+                                {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body p-0">
-                    <div class="activity-item border-bottom">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="d-flex gap-3">
-                                <div class="bg-primary bg-opacity-10 text-primary rounded p-2">
-                                    <i class="bi bi-person-plus-fill"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 fw-semibold">New candidate registered</p>
-                                    <p class="text-muted small mb-0">Sarah Williams created an account</p>
-                                </div>
-                            </div>
-                            <small class="text-muted">2 min ago</small>
-                        </div>
-                    </div>
-
-                    <div class="activity-item border-bottom">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="d-flex gap-3">
-                                <div class="bg-success bg-opacity-10 text-success rounded p-2">
-                                    <i class="bi bi-file-earmark-check-fill"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 fw-semibold">Application reviewed</p>
-                                    <p class="text-muted small mb-0">John Reviewer marked Michael Brown as shortlisted</p>
-                                </div>
-                            </div>
-                            <small class="text-muted">15 min ago</small>
-                        </div>
-                    </div>
-
-                    <div class="activity-item border-bottom">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="d-flex gap-3">
-                                <div class="bg-warning bg-opacity-10 text-warning rounded p-2">
-                                    <i class="bi bi-briefcase-fill"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 fw-semibold">New job posted</p>
-                                    <p class="text-muted small mb-0">Senior Laravel Developer position created</p>
-                                </div>
-                            </div>
-                            <small class="text-muted">1 hour ago</small>
-                        </div>
-                    </div>
-
-                    <div class="activity-item border-bottom">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="d-flex gap-3">
-                                <div class="bg-info bg-opacity-10 text-info rounded p-2">
-                                    <i class="bi bi-envelope-fill"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 fw-semibold">Application received</p>
-                                    <p class="text-muted small mb-0">New application for Frontend Developer position</p>
-                                </div>
-                            </div>
-                            <small class="text-muted">2 hours ago</small>
-                        </div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="d-flex gap-3">
-                                <div class="bg-danger bg-opacity-10 text-danger rounded p-2">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 fw-semibold">Job closed</p>
-                                    <p class="text-muted small mb-0">UX Designer position deadline reached</p>
-                                </div>
-                            </div>
-                            <small class="text-muted">3 hours ago</small>
-                        </div>
-                    </div>
+                @empty
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">No recent applications</p>
                 </div>
+                @endforelse
             </div>
         </div>
 
-        <div class="col-12 col-lg-5">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-lightning-charge text-warning me-2"></i>Quick Actions
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <button class="btn btn-outline-primary w-100 py-3">
-                                <i class="bi bi-plus-circle d-block fs-3 mb-2"></i>
-                                <small>Post Job</small>
-                            </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="btn btn-outline-success w-100 py-3">
-                                <i class="bi bi-person-plus d-block fs-3 mb-2"></i>
-                                <small>Add Reviewer</small>
-                            </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="btn btn-outline-info w-100 py-3">
-                                <i class="bi bi-file-earmark-bar-graph d-block fs-3 mb-2"></i>
-                                <small>Reports</small>
-                            </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="btn btn-outline-secondary w-100 py-3">
-                                <i class="bi bi-gear d-block fs-3 mb-2"></i>
-                                <small>Settings</small>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Top Jobs by Applications -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-bar-chart-fill text-success me-2"></i>Top Jobs by Applications
+                </h6>
             </div>
-
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-shield-check text-success me-2"></i>System Health
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                        <div>
-                            <p class="mb-1 fw-semibold">Server Status</p>
-                            <small class="text-muted">All systems operational</small>
-                        </div>
-                        <span class="metric-badge">
-                            <i class="bi bi-check-circle-fill"></i>
-                            Active
-                        </span>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                        <div>
-                            <p class="mb-1 fw-semibold">Database</p>
-                            <small class="text-muted">Connection stable</small>
-                        </div>
-                        <span class="metric-badge">
-                            <i class="bi bi-check-circle-fill"></i>
-                            Healthy
-                        </span>
-                    </div>
-
+            <div class="card-body">
+                @forelse($topJobs as $job)
+                <div class="job-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="mb-1 fw-semibold">Active Users</p>
-                            <small class="text-muted">Current session count</small>
+                            <h6 class="mb-1 fw-semibold">{{ $job->title }}</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-building me-1"></i>{{ $job->department }}
+                                <span class="mx-2">•</span>
+                                <i class="bi bi-geo-alt me-1"></i>{{ $job->location }}
+                            </small>
                         </div>
-                        <span class="metric-badge">
-                            <i class="bi bi-people-fill"></i>
-                            142
+                        <div class="text-end">
+                            <h5 class="mb-0 fw-bold text-primary">{{ $job->applications_count }}</h5>
+                            <small class="text-muted">Applications</small>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0">No jobs posted yet</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="alert('Feature coming soon!')">
+                        <i class="bi bi-plus-circle me-2"></i>Post New Job
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="alert('Feature coming soon!')">
+                        <i class="bi bi-person-plus me-2"></i>Add Reviewer
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="alert('Feature coming soon!')">
+                        <i class="bi bi-download me-2"></i>Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Reviewers -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-person-badge text-success me-2"></i>Active Reviewers
+                </h6>
+            </div>
+            <div class="card-body">
+                @forelse($reviewerStats as $reviewer)
+                <div class="reviewer-card mb-2">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 35px; height: 35px;">
+                            <span class="fw-bold text-success small">
+                                {{ strtoupper(substr($reviewer->name, 0, 1)) }}
+                            </span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 small fw-semibold">{{ $reviewer->name }}</h6>
+                            <small class="text-muted" style="font-size: 0.7rem;">{{ $reviewer->email }}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">
+                            <i class="bi bi-check-circle me-1"></i>{{ $reviewer->total_reviewed }} reviewed
+                        </span>
+                        <span class="text-warning">
+                            <i class="bi bi-hourglass me-1"></i>{{ $reviewer->pending }} pending
                         </span>
                     </div>
+                </div>
+                @empty
+                <div class="text-center py-3">
+                    <p class="text-muted small mb-0">No active reviewers</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-activity text-info me-2"></i>System Status
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small">Database</span>
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Healthy
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small">Storage</span>
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Healthy
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">System Load</span>
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Normal
+                    </span>
                 </div>
             </div>
         </div>
     </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    console.log('Admin Dashboard Loaded Successfully!');
+</script>
 @endsection

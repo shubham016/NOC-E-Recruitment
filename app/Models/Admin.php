@@ -4,18 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'phone',
-        'status',
     ];
 
     protected $hidden = [
@@ -23,16 +20,16 @@ class Admin extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    // Relationships
-    public function jobs()
+    /**
+     * Relationship: Admin posted many jobs
+     */
+    public function jobPostings()
     {
-        return $this->hasMany(Job::class, 'created_by');
+        return $this->hasMany(JobPosting::class, 'posted_by');
     }
 }
