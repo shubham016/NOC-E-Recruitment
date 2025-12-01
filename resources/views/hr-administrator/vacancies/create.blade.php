@@ -368,7 +368,7 @@
                     <input type="hidden" name="job_type"    value="permanent">
                     <input type="hidden" name="description" id="hidden_description"  value="">
                     <input type="hidden" name="requirements" id="hidden_requirements" value="">
-                    <input type="hidden" name="status"      value="active">
+                    <input type="hidden" name="status"      value="draft">
                 </div>
             </div>
 
@@ -409,9 +409,9 @@
                             <a href="{{ route('hr-administrator.vacancies.index') }}" class="btn btn-outline-secondary btn-lg">
                                 <i class="bi bi-x-circle me-2"></i>Cancel
                             </a>
-                            <button type="submit" class="btn btn-danger btn-lg btn-action px-5"
-                                onclick="return confirmPublish()">
-                                <i class="bi bi-megaphone-fill me-2"></i>Publish Vacancy
+                            <button type="submit" class="btn btn-warning btn-lg btn-action px-5"
+                                onclick="return confirmSaveDraft()">
+                                <i class="bi bi-save-fill me-2"></i>Save as Draft
                             </button>
                         </div>
                     </div>
@@ -584,8 +584,8 @@
     waitForConverter();
 })();
 
-function confirmPublish() {
-    return confirm('⚠️ Are you sure you want to publish this vacancy?\n\nयो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\nOnce published$vacancy, it will be visible to all candidates.');
+function confirmSaveDraft() {
+    return confirm('💾 Save this vacancy as draft?\n\nयो रिक्त पद ड्राफ्टमा सुरक्षित गर्नुहोस्?\n\nThe vacancy will be saved as draft and will NOT be visible to candidates until you change the status to "Active".');
 }
 </script>
 @endsection

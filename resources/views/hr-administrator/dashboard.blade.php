@@ -324,7 +324,7 @@
                                     <tr>
                                         <td>
                                             <div class="fw-semibold" style="color: #1e3a8a;">
-                                                {{ $application->candidate->name ?? 'Unknown' }}
+                                                {{ $application->name_english ?? 'Unknown' }}
                                             </div>
                                             <small class="text-muted">{{ Str::limit($application->vacancy->title ?? '', 25) }}</small>
                                         </td>

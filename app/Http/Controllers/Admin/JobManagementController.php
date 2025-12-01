@@ -80,20 +80,27 @@ class JobManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive',
+            'category' => 'required|in:open,inclusive,internal',
+            'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
-            'department' => 'required|string|max:100',
             'location' => 'required|string|max:100',
-            'job_type' => 'required|in:permanent,temporary,contract',
-            'salary_min' => 'nullable|numeric|min:0',
-            'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
+            'application_fee' => 'required|numeric|min:0',
             'deadline' => 'required|date|after:today',
+            'deadline_bs' => 'nullable|string',
+            'double_dastur_date' => 'nullable|date',
+            'double_dastur_bs' => 'nullable|string',
             'status' => 'required|in:draft,active,closed',
         ]);
+
+        // Set department from service_group
+        $validated['department'] = $validated['service_group'];
+
+        // Set posted_by to current admin
+        $validated['posted_by'] = Auth::guard('admin')->id();
 
         $validated['posted_by'] = Auth::guard('admin')->id();
 
@@ -146,20 +153,24 @@ class JobManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive',
+            'category' => 'required|in:open,inclusive,internal',
+            'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
-            'department' => 'required|string|max:100',
             'location' => 'required|string|max:100',
-            'job_type' => 'required|in:permanent,temporary,contract',
-            'salary_min' => 'nullable|numeric|min:0',
-            'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
+            'application_fee' => 'required|numeric|min:0',
             'deadline' => 'required|date',
+            'deadline_bs' => 'nullable|string',
+            'double_dastur_date' => 'nullable|date',
+            'double_dastur_bs' => 'nullable|string',
             'status' => 'required|in:draft,active,closed',
         ]);
+
+        // Set department from service_group
+        $validated['department'] = $validated['service_group'];
 
         $job->update($validated);
 

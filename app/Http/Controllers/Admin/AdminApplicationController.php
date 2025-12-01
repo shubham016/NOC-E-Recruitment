@@ -71,8 +71,8 @@ class AdminApplicationController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // Status options (Admin Portal handles only initial review: pending, approved, rejected)
-        $statuses = ['pending', 'approved', 'rejected'];
+        // Status options (Super Admin has ALL access)
+        $statuses = ['pending', 'assigned', 'reviewed', 'edit', 'approved', 'rejected'];
 
         // Calculate statistics
         $stats = [
@@ -166,7 +166,6 @@ class AdminApplicationController extends Controller
                 'Vacancy Position',
                 'Advertisement No',
                 'Status',
-                'Priority',
                 'Reviewer',
                 'Applied Date',
                 'Reviewed Date',
@@ -183,7 +182,6 @@ class AdminApplicationController extends Controller
                     $application->vacancy->title ?? 'N/A',
                     $application->vacancy->advertisement_no ?? 'N/A',
                     ucfirst($application->status),
-                    $application->manual_priority ? ucfirst($application->manual_priority) : 'Auto',
                     $application->reviewer->name ?? 'Not Assigned',
                     $application->created_at ? $application->created_at->format('Y-m-d H:i:s') : 'N/A',
                     $application->reviewed_at ? $application->reviewed_at->format('Y-m-d H:i:s') : 'Not Reviewed',
@@ -202,7 +200,7 @@ class AdminApplicationController extends Controller
         $application->load(['vacancy', 'reviewer']);
 
         $reviewers = Reviewer::where('status', 'active')->get();
-        $statuses = ['pending', 'approved', 'rejected'];
+        $statuses = ['pending', 'assigned', 'reviewed', 'edit', 'approved', 'rejected'];
 
         return view('admin.applications.show', compact(
             'application',
@@ -214,37 +212,73 @@ class AdminApplicationController extends Controller
     public function updateStatus(Request $request, ApplicationForm $application)
     {
         $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-            'admin_notes' => 'nullable|string|max:1000'
+            'status' => 'required|in:pending,assigned,reviewed,edit,approved,rejected',
+            'admin_notes' => 'nullable|string|max:1000',
+            'approver_id' => 'required_if:status,reviewed|nullable|exists:approvers,id',
+        ], [
+            'approver_id.required_if' => 'Please select an approver when marking as reviewed.',
         ]);
 
-        $application->update([
+        $updateData = [
             'status' => $request->status,
             'admin_notes' => $request->admin_notes,
             'reviewed_at' => now(),
-        ]);
-
-        // Create notification for candidate
-        $notificationMessages = [
-            'approved' => [
-                'title' => 'Application Approved',
-                'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by the admin.',
-                'type' => 'application_approved'
-            ],
-            'rejected' => [
-                'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected. Please check the admin notes for more details.',
-                'type' => 'application_rejected'
-            ],
         ];
 
-        if (isset($notificationMessages[$request->status])) {
+        // If marking as reviewed, assign to approver
+        if ($request->status === 'reviewed' && $request->approver_id) {
+            $updateData['approver_id'] = $request->approver_id;
+        }
+
+        $application->update($updateData);
+
+        // Create notification for candidate
+        $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+
+        if ($request->status === 'reviewed' && $request->approver_id) {
+            $approver = \App\Models\Approver::find($request->approver_id);
+
+            // Notify the approver
+            \App\Models\Notification::create([
+                'user_id' => $approver->id,
+                'user_type' => 'approver',
+                'type' => 'application_assigned',
+                'title' => 'New Application Assigned',
+                'message' => 'An application has been reviewed by admin and assigned to you for final approval.',
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+
+            return redirect()->back()->with('success', 'Application reviewed and assigned to Approver: ' . ($approver->name ?? 'N/A') . ' for final decision.');
+        } elseif ($request->status == 'approved') {
             Notification::create([
-                'user_id' => null,
+                'user_id' => $candidate?->id,
                 'user_type' => 'candidate',
-                'type' => $notificationMessages[$request->status]['type'],
-                'title' => $notificationMessages[$request->status]['title'],
-                'message' => $notificationMessages[$request->status]['message'],
+                'type' => 'application_approved',
+                'title' => 'Application Approved',
+                'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by the admin.',
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        } elseif ($request->status == 'edit') {
+            $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
+            Notification::create([
+                'user_id' => $candidate?->id,
+                'user_type' => 'candidate',
+                'type' => 'application_edit_request',
+                'title' => 'Application Requires Editing',
+                'message' => 'Your application for "' . $application->vacancy->title . '" has been sent back for corrections by the admin.' . $rejectionReason,
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        } elseif ($request->status == 'rejected') {
+            $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
+            Notification::create([
+                'user_id' => $candidate?->id,
+                'user_type' => 'candidate',
+                'type' => 'application_rejected',
+                'title' => 'Application Rejected',
+                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected by the admin.' . $rejectionReason,
                 'related_id' => $application->id,
                 'related_type' => 'application',
             ]);
@@ -300,21 +334,6 @@ class AdminApplicationController extends Controller
         return redirect()->back()->with('success', 'Reviewer assigned successfully!');
     }
 
-    public function setPriority(Request $request, ApplicationForm $application)
-    {
-        $request->validate([
-            'manual_priority' => 'required|in:critical,high,medium,low,normal',
-            'priority_note' => 'nullable|string|max:500'
-        ]);
-
-        $application->update([
-            'manual_priority' => $request->manual_priority,
-            'priority_note' => $request->priority_note
-        ]);
-
-        return redirect()->back()->with('success', 'Priority set successfully!');
-    }
-
     public function destroy(ApplicationForm $application)
     {
         $application->delete();
@@ -326,18 +345,15 @@ class AdminApplicationController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:delete,update_status,assign_reviewer,set_priority',
+            'action' => 'required|in:delete,update_status,assign_reviewer',
             'application_ids' => 'required|array|min:1',
             'application_ids.*' => 'exists:application_form,id',
-            'status' => 'required_if:action,update_status|in:pending,approved,rejected',
+            'status' => 'required_if:action,update_status|in:pending,assigned,reviewed,edit,approved,rejected',
             'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id',
-            'manual_priority' => 'required_if:action,set_priority|nullable|in:critical,high,medium,low,normal',
-            'priority_note' => 'nullable|string|max:500'
         ], [
             'application_ids.required' => 'Please select at least one application.',
             'application_ids.min' => 'Please select at least one application.',
             'reviewer_id.required_if' => 'Please select a reviewer.',
-            'manual_priority.required_if' => 'Please select a priority level.',
         ]);
 
         $applicationIds = $request->application_ids;
@@ -357,31 +373,12 @@ class AdminApplicationController extends Controller
                 break;
 
             case 'assign_reviewer':
-                $updateData = [
+                ApplicationForm::whereIn('id', $applicationIds)->update([
                     'reviewer_id' => $request->reviewer_id,
                     'status' => 'assigned'
-                ];
-
-                // Optionally set priority during assignment
-                if ($request->filled('manual_priority')) {
-                    $updateData['manual_priority'] = $request->manual_priority;
-                    $updateData['priority_note'] = $request->priority_note;
-                }
-
-                ApplicationForm::whereIn('id', $applicationIds)->update($updateData);
+                ]);
 
                 $message = 'Reviewer assigned to selected applications!';
-                if ($request->filled('manual_priority')) {
-                    $message .= ' Priority set to ' . ucfirst($request->manual_priority) . '.';
-                }
-                break;
-
-            case 'set_priority':
-                ApplicationForm::whereIn('id', $applicationIds)->update([
-                    'manual_priority' => $request->manual_priority,
-                    'priority_note' => $request->priority_note
-                ]);
-                $message = 'Priority set for selected applications!';
                 break;
 
             default:

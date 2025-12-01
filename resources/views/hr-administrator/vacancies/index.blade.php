@@ -109,6 +109,28 @@
         .modern-table tbody tr:hover { background: #f8fafc; }
         .modern-table tbody tr:last-child td { border-bottom: none; }
         .nepali-date-loading { color: #9ca3af; font-style: italic; }
+
+        /* Status Dropdown Styling */
+        .status-change-form select.bg-success {
+            background-color: #10b981 !important;
+        }
+
+        .status-change-form select.bg-danger {
+            background-color: #ef4444 !important;
+        }
+
+        .status-change-form select.bg-secondary {
+            background-color: #6b7280 !important;
+        }
+
+        .status-change-form select option {
+            background-color: white;
+            color: #000;
+        }
+
+        .status-change-form select:hover {
+            opacity: 0.9;
+        }
     </style>
 @endsection
 
@@ -295,7 +317,18 @@
                                     <span class="badge bg-primary">{{ $vacancy->application_forms_count ?? 0 }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $statusBadge }}">{{ ucfirst($vacancy->status) }}</span>
+                                    <form action="{{ route('hr-administrator.vacancies.changeStatus', $vacancy->id) }}" method="POST"
+                                          class="status-change-form d-inline">
+                                        @csrf
+                                        <select name="status"
+                                                class="form-select form-select-sm border"
+                                                onchange="this.form.submit()"
+                                                style="font-weight: 600; cursor: pointer; width: auto; padding-right: 2rem;">
+                                            <option value="draft" {{ $vacancy->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                            <option value="active" {{ $vacancy->status == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="closed" {{ $vacancy->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                                        </select>
+                                    </form>
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">

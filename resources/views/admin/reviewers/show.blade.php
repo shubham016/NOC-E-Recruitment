@@ -485,8 +485,8 @@
                             @foreach($recentApplications as $application)
                                 <tr>
                                     <td class="text-center">
-                                        <div class="fw-semibold" style="color: #065f46;">{{ $application->candidate->name }}</div>
-                                        <small class="text-muted">{{ $application->candidate->email }}</small>
+                                        <div class="fw-semibold" style="color: #065f46;">{{ $application->name_english }}</div>
+                                        <small class="text-muted">{{ $application->email }}</small>
                                     </td>
                                     <td class="text-center">
                                         <div class="fw-semibold">{{ $application->vacancy->title }}</div>

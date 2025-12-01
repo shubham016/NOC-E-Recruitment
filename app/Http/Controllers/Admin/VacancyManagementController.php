@@ -16,7 +16,7 @@ class VacancyManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = JobPosting::query()->with('postedBy')->withCount('applicationForms');
+        $query = JobPosting::query()->with('postedBy')->withCount('applications');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -66,17 +66,19 @@ class VacancyManagementController extends Controller
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal',
+            'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
-            'job_type' => 'required|in:permanent,temporary,contract',
-            'salary_min' => 'nullable|numeric|min:0',
-            'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
+            'application_fee' => 'required|numeric|min:0',
+            'double_dastur_fee' => 'required|numeric|min:0',
             'deadline' => 'required|date|after:today',
-            'deadline_bs' => 'nullable|string|max:20',
+            'deadline_bs' => 'nullable|string',
+            'double_dastur_date' => 'nullable|date',
+            'double_dastur_bs' => 'nullable|string',
             'status' => 'required|in:draft,active,closed',
         ]);
 
@@ -95,25 +97,31 @@ class VacancyManagementController extends Controller
 
         return redirect()
             ->route('admin.jobs.index')
-            ->with('success', 'Job posted successfully!');
+            ->with('success', 'Vacancy saved as draft successfully! Change status to "Active" to publish it.');
     }
 
     public function show($id)
     {
-        $job = JobPosting::with(['applicationForms.reviewer', 'postedBy'])
-            ->withCount('applicationForms')
+        $job = JobPosting::with(['applications.reviewer', 'postedBy'])
+            ->withCount('applications')
             ->findOrFail($id);
 
         $applicationStats = [
-            'total' => $job->applicationForms->count(),
-            'pending' => $job->applicationForms->where('status', 'pending')->count(),
-            'approved' => $job->applicationForms->where('status', 'approved')->count(),
-            'shortlisted' => $job->applicationForms->where('status', 'shortlisted')->count(),
-            'rejected' => $job->applicationForms->where('status', 'rejected')->count(),
-            'selected' => $job->applicationForms->where('status', 'selected')->count(),
+            'total' => $job->applications->count(),
+            'assigned' => $job->applications->where('status', 'assigned')->count(),
+            'reviewed' => $job->applications->where('status', 'reviewed')->count(),
+            'edit_access' => $job->applications->where('status', 'edit')->count(),
+            'approved' => $job->applications->where('status', 'approved')->count(),
+            'rejected' => $job->applications->where('status', 'rejected')->count(),
         ];
 
-        return view('admin.jobs.show', compact('job', 'applicationStats'));
+        // Get 5 latest application activities for timeline
+        $recentActivities = $job->applications()
+            ->orderBy('updated_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('admin.jobs.show', compact('job', 'applicationStats', 'recentActivities'));
     }
 
     public function edit($id)
@@ -132,16 +140,19 @@ class VacancyManagementController extends Controller
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal',
+            'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
-            'job_type' => 'required|in:permanent,temporary,contract',
-            'salary_min' => 'nullable|numeric|min:0',
-            'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
+            'application_fee' => 'required|numeric|min:0',
+            'double_dastur_fee' => 'required|numeric|min:0',
             'deadline' => 'required|date',
+            'deadline_bs' => 'nullable|string',
+            'double_dastur_date' => 'nullable|date',
+            'double_dastur_bs' => 'nullable|string',
             'status' => 'required|in:draft,active,closed',
         ]);
 
@@ -157,17 +168,25 @@ class VacancyManagementController extends Controller
     {
         $job = JobPosting::findOrFail($id);
 
-        if ($job->applicationForms()->count() > 0) {
+        // Only allow deletion if vacancy is in Draft status
+        if ($job->status !== 'draft') {
             return redirect()
                 ->route('admin.jobs.index')
-                ->with('error', 'Cannot delete job with existing applications. Please close it instead.');
+                ->with('error', 'Cannot delete published vacancy. Only Draft vacancies can be deleted. Please change status to "Closed" instead.');
+        }
+
+        // Additional check: Prevent deletion if any applications exist (even for drafts)
+        if ($job->applications()->count() > 0) {
+            return redirect()
+                ->route('admin.jobs.index')
+                ->with('error', 'Cannot delete vacancy with existing applications. Please change status to "Closed" instead.');
         }
 
         $job->delete();
 
         return redirect()
             ->route('admin.jobs.index')
-            ->with('success', 'Job deleted successfully!');
+            ->with('success', 'Draft vacancy deleted successfully!');
     }
 
     public function duplicate($id)

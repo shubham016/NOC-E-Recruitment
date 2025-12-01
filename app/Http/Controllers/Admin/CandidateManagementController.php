@@ -26,23 +26,20 @@ class CandidateManagementController extends Controller
                     ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('mobile_number', 'like', "%{$search}%");
             })
-            ->when($status, function ($query, $status) {
-                $query->where('status', $status);
-            })
             ->withCount('applications')
             ->latest()
             ->paginate(15);
 
         $stats = [
             'total' => Candidate::count(),
-            'active' => Candidate::where('status', 'active')->count(),
-            'inactive' => Candidate::where('status', 'inactive')->count(),
             'this_month' => Candidate::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
+            'with_applications' => Candidate::has('applications')->count(),
+            'verified' => Candidate::whereNotNull('email_verified_at')->count(),
         ];
 
-        return view('admin.candidates.index', compact('candidates', 'stats', 'search', 'status'));
+        return view('admin.candidates.index', compact('candidates', 'stats', 'search'));
     }
 
     /**
@@ -96,7 +93,6 @@ class CandidateManagementController extends Controller
             'state' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
             'qualification' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
         ]);
 
         $candidate->update($validated);
@@ -107,18 +103,11 @@ class CandidateManagementController extends Controller
     }
 
     /**
-     * Update candidate status
+     * Update candidate status - Disabled (status column doesn't exist)
      */
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        $candidate = Candidate::findOrFail($id);
-        $candidate->update(['status' => $request->status]);
-
-        return back()->with('success', 'Candidate status updated successfully!');
+        return back()->with('error', 'Status update is not available.');
     }
 
     /**

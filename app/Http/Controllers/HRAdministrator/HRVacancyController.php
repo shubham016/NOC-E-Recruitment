@@ -109,7 +109,7 @@ class HRVacancyController extends Controller
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
-            ->with('success', 'Job posted successfully!');
+            ->with('success', 'Vacancy saved as draft successfully! Change status to "Active" to publish it.');
     }
 
     public function show($id)
@@ -199,17 +199,25 @@ class HRVacancyController extends Controller
 
         $job = JobPosting::findOrFail($id);
 
+        // Only allow deletion if vacancy is in Draft status
+        if ($job->status !== 'draft') {
+            return redirect()
+                ->route('hr-administrator.vacancies.index')
+                ->with('error', 'Cannot delete published vacancy. Only Draft vacancies can be deleted. Please change status to "Closed" instead.');
+        }
+
+        // Additional check: Prevent deletion if any applications exist (even for drafts)
         if ($job->applicationForms()->count() > 0) {
             return redirect()
                 ->route('hr-administrator.vacancies.index')
-                ->with('error', 'Cannot delete job with existing applications. Please close it instead.');
+                ->with('error', 'Cannot delete vacancy with existing applications. Please change status to "Closed" instead.');
         }
 
         $job->delete();
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
-            ->with('success', 'Job deleted successfully!');
+            ->with('success', 'Draft vacancy deleted successfully!');
     }
 
     public function duplicate($id)

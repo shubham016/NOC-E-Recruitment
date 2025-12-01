@@ -66,17 +66,17 @@
                              class="gov-avatar gov-avatar-lg">
                     @else
                         <div class="gov-avatar-placeholder gov-avatar-lg">
-                            {{ strtoupper(substr($application->candidate->name, 0, 1)) }}
+                            {{ strtoupper(substr($application->name_english ?? 'U', 0, 1)) }}
                         </div>
                     @endif
                 </div>
                 <div class="col">
                     <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1.25rem; color: white;">
-                        {{ $application->candidate->name }}
+                        {{ $application->name_english }}
                     </h2>
                     <div class="row g-4">
                         <div class="col-auto">
-                            <i class="bi bi-envelope-fill me-2"></i>{{ $application->candidate->email }}
+                            <i class="bi bi-envelope-fill me-2"></i>{{ $application->email }}
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-telephone-fill me-2"></i>{{ $application->phone }}
@@ -93,7 +93,7 @@
                         @elseif($application->status == 'rejected') gov-badge-danger
                         @else gov-badge-secondary
                         @endif" style="font-size: 0.9375rem; padding: 0.625rem 1.25rem;">
-                        {{ $application->status_label }}
+                        {{ ucfirst(str_replace('_', ' ', $application->status)) }}
                     </span>
                 </div>
             </div>
@@ -649,7 +649,7 @@
                         <button type="button" class="gov-btn gov-btn-primary w-100" data-bs-toggle="modal" data-bs-target="#assignModal">
                             <i class="bi bi-person-plus"></i> Assign Reviewer
                         </button>
-                        <a href="mailto:{{ $application->candidate->email }}" class="gov-btn gov-btn-secondary w-100">
+                        <a href="mailto:{{ $application->email }}" class="gov-btn gov-btn-secondary w-100">
                             <i class="bi bi-envelope"></i> Send Email
                         </a>
                         <button type="button" class="gov-btn gov-btn-secondary w-100" onclick="confirmDelete()">

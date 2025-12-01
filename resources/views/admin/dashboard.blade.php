@@ -80,13 +80,8 @@
         /* Stats Grid - Perfect Alignment */
         .stats-grid {
             display: grid;
-<<<<<<< HEAD
             grid-template-columns: repeat(5, 1fr);
             gap: 20px;
-=======
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
->>>>>>> b0a5300 (admin dashboard updated)
             margin-bottom: 32px;
         }
 
@@ -95,10 +90,6 @@
             border: var(--border);
             border-radius: var(--radius);
             padding: 24px;
-<<<<<<< HEAD
-            text-align: center;
-=======
->>>>>>> b0a5300 (admin dashboard updated)
             transition: all 0.2s ease;
         }
 
@@ -108,23 +99,14 @@
         }
 
         .stat-icon {
-<<<<<<< HEAD
-            width: 56px;
-            height: 56px;
-=======
             width: 48px;
             height: 48px;
->>>>>>> b0a5300 (admin dashboard updated)
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-<<<<<<< HEAD
-            margin: 0 auto 16px;
-=======
             margin-bottom: 16px;
->>>>>>> b0a5300 (admin dashboard updated)
         }
 
         .stat-value {
@@ -175,24 +157,6 @@
             color: var(--gray-500);
         }
 
-<<<<<<< HEAD
-        /* Purple Color Utilities */
-        .bg-purple {
-            background-color: var(--purple) !important;
-        }
-
-        .text-purple {
-            color: var(--purple) !important;
-        }
-
-        .bg-purple.bg-opacity-10 {
-            background-color: rgba(139, 92, 246, 0.1) !important;
-        }
-
-        /* Top navbar positioning is handled by layout.dashboard */
-
-=======
->>>>>>> b0a5300 (admin dashboard updated)
         /* Content Layout - Perfect Grid */
         .content-layout {
             display: grid;
@@ -312,23 +276,11 @@
             color: #92400e;
         }
 
-<<<<<<< HEAD
-        .badge-approved {
-=======
         .badge-under_review {
->>>>>>> b0a5300 (admin dashboard updated)
             background: #dbeafe;
             color: #1e40af;
         }
 
-<<<<<<< HEAD
-        .badge-selected {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-
-=======
->>>>>>> b0a5300 (admin dashboard updated)
         .badge-shortlisted {
             background: #d1fae5;
             color: #065f46;
@@ -652,15 +604,9 @@
             <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                 <i class="bi bi-briefcase-fill"></i>
             </div>
-<<<<<<< HEAD
-            <div class="stat-value">{{ $stats['active_vacancies'] }}</div>
-            <div class="stat-label">Active Vacancies</div>
-            <!-- <div class="stat-meta">
-=======
             <div class="stat-value">{{ $stats['active_jobs'] }}</div>
             <div class="stat-label">Active Vacancies</div>
             <div class="stat-meta">
->>>>>>> b0a5300 (admin dashboard updated)
                 @if($growth['jobs_posted'] != 0)
                     <span class="stat-badge {{ $growth['jobs_posted'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['jobs_posted'] > 0 ? 'up' : 'down' }}"></i>
@@ -668,11 +614,7 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['jobs_posted'] }} this month</span>
-<<<<<<< HEAD
-            </div> -->
-=======
             </div>
->>>>>>> b0a5300 (admin dashboard updated)
         </div>
 
         <!-- Stat 2 -->
@@ -682,11 +624,7 @@
             </div>
             <div class="stat-value">{{ $stats['pending_applications'] }}</div>
             <div class="stat-label">Pending Reviews</div>
-<<<<<<< HEAD
-            <!-- <div class="stat-meta">
-=======
             <div class="stat-meta">
->>>>>>> b0a5300 (admin dashboard updated)
                 @if($growth['applications'] != 0)
                     <span class="stat-badge {{ $growth['applications'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['applications'] > 0 ? 'up' : 'down' }}"></i>
@@ -694,34 +632,15 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['applications'] }} received</span>
-<<<<<<< HEAD
-            </div> -->
-        </div>
-
-        <!-- Stat 3 - Total Candidates -->
-=======
             </div>
         </div>
 
         <!-- Stat 3 -->
->>>>>>> b0a5300 (admin dashboard updated)
         <div class="stat-box">
             <div class="stat-icon bg-info bg-opacity-10 text-info">
                 <i class="bi bi-people-fill"></i>
             </div>
             <div class="stat-value">{{ $stats['total_candidates'] }}</div>
-<<<<<<< HEAD
-            <div class="stat-label">Registered Candidates</div>
-            <!-- <div class="stat-meta">
-                @if($growth['candidates'] != 0)
-                    <span class="stat-badge {{ $growth['candidates'] > 0 ? 'badge-up' : 'badge-down' }}">
-                        <i class="bi bi-arrow-{{ $growth['candidates'] > 0 ? 'up' : 'down' }}"></i>
-                        {{ abs($growth['candidates']) }}%
-                    </span>
-                @endif
-                <span class="stat-text">{{ $thisMonth['candidates'] }} this month</span>
-            </div> -->
-=======
             <div class="stat-label">Total Candidates</div>
             <div class="stat-meta">
                 @if($growth['candidates_registered'] != 0)
@@ -732,7 +651,6 @@
                 @endif
                 <span class="stat-text">{{ $thisMonth['candidates_registered'] }} registered</span>
             </div>
->>>>>>> b0a5300 (admin dashboard updated)
         </div>
 
         <!-- Stat 4 -->
@@ -742,27 +660,9 @@
             </div>
             <div class="stat-value">{{ $stats['active_reviewers'] }}</div>
             <div class="stat-label">Active Reviewers</div>
-<<<<<<< HEAD
-            <!-- <div class="stat-meta">
-                <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
-            </div> -->
-        </div>
-
-        <!-- Stat 5 - HR Administrators/Approvers -->
-        <div class="stat-box">
-            <div class="stat-icon bg-purple bg-opacity-10 text-purple">
-                <i class="bi bi-person-check-fill"></i>
-            </div>
-            <div class="stat-value">{{ $stats['active_hr_admins'] }}</div>
-            <div class="stat-label">Active Approvers</div>
-            <!-- <div class="stat-meta">
-                <span class="stat-text">{{ $stats['total_hr_admins'] }} total approvers</span>
-            </div> -->
-=======
             <div class="stat-meta">
                 <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
             </div>
->>>>>>> b0a5300 (admin dashboard updated)
         </div>
     </div>
 
@@ -771,14 +671,10 @@
         <!-- Main Content -->
         <div>
             <!-- Recent Applications -->
-<<<<<<< HEAD
-            <!-- Recent Applications -->
-=======
->>>>>>> b0a5300 (admin dashboard updated)
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="bi bi-clock-history text-primary"></i>
+                        <!-- <i class="bi bi-clock-history text-primary"></i> -->
                         Recent Applications
                     </h3>
                     <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
@@ -786,12 +682,23 @@
                 <div>
                     @forelse($recentApplications as $application)
                         <div class="list-item">
-                            <div class="item-avatar bg-primary bg-opacity-10 text-primary">
-                                {{ strtoupper(substr($application->candidate->name ?? 'U', 0, 1)) }}
-                            </div>
+                            @if($application->passport_size_photo)
+                                <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
+                                     alt="{{ $application->name_english }}"
+                                     class="item-avatar"
+                                     style="object-fit: cover;">
+                            @else
+                                <div class="item-avatar bg-primary bg-opacity-10 text-primary">
+                                    {{ strtoupper(substr($application->name_english ?? 'U', 0, 1)) }}
+                                </div>
+                            @endif
                             <div class="item-content">
+<<<<<<< HEAD
                                 <h4 class="item-name">{{ $application->candidate->name ?? 'Unknown' }}</h4>
 <<<<<<< HEAD
+=======
+                                <h4 class="item-name">{{ $application->name_english ?? 'Unknown' }}</h4>
+>>>>>>> 8310a13950604862318c21ec6d79e2c6e09283f1
                                 <p class="item-text">Applied for
                                     <strong>{{ $application->vacancy->title ?? 'Position' }}</strong>
 =======
@@ -825,8 +732,9 @@
                     <h3 class="card-title">
 <<<<<<< HEAD
                         <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
-                        Total Vacancies by Applications
+                        Applications per Vacancy
                     </h3>
+                    <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
                 </div>
                 <div>
                     @forelse($topJobs as $vacancy)
@@ -896,7 +804,7 @@
             <div class="widget">
                 <div class="widget-header">
                     <h3 class="widget-title">
-                        <i class="bi bi-lightning-fill text-warning"></i>
+                        <!-- <i class="bi bi-lightning-fill text-warning"></i> -->
                         Quick Actions
                     </h3>
                 </div>
@@ -909,10 +817,14 @@
                         Post New Job
 >>>>>>> b0a5300 (admin dashboard updated)
                     </a>
-                    <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
+                    <a href="{{ route('admin.reviewers.create') }}" class="btn-action btn-secondary">
                         <i class="bi bi-person-plus"></i>
                         Add Reviewer
-                    </button>
+                    </a>
+                    <a href="{{ route('admin.approvers.create') }}" class="btn-action btn-secondary">
+                        <i class="bi bi-person-plus"></i>
+                        Add Approver
+                    </a>
                     <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
                         <i class="bi bi-download"></i>
                         Export Report
@@ -932,9 +844,16 @@
                     @forelse($reviewerStats as $reviewer)
                         <div class="reviewer-item">
                             <div class="reviewer-row">
-                                <div class="reviewer-avatar bg-success bg-opacity-10 text-success">
-                                    {{ strtoupper(substr($reviewer->name, 0, 1)) }}
-                                </div>
+                                @if($reviewer->photo)
+                                    <img src="{{ asset('storage/' . $reviewer->photo) }}"
+                                         alt="{{ $reviewer->name }}"
+                                         class="reviewer-avatar"
+                                         style="object-fit: cover;">
+                                @else
+                                    <div class="reviewer-avatar bg-success bg-opacity-10 text-success">
+                                        {{ strtoupper(substr($reviewer->name, 0, 1)) }}
+                                    </div>
+                                @endif
                                 <div class="reviewer-info">
                                     <h4 class="reviewer-name">{{ $reviewer->name }}</h4>
                                     <p class="reviewer-email">{{ $reviewer->email }}</p>

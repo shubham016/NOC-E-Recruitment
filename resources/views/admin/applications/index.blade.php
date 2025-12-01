@@ -49,29 +49,49 @@
 
     .modern-table tbody tr {
         transition: all 0.2s;
-        border-left: 3px solid transparent;
     }
 
     .modern-table tbody tr:hover {
         background: #f8fafc;
-        border-left-color: #1e40af;
-        transform: translateX(2px);
     }
 
-    /* Status-based row styling */
-    .application-row.pending {
-        border-left-color: #fbbf24;
-        background: linear-gradient(to right, rgba(251, 191, 36, 0.02) 0%, white 100%);
+    /* Compact columns for NOC Employee and Employee Code */
+    .modern-table th.compact-col-noc {
+        width: 90px;
+        max-width: 90px;
+        white-space: normal;
+        word-wrap: break-word;
+        padding: 0.75rem 0.5rem !important;
+        line-height: 1.2;
+        font-size: 0.75rem;
     }
 
-    .application-row.approved {
-        border-left-color: #10b981;
-        background: linear-gradient(to right, rgba(16, 185, 129, 0.02) 0%, white 100%);
+    .modern-table td.compact-col-noc {
+        width: 90px;
+        max-width: 90px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0.5rem !important;
     }
 
-    .application-row.rejected {
-        border-left-color: #ef4444;
-        background: linear-gradient(to right, rgba(239, 68, 68, 0.02) 0%, white 100%);
+    .modern-table th.compact-col-code {
+        width: 110px;
+        max-width: 110px;
+        white-space: normal;
+        word-wrap: break-word;
+        padding: 0.75rem 0.5rem !important;
+        line-height: 1.2;
+        font-size: 0.75rem;
+    }
+
+    .modern-table td.compact-col-code {
+        width: 110px;
+        max-width: 110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0.5rem !important;
     }
 
 </style>
@@ -146,7 +166,7 @@
                 <div class="gov-stats-icon" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%);">
                     <i class="bi bi-check-circle-fill" style="color: white;"></i>
                 </div>
-                <h3 class="gov-stats-number">{{ $stats['approved'] }}</h3>
+                <h3 class="gov-stats-number">{{ $stats['approved'] ?? 0 }}</h3>
                 <p class="gov-stats-label">Approved</p>
             </div>
         </div>
@@ -243,13 +263,14 @@
                                 <th class="text-center text-uppercase">
                                     <input type="checkbox" id="selectAll" class="form-check-input">
                                 </th>
-                                <th class="text-center text-uppercase">S.N.</th>
+                                <th class="text-center text-uppercase">S.N</th>
                                 <th class="text-center text-uppercase">Candidate Information</th>
                                 <th class="text-center text-uppercase">Vacancy Applied For</th>
                                 <th class="text-center text-uppercase">Contact Details</th>
                                 <th class="text-center text-uppercase">Application Date</th>
+                                <th class="text-center text-uppercase compact-col-noc">NOC Employee</th>
+                                <th class="text-center text-uppercase compact-col-code">Employee Code</th>
                                 <th class="text-center text-uppercase">Assigned Reviewer</th>
-                                <th class="text-center text-uppercase">Priority</th>
                                 <th class="text-center text-uppercase">Status</th>
                                 <th class="text-center text-uppercase">Actions</th>
                             </tr>
@@ -281,7 +302,7 @@
                                                     {{ $application->name_english ?? '-' }}
                                                 </div>
                                                 <small class="gov-text-sm" style="color: #6b7280;">
-                                                    {{ $application->citizenship_number ?? '-' }}
+                                                    Application ID: {{ $application->id }}
                                                 </small>
                                             </div>
                                         </div>
@@ -301,16 +322,22 @@
                                         </div>
                                         <div class="gov-text-sm">
                                             <i class="bi bi-telephone" style="color: #6b7280;"></i>
-                                            {{ $application->phone }}
+                                            {{ $application->phone ?? '-' }}
                                         </div>
                                     </td>
                                     <td class="text-center">
                                         <div class="gov-font-semibold gov-text-sm" style="color: #1f2937;">
-                                            {{ adToBS($application->submitted_at ?? $application->created_at) }} BS
+                                            {{ adToBS($application->submitted_at ?? $application->created_at) }}
                                         </div>
                                         <small class="gov-text-sm" style="color: #6b7280;">
                                             {{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}
                                         </small>
+                                    </td>
+                                    <td class="compact-col-noc">
+                                        {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
+                                    </td>
+                                    <td class="compact-col-code">
+                                        {{ $application->noc_id_card ?? '-' }}
                                     </td>
                                     <td>
                                         @if($application->reviewer)
@@ -325,37 +352,9 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        @if($application->manual_priority)
-                                            <span class="gov-badge
-                                                @if($application->manual_priority == 'critical') gov-badge-dark
-                                                @elseif($application->manual_priority == 'high') gov-badge-danger
-                                                @elseif($application->manual_priority == 'medium') gov-badge-warning
-                                                @elseif($application->manual_priority == 'low') gov-badge-success
-                                                @else gov-badge-secondary
-                                                @endif">
-                                                <i class="bi bi-star-fill"></i> {{ ucfirst($application->manual_priority) }}
-                                            </span>
-                                            @if($application->priority_note)
-                                                <br>
-                                                <small class="text-muted" title="{{ $application->priority_note }}">
-                                                    <i class="bi bi-info-circle"></i> Note
-                                                </small>
-                                            @endif
-                                        @else
-                                            <span class="gov-badge gov-badge-secondary">
-                                                <i class="bi bi-clock"></i> Auto
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="gov-badge
-                                            @if($application->status == 'pending') gov-badge-warning
-                                            @elseif($application->status == 'approved') gov-badge-success
-                                            @elseif($application->status == 'rejected') gov-badge-danger
-                                            @else gov-badge-secondary
-                                            @endif">
+                                        <div class="gov-font-semibold gov-text-sm" style="color: #1f2937; font-weight: 600;">
                                             {{ $application->status_label }}
-                                        </span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
@@ -542,8 +541,7 @@
                         <select name="action" id="bulkAction" class="form-select gov-form-select" required style="height: 50px;">
                             <option value="">-- Choose Action --</option>
                             <option value="update_status">Update Status</option>
-                            <option value="assign_reviewer">Assign Reviewer (+ Optional Priority)</option>
-                            <option value="set_priority">Set Priority Only</option>
+                            <option value="assign_reviewer">Assign Reviewer</option>
                             <option value="delete">Delete Applications</option>
                         </select>
                     </div>
@@ -565,23 +563,6 @@
                                 <option value="{{ $reviewer->id }}">{{ $reviewer->name }}</option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div class="mb-3 d-none" id="prioritySelection">
-                        <label class="gov-form-label">
-                            <i class="bi bi-star-fill text-warning me-1"></i>Set Priority Level
-                            <span class="text-muted">(Optional for Assign Reviewer)</span>
-                        </label>
-                        <select name="manual_priority" class="form-select gov-form-select mb-2">
-                            <option value="">-- Select Priority (Optional) --</option>
-                            <option value="critical">⚫ Critical - Requires Immediate Attention</option>
-                            <option value="high">🔴 High - Very Important</option>
-                            <option value="medium">🟡 Medium - Moderate Priority</option>
-                            <option value="low">🟢 Low - Less Urgent</option>
-                            <option value="normal">⚪ Normal - Standard Priority</option>
-                        </select>
-                        <textarea name="priority_note" class="form-control gov-form-control" rows="2"
-                                  placeholder="Priority note (optional, max 500 characters)"></textarea>
                     </div>
 
                     <div class="gov-alert gov-alert-info mb-0">
@@ -800,26 +781,16 @@
         bulkActionSelect.addEventListener('change', function() {
             const statusDiv = document.getElementById('statusSelection');
             const reviewerDiv = document.getElementById('reviewerSelection');
-            const priorityDiv = document.getElementById('prioritySelection');
 
             // Hide all sections first
             if (statusDiv) statusDiv.classList.add('d-none');
             if (reviewerDiv) reviewerDiv.classList.add('d-none');
-            if (priorityDiv) priorityDiv.classList.add('d-none');
 
             // Show relevant sections based on action
             if (this.value === 'update_status' && statusDiv) {
                 statusDiv.classList.remove('d-none');
             } else if (this.value === 'assign_reviewer') {
                 if (reviewerDiv) reviewerDiv.classList.remove('d-none');
-                if (priorityDiv) priorityDiv.classList.remove('d-none');
-            } else if (this.value === 'set_priority' && priorityDiv) {
-                priorityDiv.classList.remove('d-none');
-                // Make priority required for set_priority action
-                const prioritySelect = document.querySelector('select[name="manual_priority"]');
-                if (prioritySelect) {
-                    prioritySelect.required = true;
-                }
             }
         });
     }

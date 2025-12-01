@@ -41,28 +41,10 @@
 
         .job-row {
             transition: all 0.3s ease;
-            border-left: 3px solid transparent;
         }
 
         .job-row:hover {
             background-color: #f8fafc;
-            border-left-color: #6366f1;
-            transform: translateX(2px);
-        }
-
-        .job-row.draft {
-            border-left-color: #9ca3af;
-            background: linear-gradient(to right, rgba(156, 163, 175, 0.02) 0%, white 100%);
-        }
-
-        .job-row.active {
-            border-left-color: #10b981;
-            background: linear-gradient(to right, rgba(16, 185, 129, 0.02) 0%, white 100%);
-        }
-
-        .job-row.closed {
-            border-left-color: #ef4444;
-            background: linear-gradient(to right, rgba(239, 68, 68, 0.02) 0%, white 100%);
         }
 
         /* Modern Table */
@@ -110,6 +92,28 @@
             color: #9ca3af;
             font-style: italic;
         }
+
+        /* Status Dropdown Styling */
+        .status-change-form select.bg-success {
+            background-color: #10b981 !important;
+        }
+
+        .status-change-form select.bg-danger {
+            background-color: #ef4444 !important;
+        }
+
+        .status-change-form select.bg-secondary {
+            background-color: #6b7280 !important;
+        }
+
+        .status-change-form select option {
+            background-color: white;
+            color: #000;
+        }
+
+        .status-change-form select:hover {
+            opacity: 0.9;
+        }
     </style>
 @endsection
 
@@ -130,18 +134,24 @@
                         <i class="bi bi-download me-2"></i>Bulk Download
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><h6 class="dropdown-header">Preview & Download PDF</h6></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}" target="_blank">
+                            <h6 class="dropdown-header">Preview & Download PDF</h6>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}"
+                                target="_blank">
                                 <i class="bi bi-eye text-primary me-2"></i>Preview PDF (English)
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'ne']) }}" target="_blank">
+                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'ne']) }}"
+                                target="_blank">
                                 <i class="bi bi-eye text-primary me-2"></i>Preview PDF (Nepali)
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'en']) }}">
                                 <i class="bi bi-download text-danger me-2"></i>Download PDF (English)
@@ -152,7 +162,9 @@
                                 <i class="bi bi-download text-danger me-2"></i>Download PDF (Nepali)
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('admin.jobs.download-excel') }}">
                                 <i class="bi bi-file-earmark-excel text-success me-2"></i>Download Excel
@@ -256,13 +268,13 @@
                             <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         </select>
                     </div>
-                   
+
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
                                 <i class="bi bi-search me-2"></i>Search
                             </button>
-                            @if(request()->hasAny(['search', 'status', 'job_type']))
+                            @if(request()->hasAny(['search', 'status']))
                                 <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-x-lg"></i>
                                 </a>
@@ -286,21 +298,24 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 modern-table w-100" style="table-layout: auto; white-space: nowrap;">
+                <table class="table table-hover align-middle mb-0 modern-table w-100"
+                    style="table-layout: auto; white-space: nowrap;">
                     <thead class="table-light">
-                    <tr>
-                        <th class="text-center text-uppercase">S.N</th>
-                        <th class="text-center text-uppercase">Advertisement No.</th>
-                        <th class="text-center text-uppercase">Position</th>
-                        <th class="text-center text-uppercase">Service / Group</th>
-                        <th class="text-center text-uppercase">Type</th>
-                        <th class="text-center text-uppercase">Demand</th>
-                        <th class="text-center text-uppercase">Deadline</th>
-                        <th class="text-center text-uppercase">Qualifications</th>
-                        <th class="text-center text-uppercase">Applications</th>
-                        <th class="text-center text-uppercase">Status</th>
-                        <th class="text-center text-uppercase">Actions</th>
-                    </tr>
+                        <tr>
+                            <th class="text-center text-uppercase">S.N</th>
+                            <th class="text-center text-uppercase">Advertisement No.</th>
+                            <th class="text-center text-uppercase">Position</th>
+                            <th class="text-center text-uppercase">Service / Group</th>
+                            <th class="text-center text-uppercase">Type</th>
+                            <th class="text-center text-uppercase">Demand</th>
+                            <th class="text-center text-uppercase">Qualifications</th>
+                            <th class="text-center text-uppercase">Applications</th>
+                            <th class="text-center text-uppercase">Application Fee</th>
+                            <th class="text-center text-uppercase">Double Dastur Fee</th>
+                            <th class="text-center text-uppercase">Deadline</th>
+                            <th class="text-center text-uppercase">Status</th>
+                            <th class="text-center text-uppercase">Actions</th>
+                        </tr>
                     </thead>
 
                     <tbody class="text-center align-middle">
@@ -323,42 +338,87 @@
                                 <td>{{ $job->service_group ?: $job->department }}</td>
 
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ ucfirst($job->category) }}</span>
+                                    @if($job->category == 'open')
+                                        Open
+                                    @elseif($job->category == 'inclusive')
+                                        Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}
+                                    @elseif($job->category == 'internal')
+                                        @if($job->internal_type == 'open')
+                                            Internal/Open
+                                        @elseif($job->internal_type == 'inclusive')
+                                            Internal/Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}
+                                        @else
+                                            Internal
+                                        @endif
+                                    @else
+                                        {{ ucfirst($job->category) }}
+                                    @endif
                                 </td>
 
                                 <td>{{ $job->number_of_posts }}</td>
 
+                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
+
+                                <td>
+                                    {{ $job->applications_count ?? 0 }}
+                                </td>
+                                <td>
+                                    @if($job->application_fee)
+                                        NPR
+                                        {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @if($job->double_dastur_fee)
+                                        NPR
+                                        {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
                                 <td>
                                     <div>
                                         {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
-                                        <small class="text-danger d-block fw-semibold nepali-date-bs"
+                                        <small class="d-block fw-semibold nepali-date-bs"
                                             data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
                                             <i class="bi bi-hourglass-split"></i> Converting...
                                         </small>
                                         {{-- English Date (AD) --}}
-                                        <small class="text-danger">{{ $job->deadline->format('Y-m-d') }}</small>
+                                        <small>{{ $job->deadline->format('Y-m-d') }}</small>
                                     </div>
                                 </td>
 
-                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
+                                <td>
+                                    <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST"
+                                          class="status-change-form d-inline">
+                                        @csrf
+                                        <select name="status"
+                                                class="form-select form-select-sm border"
+                                                onchange="this.form.submit()"
+                                                style="font-weight: 600; cursor: pointer; width: auto; padding-right: 2rem;">
+                                            <option value="draft" {{ $job->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                            <option value="active" {{ $job->status == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="closed" {{ $job->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                                        </select>
+                                    </form>
+                                </td>
 
                                 <td>
-                                    <span class="badge bg-primary">{{ $job->application_forms_count ?? 0 }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ $statusBadge }}">
-                                        {{ ucfirst($job->status) }}
-                                    </span>
-                                </td>
-                                <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="View">
+                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary"
+                                            title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary" title="Edit">
+                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary"
+                                            title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $job->id }})" title="Delete">
+                                        <button type="button" class="btn btn-outline-danger"
+                                            onclick="confirmDelete({{ $job->id }})" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -366,7 +426,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-center py-5">
+                                <td colspan="12" class="text-center py-5">
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Vacancy Found</h5>
                                     <p class="text-muted">Start by posting your first Vacancy!</p>

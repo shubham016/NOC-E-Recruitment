@@ -130,33 +130,62 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .applications-table {
+        /* Modern Table */
+        .modern-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        .applications-table th {
+        .modern-table thead {
             background: #f9fafb;
-            padding: 1rem;
-            font-weight: 600;
-            color: #6b7280;
-            border-bottom: 2px solid #e5e7eb;
         }
 
-        .applications-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f3f4f6;
+        .modern-table thead th {
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            color: #000;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #000;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            text-align: center;
         }
 
-        .applications-table tr:hover {
-            background: #f9fafb;
+        .modern-table tbody td {
+            color: #000;
+            border: 1px solid #060606;
+            vertical-align: middle;
+        }
+
+        .modern-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
         }
 
         .qualification-box {
             background: #f9fafb;
             border-left: 4px solid #dc2626;
-            padding: 1rem;
+            padding: 0.5rem 1rem 1rem 1rem;
             border-radius: 6px;
-            white-space: pre-wrap;
+            white-space: normal;
+            line-height: 1.6;
+        }
+
+        .qualification-box .content-line {
+            margin: 0.3rem 0;
+        }
+
+        .qualification-box .posts-line {
+            margin-bottom: 0.6rem;
+        }
+
+        .qualification-box .position-line {
+            margin-top: 0.6rem;
         }
 
         .timeline-item {
@@ -178,6 +207,50 @@
             height: 12px;
             border-radius: 50%;
             background: #dc2626;
+        }
+
+        /* Scroll to Top Button */
+        .stp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            opacity: 0;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s ease;
+            z-index: 9999;
+            will-change: transform, opacity;
+        }
+
+        .stp:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+        }
+
+        .stp:active {
+            transform: translateY(-2px);
+        }
+
+        /* Force smooth rendering */
+        * {
+            scroll-behavior: auto !important;
+        }
+
+        html, body {
+            scroll-behavior: auto !important;
         }
     </style>
 @endsection
@@ -252,26 +325,6 @@
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Category</div>
-                    <div class="detail-value">
-                        @if($job->category == 'open')
-                            <span class="badge bg-success">खुल्ला (Open)</span>
-                        @else
-                            <span class="badge bg-info">समावेशी (Inclusive)</span>
-                        @endif
-                    </div>
-                </div>
-
-                @if($job->inclusive_type)
-                    <div class="detail-row">
-                        <div class="detail-label">Inclusive Type</div>
-                        <div class="detail-value">
-                            <span class="badge bg-primary">{{ $job->inclusive_type }}</span>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="detail-row">
                     <div class="detail-label">Demand Post (Number)</div>
                     <div class="detail-value">
                         <strong class="text-danger fs-5">{{ $job->number_of_posts }}</strong>
@@ -292,18 +345,62 @@
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Job Type</div>
+                    <div class="detail-label">Category</div>
                     <div class="detail-value">
-                        <span class="badge bg-secondary">{{ ucfirst($job->job_type) }}</span>
+                        @if($job->category == 'open')
+                            <span class="badge bg-success">Open</span>
+                        @elseif($job->category == 'inclusive')
+                            <span class="badge bg-info">Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}</span>
+                        @elseif($job->category == 'internal')
+                            @if($job->internal_type == 'open')
+                                <span class="badge bg-warning text-dark">Internal/Open</span>
+                            @elseif($job->internal_type == 'inclusive')
+                                <span class="badge bg-warning text-dark">Internal/Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}</span>
+                            @else
+                                <span class="badge bg-warning text-dark">Internal</span>
+                            @endif
+                        @else
+                            <span class="badge bg-secondary">{{ ucfirst($job->category) }}</span>
+                        @endif
                     </div>
                 </div>
 
                 <div class="detail-row">
                     <div class="detail-label">Deadline</div>
                     <div class="detail-value">
-                        <i class="bi bi-calendar-check-fill text-danger me-1"></i>
-                        <strong>{{ $job->deadline->format('F d, Y') }}</strong>
-                        <small class="text-muted ms-2">({{ $job->deadline->diffForHumans() }})</small>
+                        <div>
+                            {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
+                            <strong class="d-block nepali-date-bs text-danger"
+                                data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
+                                <i class="bi bi-hourglass-split"></i> Converting...
+                            </strong>
+                            {{-- English Date (AD) --}}
+                            <small class="text-muted">{{ $job->deadline->format('F d, Y') }} ({{ $job->deadline->diffForHumans() }})</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Application Fee</div>
+                    <div class="detail-value">
+                        <i class="bi bi-cash-coin text-primary me-1"></i>
+                        @if($job->application_fee)
+                            <strong>NPR {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
+                        @else
+                            <span class="text-muted">Not set</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Double Dastur Fee</div>
+                    <div class="detail-value">
+                        <i class="bi bi-cash-stack text-danger me-1"></i>
+                        @if($job->double_dastur_fee)
+                            <strong>NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}</strong>
+                        @else
+                            <span class="text-muted">Not set</span>
+                        @endif
                     </div>
                 </div>
 
@@ -334,7 +431,32 @@
                     <small class="text-muted">आवश्यक शिक्षक योग्यता</small>
                 </div>
                 <div class="qualification-box">
-                    {{ $job->minimum_qualification }}
+                    @php
+                        $lines = explode("\n", $job->minimum_qualification);
+                        $processedLines = [];
+                        foreach ($lines as $line) {
+                            $trimmed = trim($line);
+                            if ($trimmed !== '') {
+                                $processedLines[] = $trimmed;
+                            }
+                        }
+
+                        foreach ($processedLines as $index => $line) {
+                            $class = 'content-line';
+
+                            // Check if current line starts with "Position:"
+                            if (stripos($line, 'Position:') === 0) {
+                                $class .= ' position-line';
+                            }
+
+                            // Check if current line contains "Number of Posts"
+                            if (stripos($line, 'Number of Posts') !== false) {
+                                $class .= ' posts-line';
+                            }
+
+                            echo '<div class="' . $class . '">' . e($line) . '</div>';
+                        }
+                    @endphp
                 </div>
             </div>
 
@@ -347,7 +469,7 @@
                         </h5>
                     </div>
                     <div class="qualification-box">
-                        {{ $job->description }}
+                        {!! nl2br(e(implode("\n", array_filter(array_map('trim', explode("\n", $job->description)), 'strlen')))) !!}
                     </div>
                 </div>
             @endif
@@ -357,55 +479,76 @@
                 <div class="detail-card">
                     <div class="detail-header">
                         <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-people-fill me-2"></i>Recent Applications
-                            <span class="badge bg-danger ms-2">{{ $job->applications_count }}</span>
+                            <!-- <i class="bi bi-people-fill me-2"></i> -->
+                            Recent Applications
+                            <!-- <span class="badge bg-danger ms-2">{{ $job->applications_count }}</span> -->
                         </h5>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="applications-table">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0 modern-table w-100"
+                            style="table-layout: auto; white-space: nowrap;">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Candidate</th>
-                                    <th>Applied Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th class="text-center text-uppercase">S.N</th>
+                                    <th class="text-center text-uppercase">Candidate</th>
+                                    <th class="text-center text-uppercase">Applied Date</th>
+                                    <th class="text-center text-uppercase">Status</th>
+                                    <th class="text-center text-uppercase">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($job->applications->take(5) as $application)
+                            <tbody class="text-center align-middle">
+                                @forelse($job->applications->take(5) as $index => $application)
                                     <tr>
+                                        <td>{{ $index + 1 }}</td>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="bg-danger bg-opacity-10 rounded-circle p-2 me-2">
-                                                    <i class="bi bi-person-fill text-danger"></i>
-                                                </div>
-                                                <div>
-                                                    <div class="fw-bold">{{ $application->candidate->user->name ?? 'N/A' }}</div>
-                                                    <small
-                                                        class="text-muted">{{ $application->candidate->user->email ?? '' }}</small>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                @if($application->passport_size_photo)
+                                                    <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
+                                                         alt="{{ $application->name_english }}"
+                                                         class="rounded-circle me-2"
+                                                         style="width: 55px; height: 55px; object-fit: cover;">
+                                                @else
+                                                    <div class="bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                         style="width: 55px; height: 55px; min-width: 55px;">
+                                                        <i class="bi bi-person-fill text-danger fs-4"></i>
+                                                    </div>
+                                                @endif
+                                                <div class="text-start">
+                                                    <div class="fw-bold">{{ $application->name_english ?? 'N/A' }}</div>
+                                                    <small class="text-muted">Application ID: {{ $application->id }}</small>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $application->created_at->format('M d, Y') }}</td>
                                         <td>
-                                            <span class="badge 
-                                                            {{ $application->status == 'pending' ? 'bg-warning' : '' }}
-                                                            {{ $application->status == 'under_review' ? 'bg-info' : '' }}
-                                                            {{ $application->status == 'shortlisted' ? 'bg-success' : '' }}
-                                                            {{ $application->status == 'rejected' ? 'bg-danger' : '' }}">
-                                                {{ ucfirst(str_replace('_', ' ', $application->status)) }}
-                                            </span>
+                                            <strong class="d-block nepali-date-bs text-danger"
+                                                    data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
+                                                Converting...
+                                            </strong>
+                                            <small class="text-muted">{{ $application->created_at->format('M d, Y') }}</small>
                                         </td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                            {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ route('admin.applications.show', $application->id) }}"
+                                                   class="btn btn-outline-primary"
+                                                   title="View">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger"
+                                                        title="Delete"
+                                                        onclick="confirmDelete({{ $application->id }})">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">
+                                        <td colspan="5" class="text-center text-muted py-4">
                                             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                             No applications yet
                                         </td>
@@ -414,6 +557,12 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Delete Form (Hidden) -->
+                    <form id="deleteApplicationForm" method="POST" style="display: none;">
+                        @csrf
+                        @method('DELETE')
+                    </form>
 
                     @if($job->applications_count > 5)
                         <div class="text-center mt-3">
@@ -492,25 +641,37 @@
                     <div class="col-6">
                         <div class="text-center p-3 bg-light rounded">
                             <div class="fs-3 fw-bold text-danger">{{ $applicationStats['total'] ?? 0 }}</div>
-                            <small class="text-muted">Total</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
-                            <div class="fs-3 fw-bold text-warning">{{ $applicationStats['pending'] ?? 0 }}</div>
-                            <small class="text-muted">Pending</small>
+                            <small class="text-muted">Total Applied</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-info bg-opacity-10 rounded">
-                            <div class="fs-3 fw-bold text-info">{{ $applicationStats['under_review'] ?? 0 }}</div>
-                            <small class="text-muted">Under Review</small>
+                            <div class="fs-3 fw-bold text-info">{{ $applicationStats['assigned'] ?? 0 }}</div>
+                            <small class="text-muted">Assigned</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 bg-primary bg-opacity-10 rounded">
+                            <div class="fs-3 fw-bold text-primary">{{ $applicationStats['reviewed'] ?? 0 }}</div>
+                            <small class="text-muted">Reviewed</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
+                            <div class="fs-3 fw-bold text-warning">{{ $applicationStats['edit_access'] ?? 0 }}</div>
+                            <small class="text-muted">Edit Access</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-success bg-opacity-10 rounded">
-                            <div class="fs-3 fw-bold text-success">{{ $applicationStats['shortlisted'] ?? 0 }}</div>
-                            <small class="text-muted">Shortlisted</small>
+                            <div class="fs-3 fw-bold text-success">{{ $applicationStats['approved'] ?? 0 }}</div>
+                            <small class="text-muted">Approved</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 bg-danger bg-opacity-10 rounded">
+                            <div class="fs-3 fw-bold text-danger">{{ $applicationStats['rejected'] ?? 0 }}</div>
+                            <small class="text-muted">Rejected</small>
                         </div>
                     </div>
                 </div>
@@ -520,36 +681,230 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        <i class="bi bi-clock-history text-danger me-2"></i>Timeline
+                        <i class="bi bi-clock-history text-danger me-2"></i>Recent Activities (Latest 5)
                     </h6>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div>
-                        <strong class="d-block">Vacancy Posted</strong>
-                        <small class="text-muted">{{ $job->created_at->format('M d, Y h:i A') }}</small>
-                    </div>
-                </div>
+                @php
+                    $timelineCount = 0;
+                    $maxTimeline = 5;
+                @endphp
 
-                @if($job->updated_at != $job->created_at)
+                {{-- Show recent application activities --}}
+                @foreach($recentActivities as $activity)
+                    @if($timelineCount < $maxTimeline)
+                        @php
+                            $dotColor = match($activity->status) {
+                                'approved' => 'bg-success',
+                                'rejected' => 'bg-danger',
+                                'reviewed' => 'bg-primary',
+                                'assigned' => 'bg-info',
+                                'edit' => 'bg-warning',
+                                'pending' => 'bg-secondary',
+                                default => 'bg-secondary'
+                            };
+                            $statusText = ucfirst(str_replace('_', ' ', $activity->status));
+                            $timelineCount++;
+                        @endphp
+                        <div class="timeline-item">
+                            <div class="timeline-dot {{ $dotColor }}"></div>
+                            <div>
+                                <strong class="d-block">Application {{ $statusText }}</strong>
+                                <small class="text-muted">{{ $activity->name_english ?? 'Applicant' }}</small>
+                                <br>
+                                <small class="text-muted">{{ $activity->updated_at->format('M d, Y h:i A') }}</small>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+
+                {{-- Show vacancy posted if less than 5 activities --}}
+                @if($timelineCount < $maxTimeline)
                     <div class="timeline-item">
-                        <div class="timeline-dot bg-warning"></div>
+                        <div class="timeline-dot"></div>
                         <div>
-                            <strong class="d-block">Last Updated</strong>
-                            <small class="text-muted">{{ $job->updated_at->format('M d, Y h:i A') }}</small>
+                            <strong class="d-block">Vacancy Posted</strong>
+                            <small class="text-muted">{{ $job->created_at->format('M d, Y h:i A') }}</small>
                         </div>
                     </div>
+                    @php $timelineCount++; @endphp
                 @endif
-
-                <div class="timeline-item">
-                    <div class="timeline-dot bg-danger"></div>
-                    <div>
-                        <strong class="d-block">Application Deadline</strong>
-                        <small class="text-muted">{{ $job->deadline->format('M d, Y') }}</small>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="stp" id="stp">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+@endsection
+
+@section('scripts')
+    <script>
+        // ========================================
+        // NEPALI DATE CONVERSION
+        // ========================================
+
+        // Convert English numerals to Nepali numerals
+        function englishToNepali(str) {
+            if (!str) return str;
+            const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+            return str.replace(/[0-9]/g, d => map[d]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔧 Initializing Nepali date conversion...');
+
+            // Wait for converter to be ready
+            function waitForConverter() {
+                if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+                    setTimeout(waitForConverter, 100);
+                    return;
+                }
+
+                console.log('✅ Converter ready, converting deadline date...');
+                convertDeadlineDate();
+            }
+
+            function convertDeadlineDate() {
+                // Find ALL date elements with nepali-date-bs class
+                const dateElements = document.querySelectorAll('.nepali-date-bs');
+
+                dateElements.forEach(function(dateElement) {
+                    const adDate = dateElement.getAttribute('data-ad-date');
+
+                    if (adDate) {
+                        try {
+                            // Convert AD to BS
+                            const bsDate = window.adToBS(adDate);
+
+                            if (bsDate) {
+                                // Convert to Nepali numerals
+                                const bsNepali = englishToNepali(bsDate);
+
+                                // Update the element with Nepali numeral date
+                                dateElement.innerHTML = `${bsNepali}`;
+                                console.log(`✅ Date converted: ${adDate} → ${bsDate} → ${bsNepali}`);
+                            } else {
+                                dateElement.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                            }
+                        } catch (error) {
+                            console.error(`❌ Error converting date ${adDate}:`, error);
+                            dateElement.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+                        }
+                    }
+                });
+            }
+
+            // Start the conversion process
+            waitForConverter();
+        });
+
+        // ========================================
+        // SCROLL TO TOP FUNCTIONALITY
+        // ========================================
+        (function() {
+            const btn = document.getElementById('stp');
+            if (!btn) return;
+
+            let isAnimating = false;
+            let animationId = null;
+
+            btn.style.display = 'none';
+
+            function easeInOutQuad(t) {
+                return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+            }
+
+            function scrollToTop() {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+
+                if (isAnimating) return;
+
+                isAnimating = true;
+
+                const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+                const startTime = performance.now();
+                const duration = 700;
+
+                function animate(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    const easeProgress = easeInOutQuad(progress);
+                    const currentPosition = startPosition * (1 - easeProgress);
+
+                    window.scrollTo(0, currentPosition);
+
+                    if (progress < 1) {
+                        animationId = requestAnimationFrame(animate);
+                    } else {
+                        isAnimating = false;
+                        animationId = null;
+                    }
+                }
+
+                animationId = requestAnimationFrame(animate);
+            }
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                scrollToTop();
+                return false;
+            }, true);
+
+            let visible = false;
+
+            function checkScroll() {
+                const scrolled = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrolled > 200) {
+                    if (!visible) {
+                        btn.style.display = 'flex';
+                        setTimeout(function() {
+                            btn.style.opacity = '1';
+                        }, 10);
+                        visible = true;
+                    }
+                } else {
+                    if (visible) {
+                        btn.style.opacity = '0';
+                        setTimeout(function() {
+                            btn.style.display = 'none';
+                        }, 300);
+                        visible = false;
+                    }
+                }
+            }
+
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        checkScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            checkScroll();
+
+        })();
+
+        // ========================================
+        // DELETE APPLICATION CONFIRMATION
+        // ========================================
+        function confirmDelete(applicationId) {
+            if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+                const form = document.getElementById('deleteApplicationForm');
+                form.action = `/admin/applications/${applicationId}`;
+                form.submit();
+            }
+        }
+    </script>
 @endsection

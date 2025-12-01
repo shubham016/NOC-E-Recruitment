@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ReviewerMiddleware;
 use App\Http\Middleware\ApproverMiddleware;
@@ -25,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'hr_administrator' => HRAdministratorMiddleware::class,
             'candidate.session' => CandidateSessionMiddleware::class,
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        // Automatically close expired vacancies every day at midnight
+        $schedule->command('vacancies:close-expired')->daily();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

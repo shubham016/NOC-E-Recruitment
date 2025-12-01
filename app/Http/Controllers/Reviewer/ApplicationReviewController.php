@@ -44,28 +44,6 @@ class ApplicationReviewController extends Controller
             $query->whereIn('status', ['pending', 'assigned']);
         }
 
-        // Priority filter (based on deadline)
-        if ($request->filled('priority')) {
-            $priority = $request->priority;
-            $query->whereHas('jobPosting', function ($q) use ($priority) {
-                $now = now();
-                switch ($priority) {
-                    case 'high':
-                        $q->whereBetween('deadline', [$now, $now->copy()->addDays(2)]);
-                        break;
-                    case 'medium':
-                        $q->whereBetween('deadline', [$now->copy()->addDays(2), $now->copy()->addDays(5)]);
-                        break;
-                    case 'low':
-                        $q->whereBetween('deadline', [$now->copy()->addDays(5), $now->copy()->addDays(10)]);
-                        break;
-                    case 'normal':
-                        $q->where('deadline', '>', $now->copy()->addDays(10));
-                        break;
-                }
-            });
-        }
-
         // Date range filter
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
@@ -263,8 +241,36 @@ class ApplicationReviewController extends Controller
 
             $message = 'Application reviewed and assigned to Approver: ' . ($approver->name ?? 'N/A') . ' for final decision.';
         } elseif ($request->status === 'edit') {
+            // Notify candidate for edit request
+            $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+            $rejectionReason = $request->reviewer_notes ? ' Reason: ' . $request->reviewer_notes : '';
+
+            \App\Models\Notification::create([
+                'user_id'      => $candidate?->id,
+                'user_type'    => 'candidate',
+                'type'         => 'application_edit_required',
+                'title'        => 'Application Edit Required',
+                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" requires corrections.' . $rejectionReason,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+
             $message = 'Application sent back to candidate for correction successfully!';
         } else {
+            // Notify candidate for rejection
+            $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+            $rejectionReason = $request->reviewer_notes ? ' Reason: ' . $request->reviewer_notes : '';
+
+            \App\Models\Notification::create([
+                'user_id'      => $candidate?->id,
+                'user_type'    => 'candidate',
+                'type'         => 'application_rejected',
+                'title'        => 'Application Rejected',
+                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been rejected by the reviewer.' . $rejectionReason,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+
             $message = 'Application rejected successfully!';
         }
 
@@ -377,7 +383,6 @@ class ApplicationReviewController extends Controller
                 'Position',
                 'Department',
                 'Status',
-                'Priority',
                 'Applied Date',
                 'Deadline',
                 'Days Remaining',
@@ -391,10 +396,6 @@ class ApplicationReviewController extends Controller
                     ? (int) now()->diffInDays($application->jobPosting->deadline, false)
                     : 0;
 
-                $priority = $application->manual_priority
-                    ? ucfirst($application->manual_priority)
-                    : ($daysRemaining <= 2 ? 'High' : ($daysRemaining <= 5 ? 'Medium' : ($daysRemaining <= 10 ? 'Low' : 'Normal')));
-
                 fputcsv($file, [
                     $application->id,
                     $application->name_english ?? 'N/A',
@@ -403,7 +404,6 @@ class ApplicationReviewController extends Controller
                     $application->jobPosting->title ?? 'N/A',
                     $application->jobPosting->department ?? 'N/A',
                     ucfirst($application->status),
-                    $priority,
                     $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i') : 'N/A',
                     $application->jobPosting && $application->jobPosting->deadline ? $application->jobPosting->deadline->format('Y-m-d') : 'N/A',
                     $daysRemaining . ' days',
