@@ -4,7 +4,7 @@
 <div class="container my-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="fas fa-list"></i> All Registration Records</h4>
+            <h4 class="mb-0"><i class="fas fa-list"></i> All Application Records</h4>
             <a href="{{ route('candidate.applications.create') }}" class="btn btn-light btn-sm">
                 <i class="fas fa-plus"></i> New Application
             </a>

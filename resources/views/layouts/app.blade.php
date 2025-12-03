@@ -130,7 +130,7 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p class="mb-0">&copy; {{ date('Y') }} Recruitment Management System. All rights reserved.</p>
+            <p class="mb-0">&copy; {{ date('Y') }} Nepal Oil Coorporation</p>
         </div>
     </footer>
 
