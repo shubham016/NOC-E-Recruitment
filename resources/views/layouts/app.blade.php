@@ -38,10 +38,8 @@
             padding: 20px 0;
             margin-top: 40px;
         }
-
-        @yield('custom-styles');
     </style>
-
+        @yield('custom-styles');
     @stack('styles')
 </head>
 

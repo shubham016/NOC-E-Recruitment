@@ -208,9 +208,8 @@
                 margin-left: 0;
             }
         }
-
-        @yield('custom-styles');
     </style>
+    @yield('custom-styles');
 </head>
 
 <body>
