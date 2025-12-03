@@ -116,6 +116,14 @@ class Application extends Model
     ];
 
     /**
+     * Get the job posting that this application is for
+     */
+    public function jobPosting()
+    {
+        return $this->belongsTo(JobPosting::class);
+    }
+
+    /**
      * Get the candidate that owns the application
      */
     public function candidate()
@@ -144,13 +152,18 @@ class Application extends Model
      */
     public function reviewer()
     {
-        return $this->belongsTo(Reviewer::class, 'reviewer_id');
+        return $this->belongsTo(Reviewer::class);
     }
 
-    /**
-     * Check if application can be edited
-     */
-    public function canEdit()
+    //  Get the documents for this application
+
+    // public function documents()
+    // {
+    //     return $this->hasMany(ApplicationDocument::class);
+    // }
+
+    // Scopes
+    public function scopePending($query)
     {
         return in_array($this->status, ['pending']);
     }

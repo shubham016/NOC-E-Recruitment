@@ -118,29 +118,127 @@
 @endsection
 
 @section('content')
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h4 class="fw-bold mb-1">
-                    <i class="bi bi-briefcase me-2"></i>Vacancy Management
-                </h4>
-                <p class="mb-0 opacity-90">Create and manage Vacancies</p>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold mb-1">
+                <i class="bi bi-briefcase me-2"></i>Vacancy Management
+            </h4>
+            <p class="mb-0 opacity-90">Create and manage Vacancy postings</p>
+        </div>
+        <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
+            <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
+        </a>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                    <i class="bi bi-briefcase-fill text-primary fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
+                    <small class="text-muted">Total Vacancy</small>
+                </div>
             </div>
-            <div class="d-flex gap-2">
-                <!-- Bulk Download Dropdown -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-download me-2"></i>Bulk Download
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <h6 class="dropdown-header">Preview & Download PDF</h6>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}"
-                                target="_blank">
-                                <i class="bi bi-eye text-primary me-2"></i>Preview PDF (English)
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
+                    <small class="text-muted">Active Vacancy</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                    <i class="bi bi-x-circle-fill text-danger fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
+                    <small class="text-muted">Closed Vacancy</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                    <i class="bi bi-file-earmark-text text-warning fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
+                    <small class="text-muted">Draft Vacancy</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.jobs.index') }}">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Search jobs..." 
+                           value="{{ request('search') }}">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="status">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="job_type">
+                        <option value="">All Types</option>
+                        <option value="full-time" {{ request('job_type') == 'full-time' ? 'selected' : '' }}>Full-time</option>
+                        <option value="part-time" {{ request('job_type') == 'part-time' ? 'selected' : '' }}>Part-time</option>
+                        <option value="contract" {{ request('job_type') == 'contract' ? 'selected' : '' }}>Contract</option>
+                        <option value="internship" {{ request('job_type') == 'internship' ? 'selected' : '' }}>Internship</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-search me-2"></i>Search
+                        </button>
+                        @if(request()->hasAny(['search', 'status', 'job_type']))
+                            <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i>
                             </a>
                         </li>
                         <li>
@@ -209,6 +307,29 @@
                     </div>
                 </div>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- Jobs Table -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold">
+                <i class="bi bi-list-ul text-primary me-2"></i>Vacancy Listings
+                <span class="badge bg-primary ms-2">{{ $jobs->total() }}</span>
+            </h6>
+            <select class="form-select form-select-sm" style="width: auto;" onchange="changeSorting(this.value)">
+                <option value="created_at-desc" {{ request('sort_by') == 'created_at' && request('sort_order') == 'desc' ? 'selected' : '' }}>
+                    Newest First
+                </option>
+                <option value="created_at-asc" {{ request('sort_by') == 'created_at' && request('sort_order') == 'asc' ? 'selected' : '' }}>
+                    Oldest First
+                </option>
+                <option value="deadline-asc" {{ request('sort_by') == 'deadline' && request('sort_order') == 'asc' ? 'selected' : '' }}>
+                    Deadline (Soon)
+                </option>
+            </select>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
