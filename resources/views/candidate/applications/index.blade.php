@@ -1,0 +1,98 @@
+@extends('layouts.app')
+
+@section('title', 'Your Applications')
+
+@section('content')
+<div class="container my-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-list"></i> All Registration Records</h4>
+            <a href="{{ route('candidate.applications.create') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-plus"></i> New Application
+            </a>
+        </div>
+
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if($forms->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-bg-primary">
+                            <tr>
+                                <th width="80">Photo</th>
+                                <th>I.D</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Citizenship No.</th>
+                                <th>Submitted</th>
+                                <th width="180">Documents</th>
+                                <th width="160">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($forms as $form)
+                                <tr>
+                                    <td class="text-center">
+                                        @if($form->passport_size_photo)
+                                            <img src="{{ asset('storage/' . $form->passport_size_photo) }}"
+                                                 class="rounded-circle border"
+                                                 width="50" height="50"
+                                                 style="object-fit: cover;">
+                                        @else
+                                            <div class="bg-secondary rounded-circle" style="width:50px;height:50px;"></div>
+                                        @endif
+                                    </td>
+                                    <td>{{ $loop->iteration + ($forms->currentPage() - 1) * $forms->perPage() }}</td>
+                                    <td><strong>{{ $form->name ?? '-' }}</strong></td>
+                                    <td>{{ $form->phone ?? '-' }}</td>
+                                    <td>{{ $form->citizenship_number ?? '-' }}</td>
+                                    <td>{{ $form->created_at->format('M d, Y') }}</td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @if($form->noc_id_card) <span class="badge bg-info">NOC</span> @endif
+                                            @if($form->disability_certificate) <span class="badge bg-warning">DIS</span> @endif
+                                            @if($form->citizenship_id_document) <span class="badge bg-success">CIT</span> @endif
+                                            @if($form->resume_cv) <span class="badge bg-primary">CV</span> @endif
+                                            @if($form->educational_certificates) <span class="badge bg-secondary">EDU</span> @endif
+                                            @if($form->ethnic_certificate) <span class="badge bg-dark">ETH</span> @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('candidate.applications.show', $form->id) }}" class="btn btn-info" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('candidate.applications.edit', $form->id) }}" class="btn btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('candidate.applications.destroy', $form->id) }}" method="POST" class="d-inline"
+                                                  onsubmit="return confirm('Delete this record permanently?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $forms->links() }}
+                </div>
+            @else
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> No records found.
+                    <a href="{{ route('candidate.applications.create') }}" class="alert-link">Create first registration</a>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+@endsection

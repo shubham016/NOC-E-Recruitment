@@ -19,7 +19,7 @@
         <i class="bi bi-search"></i>
         <span>Browse Jobs</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
