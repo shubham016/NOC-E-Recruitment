@@ -33,21 +33,33 @@ class Application extends Model
         'application_score' => 'integer',
     ];
 
-    // Relationships
+    /**
+     * Get the job posting that this application is for
+     */
     public function jobPosting()
     {
-        return $this->belongsTo(JobPosting::class, 'job_posting_id');
+        return $this->belongsTo(JobPosting::class);
     }
 
+    /**
+     * Get the candidate that owns the application
+     */
     public function candidate()
     {
-        return $this->belongsTo(Candidate::class, 'candidate_id');
+        return $this->belongsTo(Candidate::class);
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(Reviewer::class, 'reviewer_id');
+        return $this->belongsTo(Reviewer::class);
     }
+
+    //  Get the documents for this application
+
+    // public function documents()
+    // {
+    //     return $this->hasMany(ApplicationDocument::class);
+    // }
 
     // Scopes
     public function scopePending($query)

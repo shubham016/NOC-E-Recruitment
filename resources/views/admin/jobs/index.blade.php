@@ -101,12 +101,12 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h4 class="fw-bold mb-1">
-                <i class="bi bi-briefcase me-2"></i>Job Management
+                <i class="bi bi-briefcase me-2"></i>Vacancy Management
             </h4>
-            <p class="mb-0 opacity-90">Create and manage job postings</p>
+            <p class="mb-0 opacity-90">Create and manage Vacancy postings</p>
         </div>
         <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
-            <i class="bi bi-plus-circle me-2"></i>Post New Job
+            <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
         </a>
     </div>
 </div>
@@ -136,7 +136,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                    <small class="text-muted">Total Jobs</small>
+                    <small class="text-muted">Total Vacancy</small>
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
-                    <small class="text-muted">Active Jobs</small>
+                    <small class="text-muted">Active Vacancy</small>
                 </div>
             </div>
         </div>
@@ -162,7 +162,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
-                    <small class="text-muted">Closed Jobs</small>
+                    <small class="text-muted">Closed Vacancy</small>
                 </div>
             </div>
         </div>
@@ -175,7 +175,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
-                    <small class="text-muted">Draft Jobs</small>
+                    <small class="text-muted">Draft Vacancy</small>
                 </div>
             </div>
         </div>
@@ -231,7 +231,7 @@
     <div class="card-header bg-white py-3">
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold">
-                <i class="bi bi-list-ul text-primary me-2"></i>Job Listings
+                <i class="bi bi-list-ul text-primary me-2"></i>Vacancy Listings
                 <span class="badge bg-primary ms-2">{{ $jobs->total() }}</span>
             </h6>
             <select class="form-select form-select-sm" style="width: auto;" onchange="changeSorting(this.value)">
