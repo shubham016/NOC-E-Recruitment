@@ -15,9 +15,9 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
-        <span>Vacancy Postings</span>
+        <span>Post Vacancy</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-file-earmark-text"></i>
@@ -43,305 +43,474 @@
 
 @section('custom-styles')
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --white: #ffffff;
+            --border: 1px solid #e5e7eb;
+            --radius: 12px;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        /* Page Header */
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-        }
-
-        .govt-badge {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .detail-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-header {
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .detail-header::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: #dc2626;
-        }
-
-        .detail-row {
             display: flex;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f3f4f6;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #6b7280;
-            width: 200px;
-            flex-shrink: 0;
-        }
-
-        .detail-value {
-            color: #1f2937;
-            font-weight: 500;
+        .header-left {
             flex: 1;
         }
 
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .back-link {
+            font-size: 14px;
+            color: var(--gray-600);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+        }
+
+        /* Layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: var(--border);
+            background: var(--gray-50);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-under_review {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-shortlisted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Candidate Profile */
         .candidate-profile {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
+            gap: 20px;
+            padding: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
         }
 
         .candidate-avatar-large {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            font-size: 32px;
             font-weight: 700;
-            font-size: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.3);
         }
 
-        .candidate-info-large {
-            flex: 1;
-        }
-
-        .candidate-name-large {
-            font-size: 1.5rem;
+        .candidate-details h2 {
+            font-size: 24px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.25rem;
+            margin: 0 0 6px 0;
         }
 
-        .candidate-meta {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 0.5rem;
+        .candidate-details p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
         }
 
-        .candidate-meta-item {
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 12px 0;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #6b7280;
-            font-size: 0.875rem;
+            gap: 8px;
         }
 
-        .action-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+        .section-content {
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.6;
         }
 
-        .action-btn {
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-left: 2rem;
-            padding-bottom: 1.5rem;
-            border-left: 2px solid #e5e7eb;
-        }
-
-        .timeline-item:last-child {
-            border-left: 2px solid transparent;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -7px;
-            top: 0;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #dc2626;
-            border: 3px solid white;
-            box-shadow: 0 0 0 2px #dc2626;
-        }
-
-        .timeline-content {
-            background: #f9fafb;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: -0.25rem;
-        }
-
-        .timeline-time {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.25rem;
-        }
-
-        .timeline-description {
-            font-size: 0.875rem;
-            color: #6b7280;
+        /* Documents List */
+        .documents-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .document-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            padding: 12px 16px;
+            background: var(--gray-50);
             border-radius: 8px;
-            margin-bottom: 0.75rem;
-            transition: all 0.2s ease;
-        }
-
-        .document-item:hover {
-            background: #fef2f2;
-            border-color: #dc2626;
+            border: var(--border);
         }
 
         .document-info {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 12px;
         }
 
         .document-icon {
             width: 40px;
             height: 40px;
-            background: #dc2626;
-            color: white;
             border-radius: 8px;
+            background: var(--white);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 20px;
+            color: var(--primary);
         }
 
-        .score-input-group {
+        .document-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 2px 0;
+        }
+
+        .document-details p {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        .document-actions a {
+            padding: 6px 12px;
+            font-size: 13px;
+            color: var(--primary);
+            text-decoration: none;
+            border: var(--border);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .document-actions a:hover {
+            background: var(--gray-50);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gray-200);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--primary);
+        }
+
+        .timeline-content {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 4px 0;
+        }
+
+        .timeline-text {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin: 0 0 6px 0;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
         }
 
-        .score-slider {
-            flex: 1;
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
         }
 
-        .score-display {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #dc2626;
-            min-width: 70px;
-            text-align: center;
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
         }
 
-        .cover-letter-box {
-            background: #f9fafb;
-            border-left: 4px solid #dc2626;
-            padding: 1.5rem;
-            border-radius: 6px;
-            white-space: pre-wrap;
-            line-height: 1.6;
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .quick-action-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
 
-        .stat-box {
-            background: #f9fafb;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
+            .header-actions {
+                width: 100%;
+            }
 
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #dc2626;
-        }
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
 
-        .stat-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-        }
-
-        .notes-box {
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            .candidate-profile {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 @endsection
@@ -349,431 +518,321 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <div class="govt-badge">
-                    <i class="bi bi-building-fill"></i>
-                    <span>नेपाल सरकार | Government of Nepal</span>
-                </div>
-                <h3 class="fw-bold mb-2">
-                    <i class="bi bi-file-text-fill me-2"></i>Application Details
-                </h3>
-                <p class="mb-0 opacity-90">Application ID: #{{ $application->id }}</p>
-            </div>
-            <a href="{{ route('admin.applications.index') }}" class="btn btn-light btn-lg">
-                <i class="bi bi-arrow-left me-2"></i>Back to List
+        <div class="header-left">
+            <a href="{{ route('admin.applications.index') }}" class="back-link">
+                <i class="bi bi-arrow-left"></i>
+                Back to Applications
             </a>
+            <h1 class="page-title">Application Details</h1>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statusModal">
+                <i class="bi bi-pencil"></i>
+                Update Status
+            </button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#assignModal">
+                <i class="bi bi-person-plus"></i>
+                Assign Reviewer
+            </button>
+            <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                <i class="bi bi-trash"></i>
+                Delete
+            </button>
         </div>
     </div>
 
-    <!-- Success/Error Messages -->
+    <!-- Success Message -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ session('success') }}
         </div>
     @endif
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <!-- Candidate Profile Header -->
+    <!-- Candidate Profile Banner -->
     <div class="candidate-profile">
         <div class="candidate-avatar-large">
-            {{ strtoupper(substr($application->candidate->user->name ?? 'N', 0, 1)) }}
+            {{ strtoupper(substr($application->candidate->user->name ?? 'U', 0, 1)) }}
         </div>
-        <div class="candidate-info-large">
-            <div class="candidate-name-large">{{ $application->candidate->user->name ?? 'N/A' }}</div>
-            <div class="candidate-meta">
-                <div class="candidate-meta-item">
-                    <i class="bi bi-envelope-fill"></i>
-                    <span>{{ $application->candidate->user->email ?? 'N/A' }}</span>
-                </div>
-                @if($application->candidate->phone)
-                    <div class="candidate-meta-item">
-                        <i class="bi bi-phone-fill"></i>
-                        <span>{{ $application->candidate->phone }}</span>
-                    </div>
-                @endif
-                <div class="candidate-meta-item">
-                    <i class="bi bi-calendar-fill"></i>
-                    <span>Applied {{ $application->created_at->diffForHumans() }}</span>
-                </div>
-            </div>
+        <div class="candidate-details">
+            <h2>{{ $application->candidate->user->name ?? 'Unknown Candidate' }}</h2>
+            <p>
+                <i class="bi bi-envelope me-2"></i>
+                {{ $application->candidate->user->email ?? 'N/A' }}
+            </p>
+            <p>
+                <i class="bi bi-telephone me-2"></i>
+                {{ $application->candidate->phone ?? 'N/A' }}
+            </p>
         </div>
-        <div>
-            <span class="status-badge {{ $application->getStatusBadgeClass() }}">
-                {{ $application->getStatusLabel() }}
+        <div class="ms-auto">
+            <span class="status-badge status-{{ $application->status }}">
+                {{ ucfirst(str_replace('_', ' ', $application->status)) }}
             </span>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Main Content Column -->
-        <div class="col-lg-8">
-            <!-- Job Details Card -->
-            <div class="detail-card">
-                <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">
-                        <i class="bi bi-briefcase-fill me-2"></i>Applied For
-                    </h5>
+    <!-- Content Layout -->
+    <div class="content-layout">
+        <!-- Main Content -->
+        <div>
+            <!-- Job Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-briefcase-fill text-primary"></i>
+                        Job Information
+                    </h3>
                 </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Advertisement No.</div>
-                    <div class="detail-value">
-                        <strong class="text-danger">{{ $application->jobPosting->advertisement_no }}</strong>
-                    </div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Position / Level</div>
-                    <div class="detail-value">{{ $application->jobPosting->position_level }}</div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Service / Group</div>
-                    <div class="detail-value">{{ $application->jobPosting->service_group }}</div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Category</div>
-                    <div class="detail-value">
-                        @if($application->jobPosting->category == 'open')
-                            <span class="badge bg-success">खुल्ला (Open)</span>
-                        @else
-                            <span class="badge bg-info">समावेशी (Inclusive) -
-                                {{ $application->jobPosting->inclusive_type }}</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Number of Posts</div>
-                    <div class="detail-value">
-                        <strong class="text-danger fs-5">{{ $application->jobPosting->number_of_posts }}</strong>
-                    </div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Application Deadline</div>
-                    <div class="detail-value">
-                        <i class="bi bi-calendar-check-fill text-danger me-1"></i>
-                        {{ $application->jobPosting->deadline->format('F d, Y') }}
-                        <small class="text-muted ms-2">({{ $application->jobPosting->deadline->diffForHumans() }})</small>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Job Title</div>
+                            <div class="info-value">{{ $application->jobPosting->title }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Advertisement No.</div>
+                            <div class="info-value">{{ $application->jobPosting->advertisement_no }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Department</div>
+                            <div class="info-value">{{ $application->jobPosting->department }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">{{ $application->jobPosting->location }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Cover Letter Card -->
+            <!-- Candidate Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-person-fill text-info"></i>
+                        Candidate Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value">{{ $application->candidate->user->name ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ $application->candidate->user->email ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">{{ $application->candidate->phone ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">{{ $application->candidate->address ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date of Birth</div>
+                            <div class="info-value">
+                                {{ $application->candidate->date_of_birth ? \Carbon\Carbon::parse($application->candidate->date_of_birth)->format('M d, Y') : 'N/A' }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Education Level</div>
+                            <div class="info-value">{{ $application->candidate->education_level ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cover Letter -->
             @if($application->cover_letter)
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-file-text-fill me-2"></i>Cover Letter
-                        </h5>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-file-text-fill text-success"></i>
+                            Cover Letter
+                        </h3>
                     </div>
-                    <div class="cover-letter-box">
-                        {{ $application->cover_letter }}
+                    <div class="card-body">
+                        <div class="section-content">
+                            {{ $application->cover_letter }}
+                        </div>
                     </div>
                 </div>
             @endif
 
-            <!-- Documents Card -->
-            <div class="detail-card">
-                <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">
-                        <i class="bi bi-paperclip me-2"></i>Submitted Documents
-                    </h5>
+            <!-- Documents -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-paperclip text-warning"></i>
+                        Uploaded Documents
+                    </h3>
                 </div>
-
-                @if($application->resume_path)
-                    <div class="document-item">
-                        <div class="document-info">
-                            <div class="document-icon">
-                                <i class="bi bi-file-pdf-fill"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold">Resume / CV</div>
-                                <small class="text-muted">Uploaded {{ $application->created_at->format('M d, Y') }}</small>
-                            </div>
-                        </div>
-                        <a href="{{ route('admin.applications.downloadResume', $application->id) }}"
-                            class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-download me-1"></i>Download
-                        </a>
-                    </div>
-                @endif
-
-                @if($application->additional_documents && is_array($application->additional_documents))
-                    @foreach($application->additional_documents as $doc)
-                        <div class="document-item">
-                            <div class="document-info">
-                                <div class="document-icon">
-                                    <i class="bi bi-file-earmark-fill"></i>
+                <div class="card-body">
+                    @if($application->documents && $application->documents->count() > 0)
+                        <div class="documents-list">
+                            @foreach($application->documents as $document)
+                                <div class="document-item">
+                                    <div class="document-info">
+                                        <div class="document-icon">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </div>
+                                        <div class="document-details">
+                                            <h4>{{ $document->document_type }}</h4>
+                                            <p>{{ $document->file_name }} • {{ $document->file_size }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="document-actions">
+                                        <a href="{{ Storage::url($document->file_path) }}" target="_blank">
+                                            <i class="bi bi-download me-1"></i>
+                                            Download
+                                        </a>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="fw-bold">{{ $doc['name'] ?? 'Additional Document' }}</div>
-                                    <small class="text-muted">{{ $doc['type'] ?? 'Document' }}</small>
-                                </div>
-                            </div>
-                            <a href="{{ $doc['path'] ?? '#' }}" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-download me-1"></i>Download
-                            </a>
+                            @endforeach
                         </div>
-                    @endforeach
-                @endif
-
-                @if(!$application->resume_path && (!$application->additional_documents || count($application->additional_documents) == 0))
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                        No documents uploaded
-                    </div>
-                @endif
+                    @else
+                        <p class="text-muted text-center py-4">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            No documents uploaded
+                        </p>
+                    @endif
+                </div>
             </div>
 
-            <!-- Reviewer Notes Card -->
-            @if($application->reviewer_notes)
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-chat-left-text-fill me-2"></i>Reviewer Notes
-                        </h5>
+            <!-- Admin Notes -->
+            @if($application->admin_notes)
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-sticky-fill text-info"></i>
+                            Admin Notes
+                        </h3>
                     </div>
-                    <div class="notes-box">
-                        <i class="bi bi-info-circle-fill text-warning me-2"></i>
-                        {{ $application->reviewer_notes }}
+                    <div class="card-body">
+                        <div class="section-content">
+                            {{ $application->admin_notes }}
+                        </div>
                     </div>
                 </div>
             @endif
-
-            <!-- Rejection Reason Card -->
-            @if($application->status == 'rejected' && $application->rejection_reason)
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-x-circle-fill me-2"></i>Rejection Reason
-                        </h5>
-                    </div>
-                    <div class="alert alert-danger mb-0">
-                        <strong>Reason:</strong> {{ $application->rejection_reason }}
-                        @if($application->rejected_at)
-                            <br><small class="text-muted">Rejected on
-                                {{ $application->rejected_at->format('M d, Y h:i A') }}</small>
-                        @endif
-                    </div>
-                </div>
-            @endif
-
-            <!-- Timeline Card -->
-            <div class="detail-card">
-                <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">
-                        <i class="bi bi-clock-history me-2"></i>Application Timeline
-                    </h5>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-time">{{ $application->created_at->format('M d, Y h:i A') }}</div>
-                        <div class="timeline-title">Application Submitted</div>
-                        <div class="timeline-description">Candidate submitted the application</div>
-                    </div>
-                </div>
-
-                @if($application->reviewed_at)
-                    <div class="timeline-item">
-                        <div class="timeline-dot bg-info"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">{{ $application->reviewed_at->format('M d, Y h:i A') }}</div>
-                            <div class="timeline-title">Review Started</div>
-                            <div class="timeline-description">
-                                Application moved to under review
-                                @if($application->reviewer)
-                                    by {{ $application->reviewer->name }}
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                @if($application->shortlisted_at)
-                    <div class="timeline-item">
-                        <div class="timeline-dot bg-success"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">{{ $application->shortlisted_at->format('M d, Y h:i A') }}</div>
-                            <div class="timeline-title">Application Shortlisted</div>
-                            <div class="timeline-description">Candidate has been shortlisted for next round</div>
-                        </div>
-                    </div>
-                @endif
-
-                @if($application->rejected_at)
-                    <div class="timeline-item">
-                        <div class="timeline-dot bg-danger"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">{{ $application->rejected_at->format('M d, Y h:i A') }}</div>
-                            <div class="timeline-title">Application Rejected</div>
-                            <div class="timeline-description">Application was rejected</div>
-                        </div>
-                    </div>
-                @endif
-            </div>
         </div>
 
-        <!-- Sidebar Column -->
-        <div class="col-lg-4">
-            <!-- Quick Actions Card -->
-            <div class="action-card">
-                <div class="detail-header">
-                    <h6 class="fw-bold mb-0">
-                        <i class="bi bi-lightning-fill text-danger me-2"></i>Quick Actions
-                    </h6>
+        <!-- Sidebar -->
+        <div>
+            <!-- Application Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-info-circle-fill"></i>
+                        Application Status
+                    </h3>
                 </div>
+                <div class="card-body">
+                    <div class="section">
+                        <div class="section-title">Current Status</div>
+                        <span class="status-badge status-{{ $application->status }}">
+                            {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                        </span>
+                    </div>
 
-                <div class="quick-action-buttons">
-                    @if($application->status != 'shortlisted')
-                        <form action="{{ route('admin.applications.updateStatus', $application->id) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="status" value="shortlisted">
-                            <button type="submit" class="btn btn-success w-100 action-btn">
-                                <i class="bi bi-check-circle"></i>
-                                Shortlist
-                            </button>
-                        </form>
-                    @endif
+                    <div class="section">
+                        <div class="section-title">Assigned Reviewer</div>
+                        <div class="section-content">
+                            @if($application->reviewer)
+                                <strong>{{ $application->reviewer->name }}</strong><br>
+                                <small class="text-muted">{{ $application->reviewer->email }}</small>
+                            @else
+                                <span class="text-muted">Not assigned yet</span>
+                            @endif
+                        </div>
+                    </div>
 
-                    @if($application->status != 'rejected')
-                        <button type="button" class="btn btn-danger w-100 action-btn" data-bs-toggle="modal"
-                            data-bs-target="#rejectModal">
-                            <i class="bi bi-x-circle"></i>
-                            Reject
-                        </button>
-                    @endif
+                    <div class="section">
+                        <div class="section-title">Application Date</div>
+                        <div class="section-content">
+                            {{ $application->created_at->format('F d, Y') }}<br>
+                            <small class="text-muted">{{ $application->created_at->diffForHumans() }}</small>
+                        </div>
+                    </div>
 
-                    @if($application->status != 'under_review')
-                        <form action="{{ route('admin.applications.updateStatus', $application->id) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="status" value="under_review">
-                            <button type="submit" class="btn btn-info w-100 action-btn">
-                                <i class="bi bi-eye"></i>
-                                Move to Review
-                            </button>
-                        </form>
-                    @endif
-
-                    @if($application->resume_path)
-                        <a href="{{ route('admin.applications.downloadResume', $application->id) }}"
-                            class="btn btn-outline-danger w-100 action-btn">
-                            <i class="bi bi-download"></i>
-                            Download Resume
-                        </a>
-                    @endif
+                    <div class="section">
+                        <div class="section-title">Last Updated</div>
+                        <div class="section-content">
+                            {{ $application->updated_at->format('F d, Y') }}<br>
+                            <small class="text-muted">{{ $application->updated_at->diffForHumans() }}</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Assign Reviewer Card -->
-            <div class="action-card">
-                <div class="detail-header">
-                    <h6 class="fw-bold mb-0">
-                        <i class="bi bi-person-badge text-danger me-2"></i>Assign Reviewer
-                    </h6>
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-lightning-fill"></i>
+                        Quick Actions
+                    </h3>
                 </div>
-
-                @if($application->reviewer)
-                    <div class="alert alert-info mb-3">
-                        <strong>Current Reviewer:</strong><br>
-                        <i class="bi bi-person-fill me-1"></i>{{ $application->reviewer->name }}
-                    </div>
-                @endif
-
-                <form action="{{ route('admin.applications.assignReviewer', $application->id) }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <select class="form-select" name="reviewer_id" required>
-                            <option value="">Select Reviewer</option>
-                            @foreach($reviewers as $reviewer)
-                                <option value="{{ $reviewer->id }}" {{ $application->reviewer_id == $reviewer->id ? 'selected' : '' }}>
-                                    {{ $reviewer->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100 action-btn">
-                        <i class="bi bi-person-check"></i>
+                <div class="card-body">
+                    <button type="button" class="btn btn-secondary w-100 mb-2" data-bs-toggle="modal"
+                        data-bs-target="#statusModal">
+                        <i class="bi bi-pencil"></i>
+                        Change Status
+                    </button>
+                    <button type="button" class="btn btn-secondary w-100 mb-2" data-bs-toggle="modal"
+                        data-bs-target="#assignModal">
+                        <i class="bi bi-person-plus"></i>
                         Assign Reviewer
                     </button>
-                </form>
-            </div>
-
-            <!-- Application Score Card -->
-            <div class="action-card">
-                <div class="detail-header">
-                    <h6 class="fw-bold mb-0">
-                        <i class="bi bi-star-fill text-danger me-2"></i>Application Score
-                    </h6>
-                </div>
-
-                <form action="{{ route('admin.applications.updateStatus', $application->id) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="status" value="{{ $application->status }}">
-
-                    <div class="score-input-group mb-3">
-                        <input type="range" class="form-range score-slider" name="application_score" id="scoreRange" min="0"
-                            max="100" step="1"
-                            value="{{ old('application_score', $application->application_score ?? 50) }}">
-                        <div class="score-display" id="scoreDisplay">
-                            {{ old('application_score', $application->application_score ?? 50) }}%
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Reviewer Notes</label>
-                        <textarea class="form-control" name="reviewer_notes" rows="4"
-                            placeholder="Add notes about this application...">{{ old('reviewer_notes', $application->reviewer_notes) }}</textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-danger w-100 action-btn">
-                        <i class="bi bi-save"></i>
-                        Save Score & Notes
+                    <button type="button" class="btn btn-secondary w-100" onclick="alert('Email feature coming soon!')">
+                        <i class="bi bi-envelope"></i>
+                        Send Email
                     </button>
-                </form>
+                </div>
             </div>
 
-            <!-- Application Stats Card -->
-            <div class="action-card">
-                <div class="detail-header">
-                    <h6 class="fw-bold mb-0">
-                        <i class="bi bi-graph-up text-danger me-2"></i>Statistics
-                    </h6>
+            <!-- Activity Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-clock-history"></i>
+                        Activity Timeline
+                    </h3>
                 </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Application Submitted</div>
+                                <div class="timeline-text">Candidate submitted the application</div>
+                                <div class="timeline-date">{{ $application->created_at->format('M d, Y - h:i A') }}</div>
+                            </div>
+                        </div>
 
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="stat-box">
-                            <div class="stat-value">
-                                {{ $application->created_at->diffInDays(now()) }}
+                        @if($application->reviewer)
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Reviewer Assigned</div>
+                                    <div class="timeline-text">Assigned to {{ $application->reviewer->name }}</div>
+                                    <div class="timeline-date">{{ $application->updated_at->format('M d, Y - h:i A') }}</div>
+                                </div>
                             </div>
-                            <div class="stat-label">Days Since Applied</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-box">
-                            <div class="stat-value">
-                                {{ $application->application_score ?? '-' }}
+                        @endif
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Status:
+                                    {{ ucfirst(str_replace('_', ' ', $application->status)) }}</div>
+                                <div class="timeline-text">Application status updated</div>
+                                <div class="timeline-date">{{ $application->updated_at->format('M d, Y - h:i A') }}</div>
                             </div>
-                            <div class="stat-label">Score</div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="stat-box">
-                            <div class="stat-value">{{ ucfirst(str_replace('_', ' ', $application->status)) }}</div>
-                            <div class="stat-label">Current Status</div>
                         </div>
                     </div>
                 </div>
@@ -781,70 +840,93 @@
         </div>
     </div>
 
-    <!-- Reject Modal -->
-    <div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+    <!-- Update Status Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="{{ route('admin.applications.updateStatus', $application->id) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="status" value="rejected">
-
                     <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="bi bi-x-circle-fill text-danger me-2"></i>Reject Application
-                        </h5>
+                        <h5 class="modal-title">Update Application Status</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            You are about to reject this application. Please provide a reason.
+                        <div class="form-group">
+                            <label>Select Status</label>
+                            <select name="status" class="form-control" required>
+                                @foreach($statuses as $status)
+                                    <option value="{{ $status }}" {{ $application->status == $status ? 'selected' : '' }}>
+                                        {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Rejection Reason <span class="text-danger">*</span></label>
-                            <textarea class="form-control" name="rejection_reason" rows="4"
-                                placeholder="Please provide a clear reason for rejection..." required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Additional Notes (Optional)</label>
-                            <textarea class="form-control" name="reviewer_notes" rows="3"
-                                placeholder="Any additional notes..."></textarea>
+                        <div class="form-group">
+                            <label>Notes (Optional)</label>
+                            <textarea name="notes" class="form-control" rows="4"
+                                placeholder="Add any notes or comments...">{{ $application->admin_notes }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-x-circle me-1"></i>Reject Application
-                        </button>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Assign Reviewer Modal -->
+    <div class="modal fade" id="assignModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('admin.applications.assignReviewer', $application->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">Assign Reviewer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Select Reviewer</label>
+                            <select name="reviewer_id" class="form-control" required>
+                                <option value="">-- Select Reviewer --</option>
+                                @foreach($reviewers as $reviewer)
+                                    <option value="{{ $reviewer->id }}" {{ $application->reviewer_id == $reviewer->id ? 'selected' : '' }}>
+                                        {{ $reviewer->name }} - {{ $reviewer->email }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle"></i>
+                            The application status will be automatically changed to "Under Review" after assigning a
+                            reviewer.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Assign Reviewer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Form -->
+    <form id="deleteForm" action="{{ route('admin.applications.destroy', $application->id) }}" method="POST"
+        style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 @endsection
 
 @section('scripts')
     <script>
-        // Score slider
-        const scoreRange = document.getElementById('scoreRange');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-
-        if (scoreRange && scoreDisplay) {
-            scoreRange.addEventListener('input', function () {
-                scoreDisplay.textContent = this.value + '%';
-
-                // Color coding
-                const score = parseInt(this.value);
-                if (score >= 70) {
-                    scoreDisplay.style.color = '#059669'; // green
-                } else if (score >= 50) {
-                    scoreDisplay.style.color = '#d97706'; // yellow
-                } else {
-                    scoreDisplay.style.color = '#dc2626'; // red
-                }
-            });
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+                document.getElementById('deleteForm').submit();
+            }
         }
     </script>
 @endsection
