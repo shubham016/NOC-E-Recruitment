@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Your Applications')
-
 @section('content')
 <div class="container my-4">
     <div class="card shadow-sm">

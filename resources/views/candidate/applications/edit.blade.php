@@ -33,11 +33,11 @@
                     </div>
                     <div class="tab-item" data-step="3">
                         <span class="tab-circle">3</span>
-                        <span class="tab-label d-none d-md-inline">Address</span>
+                        <span class="tab-label d-none d-md-inline">Address 1</span>
                     </div>
                     <div class="tab-item" data-step="4">
                         <span class="tab-circle">4</span>
-                        <span class="tab-label d-none d-md-inline">Address</span>
+                        <span class="tab-label d-none d-md-inline">Address 2</span>
                     </div>
                     <div class="tab-item" data-step="5">
                         <span class="tab-circle">5</span>
