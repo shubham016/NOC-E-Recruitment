@@ -102,7 +102,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center align-items-center login-wrapper">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-5">
             <div class="login-card">
                 <div class="card">
                     <!-- Header -->
@@ -219,13 +219,6 @@
                             </small>
                         </div>
                     </div>
-                </div>
-
-                <!-- Copyright -->
-                <div class="text-center mt-4">
-                    <small class="text-white opacity-75">
-                        © 2024 Recruitment Management System. All rights reserved.
-                    </small>
                 </div>
             </div>
         </div>
