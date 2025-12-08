@@ -79,7 +79,8 @@ return new class extends Migration
             $table->string('mailing_house_number')->nullable(); // घर नम्बर
             
             // Missing
-            $table->string('name')->nullable(); 
+            $table->string('name_english')->nullable(); 
+            $table->string('name_nepali')->nullable(); 
             $table->string('education_level')->nullable(); 
             $table->string('field_of_study')->nullable(); 
             $table->integer('graduation_year')->nullable();

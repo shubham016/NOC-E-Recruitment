@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Candidate Login')
 
@@ -196,22 +196,16 @@
                                 </button>
                             </div>
                         </form>
-
-                        <!-- Demo Credentials Info -->
-                        <div class="alert alert-info mt-4 mb-0 border-0 bg-light" role="alert">
-                            <div class="d-flex">
-                                <i class="bi bi-info-circle-fill me-2 text-primary"></i>
-                                <div class="small">
-                                    <strong>Demo Credentials:</strong><br>
-                                    Email: <code>candidate@recruitment.com</code><br>
-                                    Password: <code>password</code>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Footer -->
                     <div class="card-footer bg-light border-0 py-4">
+                        <div class="text-center footer-links">
+                        <span class="me-2">Register Candidate:</span><br class="d-sm-none">
+                                <a href="{{ route('candidate.register') }}" class="text-decoration-none">
+                                    <i class="bi bi-shield-lock me-1"></i>Register
+                                </a>
+                        </div>
                         <div class="text-center footer-links">
                             <small class="text-muted">
                                 <span class="me-2">Access other portals:</span><br class="d-sm-none">

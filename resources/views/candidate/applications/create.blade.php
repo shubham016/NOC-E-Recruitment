@@ -1,12 +1,46 @@
 @extends('layouts.app')
 @section('title', 'Create Application Form')
 @section('content')
-<div class="container my-5">
+@section('sidebar-menu')
+    <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-search"></i>
+        <span>Browse Jobs</span>
+    </a>
+    <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>My Applications</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-bookmark"></i>
+        <span>Saved Jobs</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-file-earmark-pdf"></i>
+        <span>Resume</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>Notifications</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+    </a>
+@endsection
+<div class="container my-2">
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-4">
+        <div class="card-header bg-primary text-white text-center py-2">
             <h3 class="mb-0 fw-bold">NOC | New Application Form</h3>
         </div>
-        <div class="card-body p-5">
+        <div class="card-body px-5 pt-3 pb-5">
 
             {{-- Validation Errors --}}
             @if ($errors->any())
@@ -22,7 +56,7 @@
 
             {{-- Clickable Tabs Navigation --}}
             <div class="step-tabs mb-5">
-                <div class="d-flex flex-wrap justify-content-between border-bottom position-relative">
+                <div class="d-flex justify-content-evenly border-bottom position-relative">
                     <div class="tab-item active" data-step="1">
                         <span class="tab-circle">1</span>
                         <span class="tab-label d-none d-md-inline">Personal</span>
@@ -64,9 +98,15 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span> <small>(नाम)</small></label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                            <label for="name_english" class="form-label">Full Name in English <span class="text-danger">*</span> <small>(पुरा नाम अंग्रेजीमा)</small></label>
+                            <input type="text" name="name_english" id="name_english" class="form-control" value="{{ old('name_english') }}" required>
                         </div>
+                        <div class="col-md-6">
+                            <label for="name_nepali" class="form-label">Full Name in Nepali <span class="text-danger">*</span> <small>(पुरा नाम नेपालीमा)</small></label>
+                            <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali') }}" required>
+                        </div>
+                        </div>
+                    <div class="row mb-3">
                         <div class="col-md-3">
                             <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
                             <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control" value="{{ old('birth_date_ad') }}" required>

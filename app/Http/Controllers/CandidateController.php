@@ -1,29 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
-class CandidateAuthController extends Controller
+class CandidateController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Registration
-    |--------------------------------------------------------------------------
-    */
-    
-    // Show registration form
+    // Show Registration Form
     public function showRegisterForm()
     {
-        return view('auth.candidate.register');
+        return view('candidate.register');
     }
     
-    // Handle registration
+    // Handle Registration
     public function register(Request $request)
     {
         // Validation
@@ -44,7 +37,7 @@ class CandidateAuthController extends Controller
                 ->withInput();
         }
         
-        // Insert into database
+        // Insert into database with hashed password
         DB::table('candidate_registration')->insert([
             'name' => $request->name,
             'email' => $request->email,
@@ -59,68 +52,76 @@ class CandidateAuthController extends Controller
         ]);
         
         return redirect()->route('candidate.login')
-            ->with('success', 'Registration successful! Please login with your email or citizenship number.');
+            ->with('success', 'Registration successful! Please login.');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Login
-    |--------------------------------------------------------------------------
-    */
     
-    // Show login form
+    // Show Login Form
     public function showLoginForm()
     {
-        return view('auth.candidate.login');
+        return view('candidate.login');
     }
-
-    // Handle login with either email or citizenship number
+    
+    // Handle Login - NOW SUPPORTS BOTH EMAIL AND CITIZENSHIP NUMBER
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|min:8',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string', // Changed from citizenship_number
+            'password' => 'required|string',
         ]);
-
-        // Check if login_id is email or citizenship number
+        
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        
+        // Check if input is email or citizenship number
         $fieldType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'citizenship_number';
         
-        // Get candidate from database
+        // Check credentials
         $candidate = DB::table('candidate_registration')
             ->where($fieldType, $request->email)
             ->first();
-
-        // Check if candidate exists and password matches
+        
         if ($candidate && Hash::check($request->password, $candidate->password)) {
-            // Create session for the candidate
-            session([
-                'candidate_id' => $candidate->id,
-                'candidate_name' => $candidate->name,
-                'candidate_email' => $candidate->email,
-                'candidate_logged_in' => true
-            ]);
+            // Store candidate info in session
+            Session::put('candidate_id', $candidate->id);
+            Session::put('candidate_name', $candidate->name);
+            Session::put('candidate_email', $candidate->email);
+            Session::put('candidate_logged_in', true);
             
-            return redirect()->intended(route('candidate.dashboard'))
+            return redirect()->route('candidate.dashboard')
                 ->with('success', 'Welcome back, ' . $candidate->name . '!');
         }
-
-        return back()->withErrors([
-            'login_id' => 'Invalid email/citizenship number or password.',
-        ])->withInput($request->only('email'));
+        
+        return redirect()->back()
+            ->withErrors(['email' => 'Invalid email/citizenship number or password'])
+            ->withInput();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logout
-    |--------------------------------------------------------------------------
-    */
     
-    // Handle logout
-    public function logout(Request $request)
+    // Candidate Dashboard
+    public function dashboard()
     {
-        session()->forget(['candidate_id', 'candidate_name', 'candidate_email', 'candidate_logged_in']);
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+        
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+        
+        return view('candidate.dashboard', compact('candidate'));
+    }
+    
+    // Logout
+    public function logout()
+    {
+        Session::forget('candidate_id');
+        Session::forget('candidate_name');
+        Session::forget('candidate_email');
+        Session::forget('candidate_logged_in');
+        Session::flush();
         
         return redirect()->route('candidate.login')
             ->with('success', 'Logged out successfully!');

@@ -3,7 +3,41 @@
 @section('title', 'View Registration')
 
 @section('content')
-<div class="container my-4">
+@section('sidebar-menu')
+    <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-search"></i>
+        <span>Browse Jobs</span>
+    </a>
+    <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>My Applications</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-bookmark"></i>
+        <span>Saved Jobs</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-file-earmark-pdf"></i>
+        <span>Resume</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>Notifications</span>
+    </a>
+    <a href="#" class="sidebar-menu-item">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+    </a>
+@endsection
+<div class="container my-2">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">View Employee Application Details</h4>
@@ -29,8 +63,12 @@
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <strong>Full Name:</strong>
-                        <p class="mb-0">{{ $applicationform->name ?? '-' }}</p>
+                        <strong>Full Name (English):</strong>
+                        <p class="mb-0">{{ $applicationform->name_english ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Full Name (Nepali):</strong>
+                        <p class="mb-0">{{ $applicationform->name_nepali ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Birth Date (A.D):</strong>

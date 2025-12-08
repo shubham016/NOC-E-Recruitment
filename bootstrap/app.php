@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ReviewerMiddleware;
 use App\Http\Middleware\CandidateMiddleware;
+use App\Http\Middleware\CandidateSessionMiddleware;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => AdminMiddleware::class,
             'reviewer' => ReviewerMiddleware::class,
             'candidate' => CandidateMiddleware::class,
+            'candidate.session' => CandidateSessionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
