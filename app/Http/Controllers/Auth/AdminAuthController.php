@@ -5,38 +5,37 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AdminAuthController extends Controller
 {
-    // Show login form
     public function showLoginForm()
     {
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
         return view('auth.admin.login');
     }
 
-    // Handle login
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
-        if (Auth::guard('admin')->attempt([
-            'email' => $request->email,
-            'password' => $request->password,
-            'status' => 'active'
-        ], $request->remember)) {
+        $credentials = $request->only('email', 'password');
+        $credentials['status'] = 'active'; // Only allow active admins
+
+        if (Auth::guard('admin')->attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials or account is inactive.',
+            'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('email'));
     }
 
-    // Handle logout
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();

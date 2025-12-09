@@ -7,8 +7,6 @@ use App\Models\Application;
 use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
-use App\Models\Admin;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -27,21 +25,38 @@ class AdminDashboardController extends Controller
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
         ];
 
-        // Applications by Status (for pie chart)
-        $applicationsByStatus = Application::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        // This Month Statistics
+        $thisMonth = [
+            'jobs_posted' => JobPosting::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+            'applications' => Application::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+            'candidates' => Candidate::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+        ];
 
-        // Recent Applications (last 7 days trend)
-        $recentApplicationsTrend = Application::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('count(*) as count')
-            )
-            ->where('created_at', '>=', now()->subDays(7))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        // Last Month Statistics
+        $lastMonth = [
+            'jobs_posted' => JobPosting::whereMonth('created_at', now()->subMonth()->month)
+                ->whereYear('created_at', now()->subMonth()->year)
+                ->count(),
+            'applications' => Application::whereMonth('created_at', now()->subMonth()->month)
+                ->whereYear('created_at', now()->subMonth()->year)
+                ->count(),
+            'candidates' => Candidate::whereMonth('created_at', now()->subMonth()->month)
+                ->whereYear('created_at', now()->subMonth()->year)
+                ->count(),
+        ];
+
+        // Growth calculations
+        $growth = [
+            'jobs_posted' => $this->calculateGrowth($thisMonth['jobs_posted'], $lastMonth['jobs_posted']),
+            'applications' => $this->calculateGrowth($thisMonth['applications'], $lastMonth['applications']),
+            'candidates' => $this->calculateGrowth($thisMonth['candidates'], $lastMonth['candidates']),
+        ];
 
         // Top Jobs by Applications
         $topJobs = JobPosting::withCount('applications')
@@ -50,69 +65,30 @@ class AdminDashboardController extends Controller
             ->get();
 
         // Recent Applications (last 10)
-        $recentApplications = Application::with(['candidate', 'job', 'reviewer'])
+        $recentApplications = Application::with(['candidate', 'jobPosting'])
             ->latest()
             ->limit(10)
             ->get();
 
-        // Recent Jobs Posted (last 5)
-        $recentJobs = JobPosting::latest()
-            ->limit(5)
-            ->get();
-
-        // Active Reviewers with their stats
+        // Reviewer Statistics
         $reviewerStats = Reviewer::where('status', 'active')
             ->withCount([
                 'applications as total_reviewed',
                 'applications as pending' => function ($query) {
-                    $query->whereIn('status', ['pending', 'under_review']);
+                    $query->where('status', 'pending');
                 }
             ])
+            ->orderBy('total_reviewed', 'desc')
             ->limit(5)
             ->get();
 
-        // This Month Statistics
-        $thisMonth = [
-            'applications' => Application::whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-            'jobs_posted' => JobPosting::whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-            'candidates_registered' => Candidate::whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-        ];
-
-        // Calculate growth percentages
-        $lastMonth = [
-            'applications' => Application::whereMonth('created_at', now()->subMonth()->month)
-                ->whereYear('created_at', now()->subMonth()->year)
-                ->count(),
-            'jobs_posted' => JobPosting::whereMonth('created_at', now()->subMonth()->month)
-                ->whereYear('created_at', now()->subMonth()->year)
-                ->count(),
-            'candidates_registered' => Candidate::whereMonth('created_at', now()->subMonth()->month)
-                ->whereYear('created_at', now()->subMonth()->year)
-                ->count(),
-        ];
-
-        $growth = [
-            'applications' => $this->calculateGrowth($thisMonth['applications'], $lastMonth['applications']),
-            'jobs_posted' => $this->calculateGrowth($thisMonth['jobs_posted'], $lastMonth['jobs_posted']),
-            'candidates_registered' => $this->calculateGrowth($thisMonth['candidates_registered'], $lastMonth['candidates_registered']),
-        ];
-
         return view('admin.dashboard', compact(
             'stats',
-            'applicationsByStatus',
-            'recentApplicationsTrend',
+            'thisMonth',
+            'growth',
             'topJobs',
             'recentApplications',
-            'recentJobs',
-            'reviewerStats',
-            'thisMonth',
-            'growth'
+            'reviewerStats'
         ));
     }
 
@@ -124,7 +100,6 @@ class AdminDashboardController extends Controller
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
-
         return round((($current - $previous) / $previous) * 100, 1);
     }
 }

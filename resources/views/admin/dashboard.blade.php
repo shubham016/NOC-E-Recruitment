@@ -25,7 +25,7 @@
         <span>Applications</span>
         <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending_applications'] }}</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
         <i class="bi bi-people"></i>
         <span>Candidates</span>
         <span class="badge bg-info ms-auto">{{ $stats['total_candidates'] }}</span>
@@ -670,21 +670,21 @@
             </div>
         </div>
 
-        <!-- Stat 3 -->
+        <!-- Stat 3 - Total Candidates -->
         <div class="stat-box">
             <div class="stat-icon bg-info bg-opacity-10 text-info">
                 <i class="bi bi-people-fill"></i>
             </div>
             <div class="stat-value">{{ $stats['total_candidates'] }}</div>
-            <div class="stat-label">Total Candidates</div>
+            <div class="stat-label">Registered Candidates</div>
             <div class="stat-meta">
-                @if($growth['candidates_registered'] != 0)
-                    <span class="stat-badge {{ $growth['candidates_registered'] > 0 ? 'badge-up' : 'badge-down' }}">
-                        <i class="bi bi-arrow-{{ $growth['candidates_registered'] > 0 ? 'up' : 'down' }}"></i>
-                        {{ abs($growth['candidates_registered']) }}%
+                @if($growth['candidates'] != 0)
+                    <span class="stat-badge {{ $growth['candidates'] > 0 ? 'badge-up' : 'badge-down' }}">
+                        <i class="bi bi-arrow-{{ $growth['candidates'] > 0 ? 'up' : 'down' }}"></i>
+                        {{ abs($growth['candidates']) }}%
                     </span>
                 @endif
-                <span class="stat-text">{{ $thisMonth['candidates_registered'] }} registered</span>
+                <span class="stat-text">{{ $thisMonth['candidates'] }} this month</span>
             </div>
         </div>
 
@@ -706,6 +706,7 @@
         <!-- Main Content -->
         <div>
             <!-- Recent Applications -->
+            <!-- Recent Applications -->
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -722,7 +723,8 @@
                             </div>
                             <div class="item-content">
                                 <h4 class="item-name">{{ $application->candidate->name ?? 'Unknown' }}</h4>
-                                <p class="item-text">Applied for <strong>{{ $application->job->title ?? 'Position' }}</strong>
+                                <p class="item-text">Applied for
+                                    <strong>{{ $application->jobPosting->title ?? 'Position' }}</strong>
                                 </p>
                                 <p class="item-meta">
                                     <i class="bi bi-clock"></i>
@@ -744,13 +746,13 @@
                     @endforelse
                 </div>
             </div>
-
+            
             <!-- Top Jobs -->
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-trophy-fill text-warning"></i>
-                        Top Jobs by Applications
+                        Top Vacancies by Applications
                     </h3>
                 </div>
                 <div>
