@@ -12,96 +12,41 @@ class Application extends Model
     protected $fillable = [
         'job_posting_id',
         'candidate_id',
-        'reviewer_id',
+        'reviewed_by',
         'status',
         'cover_letter',
         'resume_path',
         'additional_documents',
-        'application_score',
         'reviewer_notes',
         'reviewed_at',
-        'shortlisted_at',
-        'rejected_at',
-        'rejection_reason',
     ];
 
     protected $casts = [
-        'reviewed_at' => 'datetime',
-        'shortlisted_at' => 'datetime',
-        'rejected_at' => 'datetime',
         'additional_documents' => 'array',
-        'application_score' => 'integer',
+        'reviewed_at' => 'datetime',
     ];
 
     /**
-     * Get the job posting that this application is for
+     * Get the job posting
      */
     public function jobPosting()
     {
-        return $this->belongsTo(JobPosting::class);
+        return $this->belongsTo(JobPosting::class, 'job_posting_id');
     }
 
     /**
-     * Get the candidate that owns the application
+     * Get the candidate
      */
     public function candidate()
     {
         return $this->belongsTo(Candidate::class);
     }
 
+    /**
+     * Get the reviewer who reviewed this application
+     */
     public function reviewer()
     {
-        return $this->belongsTo(Reviewer::class);
-    }
-
-    //  Get the documents for this application
-
-    // public function documents()
-    // {
-    //     return $this->hasMany(ApplicationDocument::class);
-    // }
-
-    // Scopes
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeUnderReview($query)
-    {
-        return $query->where('status', 'under_review');
-    }
-
-    public function scopeShortlisted($query)
-    {
-        return $query->where('status', 'shortlisted');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    // Helper methods
-    public function getStatusBadgeClass()
-    {
-        return match ($this->status) {
-            'pending' => 'bg-warning text-dark',
-            'under_review' => 'bg-info text-white',
-            'shortlisted' => 'bg-success text-white',
-            'rejected' => 'bg-danger text-white',
-            default => 'bg-secondary text-white',
-        };
-    }
-
-    public function getStatusLabel()
-    {
-        return match ($this->status) {
-            'pending' => 'Pending Review',
-            'under_review' => 'Under Review',
-            'shortlisted' => 'Shortlisted',
-            'rejected' => 'Rejected',
-            default => ucfirst($this->status),
-        };
+        return $this->belongsTo(Reviewer::class, 'reviewed_by');
     }
 }

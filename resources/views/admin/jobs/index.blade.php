@@ -189,7 +189,7 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <input type="text" class="form-control" name="search" 
-                           placeholder="Search jobs..." 
+                           placeholder="Search Vacancy..." 
                            value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">

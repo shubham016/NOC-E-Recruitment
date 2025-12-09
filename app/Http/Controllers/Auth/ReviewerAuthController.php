@@ -8,34 +8,34 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewerAuthController extends Controller
 {
-    // Show login form
     public function showLoginForm()
     {
+        if (Auth::guard('reviewer')->check()) {
+            return redirect()->route('reviewer.dashboard');
+        }
         return view('auth.reviewer.login');
     }
 
-    // Handle login
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
-        if (Auth::guard('reviewer')->attempt([
-            'email' => $request->email,
-            'password' => $request->password,
-            'status' => 'active'
-        ], $request->remember)) {
+        $credentials = $request->only('email', 'password');
+        $credentials['status'] = 'active'; // Only allow active reviewers
+
+        if (Auth::guard('reviewer')->attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
             return redirect()->intended(route('reviewer.dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials or account is inactive.',
+            'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('email'));
     }
 
-    // Handle logout
     public function logout(Request $request)
     {
         Auth::guard('reviewer')->logout();

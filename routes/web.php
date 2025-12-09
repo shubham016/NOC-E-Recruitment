@@ -39,7 +39,7 @@ Route::get('/', function () {
 // Default login route - Redirect to Admin Login
 Route::get('/login', function () {
     return redirect()->route('admin.login');
-})->name('login');
+})->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -160,8 +160,33 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     | Candidate Authentication Routes (Public - No Middleware)
     |--------------------------------------------------------------------------
     */
+    // Login
     Route::get('/login', [CandidateAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [CandidateAuthController::class, 'login'])->name('login.post');
+
+    // Registration
+    Route::get('/register', [CandidateAuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [CandidateAuthController::class, 'register'])->name('register.post');
+
+    // Email Verification (OTP)
+    Route::get('/verify-otp', [CandidateAuthController::class, 'showVerifyOtpForm'])->name('verify.otp');
+    Route::post('/verify-otp', [CandidateAuthController::class, 'verifyOtp'])->name('verify.otp.post');
+    Route::post('/resend-otp', [CandidateAuthController::class, 'resendOtp'])->name('resend.otp');
+
+    // Forgot Password
+    Route::get('/forgot-password', [CandidateAuthController::class, 'showForgotPasswordForm'])->name('forgot.password');
+    Route::post('/forgot-password', [CandidateAuthController::class, 'sendResetOtp'])->name('forgot.password.post');
+
+    // Password Reset OTP Verification
+    Route::get('/password/verify-otp', [CandidateAuthController::class, 'showResetOtpForm'])->name('password.verify-otp');
+    Route::post('/password/verify-otp', [CandidateAuthController::class, 'verifyResetOtp'])->name('password.verify-otp.post');
+    Route::post('/password/resend-otp', [CandidateAuthController::class, 'resendResetOtp'])->name('password.resend-otp');
+
+    // Reset Password
+    Route::get('/password/reset', [CandidateAuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/password/reset', [CandidateAuthController::class, 'resetPassword'])->name('password.reset.post');
+
+    // Logout
     Route::post('/logout', [CandidateAuthController::class, 'logout'])->name('logout');
 
     /*
@@ -171,12 +196,10 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     */
     Route::middleware(['auth:candidate'])->group(function () {
 
-        // Candidate Dashboard
+        // Dashboard
         Route::get('/dashboard', [CandidateDashboardController::class, 'index'])->name('dashboard');
 
-        /*
-        | Job Browsing Routes
-        */
+        // Jobs Browsing
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
             Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
@@ -186,17 +209,13 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::post('/{id}/apply', [CandidateApplicationController::class, 'store'])->name('applications.store');
         });
 
-        /*
-        | My Applications Routes
-        */
+        // My Applications Routes
         Route::prefix('my-applications')->name('applications.')->group(function () {
             Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
             Route::get('/{id}', [CandidateApplicationController::class, 'show'])->name('show');
         });
 
-        /*
-        | Profile Routes
-        */
+        // Profile Routes
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     });

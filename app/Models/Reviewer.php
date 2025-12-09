@@ -15,6 +15,7 @@ class Reviewer extends Authenticatable
         'password',
         'phone',
         'department',
+        'specialization',
         'status',
     ];
 
@@ -29,26 +30,10 @@ class Reviewer extends Authenticatable
     ];
 
     /**
-     * Relationship: Reviewer has reviewed many applications
+     * Get all applications assigned to this reviewer
      */
     public function applications()
     {
-        return $this->hasMany(Application::class, 'reviewer_id');
-    }
-
-    /**
-     * Check if reviewer is active
-     */
-    public function isActive()
-    {
-        return $this->status === 'active';
-    }
-
-    /**
-     * Scope: Only active reviewers
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
+        return $this->hasMany(Application::class, 'reviewed_by');
     }
 }

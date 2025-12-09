@@ -44,8 +44,11 @@ class ApplicationController extends Controller
             ->where('deadline', '>=', now())
             ->findOrFail($id);
 
+        // Get authenticated candidate
+        $candidate = auth()->guard('candidate')->user();
+
         // Check if already applied
-        $hasApplied = Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)
+        $hasApplied = Application::where('candidate_id', $candidate->id)
             ->where('job_posting_id', $id)
             ->exists();
 
@@ -57,8 +60,8 @@ class ApplicationController extends Controller
 
         // Validate
         $request->validate([
-            'cover_letter' => 'required|string|max:5000',
-            'resume' => 'required|file|mimes:pdf|max:5120', // 5MB max
+            'cover_letter' => 'required|string|min:100|max:5000',
+            'resume' => 'required|file|mimes:pdf|max:5120',
             'additional_documents.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
 
@@ -81,36 +84,35 @@ class ApplicationController extends Controller
         // Create application
         Application::create([
             'job_posting_id' => $id,
-            'candidate_id' => auth()->guard('candidate')->user()->candidate->id,
+            'candidate_id' => $candidate->id,
             'status' => 'pending',
             'cover_letter' => $request->cover_letter,
             'resume_path' => $resumePath,
             'additional_documents' => $additionalDocs,
         ]);
 
-        // TODO: Send email notification to admin
-
         return redirect()
             ->route('candidate.applications.index')
             ->with('success', 'Application submitted successfully!');
     }
-
     /**
      * View my applications
      */
     public function index()
     {
-        $applications = Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)
+        $candidate = auth()->guard('candidate')->user();
+
+        $applications = Application::where('candidate_id', $candidate->id)
             ->with('jobPosting', 'reviewer')
             ->latest()
             ->paginate(10);
 
         $stats = [
-            'total' => Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)->count(),
-            'pending' => Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)->where('status', 'pending')->count(),
-            'under_review' => Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)->where('status', 'under_review')->count(),
-            'shortlisted' => Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)->where('status', 'shortlisted')->count(),
-            'rejected' => Application::where('candidate_id', auth()->guard('candidate')->user()->candidate->id)->where('status', 'rejected')->count(),
+            'total' => Application::where('candidate_id', $candidate->id)->count(),
+            'pending' => Application::where('candidate_id', $candidate->id)->where('status', 'pending')->count(),
+            'under_review' => Application::where('candidate_id', $candidate->id)->where('status', 'under_review')->count(),
+            'shortlisted' => Application::where('candidate_id', $candidate->id)->where('status', 'shortlisted')->count(),
+            'rejected' => Application::where('candidate_id', $candidate->id)->where('status', 'rejected')->count(),
         ];
 
         return view('candidate.applications.index', compact('applications', 'stats'));
