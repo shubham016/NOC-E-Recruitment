@@ -295,7 +295,7 @@
                                         class="form-control form-control-lg @error('password') is-invalid @enderror" 
                                         id="password" 
                                         name="password"
-                                        placeholder="Min 6 characters"
+                                        placeholder="Min 8 characters"
                                         required
                                         minlength="6"
                                     >

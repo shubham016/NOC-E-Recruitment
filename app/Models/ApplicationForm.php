@@ -16,7 +16,8 @@ class ApplicationForm extends Model
     // Allow mass assignment for all these fields
     protected $fillable = [
         // Personal Info
-        'name',
+        'name_english',
+        'name_nepali',
         'birth_date_ad',
         'birth_date_bs',
         'age',
@@ -151,7 +152,7 @@ class ApplicationForm extends Model
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->name,
+            get: fn () => $this->name_english,
         );
     }
 }

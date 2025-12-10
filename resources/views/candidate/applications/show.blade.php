@@ -10,37 +10,33 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Browse Jobs</span>
+        <span>Vacancy</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <i class="bi bi-file-earmark-check"></i>
+        <span>View Result</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-pdf"></i>
-        <span>Resume</span>
+        <i class="bi bi-box-arrow-down"></i>
+        <span>Download Admit Card</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bell"></i>
-        <span>Notifications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
+    <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
+        <i class="bi bi-lock"></i>
+        <span>Change Password</span>
     </a>
 @endsection
 <div class="container my-2">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">View Employee Application Details</h4>
+            <h4 class="mb-0">View Application Details</h4>
             <div>
                 <a href="{{ route('candidate.applications.edit', $applicationform) }}"
                     class="btn btn-warning btn-sm me-2">

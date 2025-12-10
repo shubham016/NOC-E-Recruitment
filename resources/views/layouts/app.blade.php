@@ -431,7 +431,7 @@
                     </div>
                     <div class="user-info">
                         <h6 title="{{ $candidateName }}">{{ $candidateName }}</h6>
-                        <small>Job Seeker</small>
+                        <small>Applicant</small>
                     </div>
                 </div>
             </div>

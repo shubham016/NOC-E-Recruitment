@@ -111,7 +111,14 @@ class CandidateController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
         
-        return view('candidate.dashboard', compact('candidate'));
+        $applicationsCount = DB::table('application_form')
+            ->where('citizenship_number', $candidate->citizenship_number)
+            ->count();
+
+        return view('candidate.dashboard', [
+            'candidate' => $candidate,
+            'applicationsCount' => $applicationsCount
+        ]);
     }
     
     // Logout
@@ -125,5 +132,83 @@ class CandidateController extends Controller
         
         return redirect()->route('candidate.login')
             ->with('success', 'Logged out successfully!');
+    }
+
+    // Show Candidate Profile
+    public function profile()
+    {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+        
+        // Get candidate information
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+        
+        if (!$candidate) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Profile not found']);
+        }
+        
+        return view('candidate.profile', compact('candidate'));
+    }
+
+    // Show Change Password Form
+    public function showChangePasswordForm()
+    {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+        
+        return view('candidate.change-password');
+    }
+
+    // Handle Password Update
+    public function updatePassword(Request $request)
+    {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Get current candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $candidate->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'The current password is incorrect.'])
+                ->withInput();
+        }
+
+        // Update password
+        DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->update([
+                'password' => Hash::make($request->new_password),
+                'updated_at' => now(),
+            ]);
+
+        return redirect()->back()->with('success', 'Password changed successfully!');
     }
 }

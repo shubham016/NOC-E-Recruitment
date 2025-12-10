@@ -68,34 +68,43 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
 
 });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Candidate Routes
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('candidate')->name('candidate.')->group(function () {
-        
-        // Change CandidateAuthController to CandidateController
-        Route::get('/register', [\App\Http\Controllers\CandidateController::class, 'showRegisterForm'])->name('register');
-        Route::post('/register', [\App\Http\Controllers\CandidateController::class, 'register'])->name('register.post');
-        
-        Route::get('/login', [\App\Http\Controllers\CandidateController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [\App\Http\Controllers\CandidateController::class, 'login'])->name('login.post');
-        
-        Route::post('/logout', [\App\Http\Controllers\CandidateController::class, 'logout'])->name('logout');
+/*
+|--------------------------------------------------------------------------
+| Candidate Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('candidate')->name('candidate.')->group(function () {
+    
+    // Public routes (no authentication required)
+    Route::get('/register', [\App\Http\Controllers\CandidateController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [\App\Http\Controllers\CandidateController::class, 'register'])->name('register.post');
+    
+    Route::get('/login', [\App\Http\Controllers\CandidateController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\CandidateController::class, 'login'])->name('login.post');
+    
+    Route::post('/logout', [\App\Http\Controllers\CandidateController::class, 'logout'])->name('logout');
 
-        // Protected routes - use custom middleware
-        Route::middleware('candidate.session')->group(function () {
-            Route::get('/dashboard', [\App\Http\Controllers\CandidateController::class, 'dashboard'])->name('dashboard');
+    // Protected routes - use custom middleware
+    Route::middleware('candidate.session')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\CandidateController::class, 'dashboard'])->name('dashboard');
+        
+        Route::get('/my-profile', [\App\Http\Controllers\CandidateController::class, 'profile'])->name('my-profile');
+        
+        // Change Password Routes - FIXED: Removed duplicate 'candidate/' prefix
+        Route::get('/change-password', [\App\Http\Controllers\CandidateController::class, 'showChangePasswordForm'])
+            ->name('change-password');
+        Route::post('/change-password', [\App\Http\Controllers\CandidateController::class, 'updatePassword'])
+            ->name('password.update');
             
-            Route::prefix('applications')->name('applications.')->group(function () {
-                Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
-                Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
-                Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
-                Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
-                Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
-                Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');
-                Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
-            });
+        // Applications Routes
+        Route::prefix('applications')->name('applications.')->group(function () {
+            Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
+            Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
+            Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
+            Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
+            Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
+            Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');
+            Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
         });
     });
+});

@@ -8,31 +8,27 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Browse Jobs</span>
+        <span>Vacancy</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <i class="bi bi-file-earmark-check"></i>
+        <span>View Result</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-pdf"></i>
-        <span>Resume</span>
+        <i class="bi bi-box-arrow-down"></i>
+        <span>Download Admit Card</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bell"></i>
-        <span>Notifications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
+    <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
+        <i class="bi bi-lock"></i>
+        <span>Change Password</span>
     </a>
 @endsection
 <div class="container my-2">
@@ -98,11 +94,11 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="name_english" class="form-label">Full Name in English <span class="text-danger">*</span> <small>(पुरा नाम अंग्रेजीमा)</small></label>
+                            <label for="name_english" class="form-label">Full Name (English) <span class="text-danger">*</span> <small>(पुरा नाम अंग्रेजी)</small></label>
                             <input type="text" name="name_english" id="name_english" class="form-control" value="{{ old('name_english') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="name_nepali" class="form-label">Full Name in Nepali <span class="text-danger">*</span> <small>(पुरा नाम नेपालीमा)</small></label>
+                            <label for="name_nepali" class="form-label">Full Name (Nepali) <span class="text-danger">*</span> <small>(पुरा नाम नेपाली)</small></label>
                             <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali') }}" required>
                         </div>
                         </div>

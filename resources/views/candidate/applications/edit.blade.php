@@ -8,37 +8,33 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Browse Jobs</span>
+        <span>Vacancy</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <i class="bi bi-file-earmark-check"></i>
+        <span>View Result</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-pdf"></i>
-        <span>Resume</span>
+        <i class="bi bi-box-arrow-down"></i>
+        <span>Download Admit Card</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bell"></i>
-        <span>Notifications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
+    <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
+        <i class="bi bi-lock"></i>
+        <span>Change Password</span>
     </a>
 @endsection
 <div class="container my-2">
     <div class="card shadow-lg border-0">
         <div class="card-header bg-primary text-white text-center py-2">
-            <h3 class="mb-0 fw-bold">NOC | Edit Application Form Form</h3>
+            <h3 class="mb-0 fw-bold">NOC | Edit Application Form</h3>
         </div>
         <div class="card-body px-5 pt-3 pb-5">
 

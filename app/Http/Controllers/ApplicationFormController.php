@@ -89,7 +89,8 @@ class ApplicationFormController extends Controller
     private function validationRules($isStore = true)
     {
         return [
-            'name' => 'required|string|max:255',
+            'name_english' => 'required|string|max:255',
+            'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
             'age' => 'required|integer|min:18|max:100',
             'phone' => 'required|string',

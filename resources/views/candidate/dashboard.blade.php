@@ -9,31 +9,27 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Browse Jobs</span>
+        <span>Vacancy</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <i class="bi bi-file-earmark-check"></i>
+        <span>View Result</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
     <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-pdf"></i>
-        <span>Resume</span>
+        <i class="bi bi-box-arrow-down"></i>
+        <span>Download Admit Card</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bell"></i>
-        <span>Notifications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
+    <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
+        <i class="bi bi-lock"></i>
+        <span>Change Password</span>
     </a>
 @endsection
 
@@ -99,7 +95,7 @@
                     <i class="bi bi-file-earmark-text-fill"></i>
                 </div>
                 <h3 class="h2 fw-bold mb-1">8</h3>
-                <p class="text-muted mb-2">Total Applications</p>
+                <p class="text-muted mb-2">Total Live Advertisements</p>
                 <small class="text-info">
                     <i class="bi bi-info-circle me-1"></i>All time
                 </small>
@@ -109,12 +105,12 @@
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card stat-card h-100 shadow-sm">
                 <div class="stat-icon orange">
-                    <i class="bi bi-hourglass-split"></i>
+                    <i class="bi bi-file-earmark-text-fill"></i>
                 </div>
                 <h3 class="h2 fw-bold mb-1">3</h3>
-                <p class="text-muted mb-2">Pending Review</p>
+                <p class="text-muted mb-2">Total Vacancy</p>
                 <small class="text-warning">
-                    <i class="bi bi-clock me-1"></i>In progress
+                    <i class="bi bi-clock me-1"></i>All time
                 </small>
             </div>
         </div>
@@ -124,23 +120,10 @@
                 <div class="stat-icon emerald">
                     <i class="bi bi-star-fill"></i>
                 </div>
-                <h3 class="h2 fw-bold mb-1">2</h3>
-                <p class="text-muted mb-2">Shortlisted</p>
+                <h3 class="h2 fw-bold mb-1">{{ $applicationsCount ?? 0 }}</h3>
+                <p class="text-muted mb-2">My Applications</p>
                 <small class="text-success">
-                    <i class="bi bi-check-circle me-1"></i>Great news!
-                </small>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-100 shadow-sm">
-                <div class="stat-icon slate">
-                    <i class="bi bi-bookmark-fill"></i>
-                </div>
-                <h3 class="h2 fw-bold mb-1">12</h3>
-                <p class="text-muted mb-2">Saved Jobs</p>
-                <small class="text-muted">
-                    <i class="bi bi-heart me-1"></i>For later
+                    <i class="bi bi-check-circle me-1"></i>All Applications
                 </small>
             </div>
         </div>
