@@ -9,21 +9,11 @@ use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\JobManagementController;
+use App\Http\Controllers\Admin\CandidateManagementController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationController as CandidateApplicationController;
 use App\Http\Controllers\Candidate\ProfileController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 /*
 |--------------------------------------------------------------------------
@@ -95,16 +85,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         /*
-        | User Management Routes
+        | Candidate Management Routes
         */
-        Route::prefix('users')->name('users.')->group(function () {
-            Route::get('/reviewers', function () {
-                return view('admin.users.reviewers');
-            })->name('reviewers');
+        Route::prefix('candidates')->name('candidates.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\CandidateManagementController::class, 'index'])->name('index');
+            Route::get('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [App\Http\Controllers\Admin\CandidateManagementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'update'])->name('update');
+            Route::post('/{id}/status', [App\Http\Controllers\Admin\CandidateManagementController::class, 'updateStatus'])->name('updateStatus');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'destroy'])->name('destroy');
+        });
 
-            Route::get('/candidates', function () {
-                return view('admin.users.candidates');
-            })->name('candidates');
+        /*
+        | Reviewer Management Routes
+        */
+        Route::prefix('reviewers')->name('reviewers.')->group(function () {
+            Route::get('/', function () {
+                return view('admin.reviewers.index');
+            })->name('index');
         });
     });
 });
@@ -204,19 +202,37 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
             Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
 
-            // Application Routes (nested under jobs)
-            Route::get('/{id}/apply', [CandidateApplicationController::class, 'create'])->name('applications.create');
-            Route::post('/{id}/apply', [CandidateApplicationController::class, 'store'])->name('applications.store');
+            // Application Routes (nested under jobs for create/store/edit/update)
+            Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
+                Route::get('/create', [CandidateApplicationController::class, 'create'])->name('create');
+                Route::post('/', [CandidateApplicationController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [CandidateApplicationController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [CandidateApplicationController::class, 'update'])->name('update');
+            });
         });
 
-        // My Applications Routes
-        Route::prefix('my-applications')->name('applications.')->group(function () {
+        // My Applications Routes (Direct access for list/show/delete)
+        Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
             Route::get('/{id}', [CandidateApplicationController::class, 'show'])->name('show');
+            Route::delete('/{id}', [CandidateApplicationController::class, 'destroy'])->name('destroy');
         });
 
         // Profile Routes
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [ProfileController::class, 'show'])->name('show');
+            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+            Route::put('/', [ProfileController::class, 'update'])->name('update');
+        });
+
+        // Settings Routes
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Candidate\SettingsController::class, 'index'])->name('index');
+            Route::put('/account', [App\Http\Controllers\Candidate\SettingsController::class, 'updateAccount'])->name('account.update');
+            Route::put('/password', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePassword'])->name('password.update');
+            Route::put('/notifications', [App\Http\Controllers\Candidate\SettingsController::class, 'updateNotifications'])->name('notifications.update');
+            Route::put('/privacy', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePrivacy'])->name('privacy.update');
+            Route::delete('/account', [App\Http\Controllers\Candidate\SettingsController::class, 'deleteAccount'])->name('account.delete');
+        });
     });
 });

@@ -11,15 +11,26 @@ class Candidate extends Authenticatable implements MustVerifyEmail
     use HasFactory;
 
     protected $fillable = [
+        'first_name',
+        'middle_name',
+        'last_name',
         'name',
+        'username',
         'email',
         'email_verified_at',
+        'mobile_number',
         'password',
-        'phone',
-        'address',
-        'date_of_birth',
         'profile_picture',
+        'city',
+        'state',
+        'country',
+        'qualification',
+        'skills',
+        'resume_path',
         'status',
+        'notification_settings',
+        'privacy_settings',
+
     ];
 
     protected $hidden = [
@@ -30,8 +41,55 @@ class Candidate extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'date_of_birth' => 'date',
+        'notification_settings' => 'array',
+        'privacy_settings' => 'array',
     ];
+
+    /**
+     * Boot method to auto-generate full name
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When creating a new candidate
+        static::creating(function ($candidate) {
+            $candidate->name = static::generateFullName(
+                $candidate->first_name,
+                $candidate->middle_name,
+                $candidate->last_name
+            );
+        });
+
+        // When updating a candidate
+        static::updating(function ($candidate) {
+            // Only regenerate name if name fields changed
+            if ($candidate->isDirty(['first_name', 'middle_name', 'last_name'])) {
+                $candidate->name = static::generateFullName(
+                    $candidate->first_name,
+                    $candidate->middle_name,
+                    $candidate->last_name
+                );
+            }
+        });
+    }
+
+    /**
+     * Generate full name from first, middle, and last name
+     */
+    public static function generateFullName($firstName, $middleName, $lastName)
+    {
+        $parts = array_filter([$firstName, $middleName, $lastName]);
+        return implode(' ', $parts);
+    }
+
+    /**
+     * Get full name attribute
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->name;
+    }
 
     /**
      * Check if email is verified
@@ -52,6 +110,16 @@ class Candidate extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Find candidate by username or email (for login)
+     */
+    public static function findByUsernameOrEmail($identifier)
+    {
+        return static::where('username', $identifier)
+            ->orWhere('email', $identifier)
+            ->first();
+    }
+
+    /**
      * Get all applications for this candidate
      */
     public function applications()
@@ -65,13 +133,5 @@ class Candidate extends Authenticatable implements MustVerifyEmail
     public function isActive()
     {
         return $this->status === 'active';
-    }
-
-    /**
-     * Get candidate's age
-     */
-    public function getAgeAttribute()
-    {
-        return $this->date_of_birth ? $this->date_of_birth->age : null;
     }
 }

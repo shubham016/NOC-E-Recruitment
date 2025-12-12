@@ -4,18 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('candidates', function (Blueprint $table) {
-            $table->timestamp('email_verified_at')->nullable()->after('email');
+            // Only add if column doesn't exist
+            if (!Schema::hasColumn('candidates', 'email_verified_at')) {
+                $table->timestamp('email_verified_at')->nullable()->after('email');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('candidates', function (Blueprint $table) {
-            $table->dropColumn('email_verified_at');
+            if (Schema::hasColumn('candidates', 'email_verified_at')) {
+                $table->dropColumn('email_verified_at');
+            }
         });
     }
 };

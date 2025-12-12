@@ -46,7 +46,7 @@ class CandidateOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'candidate.emails.candidate-otp',
+            view: 'candidate.email.candidate-otp',
         );
     }
 

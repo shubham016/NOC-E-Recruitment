@@ -802,7 +802,7 @@
                 <div class="widget-body">
                     <a href="{{ route('admin.jobs.create') }}" class="btn-action btn-primary">
                         <i class="bi bi-plus-circle"></i>
-                        Post New Job
+                        Post New Vacancy
                     </a>
                     <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
                         <i class="bi bi-person-plus"></i>
