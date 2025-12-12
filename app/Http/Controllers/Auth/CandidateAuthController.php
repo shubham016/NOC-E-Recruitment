@@ -32,33 +32,41 @@ class CandidateAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'username_or_email' => 'required',
             'password' => 'required',
+        ], [
+            'username_or_email.required' => 'Username or Email is required.',
         ]);
 
-        $candidate = Candidate::where('email', $request->email)->first();
+        // Find candidate by username or email
+        $candidate = Candidate::findByUsernameOrEmail($request->username_or_email);
 
         if (!$candidate) {
             return back()->withErrors([
-                'email' => 'No account found with this email address.',
-            ])->withInput($request->only('email'));
+                'username_or_email' => 'No account found with this username or email.',
+            ])->withInput($request->only('username_or_email'));
         }
 
         // Check if email is verified
         if (!$candidate->hasVerifiedEmail()) {
             return back()->withErrors([
-                'email' => 'Please verify your email address first. Check your inbox for the OTP code.',
-            ])->withInput($request->only('email'));
+                'username_or_email' => 'Please verify your email address first. Check your inbox for the OTP code.',
+            ])->withInput($request->only('username_or_email'));
         }
 
         // Check if account is active
         if ($candidate->status !== 'active') {
             return back()->withErrors([
-                'email' => 'Your account is inactive. Please contact support.',
-            ])->withInput($request->only('email'));
+                'username_or_email' => 'Your account is inactive. Please contact support.',
+            ])->withInput($request->only('username_or_email'));
         }
 
-        $credentials = $request->only('email', 'password');
+        // Attempt login with username
+        $loginField = filter_var($request->username_or_email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $credentials = [
+            $loginField => $request->username_or_email,
+            'password' => $request->password,
+        ];
 
         if (Auth::guard('candidate')->attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
@@ -66,8 +74,8 @@ class CandidateAuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->withInput($request->only('email'));
+            'username_or_email' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('username_or_email'));
     }
 
     /**
@@ -87,25 +95,38 @@ class CandidateAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'mobile_number' => 'required|string|max:20|regex:/^[0-9]{10}$/',
             'email' => 'required|string|email|max:255|unique:candidates,email',
+            'username' => 'required|string|max:255|unique:candidates,username|regex:/^[a-zA-Z0-9_]+$/',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'required|string|max:20',
-            'date_of_birth' => 'required|date|before:today|before:-18 years',
-            'address' => 'required|string|max:500',
         ], [
-            'date_of_birth.before' => 'You must be at least 18 years old to register.',
+            'first_name.required' => 'First Name is required.',
+            'last_name.required' => 'Last Name is required.',
+            'mobile_number.required' => 'Mobile Number is required.',
+            'mobile_number.regex' => 'Mobile Number must be 10 digits.',
+            'email.required' => 'Email is required.',
+            'email.unique' => 'This email is already registered.',
+            'username.required' => 'Username is required.',
+            'username.unique' => 'This username is already taken.',
+            'username.regex' => 'Username can only contain letters, numbers, and underscores.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
         ]);
 
         try {
             // Create candidate account (unverified)
             $candidate = Candidate::create([
-                'name' => $validated['name'],
+                'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'],
+                'last_name' => $validated['last_name'],
+                'username' => $validated['username'],
                 'email' => $validated['email'],
+                'mobile_number' => $validated['mobile_number'],
                 'password' => Hash::make($validated['password']),
-                'phone' => $validated['phone'],
-                'date_of_birth' => $validated['date_of_birth'],
-                'address' => $validated['address'],
                 'status' => 'active',
                 'email_verified_at' => null, // Not verified yet
             ]);
@@ -119,7 +140,7 @@ class CandidateAuthController extends Controller
 
             // Send OTP email
             Mail::to($validated['email'])->send(
-                new CandidateOtpMail($otpRecord->otp, $validated['name'], 'registration')
+                new CandidateOtpMail($otpRecord->otp, $candidate->name, 'registration')
             );
 
             // Store email in session for OTP verification

@@ -26,7 +26,7 @@
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
@@ -57,6 +57,12 @@
             font-size: 14px;
             color: #374151;
             margin-bottom: 8px;
+        }
+
+        .nepali-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-left: 4px;
         }
 
         .form-control {
@@ -113,6 +119,15 @@
             border-radius: 8px;
             margin-bottom: 24px;
         }
+
+        .full-name-display {
+            background: #f3f4f6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            font-weight: 600;
+            color: #1f2937;
+        }
     </style>
 </head>
 
@@ -139,91 +154,128 @@
                     </div>
                 @endif
 
-                <form action="{{ route('candidate.register.post') }}" method="POST">
+                <form action="{{ route('candidate.register.post') }}" method="POST" id="registerForm">
                     @csrf
 
-                    <!-- Full Name -->
+                    <div class="row">
+                        <!-- First Name -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                First Name <span class="nepali-label">(पहिलो नाम)</span> <span class="required">*</span>
+                            </label>
+                            <input type="text" name="first_name" id="first_name" 
+                                class="form-control @error('first_name') is-invalid @enderror"
+                                placeholder="Enter first name" value="{{ old('first_name') }}" required>
+                            @error('first_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Middle Name -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Middle Name <span class="nepali-label">(बीचको नाम)</span>
+                            </label>
+                            <input type="text" name="middle_name" id="middle_name"
+                                class="form-control @error('middle_name') is-invalid @enderror"
+                                placeholder="Enter middle name (optional)" value="{{ old('middle_name') }}">
+                            @error('middle_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
                     <div class="mb-3">
                         <label class="form-label">
-                            Full Name <span class="required">*</span>
+                            Last Name <span class="nepali-label">(थर)</span> <span class="required">*</span>
                         </label>
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                            placeholder="Enter your full name" value="{{ old('name') }}" required>
-                        @error('name')
+                        <input type="text" name="last_name" id="last_name"
+                            class="form-control @error('last_name') is-invalid @enderror"
+                            placeholder="Enter last name" value="{{ old('last_name') }}" required>
+                        @error('last_name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <!-- Email -->
+                    <!-- Full Name Display -->
                     <div class="mb-3">
                         <label class="form-label">
-                            Email Address <span class="required">*</span>
+                            Full Name <span class="nepali-label">(पुरा नाम)</span>
                         </label>
-                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                            placeholder="your.email@example.com" value="{{ old('email') }}" required>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <div class="full-name-display" id="fullNameDisplay">
+                            <i class="bi bi-person me-2"></i>
+                            <span id="fullNameText">Your full name will appear here</span>
+                        </div>
+                        <small class="text-muted">Auto-generated from first, middle, and last name</small>
                     </div>
 
-                    <!-- Phone -->
+                    <div class="row">
+                        <!-- Mobile Number -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Mobile Number <span class="nepali-label">(मोबाइल नम्बर)</span> <span class="required">*</span>
+                            </label>
+                            <input type="text" name="mobile_number" 
+                                class="form-control @error('mobile_number') is-invalid @enderror"
+                                placeholder="98XXXXXXXX" value="{{ old('mobile_number') }}" 
+                                maxlength="10" pattern="[0-9]{10}" required>
+                            @error('mobile_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">10 digit mobile number</small>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Email <span class="nepali-label">(इमेल)</span> <span class="required">*</span>
+                            </label>
+                            <input type="email" name="email" 
+                                class="form-control @error('email') is-invalid @enderror"
+                                placeholder="your.email@example.com" value="{{ old('email') }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Username -->
                     <div class="mb-3">
                         <label class="form-label">
-                            Phone Number <span class="required">*</span>
+                            Username <span class="nepali-label">(युजरनेम)</span> <span class="required">*</span>
                         </label>
-                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
-                            placeholder="9812345678" value="{{ old('phone') }}" required>
-                        @error('phone')
+                        <input type="text" name="username" 
+                            class="form-control @error('username') is-invalid @enderror"
+                            placeholder="Choose a unique username" value="{{ old('username') }}" required>
+                        @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">Letters, numbers, and underscores only</small>
                     </div>
 
-                    <!-- Date of Birth -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Date of Birth <span class="required">*</span>
-                        </label>
-                        <input type="date" name="date_of_birth"
-                            class="form-control @error('date_of_birth') is-invalid @enderror"
-                            value="{{ old('date_of_birth') }}" max="{{ date('Y-m-d', strtotime('-18 years')) }}"
-                            required>
-                        @error('date_of_birth')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <div class="row">
+                        <!-- Password -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Password <span class="nepali-label">(पासवर्ड)</span> <span class="required">*</span>
+                            </label>
+                            <input type="password" name="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                placeholder="Minimum 8 characters" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <!-- Address -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Address <span class="required">*</span>
-                        </label>
-                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="3"
-                            placeholder="Enter your complete address" required>{{ old('address') }}</textarea>
-                        @error('address')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Password <span class="required">*</span>
-                        </label>
-                        <input type="password" name="password"
-                            class="form-control @error('password') is-invalid @enderror"
-                            placeholder="Minimum 8 characters" required>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mb-4">
-                        <label class="form-label">
-                            Confirm Password <span class="required">*</span>
-                        </label>
-                        <input type="password" name="password_confirmation" class="form-control"
-                            placeholder="Re-enter your password" required>
+                        <!-- Confirm Password -->
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">
+                                Confirm Password <span class="nepali-label">(पासवर्ड पुष्टि गर्नुहोस्)</span> <span class="required">*</span>
+                            </label>
+                            <input type="password" name="password_confirmation" class="form-control"
+                                placeholder="Re-enter your password" required>
+                        </div>
                     </div>
 
                     <!-- Terms -->
@@ -251,6 +303,41 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-generate full name
+        const firstNameInput = document.getElementById('first_name');
+        const middleNameInput = document.getElementById('middle_name');
+        const lastNameInput = document.getElementById('last_name');
+        const fullNameText = document.getElementById('fullNameText');
+
+        function updateFullName() {
+            const firstName = firstNameInput.value.trim();
+            const middleName = middleNameInput.value.trim();
+            const lastName = lastNameInput.value.trim();
+
+            const nameParts = [firstName, middleName, lastName].filter(part => part !== '');
+            
+            if (nameParts.length > 0) {
+                fullNameText.textContent = nameParts.join(' ');
+            } else {
+                fullNameText.textContent = 'Your full name will appear here';
+            }
+        }
+
+        firstNameInput.addEventListener('input', updateFullName);
+        middleNameInput.addEventListener('input', updateFullName);
+        lastNameInput.addEventListener('input', updateFullName);
+
+        // Validate mobile number (only digits)
+        document.querySelector('input[name="mobile_number"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Validate username (letters, numbers, underscores only)
+        document.querySelector('input[name="username"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '');
+        });
+    </script>
 </body>
 
 </html>

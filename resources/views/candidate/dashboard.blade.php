@@ -27,9 +27,9 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <span>Saved Vacancy</span>
     </a>
-    <a href="{{ route('candidate.profile.edit') }}" class="sidebar-menu-item">
+    <a href="{{ route('candidate.profile.show') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
@@ -41,7 +41,7 @@
         <i class="bi bi-bell"></i>
         <span>Notifications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.settings.index') }}" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
         <span>Settings</span>
     </a>
@@ -172,7 +172,7 @@
                     <i class="bi bi-briefcase-fill"></i>
                 </div>
                 <h3 class="h2 fw-bold mb-1">{{ $stats['active_jobs'] }}</h3>
-                <p class="text-muted mb-2">Active Jobs</p>
+                <p class="text-muted mb-2">Active Vacancy</p>
                 <small class="text-muted">
                     <i class="bi bi-search me-1"></i>Available
                 </small>
@@ -215,9 +215,11 @@
                                                 <div>
                                                     <div class="fw-semibold text-dark">{{ $application->jobPosting->title }}</div>
                                                     <small class="text-muted">
-                                                        <i class="bi bi-building me-1"></i>{{ $application->jobPosting->department }}
+                                                        <i
+                                                            class="bi bi-building me-1"></i>{{ $application->jobPosting->department }}
                                                         <span class="mx-1">•</span>
-                                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $application->jobPosting->location }}
+                                                        <i
+                                                            class="bi bi-geo-alt-fill me-1"></i>{{ $application->jobPosting->location }}
                                                     </small>
                                                 </div>
                                             </td>
@@ -244,11 +246,13 @@
                                                     $icon = $statusIcons[$application->status] ?? 'circle';
                                                 @endphp
                                                 <span class="badge bg-{{ $color }} badge-custom">
-                                                    <i class="bi bi-{{ $icon }} me-1"></i>{{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                                                    <i
+                                                        class="bi bi-{{ $icon }} me-1"></i>{{ ucfirst(str_replace('_', ' ', $application->status)) }}
                                                 </span>
                                             </td>
                                             <td class="pe-4">
-                                                <a href="{{ route('candidate.applications.show', $application->id) }}" class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ route('candidate.applications.show', $application->id) }}"
+                                                    class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
                                             </td>
@@ -263,7 +267,7 @@
                             <h5 class="mt-3 text-muted">No Applications Yet</h5>
                             <p class="text-muted">Start applying to jobs to see your applications here</p>
                             <a href="{{ route('candidate.jobs.index') }}" class="btn btn-primary mt-2">
-                                <i class="bi bi-search me-2"></i>Browse Jobs
+                                <i class="bi bi-search me-2"></i>Browse Vacancy
                             </a>
                         </div>
                     @endif
@@ -274,7 +278,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 py-3">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-lightbulb text-warning me-2"></i>Recommended Jobs for You
+                        <i class="bi bi-lightbulb text-warning me-2"></i>Recommended Vacancies for You
                     </h5>
                 </div>
                 <div class="card-body">
@@ -298,7 +302,8 @@
                                                     </span>
                                                     @if($job->salary_min && $job->salary_max)
                                                         <span class="badge bg-light text-dark border">
-                                                            <i class="bi bi-currency-dollar me-1"></i>${{ number_format($job->salary_min/1000) }}k-${{ number_format($job->salary_max/1000) }}k
+                                                            <i
+                                                                class="bi bi-currency-dollar me-1"></i>${{ number_format($job->salary_min / 1000) }}k-${{ number_format($job->salary_max / 1000) }}k
                                                         </span>
                                                     @endif
                                                 </div>
@@ -327,7 +332,8 @@
                                         <small class="text-muted">
                                             <i class="bi bi-clock-history me-1"></i>Posted {{ $job->created_at->diffForHumans() }}
                                         </small>
-                                        <a href="{{ route('candidate.jobs.show', $job->id) }}" class="btn btn-primary btn-apply px-4">
+                                        <a href="{{ route('candidate.jobs.show', $job->id) }}"
+                                            class="btn btn-primary btn-apply px-4">
                                             <i class="bi bi-eye me-2"></i>View Details
                                         </a>
                                     </div>
@@ -338,13 +344,14 @@
                         <!-- View More Button -->
                         <div class="text-center mt-4">
                             <a href="{{ route('candidate.jobs.index') }}" class="btn btn-outline-primary px-5">
-                                <i class="bi bi-arrow-right-circle me-2"></i>View More Jobs ({{ $recommendedJobs->count() }} Available)
+                                <i class="bi bi-arrow-right-circle me-2"></i>View More Jobs ({{ $recommendedJobs->count() }}
+                                Available)
                             </a>
                         </div>
                     @else
                         <div class="text-center py-5">
                             <i class="bi bi-briefcase" style="font-size: 48px; color: #9ca3af;"></i>
-                            <h5 class="mt-3 text-muted">No Jobs Available</h5>
+                            <h5 class="mt-3 text-muted">No Vacancy Available</h5>
                             <p class="text-muted">Check back later for new opportunities</p>
                         </div>
                     @endif
@@ -354,102 +361,6 @@
 
         <!-- Right Column - Profile & Quick Actions -->
         <div class="col-12 col-xl-4">
-            <!-- Profile Completion -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-person-circle text-success me-2"></i>Profile Completion
-                    </h5>
-                </div>
-                <div class="card-body text-center">
-                    @php
-                        $completionScore = 0;
-                        $completionScore += $candidate->name ? 20 : 0;
-                        $completionScore += $candidate->email ? 20 : 0;
-                        $completionScore += $candidate->phone ? 20 : 0;
-                        $completionScore += $candidate->address ? 20 : 0;
-                        $completionScore += $candidate->date_of_birth ? 20 : 0;
-                        
-                        $circumference = 2 * 3.14159 * 60;
-                        $offset = $circumference - ($completionScore / 100) * $circumference;
-                    @endphp
-
-                    <div class="position-relative d-inline-block mb-3">
-                        <svg width="140" height="140">
-                            <circle cx="70" cy="70" r="60" fill="none" stroke="#e2e8f0" stroke-width="10" />
-                            <circle cx="70" cy="70" r="60" fill="none" stroke="#10b981" stroke-width="10"
-                                stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $offset }}" transform="rotate(-90 70 70)"
-                                stroke-linecap="round" />
-                        </svg>
-                        <div class="position-absolute top-50 start-50 translate-middle">
-                            <h2 class="fw-bold mb-0 text-success">{{ $completionScore }}%</h2>
-                            <small class="text-muted">Complete</small>
-                        </div>
-                    </div>
-
-                    @if($completionScore < 100)
-                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning mb-3" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <small>Complete your profile to increase visibility!</small>
-                        </div>
-                    @else
-                        <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success mb-3" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            <small>Your profile is complete! Great job!</small>
-                        </div>
-                    @endif
-
-                    <div class="profile-checklist text-start">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-{{ $candidate->name ? 'check-circle-fill text-success' : 'circle text-muted' }} me-2"></i>
-                                    <span class="small">Basic Information</span>
-                                </div>
-                                @if($candidate->name)
-                                    <i class="bi bi-check-lg text-success"></i>
-                                @else
-                                    <a href="{{ route('candidate.profile.edit') }}" class="btn btn-sm btn-primary">Add</a>
-                                @endif
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-{{ $candidate->phone ? 'check-circle-fill text-success' : 'circle text-muted' }} me-2"></i>
-                                    <span class="small">Contact Details</span>
-                                </div>
-                                @if($candidate->phone)
-                                    <i class="bi bi-check-lg text-success"></i>
-                                @else
-                                    <a href="{{ route('candidate.profile.edit') }}" class="btn btn-sm btn-primary">Add</a>
-                                @endif
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-{{ $candidate->address ? 'check-circle-fill text-success' : 'circle text-muted' }} me-2"></i>
-                                    <span class="small">Address</span>
-                                </div>
-                                @if($candidate->address)
-                                    <i class="bi bi-check-lg text-success"></i>
-                                @else
-                                    <a href="{{ route('candidate.profile.edit') }}" class="btn btn-sm btn-primary">Add</a>
-                                @endif
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-{{ $candidate->date_of_birth ? 'check-circle-fill text-success' : 'circle text-muted' }} me-2"></i>
-                                    <span class="small">Date of Birth</span>
-                                </div>
-                                @if($candidate->date_of_birth)
-                                    <i class="bi bi-check-lg text-success"></i>
-                                @else
-                                    <a href="{{ route('candidate.profile.edit') }}" class="btn btn-sm btn-primary">Add</a>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Quick Actions -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-0 py-3">
@@ -460,7 +371,7 @@
                 <div class="card-body">
                     <div class="d-grid gap-3">
                         <a href="{{ route('candidate.jobs.index') }}" class="btn btn-primary btn-lg">
-                            <i class="bi bi-search me-2"></i>Browse All Jobs
+                            <i class="bi bi-search me-2"></i>Browse All Vacancy
                         </a>
                         <a href="{{ route('candidate.applications.index') }}" class="btn btn-outline-primary btn-lg">
                             <i class="bi bi-file-earmark-text me-2"></i>My Applications
@@ -475,19 +386,21 @@
                     <h6 class="fw-bold mb-3">
                         <i class="bi bi-bar-chart me-2"></i>Application Stats
                     </h6>
-                    
+
                     @php
-                        $responseRate = $stats['total_applications'] > 0 
-                            ? round((($stats['under_review'] + $stats['shortlisted']) / $stats['total_applications']) * 100) 
+                        $responseRate = $stats['total_applications'] > 0
+                            ? round((($stats['under_review'] + $stats['shortlisted']) / $stats['total_applications']) * 100)
                             : 0;
                     @endphp
-                    
+
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-muted small">Response Rate</span>
-                        <span class="fw-bold text-{{ $responseRate > 50 ? 'success' : 'warning' }}">{{ $responseRate }}%</span>
+                        <span
+                            class="fw-bold text-{{ $responseRate > 50 ? 'success' : 'warning' }}">{{ $responseRate }}%</span>
                     </div>
                     <div class="progress mb-3" style="height: 8px;">
-                        <div class="progress-bar bg-{{ $responseRate > 50 ? 'success' : 'warning' }}" role="progressbar" style="width: {{ $responseRate }}%"></div>
+                        <div class="progress-bar bg-{{ $responseRate > 50 ? 'success' : 'warning' }}" role="progressbar"
+                            style="width: {{ $responseRate }}%"></div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -501,68 +414,6 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted small">Rejected</span>
                         <span class="badge bg-danger">{{ $stats['rejected'] }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Application Tips -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-header tip-card py-3">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-lightbulb-fill me-2"></i>Pro Tips for Success
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <div class="d-flex gap-2 mb-2">
-                            <div class="text-primary">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1">Tailor Your Resume</h6>
-                                <small class="text-muted">Customize your resume for each job application to highlight
-                                    relevant skills and experience.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="d-flex gap-2 mb-2">
-                            <div class="text-success">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1">Follow Up Professionally</h6>
-                                <small class="text-muted">Check your application status regularly and send a polite
-                                    follow-up email after one week.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="d-flex gap-2 mb-2">
-                            <div class="text-warning">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1">Research the Company</h6>
-                                <small class="text-muted">Learn about the company culture, values, and recent news before
-                                    applying or interviewing.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="d-flex gap-2 mb-2">
-                            <div class="text-info">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1">Practice Interview Skills</h6>
-                                <small class="text-muted">Prepare answers to common interview questions and practice with a
-                                    friend or mentor.</small>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

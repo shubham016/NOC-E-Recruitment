@@ -109,6 +109,12 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
+        .nepali-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 4px;
+        }
+
         @media (max-width: 576px) {
             .login-card {
                 margin: 1rem;
@@ -142,7 +148,7 @@
 
                         <!-- Body -->
                         <div class="card-body p-4 p-md-5">
-                            <!-- Success Alert (Registration/Email Verification Success) -->
+                            <!-- Success Alert -->
                             @if (session('success'))
                                 <div class="alert alert-success d-flex align-items-center alert-dismissible fade show"
                                     role="alert">
@@ -170,16 +176,21 @@
                             <form method="POST" action="{{ route('candidate.login.post') }}" novalidate>
                                 @csrf
 
-                                <!-- Email Field -->
+                                <!-- Username or Email Field -->
                                 <div class="mb-4">
-                                    <label for="email" class="form-label fw-semibold text-dark">
-                                        <i class="bi bi-envelope me-1"></i>Email Address
+                                    <label for="username_or_email" class="form-label fw-semibold text-dark">
+                                        <i class="bi bi-person me-1"></i>Username or Email
+                                        <span class="nepali-label" style="color: #6b7280;">(युजरनेम वा इमेल)</span>
                                     </label>
-                                    <input type="email"
-                                        class="form-control form-control-lg @error('email') is-invalid @enderror" id="email"
-                                        name="email" value="{{ old('email') }}" placeholder="Enter your email" required
+                                    <input type="text"
+                                        class="form-control form-control-lg @error('username_or_email') is-invalid @enderror" 
+                                        id="username_or_email"
+                                        name="username_or_email" 
+                                        value="{{ old('username_or_email') }}" 
+                                        placeholder="Enter username or email" 
+                                        required
                                         autofocus>
-                                    @error('email')
+                                    @error('username_or_email')
                                         <div class="invalid-feedback">
                                             <i class="bi bi-x-circle me-1"></i>{{ $message }}
                                         </div>
@@ -190,6 +201,7 @@
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-semibold text-dark">
                                         <i class="bi bi-lock me-1"></i>Password
+                                        <span class="nepali-label" style="color: #6b7280;">(पासवर्ड)</span>
                                     </label>
                                     <input type="password"
                                         class="form-control form-control-lg @error('password') is-invalid @enderror"
