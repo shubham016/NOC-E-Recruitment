@@ -297,7 +297,7 @@
                                         name="password"
                                         placeholder="Min 8 characters"
                                         required
-                                        minlength="6"
+                                        minlength="8"
                                     >
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -315,7 +315,7 @@
                                         name="password_confirmation"
                                         placeholder="Re-enter password"
                                         required
-                                        minlength="6"
+                                        minlength="8"
                                     >
                                 </div>
                             </div>

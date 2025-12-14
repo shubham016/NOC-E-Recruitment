@@ -28,7 +28,7 @@ class CandidateController extends Controller
             'citizenship_number' => 'required|string|unique:candidate_registration,citizenship_number',
             'citizenship_issue_distric' => 'required|string|max:255',
             'citizenship_issue_date_bs' => 'required|string',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
         
         if ($validator->fails()) {
@@ -61,12 +61,12 @@ class CandidateController extends Controller
         return view('candidate.login');
     }
     
-    // Handle Login - NOW SUPPORTS BOTH EMAIL AND CITIZENSHIP NUMBER
+    // Handle Login - SUPPORTS BOTH EMAIL AND CITIZENSHIP NUMBER
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string', // Changed from citizenship_number
-            'password' => 'required|string',
+            'email' => 'required|string', 
+            'password' => 'required|string|min:8',
         ]);
         
         if ($validator->fails()) {
@@ -180,7 +180,7 @@ class CandidateController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password' => 'required|string|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {

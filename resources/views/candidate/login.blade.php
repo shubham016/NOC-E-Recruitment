@@ -134,7 +134,7 @@
                             <!-- Email Field -->
                             <div class="mb-4">
                                 <label for="email" class="form-label fw-semibold text-dark">
-                                    <i class="bi bi-envelope me-1"></i>Email Address
+                                    <i class="bi bi-envelope me-1"></i>Email Address/Citizenship Number
                                 </label>
                                 <input 
                                     type="email" 
@@ -142,7 +142,7 @@
                                     id="email" 
                                     name="email" 
                                     value="{{ old('email') }}"
-                                    placeholder="Enter your email"
+                                    placeholder="Enter your email or citizenship number"
                                     required
                                     autofocus
                                 >

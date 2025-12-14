@@ -57,7 +57,7 @@
                             <input type="password" class="form-control @error('new_password') is-invalid @enderror" 
                                    id="new_password" name="new_password" required>
                             <small class="form-text text-muted">
-                                Password must be at least 6 characters long.
+                                Password must be at least 8 characters long.
                             </small>
                             @error('new_password')
                                 <div class="invalid-feedback">{{ $message }}</div>
