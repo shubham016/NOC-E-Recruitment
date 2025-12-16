@@ -136,9 +136,9 @@ class ApplicationController extends Controller
             'cover_letter' => 'required|string|min:100',
             'years_of_experience' => 'required|integer|min:0',
             'relevant_experience' => 'nullable|string',
-            'current_salary' => 'nullable|string|max:255',
-            'expected_salary' => 'nullable|string|max:255',
-            'available_from' => 'nullable|date|after_or_equal:today',
+            // 'current_salary' => 'nullable|string|max:255',
+            // 'expected_salary' => 'nullable|string|max:255',
+            // 'available_from' => 'nullable|date|after_or_equal:today',
 
             // Documents (Required)
             'passport_photo' => 'required|file|mimes:jpg,jpeg,png|max:1024',
@@ -311,9 +311,9 @@ class ApplicationController extends Controller
             'cover_letter' => 'required|string|min:100',
             'years_of_experience' => 'required|integer|min:0',
             'relevant_experience' => 'nullable|string',
-            'current_salary' => 'nullable|string|max:255',
-            'expected_salary' => 'nullable|string|max:255',
-            'available_from' => 'nullable|date|after_or_equal:today',
+            // 'current_salary' => 'nullable|string|max:255',
+            // 'expected_salary' => 'nullable|string|max:255',
+            // 'available_from' => 'nullable|date|after_or_equal:today',
 
             // Documents (Optional on update)
             'passport_photo' => 'nullable|file|mimes:jpg,jpeg,png|max:1024',

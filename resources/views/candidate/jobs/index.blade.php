@@ -68,7 +68,7 @@
                 <form method="GET" action="{{ route('candidate.jobs.index') }}">
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <input type="text" name="search" class="form-control" placeholder="Search by job title..."
+                            <input type="text" name="search" class="form-control" placeholder="Search by Vacancy title..."
                                 value="{{ request('search') }}">
                         </div>
                         <div class="col-md-3">

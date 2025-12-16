@@ -100,10 +100,10 @@
                             <span
                                 class="text-danger fw-bold">{{ \Carbon\Carbon::parse($job->application_deadline)->format('F d, Y') }}</span>
                         </p>
-                        <p class="mb-2">
+                        {{-- <p class="mb-2">
                             <i class="fas fa-money-bill text-success"></i>
                             <strong>Salary Range:</strong> {{ $job->salary_range ?? 'As per company policy' }}
-                        </p>
+                        </p> --}}
                     </div>
                 </div>
 

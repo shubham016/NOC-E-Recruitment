@@ -44,7 +44,7 @@
                 <h4 class="mb-0"><i class="fas fa-file-alt"></i> Application Details</h4>
                 <div>
                     @if($application->canEdit())
-                        <a href="{{ route('candidate.applications.edit', $application->id) }}"
+                        <a href="{{ route('candidate.jobs.applications.edit', [$application->job_posting_id, $application->id]) }}"
                             class="btn btn-light btn-sm me-2">
                             <i class="fas fa-edit"></i> Edit
                         </a>
@@ -221,7 +221,7 @@
                     <div class="col-md-6 mb-2">
                         <strong>Years of Experience:</strong> {{ $application->years_of_experience }} years
                     </div>
-                    <div class="col-md-6 mb-2">
+                    {{-- <div class="col-md-6 mb-2">
                         <strong>Current Salary:</strong> {{ $application->current_salary ?? 'Not Disclosed' }}
                     </div>
                     <div class="col-md-6 mb-2">
@@ -230,7 +230,7 @@
                     <div class="col-md-6 mb-2">
                         <strong>Available From:</strong>
                         {{ $application->available_from ? $application->available_from->format('Y-m-d') : 'Immediately' }}
-                    </div>
+                    </div> --}}
                     @if($application->relevant_experience)
                         <div class="col-12 mt-2">
                             <strong>Relevant Experience:</strong>
@@ -470,7 +470,7 @@
                 <div class="mt-4">
                     <div class="d-flex gap-2">
                         @if($application->canEdit())
-                            <a href="{{ route('candidate.applications.edit', $application->id) }}" class="btn btn-warning">
+                            <a href="{{ route('candidate.jobs.applications.edit', [$application->job_posting_id, $application->id]) }}" class="btn btn-warning">
                                 <i class="fas fa-edit"></i> Edit Application
                             </a>
                         @endif

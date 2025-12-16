@@ -97,9 +97,9 @@ return new class extends Migration {
             $table->text('cover_letter')->nullable();
             $table->integer('years_of_experience')->nullable();
             $table->text('relevant_experience')->nullable();
-            $table->string('current_salary')->nullable();
-            $table->string('expected_salary')->nullable();
-            $table->date('available_from')->nullable();
+            // $table->string('current_salary')->nullable();
+            // $table->string('expected_salary')->nullable();
+            // $table->date('available_from')->nullable();
 
             // ======================
             // DOCUMENTS (File Paths)

@@ -84,9 +84,9 @@ class Application extends Model
         'cover_letter',
         'years_of_experience',
         'relevant_experience',
-        'current_salary',
-        'expected_salary',
-        'available_from',
+        // 'current_salary',
+        // 'expected_salary',
+        // 'available_from',
 
         // Documents
         'passport_photo',
@@ -107,7 +107,7 @@ class Application extends Model
     protected $casts = [
         'birth_date_ad' => 'date',
         'citizenship_issue_date_ad' => 'date',
-        'available_from' => 'date',
+        // 'available_from' => 'date',
         'reviewed_at' => 'datetime',
         'submitted_at' => 'datetime',
         'same_as_permanent' => 'boolean',

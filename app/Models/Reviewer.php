@@ -34,6 +34,6 @@ class Reviewer extends Authenticatable
      */
     public function applications()
     {
-        return $this->hasMany(Application::class, 'reviewed_by');
+        return $this->hasMany(Application::class, 'reviewer_id');
     }
 }

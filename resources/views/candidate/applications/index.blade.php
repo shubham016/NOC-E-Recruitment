@@ -106,24 +106,33 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('candidate.applications.show', $application->id) }}" class="btn btn-info" title="View">
-                                                <i class="fas fa-eye"></i>
+                                        <div class="d-grid gap-1">
+                                        <!-- View Button -->
+                                        <a href="{{ route('candidate.applications.show', $application->id) }}" 
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+
+                                        <!-- Edit Button -->
+                                        @if($application->canEdit())
+                                            <a href="{{ route('candidate.jobs.applications.edit', [$application->job_posting_id, $application->id]) }}" 
+                                                class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            @if($application->canEdit())
-                                                <a href="{{ route('candidate.applications.edit', $application->id) }}" class="btn btn-warning" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            @endif
-                                            @if($application->canWithdraw())
-                                                <form action="{{ route('candidate.applications.destroy', $application->id) }}" method="POST" class="d-inline"
-                                                      onsubmit="return confirm('Withdraw this application permanently?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger" title="Withdraw">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
+                                        @endif
+
+                                        <!-- Withdraw Button -->
+                                        @if($application->canWithdraw())
+                                            <form action="{{ route('candidate.applications.destroy', $application->id) }}" 
+                                                    method="POST"
+                                                    onsubmit="return confirm('Are you sure you want to withdraw this application? This action cannot be undone.');">
+                                                @csrf 
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                    <i class="fas fa-times"></i> Withdraw
+                                                </button>
+                                            </form>
+                                        @endif
                                         </div>
                                     </td>
                                 </tr>

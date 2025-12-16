@@ -500,7 +500,7 @@
                                     @error('years_of_experience')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                     <label class="form-label">Current Salary</label>
                                     <input type="text" name="current_salary" class="form-control @error('current_salary') is-invalid @enderror" value="{{ old('current_salary') }}" placeholder="e.g., Rs. 50,000">
                                     @error('current_salary')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -516,7 +516,7 @@
                                     <label class="form-label">Available From</label>
                                     <input type="date" name="available_from" class="form-control @error('available_from') is-invalid @enderror" value="{{ old('available_from') }}">
                                     @error('available_from')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
+                                </div> --}}
 
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Relevant Experience</label>
