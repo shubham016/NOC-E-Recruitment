@@ -40,8 +40,8 @@
 @section('content')
     <div class="container-fluid my-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Job Application</h4>
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Vacancy Application</h4>
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-arrow-left"></i> Back to Applications
                 </a>
@@ -77,11 +77,11 @@
                 <!-- Job Information -->
                 <div class="alert alert-info">
                     <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Application For</h5>
-                    <h6 class="mb-1">{{ $application->job->title }}</h6>
+                    <h6 class="mb-1">{{ $application->jobPosting->title }}</h6>
                     <p class="mb-1">
                         <small>
-                            <i class="fas fa-building"></i> {{ $application->job->department }} |
-                            <i class="fas fa-map-marker-alt"></i> {{ $application->job->location }}
+                            <i class="fas fa-building"></i> {{ $application->jobPosting->department }} |
+                            <i class="fas fa-map-marker-alt"></i> {{ $application->jobPosting->location }}
                         </small>
                     </p>
                     <p class="mb-0">
@@ -104,7 +104,8 @@
                     </div>
                 @endif
 
-                <form action="{{ route('candidate.jobs.applications.update', [$application->job_id, $application->id]) }}"
+                <form
+                    action="{{ route('candidate.jobs.applications.update', [$application->job_posting_id, $application->id]) }}"
                     method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -658,16 +659,16 @@
                                     @error('years_of_experience')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                     <label class="form-label">Current Salary</label>
                                     <input type="text" name="current_salary"
                                         class="form-control @error('current_salary') is-invalid @enderror"
                                         value="{{ old('current_salary', $application->current_salary) }}"
                                         placeholder="e.g., Rs. 50,000">
                                     @error('current_salary')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
+                                </div> --}}
 
-                                <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                     <label class="form-label">Expected Salary</label>
                                     <input type="text" name="expected_salary"
                                         class="form-control @error('expected_salary') is-invalid @enderror"
@@ -682,7 +683,7 @@
                                         class="form-control @error('available_from') is-invalid @enderror"
                                         value="{{ old('available_from', $application->available_from) }}">
                                     @error('available_from')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
+                                </div> --}}
 
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Relevant Experience</label>
@@ -911,11 +912,11 @@
                         <button type="submit" class="btn btn-warning text-white">
                             <i class="fas fa-save"></i> Update Application
                         </button>
-                        <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </a>
                         <a href="{{ route('candidate.applications.show', $application->id) }}" class="btn btn-info">
                             <i class="fas fa-eye"></i> View Application
+                        </a>
+                        <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
                         </a>
                     </div>
                 </form>
