@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\JobManagementController;
 use App\Http\Controllers\Admin\CandidateManagementController;
+use App\Http\Controllers\Admin\HRAdministratorController; // ADD THIS
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationController as CandidateApplicationController;
@@ -29,7 +30,7 @@ Route::get('/', function () {
 // Default login route - Redirect to Admin Login
 Route::get('/login', function () {
     return redirect()->route('admin.login');
-})->name('dashboard');
+})->name('login');
 
 /*
 |--------------------------------------------------------------------------
@@ -88,21 +89,42 @@ Route::prefix('admin')->name('admin.')->group(function () {
         | Candidate Management Routes
         */
         Route::prefix('candidates')->name('candidates.')->group(function () {
-            Route::get('/', [App\Http\Controllers\Admin\CandidateManagementController::class, 'index'])->name('index');
-            Route::get('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [App\Http\Controllers\Admin\CandidateManagementController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'update'])->name('update');
-            Route::post('/{id}/status', [App\Http\Controllers\Admin\CandidateManagementController::class, 'updateStatus'])->name('updateStatus');
-            Route::delete('/{id}', [App\Http\Controllers\Admin\CandidateManagementController::class, 'destroy'])->name('destroy');
+            Route::get('/', [CandidateManagementController::class, 'index'])->name('index');
+            Route::get('/{id}', [CandidateManagementController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [CandidateManagementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [CandidateManagementController::class, 'update'])->name('update');
+            Route::post('/{id}/status', [CandidateManagementController::class, 'updateStatus'])->name('updateStatus');
+            Route::delete('/{id}', [CandidateManagementController::class, 'destroy'])->name('destroy');
         });
 
         /*
-        | Reviewer Management Routes
-        */
+ | Reviewer Management Routes
+ */
         Route::prefix('reviewers')->name('reviewers.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.reviewers.index');
-            })->name('index');
+            Route::get('/', [App\Http\Controllers\Admin\ReviewerController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\ReviewerController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\ReviewerController::class, 'store'])->name('store');
+            Route::get('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [App\Http\Controllers\Admin\ReviewerController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/toggle-status', [App\Http\Controllers\Admin\ReviewerController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/{id}/reset-password', [App\Http\Controllers\Admin\ReviewerController::class, 'resetPassword'])->name('reset-password');
+        });
+
+        /*
+        | HR Administrator Management Routes
+        */
+        Route::prefix('hr-administrators')->name('hr-administrators.')->group(function () {
+            Route::get('/', [HRAdministratorController::class, 'index'])->name('index');
+            Route::get('/create', [HRAdministratorController::class, 'create'])->name('create');
+            Route::post('/', [HRAdministratorController::class, 'store'])->name('store');
+            Route::get('/{id}', [HRAdministratorController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [HRAdministratorController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [HRAdministratorController::class, 'update'])->name('update');
+            Route::delete('/{id}', [HRAdministratorController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/toggle-status', [HRAdministratorController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/{id}/reset-password', [HRAdministratorController::class, 'resetPassword'])->name('reset-password');
         });
     });
 });

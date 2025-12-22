@@ -30,15 +30,24 @@
         <span>Candidates</span>
         <span class="badge bg-info ms-auto">{{ $stats['total_candidates'] }}</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+
+    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
         <span>Reviewers</span>
         <span class="badge bg-success ms-auto">{{ $stats['active_reviewers'] }}</span>
     </a>
+
+    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-person-badge"></i>
+        <span>HR Administrators</span>
+        <span class="badge bg-success ms-auto">{{ \App\Models\Admin::where('status', 'active')->count() }}</span>
+    </a>
+
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
         <span>Reports</span>
     </a>
+
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
         <span>Settings</span>
@@ -746,7 +755,7 @@
                     @endforelse
                 </div>
             </div>
-            
+
             <!-- Top Jobs -->
             <div class="card">
                 <div class="card-header">
@@ -781,8 +790,8 @@
                             <div class="empty-icon">
                                 <i class="bi bi-briefcase"></i>
                             </div>
-                            <h4 class="empty-title">No Jobs Posted</h4>
-                            <p class="empty-text">Create your first job posting</p>
+                            <h4 class="empty-title">No Vacancy Posted</h4>
+                            <p class="empty-text">Create your first vacancy posting</p>
                         </div>
                     @endforelse
                 </div>

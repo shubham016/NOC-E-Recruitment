@@ -15,7 +15,8 @@ class Reviewer extends Authenticatable
         'password',
         'phone',
         'department',
-        'specialization',
+        'designation',
+        'photo',
         'status',
     ];
 
@@ -30,10 +31,21 @@ class Reviewer extends Authenticatable
     ];
 
     /**
-     * Get all applications assigned to this reviewer
+     * Relationship: Reviewer has many applications
      */
     public function applications()
     {
         return $this->hasMany(Application::class, 'reviewer_id');
+    }
+
+    /**
+     * Get the full photo URL
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return null;
     }
 }

@@ -136,7 +136,7 @@ class Application extends Model
      */
     public function reviewer()
     {
-        return $this->belongsTo(Reviewer::class);
+        return $this->belongsTo(Reviewer::class, 'reviewer_id');
     }
 
     /**
