@@ -19,6 +19,7 @@
             --secondary-slate: #64748b;
             --accent-emerald: #10b981;
             --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
         }
 
         body {
@@ -38,12 +39,45 @@
             z-index: 1000;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sidebar-header {
             padding: 1.5rem 1.25rem;
             background: rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Hamburger Toggle Button */
+        .hamburger-toggle {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .hamburger-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .hamburger-toggle i {
+            transition: transform 0.3s ease;
         }
 
         .sidebar-brand {
@@ -54,10 +88,49 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            flex: 1;
+            overflow: hidden;
         }
 
         .sidebar-brand i {
             font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            white-space: nowrap;
+            transition: opacity 0.3s ease, width 0.3s ease;
+        }
+
+        /* Collapsed State */
+        .sidebar-collapsed .sidebar {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-collapsed .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-collapsed .brand-text,
+        .sidebar-collapsed .sidebar-menu-item span,
+        .sidebar-collapsed .sidebar-menu-item .badge {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-collapsed .brand-container {
+            justify-content: center;
+        }
+
+        .sidebar-collapsed .sidebar-menu-item {
+            justify-content: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .sidebar-collapsed .hamburger-toggle i {
+            transform: rotate(90deg);
         }
 
         .sidebar-menu {
@@ -96,6 +169,7 @@
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Top Navbar */
@@ -209,7 +283,8 @@
             }
         }
 
-        @yield('custom-styles');
+        @yield('custom-styles')
+        ;
     </style>
 </head>
 
@@ -217,10 +292,15 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="@yield('dashboard-route')" class="sidebar-brand">
-                <i class="@yield('brand-icon')"></i>
-                <span>@yield('portal-name')</span>
-            </a>
+            <div class="brand-container">
+                <a href="@yield('dashboard-route')" class="sidebar-brand">
+                    <i class="@yield('brand-icon')"></i>
+                    <span class="brand-text">@yield('portal-name')</span>
+                </a>
+                <button class="hamburger-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
         </div>
 
         <div class="sidebar-menu">
@@ -251,8 +331,10 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('candidate.profile.show') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ route('candidate.settings.index') }}"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="{{ route('candidate.profile.show') }}"><i
+                                        class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('candidate.settings.index') }}"><i
+                                        class="bi bi-gear me-2"></i>Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -280,9 +362,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Sidebar Toggle for Mobile
-        document.getElementById('sidebarToggle')?.addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('show');
+        // Sidebar Toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const body = document.body;
+            const isMobile = window.innerWidth <= 768;
+
+            // Load saved state (desktop only)
+            if (!isMobile) {
+                const savedState = localStorage.getItem('sidebarCollapsed');
+                if (savedState === 'true') {
+                    body.classList.add('sidebar-collapsed');
+                }
+            }
+
+            // Toggle on button click
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    body.classList.toggle('sidebar-collapsed');
+
+                    // Save state (desktop only)
+                    if (!isMobile) {
+                        localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
+                    }
+                });
+            }
+
+            // Mobile sidebar toggle (existing functionality)
+            const mobileToggle = document.querySelector('.top-navbar #sidebarToggle');
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function () {
+                    document.getElementById('sidebar').classList.toggle('show');
+                });
+            }
         });
     </script>
 
