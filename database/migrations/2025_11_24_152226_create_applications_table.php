@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('job_posting_id')->constrained('job_postings')->onDelete('cascade');
+            $table->unsignedBigInteger('reviewer_id')->nullable();
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');
             $table->foreignId('reviewed_by')->nullable()->constrained('reviewers')->onDelete('set null');
             $table->enum('status', ['pending', 'under_review', 'shortlisted', 'rejected'])->default('pending');

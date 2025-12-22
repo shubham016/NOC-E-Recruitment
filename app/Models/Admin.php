@@ -14,6 +14,7 @@ class Admin extends Authenticatable
         'email',
         'password',
         'phone',
+        'photo',
         'status',
     ];
 
@@ -33,5 +34,16 @@ class Admin extends Authenticatable
     public function jobPostings()
     {
         return $this->hasMany(JobPosting::class, 'posted_by');
+    }
+
+    /**
+     * Get the full photo URL
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return null;
     }
 }

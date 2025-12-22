@@ -111,7 +111,7 @@
                             <i class="bi bi-shield-lock fs-1"></i>
                         </div>
                         <h1 class="h3 fw-bold mb-2">Admin Portal</h1>
-                        <p class="mb-0 opacity-90 small">Recruitment Management System</p>
+                        <p class="mb-0 opacity-90 small">E-Recruitment Management System</p>
                     </div>
 
                     <!-- Body -->
@@ -135,6 +135,7 @@
                             <div class="mb-4">
                                 <label for="email" class="form-label fw-semibold text-dark">
                                     <i class="bi bi-envelope me-1"></i>Email Address
+                                    <span class="nepali-label" style="color: #6b7280;">(इमेल)</span>
                                 </label>
                                 <input 
                                     type="email" 
@@ -157,6 +158,7 @@
                             <div class="mb-4">
                                 <label for="password" class="form-label fw-semibold text-dark">
                                     <i class="bi bi-lock me-1"></i>Password
+                                    <span class="nepali-label" style="color: #6b7280;">(पासवर्ड)</span>
                                 </label>
                                 <input 
                                     type="password" 
@@ -198,7 +200,7 @@
                         </form>
 
                         <!-- Demo Credentials Info -->
-                        <div class="alert alert-info mt-4 mb-0 border-0 bg-light" role="alert">
+                        {{-- <div class="alert alert-info mt-4 mb-0 border-0 bg-light" role="alert">
                             <div class="d-flex">
                                 <i class="bi bi-info-circle-fill me-2 text-primary"></i>
                                 <div class="small">
@@ -207,7 +209,7 @@
                                     Password: <code>password</code>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <!-- Footer -->
