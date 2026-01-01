@@ -25,7 +25,7 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <span>Saved Vacancy</span>
     </a>
     <a href="{{ route('candidate.profile.edit') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
@@ -42,7 +42,7 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="mb-1"><i class="fas fa-search"></i> Browse Job Vacancies</h2>
+                <h2 class="mb-1"><i class="fas fa-search"></i> Browse Vacancies</h2>
                 <p class="text-muted mb-0">Find and apply for available positions</p>
             </div>
         </div>
@@ -119,7 +119,7 @@
                             <div class="card-body">
                                 <p class="mb-2">
                                     <i class="fas fa-building text-primary"></i>
-                                    <strong>Department:</strong> {{ $job->department }}
+                                    <strong>Department:</strong> {{ $job->service_group }}
                                 </p>
                                 <p class="mb-2">
                                     <i class="fas fa-map-marker-alt text-danger"></i>
@@ -127,7 +127,11 @@
                                 </p>
                                 <p class="mb-2">
                                     <i class="fas fa-briefcase text-success"></i>
-                                    <strong>Type:</strong> {{ ucfirst($job->employment_type ?? 'Full-time') }}
+                                    <strong>Type:</strong> {{ ucfirst($job->category) }}
+                                </p>
+                                <p class="mb-3">
+                                    <i class="fas fa-users text-info"></i>
+                                    <strong>Vacancies:</strong> {{ $job->number_of_posts}}
                                 </p>
                                 <p class="mb-2">
                                     <i class="fas fa-calendar text-warning"></i>
@@ -136,8 +140,9 @@
                                 </p>
                                 <p class="mb-3">
                                     <i class="fas fa-users text-info"></i>
-                                    <strong>Vacancies:</strong> {{ $job->number_of_vacancies ?? 'N/A' }}
+                                    <strong>Position:</strong> {{ $job->position_level}}
                                 </p>
+
 
                                 @if($job->description)
                                     <p class="text-muted small mb-3">{{ Str::limit($job->description, 100) }}</p>
@@ -180,8 +185,8 @@
             <div class="card shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
-                    <h5 class="text-muted">No Jobs Available</h5>
-                    <p class="text-muted mb-0">There are no job postings matching your criteria at the moment.</p>
+                    <h5 class="text-muted">No Vacancy Available</h5>
+                    <p class="text-muted mb-0">There are no Vacancy postings matching your criteria at the moment.</p>
                 </div>
             </div>
         @endif

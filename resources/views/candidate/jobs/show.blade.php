@@ -25,7 +25,7 @@
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+        <span>Saved Vacancies</span>
     </a>
     <a href="{{ route('candidate.profile.edit') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
@@ -42,7 +42,7 @@
         <!-- Back Button -->
         <div class="mb-3">
             <a href="{{ route('candidate.jobs.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Jobs
+                <i class="fas fa-arrow-left"></i> Back to Vacancies
             </a>
         </div>
 
@@ -82,11 +82,11 @@
                     <div class="col-md-6">
                         <p class="mb-2">
                             <i class="fas fa-briefcase text-primary"></i>
-                            <strong>Employment Type:</strong> {{ ucfirst($job->employment_type ?? 'Full-time') }}
+                            <strong>Employment Type:</strong> {{ ucfirst($job->category) }}
                         </p>
                         <p class="mb-2">
                             <i class="fas fa-users text-success"></i>
-                            <strong>Number of Vacancies:</strong> {{ $job->number_of_vacancies ?? 'N/A' }}
+                            <strong>Number of Vacancies:</strong> {{ ucfirst($job->number_of_posts) }}
                         </p>
                         <p class="mb-2">
                             <i class="fas fa-calendar text-info"></i>
@@ -126,7 +126,7 @@
                             <i class="fas fa-paper-plane"></i> Apply for This Position
                         </a>
                         <button type="button" class="btn btn-outline-secondary btn-lg">
-                            <i class="fas fa-bookmark"></i> Save Job
+                            <i class="fas fa-bookmark"></i> Save Vacancy
                         </button>
                     @else
                         <div class="alert alert-warning mb-0">
@@ -167,7 +167,7 @@
                 <div class="tab-content">
                     <!-- Description Tab -->
                     <div class="tab-pane fade show active" id="description">
-                        <h5 class="mb-3">Job Description</h5>
+                        <h5 class="mb-3">Vacancy Description</h5>
                         <div class="text-muted">
                             {!! nl2br(e($job->description ?? 'No description available.')) !!}
                         </div>

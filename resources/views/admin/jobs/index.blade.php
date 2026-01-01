@@ -232,9 +232,9 @@
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold">
                 <i class="bi bi-list-ul text-primary me-2"></i>Vacancy Listings
-                <span class="badge bg-primary ms-2">{{ $jobs->total() }}</span>
+                {{-- <span class="badge bg-primary ms-2">{{ $jobs->total() }}</span> --}}
             </h6>
-            <select class="form-select form-select-sm" style="width: auto;" onchange="changeSorting(this.value)">
+            {{-- <select class="form-select form-select-sm" style="width: auto;" onchange="changeSorting(this.value)">
                 <option value="created_at-desc" {{ request('sort_by') == 'created_at' && request('sort_order') == 'desc' ? 'selected' : '' }}>
                     Newest First
                 </option>
@@ -244,7 +244,8 @@
                 <option value="deadline-asc" {{ request('sort_by') == 'deadline' && request('sort_order') == 'asc' ? 'selected' : '' }}>
                     Deadline (Soon)
                 </option>
-            </select>
+            </select> --}}
+            <span class="badge bg-primary ms-2"> Total {{ $jobs->total() }}</span>
         </div>
     </div>
     <div class="card-body p-0">
@@ -331,10 +332,10 @@
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <i class="bi bi-inbox display-1 text-muted"></i>
-                                <h5 class="text-muted mt-3">No Jobs Found</h5>
-                                <p class="text-muted">Start by posting your first job!</p>
+                                <h5 class="text-muted mt-3">No Vacancy Found</h5>
+                                <p class="text-muted">Start by posting your first Vacancy!</p>
                                 <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary mt-2">
-                                    <i class="bi bi-plus-circle me-2"></i>Post New Job
+                                    <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
                                 </a>
                             </td>
                         </tr>

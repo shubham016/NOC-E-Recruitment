@@ -344,7 +344,7 @@
                         <!-- View More Button -->
                         <div class="text-center mt-4">
                             <a href="{{ route('candidate.jobs.index') }}" class="btn btn-outline-primary px-5">
-                                <i class="bi bi-arrow-right-circle me-2"></i>View More Jobs ({{ $recommendedJobs->count() }}
+                                <i class="bi bi-arrow-right-circle me-2"></i>View More Vacancies ({{ $recommendedJobs->count() }}
                                 Available)
                             </a>
                         </div>

@@ -494,8 +494,8 @@
         }
 
         /* .modern-table tbody tr:hover td {
-                                        border-color: #e5e7eb;
-                                    } */
+                                            border-color: #e5e7eb;
+                                        } */
 
         .modern-table tbody tr:last-child td {
             border-bottom: none;
@@ -937,7 +937,7 @@
                     <i class="bi bi-table"></i>
                     All Reviewers
                 </h3>
-                <span class="total-badge">{{ $reviewers->total() }} Total</span>
+                <span class="total-badge">Total {{ $reviewers->total() }} </span>
             </div>
 
             @if($reviewers->count() > 0)
@@ -971,7 +971,7 @@
                                             @endif
                                             <div class="reviewer-info-table">
                                                 <div class="reviewer-name-table">{{ $reviewer->name }}</div>
-                                                <div class="reviewer-email-table">ID: {{ $reviewer->id }}</div>
+                                                {{-- <div class="reviewer-email-table">ID: {{ $reviewer->id }}</div> --}}
                                             </div>
                                         </div>
                                     </td>
@@ -994,7 +994,7 @@
                                         @if($reviewer->designation)
                                             <div style="font-size: 0.875rem; color: #6b7280;">{{ $reviewer->designation }}</div>
                                         @else
-                                            <span style="color: #9ca3af;">—</span>
+                                            {{-- <span style="color: #9ca3af;">—</span> --}}
                                         @endif
                                     </td>
                                     <td class="text-center">

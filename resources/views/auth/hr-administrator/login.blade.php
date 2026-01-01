@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Login')
-<link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png"
-    style="height: auto; width: auto; border-radius: 80;">
+@section('title', 'HR Administrator Login')
 
 @section('custom-styles')
     <style>
@@ -19,7 +17,7 @@
         }
 
         .card-header-custom {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
             border: none;
             padding: 3rem 2rem;
         }
@@ -32,34 +30,34 @@
             margin: 0 auto 1.5rem;
         }
 
-        .btn-admin-login {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        .btn-hr-login {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
             border: none;
             padding: 0.875rem;
             font-weight: 600;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 15px rgba(3, 105, 161, 0.3);
         }
 
-        .btn-admin-login:hover {
+        .btn-hr-login:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            box-shadow: 0 8px 25px rgba(3, 105, 161, 0.4);
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
         }
 
-        .btn-admin-login:active {
+        .btn-hr-login:active {
             transform: translateY(-1px);
         }
 
         .form-control:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+            border-color: #0369a1;
+            box-shadow: 0 0 0 0.25rem rgba(3, 105, 161, 0.15);
         }
 
         .form-check-input:checked {
-            background-color: #2563eb;
-            border-color: #2563eb;
+            background-color: #0369a1;
+            border-color: #0369a1;
         }
 
         .card {
@@ -69,14 +67,14 @@
         }
 
         .footer-links a {
-            color: #2563eb;
+            color: #0369a1;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .footer-links a:hover {
-            color: #1e40af;
+            color: #0284c7;
             text-decoration: underline;
         }
 
@@ -110,18 +108,27 @@
                         <!-- Header -->
                         <div class="card-header card-header-custom text-center text-white">
                             <div class="login-icon-wrapper rounded-circle d-flex align-items-center justify-content-center">
-                                {{-- <i class="bi bi-shield-lock fs-1"></i> --}}
                                 <img src="{{ asset('images/noc_logo.png') }}" alt="Nepal Oil Corporation"
-                                    class="navbar-company-logo" style="width: 60px; height: 60px; object-fit: auto;
-                                                border-radius: 8px;
-                                                padding: 2px;">
+                                    style="width: 60px; height: 60px; object-fit: auto; border-radius: 8px; padding: 2px;">
                             </div>
-                            <h1 class="h3 fw-bold mb-2">NOC E-Recruitment</h1>
+                            <h1 class="h3 fw-bold mb-2">HR Administrator Portal</h1>
                             <p class="mb-0 opacity-90 small">E-Recruitment Management System</p>
                         </div>
 
                         <!-- Body -->
                         <div class="card-body p-4 p-md-5">
+                            <!-- Success Alert -->
+                            @if (session('success'))
+                                <div class="alert alert-success d-flex align-items-center alert-dismissible fade show"
+                                    role="alert">
+                                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                                    <div>
+                                        {{ session('success') }}
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            @endif
+
                             <!-- Error Alert -->
                             @if ($errors->any())
                                 <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show"
@@ -135,7 +142,7 @@
                             @endif
 
                             <!-- Login Form -->
-                            <form method="POST" action="{{ route('admin.login.post') }}" novalidate>
+                            <form method="POST" action="{{ route('hr-administrator.login.post') }}" novalidate>
                                 @csrf
 
                                 <!-- Email Field -->
@@ -184,23 +191,11 @@
 
                                 <!-- Submit Button -->
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary btn-lg btn-admin-login text-white">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-hr-login text-white">
                                         <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Dashboard
                                     </button>
                                 </div>
                             </form>
-
-                            <!-- Demo Credentials Info -->
-                            {{-- <div class="alert alert-info mt-4 mb-0 border-0 bg-light" role="alert">
-                                <div class="d-flex">
-                                    <i class="bi bi-info-circle-fill me-2 text-primary"></i>
-                                    <div class="small">
-                                        <strong>Demo Credentials:</strong><br>
-                                        Email: <code>admin@recruitment.com</code><br>
-                                        Password: <code>password</code>
-                                    </div>
-                                </div>
-                            </div> --}}
                         </div>
 
                         <!-- Footer -->
@@ -208,16 +203,16 @@
                             <div class="text-center footer-links">
                                 <small class="text-muted">
                                     <span class="me-2">Access other portals:</span><br class="d-sm-none">
+                                    <a href="{{ route('admin.login') }}" class="text-decoration-none">
+                                        <i class="bi bi-shield-check me-1"></i>Admin Portal
+                                    </a>
+                                    <span class="mx-2 text-muted">•</span>
                                     <a href="{{ route('reviewer.login') }}" class="text-decoration-none">
                                         <i class="bi bi-search me-1"></i>Reviewer Portal
                                     </a>
                                     <span class="mx-2 text-muted">•</span>
                                     <a href="{{ route('candidate.login') }}" class="text-decoration-none">
                                         <i class="bi bi-person-circle me-1"></i>Candidate Portal
-                                    </a>
-                                    <span class="mx-2 text-muted">•</span>
-                                    <a href="{{ route('hr-administrator.login') }}" class="text-decoration-none">
-                                        <i class="bi bi-person-circle me-1"></i>HR Portal
                                     </a>
                                 </small>
                             </div>
