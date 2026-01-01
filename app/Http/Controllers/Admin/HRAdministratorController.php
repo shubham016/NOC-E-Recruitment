@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
+use App\Models\HRAdministrator;
 use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Auth;
 
 class HRAdministratorController extends Controller
 {
@@ -19,10 +18,7 @@ class HRAdministratorController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Admin::query();
-
-        // Exclude current logged-in admin from the list
-        $query->where('id', '!=', Auth::guard('admin')->id());
+        $query = HRAdministrator::query();
 
         // Search functionality
         if ($request->filled('search')) {
@@ -48,9 +44,9 @@ class HRAdministratorController extends Controller
 
         // Statistics
         $stats = [
-            'total' => Admin::where('id', '!=', Auth::guard('admin')->id())->count(),
-            'active' => Admin::where('id', '!=', Auth::guard('admin')->id())->where('status', 'active')->count(),
-            'inactive' => Admin::where('id', '!=', Auth::guard('admin')->id())->where('status', 'inactive')->count(),
+            'total' => HRAdministrator::count(),
+            'active' => HRAdministrator::where('status', 'active')->count(),
+            'inactive' => HRAdministrator::where('status', 'inactive')->count(),
         ];
 
         return view('admin.hr-administrators.index', compact('administrators', 'stats'));
@@ -71,15 +67,22 @@ class HRAdministratorController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:admins'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:hr_administrators'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()],
             'status' => ['required', 'in:active,inactive'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
-        Admin::create($validated);
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('hr-administrator-photos', 'public');
+            $validated['photo'] = $photoPath;
+        }
+
+        HRAdministrator::create($validated);
 
         return redirect()->route('admin.hr-administrators.index')
             ->with('success', 'HR Administrator created successfully.');
@@ -90,13 +93,7 @@ class HRAdministratorController extends Controller
      */
     public function show($id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
-
-        // Prevent viewing own profile through this route
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return redirect()->route('admin.hr-administrators.index')
-                ->with('error', 'You cannot view your own profile here.');
-        }
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
         // Load job postings statistics (using 'posted_by' foreign key)
         $stats = [
@@ -121,13 +118,7 @@ class HRAdministratorController extends Controller
      */
     public function edit($id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
-
-        // Prevent editing own account through this route
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return redirect()->route('admin.hr-administrators.index')
-                ->with('error', 'You cannot edit your own account here.');
-        }
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
         return view('admin.hr-administrators.edit', compact('hrAdministrator'));
     }
@@ -137,21 +128,15 @@ class HRAdministratorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
-
-        // Prevent updating own account through this route
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return redirect()->route('admin.hr-administrators.index')
-                ->with('error', 'You cannot edit your own account here.');
-        }
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:admins,email,' . $hrAdministrator->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:hr_administrators,email,' . $hrAdministrator->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'confirmed', Password::min(8)->letters()->numbers()],
             'status' => ['required', 'in:active,inactive'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'], // Add this
+            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
 
         if ($request->filled('password')) {
@@ -167,7 +152,7 @@ class HRAdministratorController extends Controller
                 Storage::disk('public')->delete($hrAdministrator->photo);
             }
 
-            $photoPath = $request->file('photo')->store('admin-photos', 'public');
+            $photoPath = $request->file('photo')->store('hr-administrator-photos', 'public');
             $validated['photo'] = $photoPath;
         }
 
@@ -182,16 +167,16 @@ class HRAdministratorController extends Controller
      */
     public function destroy($id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
-        // Prevent deleting own account
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return back()->with('error', 'You cannot delete your own account.');
-        }
-
-        // Check if admin has job postings (using 'posted_by' foreign key)
+        // Check if HR admin has job postings (using 'posted_by' foreign key)
         if (JobPosting::where('posted_by', $hrAdministrator->id)->exists()) {
             return back()->with('error', 'Cannot delete administrator with existing job postings. Please reassign or delete their jobs first.');
+        }
+
+        // Delete photo if exists
+        if ($hrAdministrator->photo) {
+            Storage::disk('public')->delete($hrAdministrator->photo);
         }
 
         $hrAdministrator->delete();
@@ -205,12 +190,7 @@ class HRAdministratorController extends Controller
      */
     public function toggleStatus($id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
-
-        // Prevent toggling own status
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return back()->with('error', 'You cannot change your own status.');
-        }
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
         $newStatus = $hrAdministrator->status === 'active' ? 'inactive' : 'active';
         $hrAdministrator->update(['status' => $newStatus]);
@@ -224,12 +204,7 @@ class HRAdministratorController extends Controller
      */
     public function resetPassword(Request $request, $id)
     {
-        $hrAdministrator = Admin::findOrFail($id);
-
-        // Prevent resetting own password through this route
-        if ($hrAdministrator->id === Auth::guard('admin')->id()) {
-            return back()->with('error', 'You cannot reset your own password here.');
-        }
+        $hrAdministrator = HRAdministrator::findOrFail($id);
 
         $validated = $request->validate([
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],

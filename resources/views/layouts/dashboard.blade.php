@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - Recruitment Management System</title>
+    <title>@yield('title') NOC E-Recruitment Management System</title>
+    <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png" style="height: auto; width: auto; border-radius: 80;">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -40,6 +41,74 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Company Logo Header */
+        .company-logo-header {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .company-name {
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.3s ease;
+        }
+
+        .company-location {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.75rem;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Collapsed State - Hide Company Text */
+        .sidebar-collapsed .company-info {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-collapsed .company-logo-header {
+            justify-content: center;
+            padding: 1rem 0.5rem;
+        }
+
+        .sidebar-collapsed .company-logo {
+            width: 50px;
+            height: 50px;
         }
 
         .sidebar-header {
@@ -174,12 +243,58 @@
 
         /* Top Navbar */
         .top-navbar {
-            background: white;
+            background: #eee;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1rem 1.5rem;
+            padding: 0;
             position: sticky;
             top: 0;
             z-index: 999;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* Company Header in Top Navbar */
+        .navbar-company-header {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-right: 1px solid #e5e7eb;
+            min-width: 300px;
+        }
+
+        .navbar-company-logo {
+            width: 50px;
+            height: 50px;
+            /* object-fit: contain; */
+            background: white;
+            border-radius: 8px;
+            padding: 2px;
+            /* flex-shrink: 0; */
+        }
+
+        .navbar-company-info h2 {
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+            line-height: 1.2;
+            letter-spacing: 0.3px;
+        }
+
+        .navbar-company-info p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        .navbar-right-section {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
         }
 
         .user-menu {
@@ -281,16 +396,57 @@
             .main-content {
                 margin-left: 0;
             }
+
+            .navbar-company-header {
+                min-width: auto;
+                padding: 0.75rem 1rem;
+                flex: 1;
+            }
+
+            .navbar-company-logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .navbar-company-info h2 {
+                font-size: 0.85rem;
+            }
+
+            .navbar-company-info p {
+                font-size: 0.7rem;
+            }
+
+            .navbar-right-section {
+                padding: 0.75rem 1rem;
+            }
         }
 
-        @yield('custom-styles')
-        ;
+        @media (max-width: 480px) {
+            .navbar-company-info p {
+                display: none;
+            }
+
+            .navbar-company-info h2 {
+                font-size: 0.8rem;
+            }
+        }
+
+        @yield('custom-styles');
     </style>
 </head>
 
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
+        <!-- Company Logo Header -->
+        {{-- <div class="company-logo-header">
+            <img src="{{ asset('images/noc_logo.png') }}" alt="Nepal Oil Corporation" class="company-logo">
+            <div class="company-info">
+                <h2 class="company-name">NEPAL OIL CORPORATION LTD.</h2>
+                <p class="company-location">Babarmahal, Kathmandu</p>
+            </div>
+        </div> --}}
+        
         <div class="sidebar-header">
             <div class="brand-container">
                 <a href="@yield('dashboard-route')" class="sidebar-brand">
@@ -312,12 +468,20 @@
     <div class="main-content">
         <!-- Top Navbar -->
         <nav class="top-navbar">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <button class="btn btn-link d-md-none text-dark" id="sidebarToggle">
-                        <i class="bi bi-list fs-4"></i>
-                    </button>
+            <!-- Company Header (Left Side) -->
+            <div class="navbar-company-header">
+                <img src="{{ asset('images/noc_logo.png') }}" alt="Nepal Oil Corporation" class="navbar-company-logo">
+                <div class="navbar-company-info">
+                    <h2>NEPAL OIL CORPORATION LTD.</h2>
+                    <p>Babarmahal, Kathmandu</p>
                 </div>
+            </div>
+
+            <!-- Right Section (User Menu) -->
+            <div class="navbar-right-section">
+                <button class="btn btn-link d-md-none text-dark me-3" id="mobileToggle">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
 
                 <div class="user-menu">
                     <div class="text-end d-none d-md-block">
@@ -331,10 +495,8 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('candidate.profile.show') }}"><i
-                                        class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ route('candidate.settings.index') }}"><i
-                                        class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -389,8 +551,8 @@
                 });
             }
 
-            // Mobile sidebar toggle (existing functionality)
-            const mobileToggle = document.querySelector('.top-navbar #sidebarToggle');
+            // Mobile sidebar toggle
+            const mobileToggle = document.getElementById('mobileToggle');
             if (mobileToggle) {
                 mobileToggle.addEventListener('click', function () {
                     document.getElementById('sidebar').classList.toggle('show');

@@ -4,13 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ReviewerAuthController;
 use App\Http\Controllers\Auth\CandidateAuthController;
+use App\Http\Controllers\Auth\HRAdministratorAuthController;
 use App\Http\Controllers\Reviewer\ReviewerDashboardController;
 use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\JobManagementController;
 use App\Http\Controllers\Admin\CandidateManagementController;
-use App\Http\Controllers\Admin\HRAdministratorController; // ADD THIS
+use App\Http\Controllers\Admin\HRAdministratorController;
+use App\Http\Controllers\HRAdministrator\HRAdministratorDashboardController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationController as CandidateApplicationController;
@@ -98,8 +100,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         /*
- | Reviewer Management Routes
- */
+        | Reviewer Management Routes
+        */
         Route::prefix('reviewers')->name('reviewers.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\ReviewerController::class, 'index'])->name('index');
             Route::get('/create', [App\Http\Controllers\Admin\ReviewerController::class, 'create'])->name('create');
@@ -125,6 +127,88 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{id}', [HRAdministratorController::class, 'destroy'])->name('destroy');
             Route::post('/{id}/toggle-status', [HRAdministratorController::class, 'toggleStatus'])->name('toggle-status');
             Route::post('/{id}/reset-password', [HRAdministratorController::class, 'resetPassword'])->name('reset-password');
+        });
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| HR Administrator Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | HR Administrator Authentication Routes (Public - No Middleware)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/login', [HRAdministratorAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [HRAdministratorAuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [HRAdministratorAuthController::class, 'logout'])->name('logout');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Protected HR Administrator Routes (Requires HR Administrator Authentication)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth:hr_administrator'])->group(function () {
+
+        // HR Administrator Dashboard
+        Route::get('/dashboard', [HRAdministratorDashboardController::class, 'index'])->name('dashboard');
+
+        /*
+        | Job Management Routes for HR Administrator
+        */
+        Route::prefix('jobs')->name('jobs.')->group(function () {
+            Route::get('/', [JobManagementController::class, 'index'])->name('index');
+            Route::get('/create', [JobManagementController::class, 'create'])->name('create');
+            Route::post('/', [JobManagementController::class, 'store'])->name('store');
+            Route::get('/{id}', [JobManagementController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [JobManagementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [JobManagementController::class, 'update'])->name('update');
+            Route::delete('/{id}', [JobManagementController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/duplicate', [JobManagementController::class, 'duplicate'])->name('duplicate');
+            Route::post('/{id}/status', [JobManagementController::class, 'changeStatus'])->name('changeStatus');
+        });
+
+        /*
+        | Applications Management Routes for HR Administrator
+        */
+        Route::prefix('applications')->name('applications.')->group(function () {
+            Route::get('/', [AdminApplicationController::class, 'index'])->name('index');
+            Route::get('/{application}', [AdminApplicationController::class, 'show'])->name('show');
+            Route::post('/{application}/update-status', [AdminApplicationController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{application}/assign-reviewer', [AdminApplicationController::class, 'assignReviewer'])->name('assignReviewer');
+            Route::delete('/{application}', [AdminApplicationController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-action', [AdminApplicationController::class, 'bulkAction'])->name('bulkAction');
+        });
+
+        /*
+        | Candidate Management Routes for HR Administrator
+        */
+        Route::prefix('candidates')->name('candidates.')->group(function () {
+            Route::get('/', [CandidateManagementController::class, 'index'])->name('index');
+            Route::get('/{id}', [CandidateManagementController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [CandidateManagementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [CandidateManagementController::class, 'update'])->name('update');
+            Route::post('/{id}/status', [CandidateManagementController::class, 'updateStatus'])->name('updateStatus');
+            Route::delete('/{id}', [CandidateManagementController::class, 'destroy'])->name('destroy');
+        });
+
+        /*
+        | Reviewer Management Routes for HR Administrator
+        */
+        Route::prefix('reviewers')->name('reviewers.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\ReviewerController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\ReviewerController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\ReviewerController::class, 'store'])->name('store');
+            Route::get('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [App\Http\Controllers\Admin\ReviewerController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\ReviewerController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/toggle-status', [App\Http\Controllers\Admin\ReviewerController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/{id}/reset-password', [App\Http\Controllers\Admin\ReviewerController::class, 'resetPassword'])->name('reset-password');
         });
     });
 });

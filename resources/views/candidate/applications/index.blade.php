@@ -147,7 +147,7 @@
             @else
                 <div class="alert alert-info text-center">
                     <i class="fas fa-info-circle"></i> No application records found.
-                    <a href="{{ route('candidate.jobs.index') }}" class="alert-link">Browse jobs and apply</a>
+                    <a href="{{ route('candidate.jobs.index') }}" class="alert-link">Browse Vacancy and Apply</a>
                 </div>
             @endif
         </div>
