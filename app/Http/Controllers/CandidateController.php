@@ -37,7 +37,6 @@ class CandidateController extends Controller
                 ->withInput();
         }
         
-        // Insert into database with hashed password
         DB::table('candidate_registration')->insert([
             'name' => $request->name,
             'email' => $request->email,

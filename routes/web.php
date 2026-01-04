@@ -9,6 +9,8 @@ use App\Http\Controllers\ApplicationFormController;
 use App\Http\Controllers\Reviewer\ReviewerDashboardController;
 use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\AdmitCardController;
+use App\Http\Controllers\CandidateResultController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +76,21 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('candidate')->name('candidate.')->group(function () {
+    // View Result Route
+    Route::get('/viewresult', [CandidateResultController::class, 'viewResult'])
+        ->name('viewresult');
+    
+    // Alternative: View only published results
+    Route::get('/published-results', [CandidateResultController::class, 'viewPublishedResult'])
+        ->name('published-results');
+    
+    // View specific result detail
+    Route::get('/result/{id}', [CandidateResultController::class, 'showResult'])
+        ->name('result.show');
+
+    Route::get('/admit-card', [AdmitCardController::class, 'index'])->name('admit-card');
+    Route::get('/admit-card/view/{id}', [AdmitCardController::class, 'view'])->name('admit-card.view');
+    Route::get('/admit-card/download/{id}', [AdmitCardController::class, 'download'])->name('admit-card.download');
     
     // Public routes (no authentication required)
     Route::get('/register', [\App\Http\Controllers\CandidateController::class, 'showRegisterForm'])->name('register');
@@ -84,13 +101,13 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     
     Route::post('/logout', [\App\Http\Controllers\CandidateController::class, 'logout'])->name('logout');
 
-    // Protected routes - use custom middleware
+    // Protected routes 
     Route::middleware('candidate.session')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\CandidateController::class, 'dashboard'])->name('dashboard');
         
         Route::get('/my-profile', [\App\Http\Controllers\CandidateController::class, 'profile'])->name('my-profile');
         
-        // Change Password Routes - FIXED: Removed duplicate 'candidate/' prefix
+        // Change Password Routes 
         Route::get('/change-password', [\App\Http\Controllers\CandidateController::class, 'showChangePasswordForm'])
             ->name('change-password');
         Route::post('/change-password', [\App\Http\Controllers\CandidateController::class, 'updatePassword'])

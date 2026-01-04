@@ -15,7 +15,7 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
@@ -23,7 +23,7 @@
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
     </a>
