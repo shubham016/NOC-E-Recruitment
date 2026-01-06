@@ -6,13 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') NOC E-Recruitment Management System</title>
-    <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png" style="height: auto; width: auto; border-radius: 80;">
+    <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Nepali Date Picker CSS - MUST BE IN HEAD -->
+    <link rel="stylesheet" href="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/css/nepali.datepicker.v4.0.4.min.css">
 
     <style>
         :root {
@@ -438,15 +441,6 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <!-- Company Logo Header -->
-        {{-- <div class="company-logo-header">
-            <img src="{{ asset('images/noc_logo.png') }}" alt="Nepal Oil Corporation" class="company-logo">
-            <div class="company-info">
-                <h2 class="company-name">NEPAL OIL CORPORATION LTD.</h2>
-                <p class="company-location">Babarmahal, Kathmandu</p>
-            </div>
-        </div> --}}
-        
         <div class="sidebar-header">
             <div class="brand-container">
                 <a href="@yield('dashboard-route')" class="sidebar-brand">
@@ -520,17 +514,34 @@
         </div>
     </div>
 
+<!-- jQuery FIRST (Required for Nepali Date Picker) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Nepali Date Converter Library - WORKING CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/nepali-date-converter@3.1.1/dist/nepali-date-converter.umd.min.js"></script>
+
+    <!-- Nepali Date Picker Library - WORKING CDN -->
+    <script src="https://rawcdn.githack.com/leapfrogtechnology/nepali-date-picker/master/dist/jquery.nepaliDatePicker.min.js"></script>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/leapfrogtechnology/nepali-date-picker/master/dist/nepaliDatePicker.min.css">
+
     <script>
+        // Wait for all libraries to load
+        window.addEventListener('load', function() {
+            console.log('✅ Page loaded');
+            console.log('jQuery:', typeof $ !== 'undefined' ? 'Loaded' : 'NOT LOADED');
+            console.log('NepaliDate:', typeof NepaliDate !== 'undefined' ? 'Loaded' : 'NOT LOADED');
+            console.log('nepaliDatePicker:', typeof $.fn.nepaliDatePicker !== 'undefined' ? 'Loaded' : 'NOT LOADED');
+        });
+
         // Sidebar Toggle
         document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.getElementById('sidebarToggle');
             const body = document.body;
             const isMobile = window.innerWidth <= 768;
 
-            // Load saved state (desktop only)
             if (!isMobile) {
                 const savedState = localStorage.getItem('sidebarCollapsed');
                 if (savedState === 'true') {
@@ -538,26 +549,85 @@
                 }
             }
 
-            // Toggle on button click
             if (toggleBtn) {
                 toggleBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     body.classList.toggle('sidebar-collapsed');
-
-                    // Save state (desktop only)
                     if (!isMobile) {
                         localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
                     }
                 });
             }
 
-            // Mobile sidebar toggle
             const mobileToggle = document.getElementById('mobileToggle');
             if (mobileToggle) {
                 mobileToggle.addEventListener('click', function () {
                     document.getElementById('sidebar').classList.toggle('show');
                 });
             }
+        });
+
+        // Global BS/AD Converter Helper using official library
+        window.adToBS = function (adDate) {
+            try {
+                if (typeof NepaliDate === 'undefined') {
+                    console.error('NepaliDate library not loaded');
+                    return '';
+                }
+                const date = new Date(adDate);
+                const nepaliDate = new NepaliDate(date);
+                const year = nepaliDate.getYear();
+                const month = String(nepaliDate.getMonth() + 1).padStart(2, '0');
+                const day = String(nepaliDate.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } catch (error) {
+                console.error('AD to BS conversion error:', error);
+                return '';
+            }
+        };
+
+        window.bsToAD = function (bsDate) {
+            try {
+                if (typeof NepaliDate === 'undefined') {
+                    console.error('NepaliDate library not loaded');
+                    return '';
+                }
+                const [year, month, day] = bsDate.split('-').map(Number);
+                const nepaliDate = new NepaliDate(year, month - 1, day);
+                const adDate = nepaliDate.toJsDate();
+                const adYear = adDate.getFullYear();
+                const adMonth = String(adDate.getMonth() + 1).padStart(2, '0');
+                const adDay = String(adDate.getDate()).padStart(2, '0');
+                return `${adYear}-${adMonth}-${adDay}`;
+            } catch (error) {
+                console.error('BS to AD conversion error:', error);
+                return '';
+            }
+        };
+
+        window.formatDisplayDate = function (dateString) {
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                console.error('Date formatting error:', error);
+                return dateString;
+            }
+        };
+
+        // Auto-convert BS dates on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-ad-date]').forEach(function (element) {
+                const adDate = element.getAttribute('data-ad-date');
+                if (adDate && typeof window.adToBS === 'function') {
+                    const bsDate = window.adToBS(adDate);
+                    element.textContent = bsDate + ' बि.सं.';
+                }
+            });
         });
     </script>
 

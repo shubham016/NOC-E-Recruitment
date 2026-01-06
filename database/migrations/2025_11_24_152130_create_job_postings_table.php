@@ -34,11 +34,7 @@ return new class extends Migration
             // Location and Type
             $table->string('location')->default('Nepal');
             $table->string('job_type')->default('permanent');
-            
-            // // Salary (optional)
-            // $table->decimal('salary_min', 10, 2)->nullable();
-            // $table->decimal('salary_max', 10, 2)->nullable();
-            
+                        
             // Deadline and Status
             $table->date('deadline');
             $table->enum('status', ['draft', 'active', 'closed'])->default('active');
