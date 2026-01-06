@@ -462,6 +462,69 @@
                         </small>
                     </div>
 
+                    <div class="section-divider"></div>
+
+                    <!-- Application Deadline - Dual Date Pickers -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <span>Application Deadline <span class="required">*</span></span>
+                            <span class="nepali-text">आवेदन दिने अन्तिम मिति</span>
+                        </label>
+
+                        <div class="row g-3">
+                            <!-- Nepali Date (BS) Picker - PRIMARY -->
+                            <div class="col-md-6">
+                                <label for="deadline_bs" class="form-label small fw-bold text-primary">
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति (बि.सं.) <span
+                                        class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="bi bi-calendar3"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-lg nepali-datepicker"
+                                        id="deadline_bs" placeholder="YYYY-MM-DD" autocomplete="off" required>
+                                </div>
+                                <small class="form-text text-primary">
+                                    <i class="bi bi-info-circle me-1"></i><strong>Select Nepali date (BS) - Primary
+                                        input</strong>
+                                </small>
+                            </div>
+
+                            <!-- English Date (AD) Picker - SECONDARY -->
+                            <div class="col-md-6">
+                                <label for="deadline_ad" class="form-label small">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD)
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-secondary text-white">
+                                        <i class="bi bi-calendar-date"></i>
+                                    </span>
+                                    <input type="date"
+                                        class="form-control form-control-lg @error('deadline') is-invalid @enderror"
+                                        id="deadline_ad" name="deadline"
+                                        value="{{ old('deadline', now()->addDays(30)->format('Y-m-d')) }}"
+                                        min="{{ now()->addDay()->format('Y-m-d') }}" required>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>Auto-syncs with Nepali date (or select manually)
+                                </small>
+                            </div>
+                        </div>
+
+                        @error('deadline')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-arrows-angle-expand me-2"></i>
+                            <strong>Bi-directional Sync:</strong> Select date in either format - both calendars will
+                            automatically sync!
+                            <br><small>द्वि-दिशात्मक समन्वय: कुनै पनि ढाँचामा मिति चयन गर्नुहोस् - दुवै क्यालेन्डर स्वतः
+                                समन्वयित हुनेछन्!</small>
+                        </div>
+                    </div>
+
                     <!-- Hidden fields for required database columns -->
                     <input type="hidden" name="title" id="hidden_title" value="">
                     <input type="hidden" name="department" value="Government Department">
@@ -469,7 +532,6 @@
                     <input type="hidden" name="job_type" value="permanent">
                     <input type="hidden" name="description" id="hidden_description" value="">
                     <input type="hidden" name="requirements" id="hidden_requirements" value="">
-                    <input type="hidden" name="deadline" value="{{ now()->addDays(30)->format('Y-m-d') }}">
                     <input type="hidden" name="status" value="active">
                 </div>
             </div>
@@ -512,6 +574,14 @@
                             <tr>
                                 <th>Demand Post</th>
                                 <td id="preview-posts" class="fw-semibold">-</td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (BS)</th>
+                                <td id="preview-deadline-bs" class="fw-semibold text-danger">-</td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (AD)</th>
+                                <td id="preview-deadline-ad" class="fw-semibold text-danger">-</td>
                             </tr>
                         </tbody>
                     </table>
@@ -566,148 +636,227 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Toggle Inclusive Sub-Category
-            const categoryRadios = document.querySelectorAll('input[name="category"]');
-            const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
-            const inclusiveTypeSelect = document.getElementById('inclusive_type');
-            const previewInclusiveRow = document.getElementById('preview-inclusive-row');
-            const previewInclusiveType = document.getElementById('preview-inclusive-type');
+        (function () {
+            'use strict';
 
-            function toggleInclusiveSubCategory() {
-                const selectedCategory = document.querySelector('input[name="category"]:checked');
+            console.log('=== Initializing Vacancy Form ===');
 
-                if (selectedCategory && selectedCategory.value === 'inclusive') {
-                    inclusiveSubCategory.classList.add('show');
-                    inclusiveTypeSelect.setAttribute('required', 'required');
-                    previewInclusiveRow.style.display = '';
+            // Wait for libraries to be ready
+            function waitForLibraries() {
+                return new Promise((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (typeof $ !== 'undefined' &&
+                            typeof NepaliDate !== 'undefined' &&
+                            typeof $.fn.nepaliDatePicker !== 'undefined') {
+                            clearInterval(checkInterval);
+                            console.log('✅ All libraries ready');
+                            console.log('jQuery:', typeof $);
+                            console.log('NepaliDate:', typeof NepaliDate);
+                            console.log('nepaliDatePicker:', typeof $.fn.nepaliDatePicker);
+                            resolve();
+                        }
+                    }, 100);
 
-                    // Update preview if value exists
-                    if (inclusiveTypeSelect.value) {
-                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
-                    }
-                } else {
-                    inclusiveSubCategory.classList.remove('show');
-                    inclusiveTypeSelect.removeAttribute('required');
-                    inclusiveTypeSelect.value = '';
-                    previewInclusiveRow.style.display = 'none';
-                    previewInclusiveType.textContent = '-';
-                }
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        clearInterval(checkInterval);
+                        console.error('❌ Timeout: Libraries failed to load');
+                        resolve();
+                    }, 10000);
+                });
             }
 
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', toggleInclusiveSubCategory);
-            });
+            waitForLibraries().then(() => {
+                document.addEventListener('DOMContentLoaded', function () {
+                    console.log('DOM Content Loaded - Starting initialization');
 
-            // Initialize on page load
-            toggleInclusiveSubCategory();
+                    // Date picker elements
+                    const deadlineBS = document.getElementById('deadline_bs');
+                    const deadlineAD = document.getElementById('deadline_ad');
+                    const previewDeadlineBS = document.getElementById('preview-deadline-bs');
+                    const previewDeadlineAD = document.getElementById('preview-deadline-ad');
 
-            // Inclusive Type Select Change Event (SEPARATE HANDLER)
-            inclusiveTypeSelect.addEventListener('change', function () {
-                if (this.value) {
-                    previewInclusiveType.textContent = this.value;
-                } else {
-                    previewInclusiveType.textContent = '-';
-                }
-            });
+                    let isUpdating = false;
 
-            // Live Preview Updates for OTHER fields (NOT inclusive_type)
-            const previewMappings = {
-                'advertisement_no': {
-                    preview: 'preview-adv-no',
-                    default: '-'
-                },
-                'position_level': {
-                    preview: 'preview-position',
-                    default: '-'
-                },
-                'service_group': {
-                    preview: 'preview-service',
-                    default: '-'
-                },
-                'number_of_posts': {
-                    preview: 'preview-posts',
-                    default: '-'
-                },
-                'minimum_qualification': {
-                    preview: 'preview-qualification',
-                    default: 'Not yet entered...'
-                }
-            };
+                    // Initialize Official Nepali Date Picker
+                    if (deadlineBS && typeof $ !== 'undefined' && typeof $.fn.nepaliDatePicker !== 'undefined') {
+                        console.log('Initializing Official Nepali Date Picker...');
+                        try {
+                            $(deadlineBS).nepaliDatePicker({
+                                dateFormat: 'YYYY-MM-DD',
+                                closeOnDateSelect: true,
+                                ndpYear: true,
+                                ndpMonth: true,
+                                ndpYearCount: 20,
+                                onChange: function () {
+                                    console.log('BS Date changed:', deadlineBS.value);
+                                    if (!isUpdating && deadlineBS.value) {
+                                        isUpdating = true;
+                                        const bsDate = deadlineBS.value;
 
-            // Update preview for input/select fields
-            Object.keys(previewMappings).forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                const preview = document.getElementById(previewMappings[fieldId].preview);
+                                        if (typeof window.bsToAD === 'function') {
+                                            const adDate = window.bsToAD(bsDate);
+                                            console.log('Converted to AD:', adDate);
+                                            if (adDate) {
+                                                deadlineAD.value = adDate;
+                                                if (previewDeadlineBS) {
+                                                    previewDeadlineBS.textContent = bsDate + ' बि.सं.';
+                                                }
+                                                if (previewDeadlineAD) {
+                                                    previewDeadlineAD.textContent = window.formatDisplayDate(adDate);
+                                                }
+                                            }
+                                        }
+                                        setTimeout(() => { isUpdating = false; }, 100);
+                                    }
+                                }
+                            });
+                            console.log('✅ Official Nepali Date Picker initialized successfully');
+                        } catch (error) {
+                            console.error('❌ Failed to initialize Nepali Date Picker:', error);
+                        }
+                    } else {
+                        console.error('❌ Cannot initialize - Missing dependencies');
+                    }
 
-                if (input && preview) {
-                    // Use 'change' event for select elements, 'input' for others
-                    const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+                    // AD to BS conversion (when AD date is manually changed)
+                    if (deadlineAD) {
+                        deadlineAD.addEventListener('change', function () {
+                            console.log('AD Date changed:', this.value);
+                            if (!isUpdating && this.value && typeof window.adToBS === 'function') {
+                                isUpdating = true;
+                                const bsDate = window.adToBS(this.value);
+                                console.log('Converted to BS:', bsDate);
+                                if (bsDate) {
+                                    deadlineBS.value = bsDate;
+                                    if (previewDeadlineBS) {
+                                        previewDeadlineBS.textContent = bsDate + ' बि.सं.';
+                                    }
+                                    if (previewDeadlineAD) {
+                                        previewDeadlineAD.textContent = window.formatDisplayDate(this.value);
+                                    }
+                                }
+                                setTimeout(() => { isUpdating = false; }, 100);
+                            }
+                        });
+                    }
 
-                    input.addEventListener(eventType, function () {
-                        const value = this.value.trim();
-                        preview.textContent = value || previewMappings[fieldId].default;
+                    // Initialize preview on page load
+                    if (deadlineAD && deadlineAD.value && typeof window.adToBS === 'function') {
+                        const bsDate = window.adToBS(deadlineAD.value);
+                        if (bsDate) {
+                            deadlineBS.value = bsDate;
+                            if (previewDeadlineBS) {
+                                previewDeadlineBS.textContent = bsDate + ' बि.सं.';
+                            }
+                            if (previewDeadlineAD) {
+                                previewDeadlineAD.textContent = window.formatDisplayDate(deadlineAD.value);
+                            }
+                        }
+                    }
 
-                        // Remove italic for qualification when filled
-                        if (fieldId === 'minimum_qualification') {
-                            preview.innerHTML = value ? value : '<em>' + previewMappings[fieldId].default + '</em>';
+                    // Toggle Inclusive Sub-Category
+                    const categoryRadios = document.querySelectorAll('input[name="category"]');
+                    const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
+                    const inclusiveTypeSelect = document.getElementById('inclusive_type');
+                    const previewInclusiveRow = document.getElementById('preview-inclusive-row');
+                    const previewInclusiveType = document.getElementById('preview-inclusive-type');
+
+                    function toggleInclusiveSubCategory() {
+                        const selectedCategory = document.querySelector('input[name="category"]:checked');
+                        if (selectedCategory && selectedCategory.value === 'inclusive') {
+                            inclusiveSubCategory.classList.add('show');
+                            inclusiveTypeSelect.setAttribute('required', 'required');
+                            previewInclusiveRow.style.display = '';
+                            if (inclusiveTypeSelect.value) {
+                                previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                            }
+                        } else {
+                            inclusiveSubCategory.classList.remove('show');
+                            inclusiveTypeSelect.removeAttribute('required');
+                            inclusiveTypeSelect.value = '';
+                            previewInclusiveRow.style.display = 'none';
+                            previewInclusiveType.textContent = '-';
+                        }
+                    }
+
+                    categoryRadios.forEach(radio => {
+                        radio.addEventListener('change', toggleInclusiveSubCategory);
+                    });
+                    toggleInclusiveSubCategory();
+
+                    inclusiveTypeSelect.addEventListener('change', function () {
+                        previewInclusiveType.textContent = this.value || '-';
+                    });
+
+                    // Live Preview Updates
+                    const previewMappings = {
+                        'advertisement_no': { preview: 'preview-adv-no', default: '-' },
+                        'position_level': { preview: 'preview-position', default: '-' },
+                        'service_group': { preview: 'preview-service', default: '-' },
+                        'number_of_posts': { preview: 'preview-posts', default: '-' },
+                        'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
+                    };
+
+                    Object.keys(previewMappings).forEach(fieldId => {
+                        const input = document.getElementById(fieldId);
+                        const preview = document.getElementById(previewMappings[fieldId].preview);
+
+                        if (input && preview) {
+                            const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+                            input.addEventListener(eventType, function () {
+                                const value = this.value.trim();
+                                if (fieldId === 'minimum_qualification') {
+                                    preview.innerHTML = value ? value : '<em>' + previewMappings[fieldId].default + '</em>';
+                                } else {
+                                    preview.textContent = value || previewMappings[fieldId].default;
+                                }
+                            });
+                            input.dispatchEvent(new Event(eventType));
                         }
                     });
 
-                    // Initialize
-                    if (eventType === 'change') {
-                        input.dispatchEvent(new Event('change'));
-                    } else {
-                        input.dispatchEvent(new Event('input'));
-                    }
-                }
-            });
+                    // Category preview
+                    const categoryPreview = document.getElementById('preview-category');
+                    categoryRadios.forEach(radio => {
+                        radio.addEventListener('change', function () {
+                            if (this.value === 'open') {
+                                categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
+                            } else if (this.value === 'inclusive') {
+                                categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
+                            }
+                        });
+                    });
 
-            // Category preview (radio buttons)
-            const categoryPreview = document.getElementById('preview-category');
-
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    if (this.value === 'open') {
-                        categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
-                    } else if (this.value === 'inclusive') {
-                        categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
+                    const checkedCategory = document.querySelector('input[name="category"]:checked');
+                    if (checkedCategory) {
+                        checkedCategory.dispatchEvent(new Event('change'));
                     }
+
+                    // Auto-fill hidden fields before submit
+                    const form = document.getElementById('vacancyForm');
+                    form.addEventListener('submit', function (e) {
+                        const positionLevel = document.getElementById('position_level').value;
+                        document.getElementById('hidden_title').value = positionLevel;
+
+                        let descriptionText = 'Position: ' + positionLevel + '\n' +
+                            'Service/Group: ' + document.getElementById('service_group').value + '\n' +
+                            'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
+
+                        const inclusiveType = document.getElementById('inclusive_type').value;
+                        if (inclusiveType) {
+                            descriptionText += ' (' + inclusiveType + ')';
+                        }
+                        descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
+
+                        document.getElementById('hidden_description').value = descriptionText;
+                        document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
+                    });
+
+                    console.log('=== Form Initialization Complete ===');
                 });
             });
-
-            // Initialize category
-            const checkedCategory = document.querySelector('input[name="category"]:checked');
-            if (checkedCategory) {
-                checkedCategory.dispatchEvent(new Event('change'));
-            }
-
-            // Auto-fill hidden fields before submit
-            const form = document.getElementById('vacancyForm');
-            form.addEventListener('submit', function (e) {
-                // Set title as position_level
-                const positionLevel = document.getElementById('position_level').value;
-                document.getElementById('hidden_title').value = positionLevel;
-
-                // Build description with inclusive type if applicable
-                let descriptionText = 'Position: ' + positionLevel + '\n' +
-                    'Service/Group: ' + document.getElementById('service_group').value + '\n' +
-                    'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
-
-                const inclusiveType = document.getElementById('inclusive_type').value;
-                if (inclusiveType) {
-                    descriptionText += ' (' + inclusiveType + ')';
-                }
-
-                descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
-
-                document.getElementById('hidden_description').value = descriptionText;
-
-                // Set requirements
-                document.getElementById('hidden_requirements').value =
-                    document.getElementById('minimum_qualification').value;
-            });
-        });
+        })();
 
         function confirmPublish() {
             return confirm(

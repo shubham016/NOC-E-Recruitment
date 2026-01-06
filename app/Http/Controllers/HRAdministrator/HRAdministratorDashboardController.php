@@ -19,6 +19,9 @@ class HRAdministratorDashboardController extends Controller
     {
         $hrAdmin = Auth::guard('hr_administrator')->user();
 
+        // ADD THIS LINE - Create the variable the view expects
+        $hrAdministrator = $hrAdmin;
+
         // Statistics for jobs posted by this HR Administrator
         $stats = [
             'total_jobs' => JobPosting::where('posted_by', $hrAdmin->id)->count(),
@@ -31,6 +34,15 @@ class HRAdministratorDashboardController extends Controller
             'total_candidates' => Candidate::count(),
             'total_reviewers' => Reviewer::where('status', 'active')->count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
+
+            // ADD THESE - The show.blade.php view expects these exact keys
+            'total_jobs_posted' => JobPosting::where('posted_by', $hrAdmin->id)->count(),
+            'closed_jobs' => JobPosting::where('posted_by', $hrAdmin->id)
+                ->where('status', 'closed')
+                ->count(),
+            'total_applications' => Application::whereHas('jobPosting', function ($q) use ($hrAdmin) {
+                $q->where('posted_by', $hrAdmin->id);
+            })->count(),
         ];
 
         // Growth statistics (this month vs last month)
@@ -84,6 +96,12 @@ class HRAdministratorDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // ADD THIS - The show.blade.php view expects $recentJobs
+        $recentJobs = JobPosting::where('posted_by', $hrAdmin->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
         // Top jobs by application count
         $topJobs = JobPosting::where('posted_by', $hrAdmin->id)
             ->withCount('applications')
@@ -104,8 +122,11 @@ class HRAdministratorDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // FIXED - Now passing all required variables
         return view('admin.hr-administrators.show', compact(
+            'hrAdministrator',  // ✅ ADDED THIS
             'stats',
+            'recentJobs',       // ✅ ADDED THIS
             'growth',
             'thisMonth',
             'recentApplications',

@@ -12,11 +12,11 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\JobManagementController;
 use App\Http\Controllers\Admin\CandidateManagementController;
 use App\Http\Controllers\Admin\HRAdministratorController;
+use App\Http\Controllers\HRAdministrator\ProfileController;
 use App\Http\Controllers\HRAdministrator\HRAdministratorDashboardController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationController as CandidateApplicationController;
-use App\Http\Controllers\Candidate\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -156,6 +156,16 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
 
         // HR Administrator Dashboard
         Route::get('/dashboard', [HRAdministratorDashboardController::class, 'index'])->name('dashboard');
+
+        /*
+        | Profile Routes - ✅ ADDED THIS SECTION
+        */
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [ProfileController::class, 'show'])->name('show');
+            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+            Route::put('/', [ProfileController::class, 'update'])->name('update');
+            Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password');
+        });
 
         /*
         | Job Management Routes for HR Administrator
@@ -326,9 +336,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
 
         // Profile Routes
         Route::prefix('profile')->name('profile.')->group(function () {
-            Route::get('/', [ProfileController::class, 'show'])->name('show');
-            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-            Route::put('/', [ProfileController::class, 'update'])->name('update');
+            Route::get('/', [App\Http\Controllers\Candidate\ProfileController::class, 'show'])->name('show');
+            Route::get('/edit', [App\Http\Controllers\Candidate\ProfileController::class, 'edit'])->name('edit');
+            Route::put('/', [App\Http\Controllers\Candidate\ProfileController::class, 'update'])->name('update');
         });
 
         // Settings Routes

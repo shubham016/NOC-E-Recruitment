@@ -19,6 +19,15 @@
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
+    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+        <i class="bi bi-briefcase"></i>
+        <span>Post Vacancy</span>
+    </a>
+    {{-- <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Vacancy List</span>
+        <span class="badge bg-primary ms-auto">{{ $stats['total_jobs'] }}</span>
+    </a> --}}
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Applications</span>

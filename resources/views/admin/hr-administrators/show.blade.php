@@ -2,47 +2,94 @@
 
 @section('title', 'HR Administrator Profile')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
-@section('logout-route', route('admin.logout'))
+@php
+    // Detect which guard is authenticated
+    $currentUser = Auth::guard('admin')->user() ?? Auth::guard('hr_administrator')->user();
+    $isAdmin = Auth::guard('admin')->check();
+    $isHRAdmin = Auth::guard('hr_administrator')->check();
+    
+    // Set portal configuration based on user type
+    $portalName = $isAdmin ? 'Admin Portal' : 'HR Administrator Portal';
+    $brandIcon = $isAdmin ? 'bi bi-shield-check' : 'bi bi-briefcase-fill';
+    $userRole = $isAdmin ? 'System Administrator' : 'HR Administrator';
+    $dashboardRoute = $isAdmin ? route('admin.dashboard') : route('hr-administrator.dashboard');
+    $logoutRoute = $isAdmin ? route('admin.logout') : route('hr-administrator.logout');
+@endphp
+
+@section('portal-name', $portalName)
+@section('brand-icon', $brandIcon)
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name)
+@section('user-role', $userRole)
+@section('user-initial', strtoupper(substr($currentUser->name, 0, 1)))
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-    </a>
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-check"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @if($isAdmin)
+        {{-- Super Admin Sidebar --}}
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Post Vacancy</span>
+        </a>
+        <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
+            <i class="bi bi-person-badge"></i>
+            <span>HR Administrators</span>
+        </a>
+        <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @else
+        {{-- HR Administrator Sidebar --}}
+        <a href="{{ route('hr-administrator.dashboard') }}" class="sidebar-menu-item active">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('hr-administrator.jobs.create') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Post Vacancy</span>
+        </a>
+        <a href="{{ route('hr-administrator.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('hr-administrator.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('hr-administrator.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="{{ route('hr-administrator.profile.show') }}" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @endif
 @endsection
 
 @section('content')
@@ -350,10 +397,21 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #3b82f6;">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.hr-administrators.index') }}"
-                        style="color: #3b82f6;">HR Administrators</a></li>
+                @if($isAdmin)
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('admin.dashboard') }}" style="color: #3b82f6;">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('admin.hr-administrators.index') }}" style="color: #3b82f6;">HR Administrators</a>
+                    </li>
+                @else
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('hr-administrator.dashboard') }}" style="color: #3b82f6;">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#" style="color: #3b82f6;">Settings</a>
+                    </li>
+                @endif
                 <li class="breadcrumb-item active">Profile</li>
             </ol>
         </nav>
@@ -362,6 +420,13 @@
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i><strong>Success!</strong> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Error!</strong> {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -396,42 +461,46 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-auto">
-                    <div class="action-btn-group">
-                        <a href="{{ route('admin.hr-administrators.edit', $hrAdministrator->id) }}"
-                            class="btn action-btn action-btn-primary">
-                            <i class="bi bi-pencil"></i>Edit Profile
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn action-btn action-btn-primary dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown">
-                                {{-- <i class="bi bi-three-dots-vertical"></i> --}}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#resetPasswordModal">
-                                        <i class="bi bi-key me-2"></i>Reset Password
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#toggleStatusModal">
-                                        <i class="bi bi-arrow-repeat me-2"></i>Change Status
-                                    </button>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <button type="button" class="dropdown-item text-danger" onclick="deleteAdmin()">
-                                        <i class="bi bi-trash me-2"></i>Delete Account
-                                    </button>
-                                </li>
-                            </ul>
+
+                {{-- Action Buttons - Only show for Super Admin --}}
+                @if($isAdmin)
+                    <div class="col-auto">
+                        <div class="action-btn-group">
+                            <a href="{{ route('admin.hr-administrators.edit', $hrAdministrator->id) }}"
+                                class="btn action-btn action-btn-primary">
+                                <i class="bi bi-pencil"></i> Edit Profile
+                            </a>
+                            <div class="dropdown">
+                                <button class="btn action-btn action-btn-primary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#resetPasswordModal">
+                                            <i class="bi bi-key me-2"></i>Reset Password
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#toggleStatusModal">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Change Status
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item text-danger" onclick="deleteAdmin()">
+                                            <i class="bi bi-trash me-2"></i>Delete Account
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
 
@@ -444,7 +513,7 @@
                         <i class="bi bi-briefcase-fill"></i>
                     </div>
                     <div class="stat-value" style="color: #1e3a8a;">{{ $stats['total_jobs_posted'] }}</div>
-                    <div class="stat-label">Total Vacancys Posted</div>
+                    <div class="stat-label">Total Vacancies Posted</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -454,7 +523,7 @@
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
                     <div class="stat-value" style="color: #059669;">{{ $stats['active_jobs'] }}</div>
-                    <div class="stat-label">Active Vacancys</div>
+                    <div class="stat-label">Active Vacancies</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -464,7 +533,7 @@
                         <i class="bi bi-x-circle-fill"></i>
                     </div>
                     <div class="stat-value" style="color: #dc2626;">{{ $stats['closed_jobs'] }}</div>
-                    <div class="stat-label">Closed Vacancys</div>
+                    <div class="stat-label">Closed Vacancies</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -488,7 +557,7 @@
                             <h5 class="mb-0 fw-bold" style="color: #1e3a8a;">
                                 <i class="bi bi-briefcase me-2"></i>Recent Vacancy Postings
                             </h5>
-                            {{-- <span class="badge bg-primary">{{ $recentJobs->count() }} Job Vacancy</span> --}}
+                            <span class="badge bg-primary">{{ $recentJobs->count() }} Vacancies</span>
                         </div>
                     </div>
                     @if($recentJobs->count() > 0)
@@ -519,7 +588,7 @@
                                             <small>{{ $job->created_at->format('M d, Y') }}</small>
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('admin.jobs.show', $job->id) }}"
+                                            <a href="{{ $isAdmin ? route('admin.jobs.show', $job->id) : route('hr-administrator.jobs.show', $job->id) }}"
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
@@ -552,7 +621,7 @@
                     </div>
                     <div class="info-row">
                         <span class="info-label">Administrator ID</span>
-                        <span class="info-value">#{{ $hrAdministrator->id }}</span>
+                        <span class="info-value">#{{ str_pad($hrAdministrator->id, 4, '0', STR_PAD_LEFT) }}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Status</span>
@@ -619,93 +688,109 @@
         </div>
     </div>
 
-    <!-- Reset Password Modal -->
-    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                <form action="{{ route('admin.hr-administrators.reset-password', $hrAdministrator->id) }}" method="POST">
-                    @csrf
-                    <div class="modal-header border-bottom">
-                        <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
-                            <i class="bi bi-key me-2"></i>Reset Administrator Password
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">New Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                            <small class="text-muted">Minimum 8 characters with letters and numbers</small>
+    {{-- Modals - Only show for Super Admin --}}
+    @if($isAdmin)
+        <!-- Reset Password Modal -->
+        <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                    <form action="{{ route('admin.hr-administrators.reset-password', $hrAdministrator->id) }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-bottom">
+                            <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
+                                <i class="bi bi-key me-2"></i>Reset Administrator Password
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Confirm Password</label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                        <div class="modal-body p-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">New Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                                <small class="text-muted">Minimum 8 characters with letters and numbers</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Confirm Password</label>
+                                <input type="password" name="password_confirmation" class="form-control" required>
+                            </div>
+                            <div class="alert alert-warning mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <small>The administrator will need to use this new password to log in.</small>
+                            </div>
                         </div>
-                        <div class="alert alert-warning mb-0">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            <small>The administrator will need to use this new password to log in.</small>
+                        <div class="modal-footer border-top">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Reset Password
+                            </button>
                         </div>
-                    </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle me-2"></i>Reset Password
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toggle Status Modal -->
-    <div class="modal fade" id="toggleStatusModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                <form action="{{ route('admin.hr-administrators.toggle-status', $hrAdministrator->id) }}" method="POST">
-                    @csrf
-                    <div class="modal-header border-bottom">
-                        <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
-                            <i class="bi bi-arrow-repeat me-2"></i>Change Administrator Status
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <p class="mb-0">
-                            Are you sure you want to {{ $hrAdministrator->status == 'active' ? 'deactivate' : 'activate' }}
-                            <strong>{{ $hrAdministrator->name }}</strong>?
-                        </p>
-                    </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit"
-                            class="btn btn-{{ $hrAdministrator->status == 'active' ? 'warning' : 'success' }}">
-                            <i class="bi bi-check-circle me-2"></i>
-                            {{ $hrAdministrator->status == 'active' ? 'Deactivate' : 'Activate' }}
-                        </button>
-                    </div>
-                </form>
+        <!-- Toggle Status Modal -->
+        <div class="modal fade" id="toggleStatusModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                    <form action="{{ route('admin.hr-administrators.toggle-status', $hrAdministrator->id) }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-bottom">
+                            <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
+                                <i class="bi bi-arrow-repeat me-2"></i>Change Administrator Status
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <p class="mb-0">
+                                Are you sure you want to {{ $hrAdministrator->status == 'active' ? 'deactivate' : 'activate' }}
+                                <strong>{{ $hrAdministrator->name }}</strong>?
+                            </p>
+                            @if($hrAdministrator->status == 'active')
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <small>Deactivating will prevent this administrator from logging in.</small>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer border-top">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit"
+                                class="btn btn-{{ $hrAdministrator->status == 'active' ? 'warning' : 'success' }}">
+                                <i class="bi bi-check-circle me-2"></i>
+                                {{ $hrAdministrator->status == 'active' ? 'Deactivate' : 'Activate' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delete Form -->
-    <form id="deleteForm" action="{{ route('admin.hr-administrators.destroy', $hrAdministrator->id) }}" method="POST"
-        style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
+        <!-- Delete Form -->
+        <form id="deleteForm" action="{{ route('admin.hr-administrators.destroy', $hrAdministrator->id) }}" method="POST"
+            style="display: none;">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endif
 
 @endsection
 
 @section('scripts')
     <script>
-        function deleteAdmin() {
-            if (confirm('Are you sure you want to delete this administrator? This action cannot be undone and will remove all associated data.')) {
-                document.getElementById('deleteForm').submit();
+        @if($isAdmin)
+            function deleteAdmin() {
+                if (confirm('Are you sure you want to delete this administrator?\n\nThis action cannot be undone and will:\n- Remove all associated data\n- Delete all job postings created by this administrator\n- Remove all application records\n\nType DELETE to confirm.')) {
+                    const confirmation = prompt('Type DELETE to confirm deletion:');
+                    if (confirmation === 'DELETE') {
+                        document.getElementById('deleteForm').submit();
+                    } else {
+                        alert('Deletion cancelled. You must type DELETE exactly to confirm.');
+                    }
+                }
             }
-        }
+        @endif
 
-        // Auto-dismiss alerts
+        // Auto-dismiss alerts after 5 seconds
         setTimeout(() => {
             document.querySelectorAll('.alert-dismissible').forEach(alert => {
                 const bsAlert = bootstrap.Alert.getInstance(alert) || new bootstrap.Alert(alert);
