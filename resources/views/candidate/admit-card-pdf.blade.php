@@ -9,14 +9,14 @@
             font-family: 'NotoSansDevanagari';
             font-style: normal;
             font-weight: normal;
-            src: url('{{ public_path("fonts/NotoSansDevanagari-Regular.ttf") }}') format('truetype');
+            src: url('{{ public_path("storage/fonts/NotoSansDevanagari-Regular.ttf") }}') format('truetype');
         }
 
         @font-face {
             font-family: 'NotoSansDevanagari';
             font-style: normal;
             font-weight: bold;
-            src: url('{{ public_path("fonts/NotoSansDevanagari-Bold.ttf") }}') format('truetype');
+            src: url('{{ public_path("storage/fonts/NotoSansDevanagari-Bold.ttf") }}') format('truetype');
         }
         
         * {

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ApplicationForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class ApplicationFormController extends Controller
 {
@@ -20,26 +22,76 @@ class ApplicationFormController extends Controller
 
     public function index()
     {
-        $forms = ApplicationForm::latest()->paginate(10);
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Get only this candidate's applications
+        $forms = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+            ->latest()
+            ->paginate(10);
+
         return view('candidate.applications.index', compact('forms'));
     }
 
-    public function create()
+    public function create($jobId = null)
     {
-        return view('candidate.applications.create');
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // If job ID is provided, pass it to the view
+        $job = null;
+        if ($jobId) {
+            $job = DB::table('job_postings')->where('id', $jobId)->first();
+        }
+
+        return view('candidate.applications.create', compact('job'));
     }
 
     public function store(Request $request)
     {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Validate the request
         $validated = $request->validate($this->validationRules());
 
+        // Prepare data
         $data = $request->except(array_keys($this->fileFields));
         $data = array_merge($data, $this->handleFileUploads($request));
 
+        // Copy permanent address to mailing if requested
         if ($request->boolean('same_as_permanent')) {
             $data = array_merge($data, $this->copyPermanentToMailing($request));
         }
 
+        // Add job_posting_id if provided
+        if ($request->has('job_posting_id')) {
+            $data['job_posting_id'] = $request->job_posting_id;
+        }
+
+        // Add citizenship_number from logged-in candidate
+        $data['citizenship_number'] = $candidate->citizenship_number;
+
+        // Create the application
         ApplicationForm::create($data);
 
         return redirect()->route('candidate.applications.index')
@@ -48,18 +100,68 @@ class ApplicationFormController extends Controller
 
     public function show(ApplicationForm $applicationform)
     {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Check if this application belongs to the logged-in candidate
+        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+            return redirect()->route('candidate.applications.index')
+                ->withErrors(['error' => 'Unauthorized access']);
+        }
+
         return view('candidate.applications.show', compact('applicationform'));
     }
 
-        public function edit(ApplicationForm $applicationform)
-        {
-            return view('candidate.applications.edit', compact('applicationform'));
+    public function edit(ApplicationForm $applicationform)
+    {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
         }
 
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
+        // Check if this application belongs to the logged-in candidate
+        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+            return redirect()->route('candidate.applications.index')
+                ->withErrors(['error' => 'Unauthorized access']);
+        }
+
+        return view('candidate.applications.edit', compact('applicationform'));
+    }
 
     public function update(Request $request, ApplicationForm $applicationform)
     {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Check if this application belongs to the logged-in candidate
+        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+            return redirect()->route('candidate.applications.index')
+                ->withErrors(['error' => 'Unauthorized access']);
+        }
+
+        // Validate the request
         $validated = $request->validate($this->validationRules(false));
 
         $data = $request->except(array_keys($this->fileFields));
@@ -79,6 +181,23 @@ class ApplicationFormController extends Controller
 
     public function destroy(ApplicationForm $applicationform)
     {
+        // Check if candidate is logged in
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        // Get logged-in candidate
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        // Check if this application belongs to the logged-in candidate
+        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+            return redirect()->route('candidate.applications.index')
+                ->withErrors(['error' => 'Unauthorized access']);
+        }
+
         $this->deleteAssociatedFiles($applicationform);
         $applicationform->delete();
 
@@ -109,6 +228,7 @@ class ApplicationFormController extends Controller
 
             'same_as_permanent' => 'nullable|boolean',
             'physical_disability' => 'nullable|in:yes,no',
+            'job_posting_id' => 'nullable|exists:job_postings,id',
 
             // File validations
             'citizenship_id_document' => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',

@@ -8,7 +8,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -137,10 +137,10 @@
                                class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> View Admit Card
                             </a>
-                            <a href="{{ route('candidate.admit-card.download', $application->id) }}" 
+                        <!--    <a href="{{ route('candidate.admit-card.download', $application->id) }}" 
                                class="btn btn-primary btn-sm">
                                 <i class="bi bi-download"></i> Download PDF
-                            </a>
+                            </a> -->
                         </div>
                         <small class="text-muted d-block text-center mt-2">
                             <i class="bi bi-info-circle"></i> Bring this card on exam day

@@ -7,7 +7,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -94,7 +94,7 @@
                 <div class="stat-icon blue">
                     <i class="bi bi-file-earmark-text-fill"></i>
                 </div>
-                <h3 class="h2 fw-bold mb-1">8</h3>
+                <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">Total Live Advertisements</p>
                 <small class="text-info">
                     <i class="bi bi-info-circle me-1"></i>All time
@@ -107,7 +107,7 @@
                 <div class="stat-icon orange">
                     <i class="bi bi-file-earmark-text-fill"></i>
                 </div>
-                <h3 class="h2 fw-bold mb-1">3</h3>
+                <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">Total Vacancy</p>
                 <small class="text-warning">
                     <i class="bi bi-clock me-1"></i>All time

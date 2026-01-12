@@ -98,7 +98,7 @@ class CandidateController extends Controller
             ->withInput();
     }
     
-    // Candidate Dashboard
+        // Candidate Dashboard
     public function dashboard()
     {
         if (!Session::has('candidate_logged_in')) {
@@ -110,13 +110,18 @@ class CandidateController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
         
+        // Count applications by this candidate
         $applicationsCount = DB::table('application_form')
             ->where('citizenship_number', $candidate->citizenship_number)
             ->count();
+        
+        // Count total job postings (all vacancies)
+        $jobpostingsCount = DB::table('job_postings')->count();
 
         return view('candidate.dashboard', [
             'candidate' => $candidate,
-            'applicationsCount' => $applicationsCount
+            'applicationsCount' => $applicationsCount,
+            'jobpostingsCount' => $jobpostingsCount
         ]);
     }
     

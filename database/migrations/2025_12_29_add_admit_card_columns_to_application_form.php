@@ -12,9 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('application_form', function (Blueprint $table) {
-            // Modify existing status column to include 'shortlisted' and 'selected'
-            // Note: Your current status has 'pending', 'approved', 'rejected'
-            // We'll add 'shortlisted' and 'selected' options
             $table->dropColumn('status');
         });
         

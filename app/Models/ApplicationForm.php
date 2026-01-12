@@ -15,6 +15,7 @@ class ApplicationForm extends Model
 
     // Allow mass assignment for all these fields
     protected $fillable = [
+        'job_posting_id',
         // Personal Info
         'name_english',
         'name_nepali',
@@ -154,5 +155,12 @@ class ApplicationForm extends Model
         return Attribute::make(
             get: fn () => $this->name_english,
         );
+    }
+    /**
+     * Relationship: Application belongs to a Job Posting
+     */
+    public function jobPosting()
+    {
+        return $this->belongsTo(JobPosting::class, 'job_posting_id');
     }
 }

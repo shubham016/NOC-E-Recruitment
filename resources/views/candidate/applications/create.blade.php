@@ -6,7 +6,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -81,7 +81,6 @@
                         <span class="tab-circle">7</span>
                         <span class="tab-label d-none d-md-inline">Documents</span>
                     </div>
-                    <!-- <div class="progress-line"></div> -->
                 </div>
             </div>
 

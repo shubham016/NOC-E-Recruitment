@@ -11,6 +11,7 @@ use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AdmitCardController;
 use App\Http\Controllers\CandidateResultController;
+use App\Http\Controllers\Candidate\JobBrowsingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,7 +105,20 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     // Protected routes 
     Route::middleware('candidate.session')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\CandidateController::class, 'dashboard'])->name('dashboard');
-        
+         
+        // Jobs Browsing
+        Route::prefix('jobs')->name('jobs.')->group(function () {
+            Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
+            Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
+
+            // Application Routes (nested under jobs for create/store/edit/update)
+            Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
+                Route::get('/create', [App\Http\Controllers\ApplicationFormController::class, 'create'])->name('create');
+                Route::post('/', [App\Http\Controllers\ApplicationFormController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [App\Http\Controllers\ApplicationFormController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [App\Http\Controllers\ApplicationFormController::class, 'update'])->name('update');
+            });
+        });
         Route::get('/my-profile', [\App\Http\Controllers\CandidateController::class, 'profile'])->name('my-profile');
         
         // Change Password Routes 

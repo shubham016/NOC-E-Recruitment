@@ -8,7 +8,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -16,7 +16,7 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>

@@ -8,7 +8,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -39,11 +39,13 @@
             <a href="{{ route('candidate.admit-card') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Admit Cards
             </a>
-            <a href="{{ route('candidate.admit-card.download', $application->id) }}" class="btn btn-primary float-end">
+        
+       <!-- <a href="{{ route('candidate.admit-card.download', $application->id) }}" class="btn btn-primary float-end">
                 <i class="bi bi-download"></i> Download PDF
-            </a>
+            </a> -->
+        
             <button onclick="window.print()" class="btn btn-info float-end me-2">
-                <i class="bi bi-printer"></i> Print
+                <i class="bi bi-printer"></i> Print or Save as PDF
             </button>
         </div>
     </div>
