@@ -227,7 +227,7 @@
                     <!-- Copyright -->
                     <div class="text-center mt-4">
                         <small class="text-white opacity-75">
-                            © 2025 NOC E-Recruitment Management System. All Rights Reserved.
+                            © {{ date('Y') }} NOC E-Recruitment Management System. All Rights Reserved.
                         </small>
                     </div>
                 </div>

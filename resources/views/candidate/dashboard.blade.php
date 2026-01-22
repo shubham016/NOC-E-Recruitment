@@ -6,7 +6,7 @@
 @section('brand-icon', 'bi bi-briefcase')
 @section('dashboard-route', route('candidate.dashboard'))
 @section('user-name', Auth::guard('candidate')->user()->name)
-@section('user-role', 'Job Seeker')
+{{-- @section('user-role', 'Job Seeker') --}}
 @section('user-initial', strtoupper(substr(Auth::guard('candidate')->user()->name, 0, 1)))
 @section('logout-route', route('candidate.logout'))
 

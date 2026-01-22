@@ -328,8 +328,8 @@
                                     Assistant Level - 4th (सहायक तह - ४)</option>
                             </optgroup>
                             <optgroup label="Technician Level (सहयोगी)">
-                                <option value="Technician Level (सहयोगी)" {{ old('position_level', $job->position_level) == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>Technician
-                                    (टेक्निशियन)</option>
+                                <option value="Technician Level (सहयोगी)" {{ old('position_level', $job->position_level) == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>
+                                    Technician (टेक्निशियन)</option>
                             </optgroup>
                         </select>
                         @error('position_level')
@@ -451,6 +451,61 @@
                         @enderror
                     </div>
 
+                    <div class="section-divider"></div>
+
+                    <!-- Application Deadline - Dual Date Pickers -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <span>Application Deadline <span class="required">*</span></span>
+                            <span class="nepali-text">आवेदन दिने अन्तिम मिति</span>
+                        </label>
+
+                        <div class="row g-3">
+                            <!-- Nepali Date (BS) Picker -->
+                            <div class="col-md-6">
+                                <label for="deadline_bs" class="form-label small fw-bold text-primary">
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg"
+                                    id="deadline_bs"
+                                    placeholder="YYYY-MM-DD"
+                                    autocomplete="off">
+                                <small class="form-text text-primary">
+                                    <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
+                                </small>
+                            </div>
+
+                            <!-- English Date (AD) - Database Field -->
+                            <div class="col-md-6">
+                                <label for="deadline_ad" class="form-label small fw-bold">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD) <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg @error('deadline') is-invalid @enderror"
+                                    id="deadline_ad"
+                                    name="deadline"
+                                    placeholder="YYYY-MM-DD"
+                                    value="{{ old('deadline', $job->deadline->format('Y-m-d')) }}"
+                                    required
+                                    readonly>
+                                <small class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
+                                </small>
+                            </div>
+                        </div>
+
+                        @error('deadline')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-arrows-angle-expand me-2"></i>
+                            <strong>Official Nepali Date Picker:</strong> Pick Nepali date and English date auto-syncs!
+                            <br><small>आधिकारिक नेपाली मिति: नेपाली मिति छान्नुहोस् र अंग्रेजी मिति स्वतः सिंक हुन्छ!</small>
+                        </div>
+                    </div>
+
                     <!-- Hidden fields -->
                     <input type="hidden" name="title" id="hidden_title" value="{{ $job->title }}">
                     <input type="hidden" name="department" value="Government Department">
@@ -458,7 +513,6 @@
                     <input type="hidden" name="job_type" value="permanent">
                     <input type="hidden" name="description" id="hidden_description" value="{{ $job->description }}">
                     <input type="hidden" name="requirements" id="hidden_requirements" value="{{ $job->requirements }}">
-                    <input type="hidden" name="deadline" value="{{ $job->deadline->format('Y-m-d') }}">
                     <input type="hidden" name="status" value="{{ $job->status }}">
                 </div>
             </div>
@@ -507,6 +561,14 @@
                             <tr>
                                 <th>Demand Post</th>
                                 <td id="preview-posts" class="fw-semibold">{{ $job->number_of_posts }}</td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (BS)</th>
+                                <td id="preview-deadline-bs" class="fw-semibold text-primary">-</td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (AD)</th>
+                                <td id="preview-deadline-ad" class="fw-semibold text-secondary">{{ $job->deadline->format('M d, Y') }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -563,78 +625,200 @@
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Same JavaScript as create.blade.php
-            const categoryRadios = document.querySelectorAll('input[name="category"]');
-            const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
-            const inclusiveTypeSelect = document.getElementById('inclusive_type');
-            const previewInclusiveRow = document.getElementById('preview-inclusive-row');
-            const previewInclusiveType = document.getElementById('preview-inclusive-type');
+<script>
+(function() {
+    'use strict';
 
-            function toggleInclusiveSubCategory() {
-                const selectedCategory = document.querySelector('input[name="category"]:checked');
+    console.log('📝 === Edit Form Date System Initializing ===');
 
-                if (selectedCategory && selectedCategory.value === 'inclusive') {
-                    inclusiveSubCategory.classList.add('show');
-                    inclusiveTypeSelect.setAttribute('required', 'required');
-                    previewInclusiveRow.style.display = '';
+    // Convert Nepali numerals to English
+    function nepaliToEnglish(str) {
+        if (!str) return str;
+        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
+        return str.replace(/[०-९]/g, d => map[d]);
+    }
 
-                    if (inclusiveTypeSelect.value) {
-                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
+    // Convert English numerals to Nepali for display
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    function waitForConverter() {
+        if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+            console.log('⏳ Waiting for converter...');
+            setTimeout(waitForConverter, 100);
+            return;
+        }
+
+        console.log('✅ Converter ready!');
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeForm);
+        } else {
+            initializeForm();
+        }
+    }
+
+    function initializeForm() {
+        console.log('🔧 Initializing edit form...');
+
+        const deadlineBS = document.getElementById('deadline_bs');
+        const deadlineAD = document.getElementById('deadline_ad');
+        const previewDeadlineBS = document.getElementById('preview-deadline-bs');
+        const previewDeadlineAD = document.getElementById('preview-deadline-ad');
+
+        if (!deadlineBS || !deadlineAD) {
+            console.error('❌ Date elements not found!');
+            return;
+        }
+
+        // Initialize Nepali Date Picker
+        $('#deadline_bs').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD',
+            closeOnDateSelect: true,
+            unicodeDate: true,
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 10
+        });
+
+        console.log('✅ Nepali Date Picker initialized');
+
+        // Polling for date changes
+        let lastBSValue = '';
+        
+        setInterval(function() {
+            const currentBSValue = $('#deadline_bs').val();
+            
+            if (currentBSValue && 
+                currentBSValue !== lastBSValue && 
+                currentBSValue !== 'YYYY-MM-DD' &&
+                currentBSValue.length >= 10) {
+                
+                console.log('📅 BS Date changed:', currentBSValue);
+                lastBSValue = currentBSValue;
+                
+                const bsValueEnglish = nepaliToEnglish(currentBSValue);
+                const adValue = window.bsToAD(bsValueEnglish);
+                
+                if (adValue) {
+                    deadlineAD.value = adValue;
+                    
+                    if (previewDeadlineBS) {
+                        // Convert to Nepali numerals for display
+                        const bsNepali = englishToNepali(bsValueEnglish);
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
                     }
-                } else {
-                    inclusiveSubCategory.classList.remove('show');
-                    inclusiveTypeSelect.removeAttribute('required');
-                    inclusiveTypeSelect.value = '';
-                    previewInclusiveRow.style.display = 'none';
-                    previewInclusiveType.textContent = '-';
+                    
+                    if (previewDeadlineAD) {
+                        const date = new Date(adValue);
+                        if (!isNaN(date.getTime())) {
+                            previewDeadlineAD.textContent = date.toLocaleDateString('en-US', {
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric'
+                            });
+                        }
+                    }
                 }
             }
+        }, 200);
 
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', toggleInclusiveSubCategory);
-            });
+        // Initialize with existing deadline from database
+        setTimeout(function() {
+            if (deadlineAD.value) {
+                console.log('📅 Initializing with existing deadline:', deadlineAD.value);
+                
+                const bsValue = window.adToBS(deadlineAD.value);
+                
+                if (bsValue) {
+                    $('#deadline_bs').val(bsValue);
+                    lastBSValue = bsValue;
+                    
+                    if (previewDeadlineBS) {
+                        // Convert to Nepali numerals for display
+                        const bsNepali = englishToNepali(bsValue);
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                    }
+                }
+            }
+        }, 500);
 
-            toggleInclusiveSubCategory();
+        console.log('✅ Date system ready!');
 
-            inclusiveTypeSelect.addEventListener('change', function () {
-                if (this.value) {
-                    previewInclusiveType.textContent = this.value;
-                } else {
-                    previewInclusiveType.textContent = '-';
+        // ============================================
+        // REST OF FORM - Live Preview for other fields
+        // ============================================
+        
+        const categoryRadios = document.querySelectorAll('input[name="category"]');
+        const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
+        const inclusiveTypeSelect = document.getElementById('inclusive_type');
+        const previewInclusiveRow = document.getElementById('preview-inclusive-row');
+        const previewInclusiveType = document.getElementById('preview-inclusive-type');
+
+        function toggleInclusiveSubCategory() {
+            const selectedCategory = document.querySelector('input[name="category"]:checked');
+            if (selectedCategory && selectedCategory.value === 'inclusive') {
+                inclusiveSubCategory.classList.add('show');
+                inclusiveTypeSelect.setAttribute('required', 'required');
+                if (previewInclusiveRow) previewInclusiveRow.style.display = '';
+                if (previewInclusiveType && inclusiveTypeSelect.value) {
+                    previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                }
+            } else {
+                inclusiveSubCategory.classList.remove('show');
+                inclusiveTypeSelect.removeAttribute('required');
+                inclusiveTypeSelect.value = '';
+                if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
+                if (previewInclusiveType) previewInclusiveType.textContent = '-';
+            }
+        }
+
+        categoryRadios.forEach(radio => {
+            radio.addEventListener('change', toggleInclusiveSubCategory);
+        });
+        toggleInclusiveSubCategory();
+
+        if (inclusiveTypeSelect) {
+            inclusiveTypeSelect.addEventListener('change', function() {
+                if (previewInclusiveType) {
+                    previewInclusiveType.textContent = this.value || '-';
                 }
             });
+        }
 
-            const previewMappings = {
-                'advertisement_no': { preview: 'preview-adv-no', default: '-' },
-                'position_level': { preview: 'preview-position', default: '-' },
-                'service_group': { preview: 'preview-service', default: '-' },
-                'number_of_posts': { preview: 'preview-posts', default: '-' },
-                'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' }
-            };
+        const previewMappings = {
+            'advertisement_no': { preview: 'preview-adv-no', default: '-' },
+            'position_level': { preview: 'preview-position', default: '-' },
+            'service_group': { preview: 'preview-service', default: '-' },
+            'number_of_posts': { preview: 'preview-posts', default: '-' },
+            'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' }
+        };
 
-            Object.keys(previewMappings).forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                const preview = document.getElementById(previewMappings[fieldId].preview);
+        Object.keys(previewMappings).forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            const preview = document.getElementById(previewMappings[fieldId].preview);
 
-                if (input && preview) {
-                    const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+            if (input && preview) {
+                const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+                
+                input.addEventListener(eventType, function() {
+                    const value = this.value.trim();
+                    if (fieldId === 'minimum_qualification') {
+                        preview.textContent = value.substring(0, 100) + (value.length > 100 ? '...' : '');
+                    } else {
+                        preview.textContent = value || previewMappings[fieldId].default;
+                    }
+                });
+            }
+        });
 
-                    input.addEventListener(eventType, function () {
-                        const value = this.value.trim();
-                        if (fieldId === 'minimum_qualification') {
-                            preview.textContent = value.substring(0, 100) + (value.length > 100 ? '...' : '');
-                        } else {
-                            preview.textContent = value || previewMappings[fieldId].default;
-                        }
-                    });
-                }
-            });
-
-            const categoryPreview = document.getElementById('preview-category');
+        const categoryPreview = document.getElementById('preview-category');
+        if (categoryPreview) {
             categoryRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
+                radio.addEventListener('change', function() {
                     if (this.value === 'open') {
                         categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
                     } else if (this.value === 'inclusive') {
@@ -642,9 +826,12 @@
                     }
                 });
             });
+        }
 
-            const form = document.getElementById('vacancyForm');
-            form.addEventListener('submit', function (e) {
+        // Form submit handler
+        const form = document.getElementById('vacancyForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
                 const positionLevel = document.getElementById('position_level').value;
                 document.getElementById('hidden_title').value = positionLevel;
 
@@ -656,20 +843,25 @@
                 if (inclusiveType) {
                     descriptionText += ' (' + inclusiveType + ')';
                 }
-
                 descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
 
                 document.getElementById('hidden_description').value = descriptionText;
                 document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
             });
-        });
-
-        function confirmUpdate() {
-            return confirm(
-                '⚠️ Are you sure you want to update this vacancy?\n\n' +
-                'यो रिक्त पद अपडेट गर्न निश्चित हुनुहुन्छ?\n\n' +
-                'The changes will be saved immediately.'
-            );
         }
-    </script>
+
+        console.log('✅ === EDIT FORM COMPLETE ===');
+    }
+
+    waitForConverter();
+})();
+
+function confirmUpdate() {
+    return confirm(
+        '⚠️ Are you sure you want to update this vacancy?\n\n' +
+        'यो रिक्त पद अपडेट गर्न निश्चित हुनुहुन्छ?\n\n' +
+        'The changes will be saved immediately.'
+    );
+}
+</script>
 @endsection

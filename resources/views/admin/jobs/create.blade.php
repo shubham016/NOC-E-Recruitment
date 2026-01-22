@@ -472,42 +472,36 @@
                         </label>
 
                         <div class="row g-3">
-                            <!-- Nepali Date (BS) Picker - PRIMARY -->
+                            <!-- Nepali Date (BS) Picker -->
                             <div class="col-md-6">
                                 <label for="deadline_bs" class="form-label small fw-bold text-primary">
-                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति (बि.सं.) <span
-                                        class="text-danger">*</span>
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
                                 </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-primary text-white">
-                                        <i class="bi bi-calendar3"></i>
-                                    </span>
-                                    <input type="text" class="form-control form-control-lg nepali-datepicker"
-                                        id="deadline_bs" placeholder="YYYY-MM-DD" autocomplete="off" required>
-                                </div>
+                                <input type="text"
+                                    class="form-control form-control-lg"
+                                    id="deadline_bs"
+                                    placeholder="YYYY-MM-DD"
+                                    autocomplete="off">
                                 <small class="form-text text-primary">
-                                    <i class="bi bi-info-circle me-1"></i><strong>Select Nepali date (BS) - Primary
-                                        input</strong>
+                                    <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
                                 </small>
                             </div>
 
-                            <!-- English Date (AD) Picker - SECONDARY -->
+                            <!-- English Date (AD) - Database Field -->
                             <div class="col-md-6">
-                                <label for="deadline_ad" class="form-label small">
-                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD)
+                                <label for="deadline_ad" class="form-label small fw-bold">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD) <span class="text-danger">*</span>
                                 </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-secondary text-white">
-                                        <i class="bi bi-calendar-date"></i>
-                                    </span>
-                                    <input type="date"
-                                        class="form-control form-control-lg @error('deadline') is-invalid @enderror"
-                                        id="deadline_ad" name="deadline"
-                                        value="{{ old('deadline', now()->addDays(30)->format('Y-m-d')) }}"
-                                        min="{{ now()->addDay()->format('Y-m-d') }}" required>
-                                </div>
-                                <small class="form-text text-muted">
-                                    <i class="bi bi-info-circle me-1"></i>Auto-syncs with Nepali date (or select manually)
+                                <input type="text"
+                                    class="form-control form-control-lg @error('deadline') is-invalid @enderror"
+                                    id="deadline_ad"
+                                    name="deadline"
+                                    placeholder="YYYY-MM-DD"
+                                    value="{{ old('deadline', now()->addDays(30)->format('Y-m-d')) }}"
+                                    required
+                                    readonly>
+                                <small class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
                                 </small>
                             </div>
                         </div>
@@ -518,10 +512,8 @@
 
                         <div class="alert alert-info mt-3 mb-0">
                             <i class="bi bi-arrows-angle-expand me-2"></i>
-                            <strong>Bi-directional Sync:</strong> Select date in either format - both calendars will
-                            automatically sync!
-                            <br><small>द्वि-दिशात्मक समन्वय: कुनै पनि ढाँचामा मिति चयन गर्नुहोस् - दुवै क्यालेन्डर स्वतः
-                                समन्वयित हुनेछन्!</small>
+                            <strong>Official Nepali Date Picker:</strong> Pick Nepali date and English date auto-syncs!
+                            <br><small>आधिकारिक नेपाली मिति: नेपाली मिति छान्नुहोस् र अंग्रेजी मिति स्वतः सिंक हुन्छ!</small>
                         </div>
                     </div>
 
@@ -635,235 +627,270 @@
 @endsection
 
 @section('scripts')
-    <script>
-        (function () {
-            'use strict';
+<script>
+(function() {
+    'use strict';
 
-            console.log('=== Initializing Vacancy Form ===');
+    console.log('📝 === Date System Initializing ===');
 
-            // Wait for libraries to be ready
-            function waitForLibraries() {
-                return new Promise((resolve) => {
-                    const checkInterval = setInterval(() => {
-                        if (typeof $ !== 'undefined' &&
-                            typeof NepaliDate !== 'undefined' &&
-                            typeof $.fn.nepaliDatePicker !== 'undefined') {
-                            clearInterval(checkInterval);
-                            console.log('✅ All libraries ready');
-                            console.log('jQuery:', typeof $);
-                            console.log('NepaliDate:', typeof NepaliDate);
-                            console.log('nepaliDatePicker:', typeof $.fn.nepaliDatePicker);
-                            resolve();
-                        }
-                    }, 100);
+    // ============================================
+    // CRITICAL: Numeral conversion functions
+    // ============================================
+    
+    // Convert Nepali numerals to English
+    function nepaliToEnglish(str) {
+        if (!str) return str;
+        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
+        return str.replace(/[०-९]/g, d => map[d]);
+    }
 
-                    // Timeout after 10 seconds
-                    setTimeout(() => {
-                        clearInterval(checkInterval);
-                        console.error('❌ Timeout: Libraries failed to load');
-                        resolve();
-                    }, 10000);
-                });
+    // Convert English numerals to Nepali for display
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    function waitForConverter() {
+        if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+            console.log('⏳ Waiting for converter...');
+            setTimeout(waitForConverter, 100);
+            return;
+        }
+
+        console.log('✅ Converter ready!');
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeForm);
+        } else {
+            initializeForm();
+        }
+    }
+
+    function initializeForm() {
+        console.log('🔧 Initializing form...');
+
+        const deadlineBS = document.getElementById('deadline_bs');
+        const deadlineAD = document.getElementById('deadline_ad');
+        const previewDeadlineBS = document.getElementById('preview-deadline-bs');
+        const previewDeadlineAD = document.getElementById('preview-deadline-ad');
+
+        if (!deadlineBS || !deadlineAD) {
+            console.error('❌ Date elements not found!');
+            return;
+        }
+
+        // Initialize Nepali Date Picker
+        $('#deadline_bs').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD',
+            closeOnDateSelect: true,
+            unicodeDate: true,
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 10
+        });
+
+        console.log('✅ Nepali Date Picker initialized');
+
+        // ============================================
+        // WORKING SOLUTION: Use polling to detect changes
+        // ============================================
+        let lastBSValue = '';
+        
+        const pollInterval = setInterval(function() {
+            const currentBSValue = $('#deadline_bs').val();
+            
+            // Check if value changed and is valid
+            if (currentBSValue && 
+                currentBSValue !== lastBSValue && 
+                currentBSValue !== 'YYYY-MM-DD' &&
+                currentBSValue.length >= 10) {
+                
+                console.log('📅 BS Date changed (polling detected):', currentBSValue);
+                lastBSValue = currentBSValue;
+                
+                // Convert Nepali numerals to English for calculation
+                const bsValueEnglish = nepaliToEnglish(currentBSValue);
+                console.log('🔢 After numeral conversion:', bsValueEnglish);
+                
+                // Convert BS to AD
+                const adValue = window.bsToAD(bsValueEnglish);
+                console.log('✅ AD Result:', adValue);
+                
+                if (adValue) {
+                    // Update the English date field (this goes to database)
+                    deadlineAD.value = adValue;
+                    console.log('✅ English date field updated:', adValue);
+                    
+                    // Update BS preview with Nepali numerals
+                    if (previewDeadlineBS) {
+                        // Convert back to Nepali numerals for display
+                        const bsNepali = englishToNepali(bsValueEnglish);
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                        console.log('✅ BS Preview:', bsNepali);
+                    }
+                    
+                    // Update AD preview in YYYY-MM-DD format
+                    if (previewDeadlineAD) {
+                        previewDeadlineAD.textContent = adValue; // Already in YYYY-MM-DD format
+                        console.log('✅ AD Preview updated:', adValue);
+                    }
+                }
             }
+        }, 200); // Check every 200ms
 
-            waitForLibraries().then(() => {
-                document.addEventListener('DOMContentLoaded', function () {
-                    console.log('DOM Content Loaded - Starting initialization');
+        // Initialize with default AD date on page load
+        setTimeout(function() {
+            if (deadlineAD.value && !$('#deadline_bs').val()) {
+                console.log('📅 Initializing with default AD date:', deadlineAD.value);
+                
+                const bsValue = window.adToBS(deadlineAD.value);
+                console.log('✅ Initial BS (English numerals):', bsValue);
+                
+                if (bsValue) {
+                    // Convert to Nepali numerals for display in picker
+                    const bsNepali = englishToNepali(bsValue);
+                    
+                    // Set the BS field with Nepali numerals
+                    $('#deadline_bs').val(bsNepali);
+                    lastBSValue = bsNepali; // Prevent polling from re-processing
+                    
+                    console.log('✅ Initial BS (Nepali numerals):', bsNepali);
+                    
+                    // Update previews
+                    if (previewDeadlineBS) {
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                    }
+                    if (previewDeadlineAD) {
+                        previewDeadlineAD.textContent = deadlineAD.value; // Display as YYYY-MM-DD
+                    }
+                }
+            }
+        }, 500);
 
-                    // Date picker elements
-                    const deadlineBS = document.getElementById('deadline_bs');
-                    const deadlineAD = document.getElementById('deadline_ad');
-                    const previewDeadlineBS = document.getElementById('preview-deadline-bs');
-                    const previewDeadlineAD = document.getElementById('preview-deadline-ad');
+        console.log('✅ Date system ready (using polling method)!');
 
-                    let isUpdating = false;
+        // ============================================
+        // REST OF FORM - Live Preview for other fields
+        // ============================================
+        
+        const categoryRadios = document.querySelectorAll('input[name="category"]');
+        const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
+        const inclusiveTypeSelect = document.getElementById('inclusive_type');
+        const previewInclusiveRow = document.getElementById('preview-inclusive-row');
+        const previewInclusiveType = document.getElementById('preview-inclusive-type');
 
-                    // Initialize Official Nepali Date Picker
-                    if (deadlineBS && typeof $ !== 'undefined' && typeof $.fn.nepaliDatePicker !== 'undefined') {
-                        console.log('Initializing Official Nepali Date Picker...');
-                        try {
-                            $(deadlineBS).nepaliDatePicker({
-                                dateFormat: 'YYYY-MM-DD',
-                                closeOnDateSelect: true,
-                                ndpYear: true,
-                                ndpMonth: true,
-                                ndpYearCount: 20,
-                                onChange: function () {
-                                    console.log('BS Date changed:', deadlineBS.value);
-                                    if (!isUpdating && deadlineBS.value) {
-                                        isUpdating = true;
-                                        const bsDate = deadlineBS.value;
+        function toggleInclusiveSubCategory() {
+            const selectedCategory = document.querySelector('input[name="category"]:checked');
+            if (selectedCategory && selectedCategory.value === 'inclusive') {
+                inclusiveSubCategory.classList.add('show');
+                inclusiveTypeSelect.setAttribute('required', 'required');
+                if (previewInclusiveRow) previewInclusiveRow.style.display = '';
+                if (previewInclusiveType && inclusiveTypeSelect.value) {
+                    previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                }
+            } else {
+                inclusiveSubCategory.classList.remove('show');
+                inclusiveTypeSelect.removeAttribute('required');
+                inclusiveTypeSelect.value = '';
+                if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
+                if (previewInclusiveType) previewInclusiveType.textContent = '-';
+            }
+        }
 
-                                        if (typeof window.bsToAD === 'function') {
-                                            const adDate = window.bsToAD(bsDate);
-                                            console.log('Converted to AD:', adDate);
-                                            if (adDate) {
-                                                deadlineAD.value = adDate;
-                                                if (previewDeadlineBS) {
-                                                    previewDeadlineBS.textContent = bsDate + ' बि.सं.';
-                                                }
-                                                if (previewDeadlineAD) {
-                                                    previewDeadlineAD.textContent = window.formatDisplayDate(adDate);
-                                                }
-                                            }
-                                        }
-                                        setTimeout(() => { isUpdating = false; }, 100);
-                                    }
-                                }
-                            });
-                            console.log('✅ Official Nepali Date Picker initialized successfully');
-                        } catch (error) {
-                            console.error('❌ Failed to initialize Nepali Date Picker:', error);
-                        }
+        categoryRadios.forEach(radio => {
+            radio.addEventListener('change', toggleInclusiveSubCategory);
+        });
+        toggleInclusiveSubCategory();
+
+        if (inclusiveTypeSelect) {
+            inclusiveTypeSelect.addEventListener('change', function() {
+                if (previewInclusiveType) {
+                    previewInclusiveType.textContent = this.value || '-';
+                }
+            });
+        }
+
+        const previewMappings = {
+            'advertisement_no': { preview: 'preview-adv-no', default: '-' },
+            'position_level': { preview: 'preview-position', default: '-' },
+            'service_group': { preview: 'preview-service', default: '-' },
+            'number_of_posts': { preview: 'preview-posts', default: '-' },
+            'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
+        };
+
+        Object.keys(previewMappings).forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            const preview = document.getElementById(previewMappings[fieldId].preview);
+
+            if (input && preview) {
+                const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+                
+                input.addEventListener(eventType, function() {
+                    const value = this.value.trim();
+                    if (fieldId === 'minimum_qualification') {
+                        preview.innerHTML = value ? value.replace(/\n/g, '<br>') : '<em>' + previewMappings[fieldId].default + '</em>';
                     } else {
-                        console.error('❌ Cannot initialize - Missing dependencies');
+                        preview.textContent = value || previewMappings[fieldId].default;
                     }
+                });
+                
+                input.dispatchEvent(new Event(eventType));
+            }
+        });
 
-                    // AD to BS conversion (when AD date is manually changed)
-                    if (deadlineAD) {
-                        deadlineAD.addEventListener('change', function () {
-                            console.log('AD Date changed:', this.value);
-                            if (!isUpdating && this.value && typeof window.adToBS === 'function') {
-                                isUpdating = true;
-                                const bsDate = window.adToBS(this.value);
-                                console.log('Converted to BS:', bsDate);
-                                if (bsDate) {
-                                    deadlineBS.value = bsDate;
-                                    if (previewDeadlineBS) {
-                                        previewDeadlineBS.textContent = bsDate + ' बि.सं.';
-                                    }
-                                    if (previewDeadlineAD) {
-                                        previewDeadlineAD.textContent = window.formatDisplayDate(this.value);
-                                    }
-                                }
-                                setTimeout(() => { isUpdating = false; }, 100);
-                            }
-                        });
+        const categoryPreview = document.getElementById('preview-category');
+        if (categoryPreview) {
+            categoryRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'open') {
+                        categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
+                    } else if (this.value === 'inclusive') {
+                        categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
                     }
-
-                    // Initialize preview on page load
-                    if (deadlineAD && deadlineAD.value && typeof window.adToBS === 'function') {
-                        const bsDate = window.adToBS(deadlineAD.value);
-                        if (bsDate) {
-                            deadlineBS.value = bsDate;
-                            if (previewDeadlineBS) {
-                                previewDeadlineBS.textContent = bsDate + ' बि.सं.';
-                            }
-                            if (previewDeadlineAD) {
-                                previewDeadlineAD.textContent = window.formatDisplayDate(deadlineAD.value);
-                            }
-                        }
-                    }
-
-                    // Toggle Inclusive Sub-Category
-                    const categoryRadios = document.querySelectorAll('input[name="category"]');
-                    const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
-                    const inclusiveTypeSelect = document.getElementById('inclusive_type');
-                    const previewInclusiveRow = document.getElementById('preview-inclusive-row');
-                    const previewInclusiveType = document.getElementById('preview-inclusive-type');
-
-                    function toggleInclusiveSubCategory() {
-                        const selectedCategory = document.querySelector('input[name="category"]:checked');
-                        if (selectedCategory && selectedCategory.value === 'inclusive') {
-                            inclusiveSubCategory.classList.add('show');
-                            inclusiveTypeSelect.setAttribute('required', 'required');
-                            previewInclusiveRow.style.display = '';
-                            if (inclusiveTypeSelect.value) {
-                                previewInclusiveType.textContent = inclusiveTypeSelect.value;
-                            }
-                        } else {
-                            inclusiveSubCategory.classList.remove('show');
-                            inclusiveTypeSelect.removeAttribute('required');
-                            inclusiveTypeSelect.value = '';
-                            previewInclusiveRow.style.display = 'none';
-                            previewInclusiveType.textContent = '-';
-                        }
-                    }
-
-                    categoryRadios.forEach(radio => {
-                        radio.addEventListener('change', toggleInclusiveSubCategory);
-                    });
-                    toggleInclusiveSubCategory();
-
-                    inclusiveTypeSelect.addEventListener('change', function () {
-                        previewInclusiveType.textContent = this.value || '-';
-                    });
-
-                    // Live Preview Updates
-                    const previewMappings = {
-                        'advertisement_no': { preview: 'preview-adv-no', default: '-' },
-                        'position_level': { preview: 'preview-position', default: '-' },
-                        'service_group': { preview: 'preview-service', default: '-' },
-                        'number_of_posts': { preview: 'preview-posts', default: '-' },
-                        'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
-                    };
-
-                    Object.keys(previewMappings).forEach(fieldId => {
-                        const input = document.getElementById(fieldId);
-                        const preview = document.getElementById(previewMappings[fieldId].preview);
-
-                        if (input && preview) {
-                            const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
-                            input.addEventListener(eventType, function () {
-                                const value = this.value.trim();
-                                if (fieldId === 'minimum_qualification') {
-                                    preview.innerHTML = value ? value : '<em>' + previewMappings[fieldId].default + '</em>';
-                                } else {
-                                    preview.textContent = value || previewMappings[fieldId].default;
-                                }
-                            });
-                            input.dispatchEvent(new Event(eventType));
-                        }
-                    });
-
-                    // Category preview
-                    const categoryPreview = document.getElementById('preview-category');
-                    categoryRadios.forEach(radio => {
-                        radio.addEventListener('change', function () {
-                            if (this.value === 'open') {
-                                categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
-                            } else if (this.value === 'inclusive') {
-                                categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
-                            }
-                        });
-                    });
-
-                    const checkedCategory = document.querySelector('input[name="category"]:checked');
-                    if (checkedCategory) {
-                        checkedCategory.dispatchEvent(new Event('change'));
-                    }
-
-                    // Auto-fill hidden fields before submit
-                    const form = document.getElementById('vacancyForm');
-                    form.addEventListener('submit', function (e) {
-                        const positionLevel = document.getElementById('position_level').value;
-                        document.getElementById('hidden_title').value = positionLevel;
-
-                        let descriptionText = 'Position: ' + positionLevel + '\n' +
-                            'Service/Group: ' + document.getElementById('service_group').value + '\n' +
-                            'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
-
-                        const inclusiveType = document.getElementById('inclusive_type').value;
-                        if (inclusiveType) {
-                            descriptionText += ' (' + inclusiveType + ')';
-                        }
-                        descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
-
-                        document.getElementById('hidden_description').value = descriptionText;
-                        document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
-                    });
-
-                    console.log('=== Form Initialization Complete ===');
                 });
             });
-        })();
 
-        function confirmPublish() {
-            return confirm(
-                '⚠️ Are you sure you want to publish this vacancy?\n\n' +
-                'यो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\n' +
-                'Once published, it will be visible to all candidates.'
-            );
+            const checkedCategory = document.querySelector('input[name="category"]:checked');
+            if (checkedCategory) {
+                checkedCategory.dispatchEvent(new Event('change'));
+            }
         }
-    </script>
+
+        // FORM SUBMIT
+        const form = document.getElementById('vacancyForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const positionLevel = document.getElementById('position_level').value;
+                document.getElementById('hidden_title').value = positionLevel;
+
+                let descriptionText = 'Position: ' + positionLevel + '\n' +
+                    'Service/Group: ' + document.getElementById('service_group').value + '\n' +
+                    'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
+
+                const inclusiveType = document.getElementById('inclusive_type').value;
+                if (inclusiveType) {
+                    descriptionText += ' (' + inclusiveType + ')';
+                }
+                descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
+
+                document.getElementById('hidden_description').value = descriptionText;
+                document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
+            });
+        }
+
+        console.log('✅ === ALL COMPLETE ===');
+    }
+
+    waitForConverter();
+})();
+
+function confirmPublish() {
+    return confirm(
+        '⚠️ Are you sure you want to publish this vacancy?\n\n' +
+        'यो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\n' +
+        'Once published, it will be visible to all candidates.'
+    );
+}
+</script>
 @endsection
