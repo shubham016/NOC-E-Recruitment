@@ -206,6 +206,26 @@
             border-radius: 50%;
             background: #dc2626;
         }
+
+        .deadline-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .deadline-nepali {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #bb2124
+;
+        }
+
+        .deadline-english {
+            font-size: 0.9rem;
+            color: #bb2124;
+;
+        }
     </style>
 @endsection
 
@@ -325,12 +345,25 @@
                     </div>
                 </div>
 
+                <!-- Enhanced Deadline Display with Nepali Date -->
                 <div class="detail-row">
-                    <div class="detail-label">Deadline</div>
+                    <div class="detail-label">Application Deadline</div>
                     <div class="detail-value">
-                        <i class="bi bi-calendar-check-fill text-danger me-1"></i>
-                        <strong>{{ $job->deadline->format('F d, Y') }}</strong>
-                        <small class="text-muted ms-2">({{ $job->deadline->diffForHumans() }})</small>
+                        {{-- <div class="deadline-box"> --}}
+                            {{-- <div class="d-flex align-items-center gap-3"> --}}
+                                {{-- <i class="bi bi-calendar-check-fill text-warning fs-4"></i> --}}
+                                <div>
+                                    <div class="deadline-nepali" id="deadline-bs-display">
+                                        <i class="bi bi-hourglass-split me-1"></i>Loading...
+                                    </div>
+                                    <div class="deadline-english">
+                                        <i class="bi bi-calendar-date me-1"></i>
+                                        <strong>{{ $job->deadline->format('Y-M-d') }}</strong>
+                                        {{-- <span class="ms-2">({{ $job->deadline->diffForHumans() }})</span> --}}
+                                    </div>
+                                </div>
+                            {{-- </div> --}}
+                        {{-- </div> --}}
                     </div>
                 </div>
 
@@ -573,10 +606,82 @@
                     <div class="timeline-dot bg-danger"></div>
                     <div>
                         <strong class="d-block">Application Deadline</strong>
-                        <small class="text-muted">{{ $job->deadline->format('M d, Y') }}</small>
+                        <small class="text-danger d-block" id="timeline-deadline-bs">Loading BS date...</small>
+                        <small class="text-danger">{{ $job->deadline->format('Y-M-d') }}</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+<script>
+(function() {
+    'use strict';
+
+    console.log('📝 === Show Page Date Display Initializing ===');
+
+    // Convert English numerals to Nepali for display
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    function waitForConverter() {
+        if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+            console.log('⏳ Waiting for converter...');
+            setTimeout(waitForConverter, 100);
+            return;
+        }
+
+        console.log('✅ Converter ready!');
+        displayNepaliDates();
+    }
+
+    function displayNepaliDates() {
+        // Get the deadline date from the page (passed from Laravel)
+        const deadlineAD = '{{ $job->deadline->format("Y-m-d") }}';
+        console.log('📅 Deadline AD:', deadlineAD);
+
+        // Convert AD to BS
+        const deadlineBS = window.adToBS(deadlineAD);
+        console.log('📅 Deadline BS:', deadlineBS);
+
+        if (deadlineBS) {
+            // Convert to Nepali numerals for display
+            const deadlineBSNepali = englishToNepali(deadlineBS);
+            console.log('📅 Deadline BS (Nepali):', deadlineBSNepali);
+
+            // Update the main deadline display
+            const deadlineBSDisplay = document.getElementById('deadline-bs-display');
+            if (deadlineBSDisplay) {
+                deadlineBSDisplay.innerHTML = '<i class="bi bi-calendar-week me-1"></i>' + deadlineBSNepali + ' बि.सं.';
+            }
+
+            // Update the timeline deadline
+            const timelineDeadlineBS = document.getElementById('timeline-deadline-bs');
+            if (timelineDeadlineBS) {
+                timelineDeadlineBS.textContent = deadlineBSNepali + ' बि.सं.';
+            }
+
+            console.log('✅ Nepali dates displayed successfully!');
+        } else {
+            // Fallback if conversion fails
+            const deadlineBSDisplay = document.getElementById('deadline-bs-display');
+            if (deadlineBSDisplay) {
+                deadlineBSDisplay.innerHTML = '<i class="bi bi-calendar-week me-1"></i>Date conversion unavailable';
+            }
+
+            const timelineDeadlineBS = document.getElementById('timeline-deadline-bs');
+            if (timelineDeadlineBS) {
+                timelineDeadlineBS.textContent = '';
+            }
+        }
+    }
+
+    waitForConverter();
+})();
+</script>
 @endsection
