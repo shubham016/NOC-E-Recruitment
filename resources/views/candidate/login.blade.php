@@ -206,7 +206,7 @@
                                     <i class="bi bi-shield-lock me-1"></i>Register
                                 </a>
                         </div>
-                        <div class="text-center footer-links">
+                     {{--   <div class="text-center footer-links">
                             <small class="text-muted">
                                 <span class="me-2">Access other portals:</span><br class="d-sm-none">
                                 <a href="{{ route('admin.login') }}" class="text-decoration-none">
@@ -217,7 +217,7 @@
                                     <i class="bi bi-clipboard-check me-1"></i>Reviewer Portal
                                 </a>
                             </small>
-                        </div>
+                        </div>  --}}
                     </div>
                 </div>
             </div>

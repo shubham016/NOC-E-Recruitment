@@ -19,10 +19,11 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
+    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -38,7 +39,7 @@
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="fas fa-list"></i> All Application Records</h4>
         <a href="{{ route('candidate.applications.create') }}" class="btn btn-light btn-sm">
-            <i class="fas fa-plus"></i> New Application
+            <i class="fas fa-plus"></i> Create New Application
         </a>
     </div>
 
@@ -95,13 +96,6 @@
                                         <a href="{{ route('candidate.applications.edit', $form->id) }}" class="btn btn-warning" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('candidate.applications.destroy', $form->id) }}" method="POST" class="d-inline"
-                                              onsubmit="return confirm('Delete this record permanently?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>

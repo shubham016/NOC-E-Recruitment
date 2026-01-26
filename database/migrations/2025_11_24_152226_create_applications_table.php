@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('reviewer_id')->nullable()->constrained('reviewers')->onDelete('set null');
             
             // Application status
-            $table->enum('status', ['pending', 'under_review', 'shortlisted', 'rejected'])->default('pending');
+            $table->enum('status', ['draft','pending', 'under_review', 'shortlisted', 'rejected'])->default('pending');
             
             // Application content
             $table->text('cover_letter')->nullable();

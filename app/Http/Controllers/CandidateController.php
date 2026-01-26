@@ -121,7 +121,8 @@ class CandidateController extends Controller
         return view('candidate.dashboard', [
             'candidate' => $candidate,
             'applicationsCount' => $applicationsCount,
-            'jobpostingsCount' => $jobpostingsCount
+            'jobpostingsCount' => $jobpostingsCount,
+            'job' => null,
         ]);
     }
     

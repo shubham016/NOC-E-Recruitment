@@ -20,10 +20,11 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
+    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -80,6 +81,14 @@
                         <strong>Birth Date (B.S):</strong>
                         <p class="mb-0">{{ $applicationform->birth_date_bs ?? '-' }}</p>
                     </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Applying Position:</strong>
+                        <p class="mb-0">{{ $applicationform->applying_position ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Advertisement Number:</strong>
+                        <p class="mb-0">{{ $applicationform->advertisement_no ?? '-' }}</p>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
@@ -118,6 +127,10 @@
                     <div class="col-md-4 mb-3">
                         <strong>Nationality:</strong>
                         <p class="mb-0">{{ $applicationform->nationality ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Email:</strong>
+                        <p class="mb-0">{{ $applicationform->email ?? '-' }}</p>
                     </div>
                 </div>
             </div>
@@ -569,13 +582,6 @@
                     <a href="{{ route('candidate.applications.edit', $applicationform->id) }}" class="btn btn-warning me-2">
                         <i class="fas fa-edit"></i> Edit Registration
                     </a>
-                    <form action="{{ route('candidate.applications.destroy', $applicationform->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this registration?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

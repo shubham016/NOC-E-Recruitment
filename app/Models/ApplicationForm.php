@@ -15,12 +15,14 @@ class ApplicationForm extends Model
 
     // Allow mass assignment for all these fields
     protected $fillable = [
-        'job_posting_id',
+        'advertisement_no',
         // Personal Info
         'name_english',
         'name_nepali',
         'birth_date_ad',
         'birth_date_bs',
+        'email',
+        'applying_position',
         'age',
         'phone',
         'gender',

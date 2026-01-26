@@ -80,6 +80,41 @@
             transition: padding-left 0.3s ease;
         }
 
+        /* NOC Logo and Brand Styles */
+        .noc-brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .noc-logo {
+            height: 50px;
+            width: auto;
+        }
+
+        .noc-info h5 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .noc-info p {
+            margin: 0;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.2;
+        }
+
+        .noc-info small {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.75);
+            font-style: italic;
+            display: block;
+            margin-top: 2px;
+        }
+
         /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
             background: rgba(255, 255, 255, 0.1);
@@ -100,7 +135,7 @@
         /* Layout Container */
         .layout-container {
             display: flex;
-            min-height: calc(100vh - 56px);
+            min-height: calc(100vh - 70px);
             transition: margin-left 0.3s ease;
         }
 
@@ -111,7 +146,7 @@
             color: white;
             position: fixed;
             left: 0;
-            top: 56px;
+            top: 70px;
             height: calc(100vh - 56px);
             overflow-y: hidden;
             flex-shrink: 0;
@@ -324,6 +359,22 @@
             .main-content {
                 padding: 1rem;
             }
+
+            .noc-info h5 {
+                font-size: 15px;
+            }
+
+            .noc-info p {
+                font-size: 12px;
+            }
+
+            .noc-info small {
+                font-size: 10px;
+            }
+
+            .noc-logo {
+                height: 40px;
+            }
         }
 
         /* Custom Scrollbar for Sidebar Menu */
@@ -360,9 +411,16 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-users"></i> Online Recruitment Management System
-            </a>
+            <!-- NOC Logo and Brand -->
+            <div class="noc-brand-container">
+                <img src="{{ asset('images/noc_logo.jpeg') }}" alt="Nepal Oil Corporation Logo" class="noc-logo">
+                <div class="noc-info">
+                    <h5>NEPAL OIL CORPORATION LTD.</h5>
+                    <p>Babarmahal, Kathmandu</p>
+                    <small>Online Recruitment Management System</small>
+                </div>
+            </div>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>

@@ -34,5 +34,8 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    /*'sparrow' => [
+        'token'  => env('SPARROW_TOKEN'),
+        'sender' => env('SPARROW_SENDER'),
+    ], */
 ];

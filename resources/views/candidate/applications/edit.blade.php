@@ -18,10 +18,11 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
+    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -110,6 +111,20 @@
                         <div class="col-md-3">
                             <label for="birth_date_bs" class="form-label">Birth Date (B.S) <span class="text-danger">*</span> <small>(जन्म मिति B.S)</small></label>
                             <input type="text" name="birth_date_bs" id="birth_date_bs" class="form-control" placeholder="YYYY-MM-DD" value="{{ old('birth_date_bs', $applicationform->birth_date_bs) }}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="text" name="email" id="email" class="form-control" placeholder="email" value="{{ old('Email Address', $applicationform->email) }}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
+                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $applicationform->applying_position ?? '') }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $applicationform->advertisement_no ?? '') }}" required>
                         </div>
                     </div>
 

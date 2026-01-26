@@ -94,7 +94,7 @@ return new class extends Migration
             $table->string('passport_size_photo')->nullable(); 
             $table->string('institution_name')->nullable(); 
             $table->string('terms_agree')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['draft','pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

@@ -110,6 +110,8 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
             Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
+            Route::get('/{jobId}/check-eligibility', [ApplicationFormController::class, 'checkEligibility'])
+            ->name('jobs.check-eligibility');
 
             // Application Routes (nested under jobs for create/store/edit/update)
             Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
@@ -131,11 +133,12 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
             Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
+            Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft');
             Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
             Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
             Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
             Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');
-            Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
+           // Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
         });
     });
 });

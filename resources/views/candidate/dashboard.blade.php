@@ -19,10 +19,11 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
+    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -97,7 +98,7 @@
                 <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">Total Live Advertisements</p>
                 <small class="text-info">
-                    <i class="bi bi-info-circle me-1"></i>All time
+                    <i class="bi bi-info-circle me-1"></i>Currently Active
                 </small>
             </div>
         </div>
