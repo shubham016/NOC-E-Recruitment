@@ -103,7 +103,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="name_nepali" class="form-label">Full Name (Nepali) <span class="text-danger">*</span> <small>(पुरा नाम नेपाली)</small></label>
-                            <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali') }}" required>
+                            <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali', $draftApplication->name_nepali ?? '') }}" required>
                         </div>
                         </div>
                     <div class="row mb-3">
@@ -119,18 +119,23 @@
                         </div>
                         <div class="col-md-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="text" name="email" id="email" class="form-control" placeholder="YYYY-MM-DD" 
+                            <input type="text" name="email" id="email" class="form-control"
                                 value="{{ old('email', $draftApplication->email ?? $candidate->email) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
+                            <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? '') }}" required>
+                        </div>
+                        <div class="col-md-4">
                             <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
                             <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $draftApplication->applying_position ?? '') }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
-                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? '') }}" required>
+                        <div class="col-md-3">
+                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                            <input type="text" name="department" id="department" class="form-control" 
+                                value="{{ old('department', $draftApplication->department ?? '') }}" required>
                         </div>
                     </div>
 

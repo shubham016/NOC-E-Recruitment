@@ -16,6 +16,7 @@ class ApplicationForm extends Model
     // Allow mass assignment for all these fields
     protected $fillable = [
         'advertisement_no',
+        'job_posting_id',
         // Personal Info
         'name_english',
         'name_nepali',
@@ -23,6 +24,8 @@ class ApplicationForm extends Model
         'birth_date_bs',
         'email',
         'applying_position',
+        'department',
+        'position',
         'age',
         'phone',
         'gender',

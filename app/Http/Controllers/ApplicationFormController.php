@@ -468,6 +468,9 @@ class ApplicationFormController extends Controller
             'same_as_permanent' => 'nullable|boolean',
             'physical_disability' => 'nullable|in:yes,no',
             'job_posting_id' => 'nullable|exists:job_postings,id',
+            'advertisement_no' => 'nullable|string',
+            'department' => 'nullable|string',
+            'applying_position' => 'nullable|string',
 
             'citizenship_id_document' => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'resume_cv'               => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',

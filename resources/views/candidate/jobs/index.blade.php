@@ -266,7 +266,7 @@
         
         // Disable button and show loading state
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking Eligibility...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
         fetch(`/candidate/jobs/${jobId}/check-eligibility`)
             .then(response => response.json())

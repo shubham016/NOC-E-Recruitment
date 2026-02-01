@@ -81,13 +81,19 @@
                         <strong>Birth Date (B.S):</strong>
                         <p class="mb-0">{{ $applicationform->birth_date_bs ?? '-' }}</p>
                     </div>
+                    <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <strong>Advertisement Number:</strong>
+                        <p class="mb-0">{{ $applicationform->advertisement_no ?? '-' }}</p>
+                    </div>
                     <div class="col-md-3 mb-3">
                         <strong>Applying Position:</strong>
                         <p class="mb-0">{{ $applicationform->applying_position ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <strong>Advertisement Number:</strong>
-                        <p class="mb-0">{{ $applicationform->advertisement_no ?? '-' }}</p>
+                        <strong>Department:</strong>
+                        <p class="mb-0">{{ $applicationform->department ?? '-' }}</p>
+                    </div>
                     </div>
                 </div>
                 <div class="row">
