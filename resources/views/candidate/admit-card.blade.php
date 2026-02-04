@@ -138,7 +138,7 @@
                                class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> View Admit Card
                             </a>
-                        <!--    <a href="{{ route('candidate.admit-card.download', $application->id) }}" 
+                        <!-- <a href="{{ route('candidate.admit-card.download', $application->id) }}" 
                                class="btn btn-primary btn-sm">
                                 <i class="bi bi-download"></i> Download PDF
                             </a> -->

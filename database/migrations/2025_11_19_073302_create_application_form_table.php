@@ -14,22 +14,22 @@ return new class extends Migration
             $table->id();
             
             // General Information
-            $table->string('religion')->nullable(); // धर्म
-            $table->string('religion_other')->nullable();
-            $table->string('community')->nullable(); // तपाई आफैलाई के बोलाउन रुचाउनुहुन्छ
-            $table->string('community_other')->nullable();
-            $table->string('ethnic_group')->nullable(); // जातीय समूह
-            $table->string('ethnic_group_other')->nullable();
+            $table->text('religion')->nullable(); // धर्म
+            $table->text('religion_other')->nullable();
+            $table->text('community')->nullable(); // तपाई आफैलाई के बोलाउन रुचाउनुहुन्छ
+            $table->text('community_other')->nullable();
+            $table->text('ethnic_group')->nullable(); // जातीय समूह
+            $table->text('ethnic_group_other')->nullable();
             $table->string('ethnic_certificate')->nullable(); // Certificate upload
-            $table->string('marital_status')->nullable(); // वैवाहिक स्थिति
-            $table->string('employment_status')->nullable(); // रोजगारी अवस्था
+            $table->text('marital_status')->nullable(); // वैवाहिक स्थिति
+            $table->text('employment_status')->nullable(); // रोजगारी अवस्था
             $table->string('employment_other')->nullable();
-            $table->string('physical_disability')->nullable(); // शारीरिक अशक्त
+            $table->text('physical_disability')->nullable(); // शारीरिक अशक्त
             $table->string('disability_other')->nullable();
             $table->string('disability_certificate')->nullable(); // Disability certificate
-            $table->string('mother_tongue')->nullable(); // मातृभाषा
+            $table->text('mother_tongue')->nullable(); // मातृभाषा
             $table->string('blood_group')->nullable(); // रक्त समूह
-            $table->string('noc_employee')->nullable(); // NOC कर्मचारी
+            $table->text('noc_employee')->nullable(); // NOC कर्मचारी
             $table->string('noc_id_card')->nullable(); // NOC ID Card upload
             
             // Personal Information - Basic
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('birth_date_bs')->nullable(); // जन्म मिति (B.S)
             $table->integer('age')->nullable(); // उमेर
             $table->string('phone')->nullable(); // फोन नम्बर
-            $table->string('gender')->nullable(); // लिङ्ग
+            $table->text('gender')->nullable(); // लिङ्ग
             
             // Citizenship
             $table->string('citizenship_number')->nullable(); // नागरिकता नम्बर
@@ -46,24 +46,24 @@ return new class extends Migration
             $table->string('citizenship_issue_district')->nullable(); // जारी जिल्ला
             
             // Family Information
-            $table->string('father_name_english')->nullable(); // बुबाको नाम (English)
-            $table->string('father_name_nepali')->nullable(); // बुबाको नाम (नेपालीमा)
+            $table->text('father_name_english')->nullable(); // बुबाको नाम (English)
+            $table->text('father_name_nepali')->nullable(); // बुबाको नाम (नेपालीमा)
             $table->string('father_qualification')->nullable(); // बुबाको योग्यता
-            $table->string('mother_name_english')->nullable(); // आमाको नाम (English)
-            $table->string('mother_name_nepali')->nullable(); // आमाको नाम (नेपालीमा)
+            $table->text('mother_name_english')->nullable(); // आमाको नाम (English)
+            $table->text('mother_name_nepali')->nullable(); // आमाको नाम (नेपालीमा)
             $table->string('mother_qualification')->nullable(); // आमाको योग्यता
             $table->string('parent_occupation')->nullable(); // बुबा/आमाको मुख्य पेशा
             $table->string('parent_occupation_other')->nullable();
             $table->string('grandfather_name_english')->nullable(); // हजुरबुबाको नाम (English)
             $table->string('grandfather_name_nepali')->nullable(); // हजुरबुबाको नाम (नेपालीमा)
-            $table->string('nationality')->nullable(); // राष्ट्रियता
-            $table->string('spouse_name_english')->nullable(); // पति/पत्नीको नाम (English)
-            $table->string('spouse_name_nepali')->nullable(); // पति/पत्नीको नाम (नेपालीमा)
-            $table->string('spouse_nationality')->nullable(); // पति/पत्नी राष्ट्रियता
+            $table->text('nationality')->nullable(); // राष्ट्रियता
+            $table->text('spouse_name_english')->nullable(); // पति/पत्नीको नाम (English)
+            $table->text('spouse_name_nepali')->nullable(); // पति/पत्नीको नाम (नेपालीमा)
+            $table->text('spouse_nationality')->nullable(); // पति/पत्नी राष्ट्रियता
             
             // Permanent Address
             $table->string('permanent_province')->nullable(); // प्रान्त
-            $table->string('permanent_district')->nullable(); // जिल्ला
+            $table->text('permanent_district')->nullable(); // जिल्ला
             $table->string('permanent_municipality')->nullable(); // नगरपालिका / गा.वि.स
             $table->string('permanent_ward')->nullable(); // वडा नम्बर
             $table->string('permanent_tole')->nullable(); // टोलको नाम
@@ -72,15 +72,15 @@ return new class extends Migration
             // Mailing Address
             $table->boolean('same_as_permanent')->default(false); // स्थायी ठेगाना जस्तै
             $table->string('mailing_province')->nullable(); // प्रान्त
-            $table->string('mailing_district')->nullable(); // जिल्ला
+            $table->text('mailing_district')->nullable(); // जिल्ला
             $table->string('mailing_municipality')->nullable(); // नगरपालिका / गा.वि.स
             $table->string('mailing_ward')->nullable(); // वडा नम्बर
             $table->string('mailing_tole')->nullable(); // टोलको नाम
             $table->string('mailing_house_number')->nullable(); // घर नम्बर
             
             // Missing
-            $table->string('name_english')->nullable(); 
-            $table->string('name_nepali')->nullable(); 
+            $table->text('name_english')->nullable(); 
+            $table->text('name_nepali')->nullable(); 
             $table->string('education_level')->nullable(); 
             $table->string('field_of_study')->nullable(); 
             $table->integer('graduation_year')->nullable();

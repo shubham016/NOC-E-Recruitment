@@ -133,6 +133,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
             Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
+            
             Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft');
             Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
             Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');

@@ -20,7 +20,7 @@ class ApplicationFormController extends Controller
         'resume_cv'                => 'resumes',
         'educational_certificates' => 'educational-certificates',
         'passport_size_photo'      => 'passport-photos',
-
+        'signature'  => 'signature',
     ];
 
     public function index()
@@ -224,7 +224,10 @@ class ApplicationFormController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
 
-        $validated = $request->validate($this->validationRules());
+        $validated = $request->validate(
+            $this->validationRules(),
+            $this->validationMessages()
+        );
 
         if ($request->has('job_posting_id')) {
             $job = JobPosting::find($request->job_posting_id);
@@ -354,7 +357,10 @@ class ApplicationFormController extends Controller
                 ->withErrors(['error' => 'Unauthorized access']);
         }
 
-        $validated = $request->validate($this->validationRules(false));
+        $validated = $request->validate(
+            $this->validationRules(false),
+            $this->validationMessages()
+        );
 
         $data = $request->except(array_keys($this->fileFields));
         $uploadedFiles = $this->handleFileUploads($request, $applicationform);
@@ -444,7 +450,7 @@ class ApplicationFormController extends Controller
 
     private function validationRules($isStore = true)
     {
-        return [
+        $rules = [
             'name_english' => 'required|string|max:255',
             'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
@@ -466,22 +472,64 @@ class ApplicationFormController extends Controller
             'education_level' => 'nullable|string',
 
             'same_as_permanent' => 'nullable|boolean',
-            'physical_disability' => 'nullable|in:yes,no',
+            'physical_disability' => 'required|in:yes,no',
+            'noc_employee' => 'required|in:yes,no',
+            'ethnic_group' => 'required|in:Dalit,Janajati,Madhesi,Brahmin/Chhetri,Other',
             'job_posting_id' => 'nullable|exists:job_postings,id',
             'advertisement_no' => 'nullable|string',
             'department' => 'nullable|string',
             'applying_position' => 'nullable|string',
+            'alternate_phone_number' => 'nullable|digits:10',
 
             'citizenship_id_document' => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'resume_cv'               => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
             'passport_size_photo'     => $isStore ? 'required|image|mimes:jpg,jpeg,png,webp|max:2048' : 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
-            'ethnic_certificate'      => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'noc_id_card'             => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'disability_certificate'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-
             'educational_certificates'     => 'nullable|array',
             'educational_certificates.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ];
+
+        // Conditional validation for NOC ID Card
+        if ($isStore) {
+            $rules['noc_id_card'] = 'required_if:noc_employee,yes|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        } else {
+            $rules['noc_id_card'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
+
+        // Conditional validation for Disability Certificate
+        if ($isStore) {
+            $rules['disability_certificate'] = 'required_if:physical_disability,yes|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        } else {
+            $rules['disability_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
+
+        // Conditional validation for Ethnic Certificate (required for Dalit and Janajati)
+        if ($isStore) {
+            $rules['ethnic_certificate'] = 'required_if:ethnic_group,Dalit,Janajati|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        } else {
+            $rules['ethnic_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
+
+        return $rules;
+    }
+
+    private function validationMessages()
+    {
+        return [
+            'noc_employee.required' => 'Please select whether you are a NOC employee.',
+            'noc_id_card.required_if' => 'NOC ID Card is required when you are a NOC employee.',
+            'noc_id_card.mimes' => 'NOC ID Card must be an image (JPEG, JPG, PNG) or PDF.',
+            'noc_id_card.max' => 'NOC ID Card must not exceed 2MB.',
+            
+            'physical_disability.required' => 'Please select whether you have a physical disability.',
+            'disability_certificate.required_if' => 'Disability Certificate is required when you have a physical disability.',
+            'disability_certificate.mimes' => 'Disability Certificate must be an image (JPEG, JPG, PNG) or PDF.',
+            'disability_certificate.max' => 'Disability Certificate must not exceed 2MB.',
+            
+            'ethnic_group.required' => 'Please select your ethnic group.',
+            'ethnic_certificate.required_if' => 'Ethnic Certificate is required for Dalit and Janajati ethnic groups.',
+            'ethnic_certificate.mimes' => 'Ethnic Certificate must be an image (JPEG, JPG, PNG) or PDF.',
+            'ethnic_certificate.max' => 'Ethnic Certificate must not exceed 2MB.',
         ];
     }
 

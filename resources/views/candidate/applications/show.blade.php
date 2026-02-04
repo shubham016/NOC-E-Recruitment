@@ -94,6 +94,10 @@
                         <strong>Department:</strong>
                         <p class="mb-0">{{ $applicationform->department ?? '-' }}</p>
                     </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Phone Number:</strong>
+                        <p class="mb-0">{{ $applicationform->phone ?? '-' }}</p>
+                    </div>
                     </div>
                 </div>
                 <div class="row">
@@ -102,8 +106,8 @@
                         <p class="mb-0">{{ $applicationform->age ?? '-' }} {{ $applicationform->age ? 'years' : '' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Phone:</strong>
-                        <p class="mb-0">{{ $applicationform->phone ?? '-' }}</p>
+                        <strong>Alternate Phone Number:</strong>
+                        <p class="mb-0">{{ $applicationform->alternate_phone_number ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Gender:</strong>
@@ -499,6 +503,18 @@
                             @if($applicationform->disability_certificate)
                                 <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file"></i> View Certificate
+                                </a>
+                            @else
+                                <span class="text-muted">Not uploaded</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Signature:</strong>
+                        <p class="mb-0">
+                            @if($applicationform->signature)
+                                <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank" class="btn btn-sm bg-light">
+                                    <i class="fas fa-file"></i> View Signature
                                 </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>

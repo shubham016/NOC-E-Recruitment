@@ -28,405 +28,453 @@
         body {
             font-family: 'NotoSansDevanagari', 'DejaVu Sans', sans-serif;
             padding: 0;
-            font-size: 11px;
+            font-size: 12px;
             line-height: 1.4;
         }
         
-        .admit-card {
+        .admit-card-wrapper {
             width: 100%;
-            max-width: 210mm;
+            max-width: 800px;
             margin: 0 auto;
+        }
+
+        .admit-card {
+            border: 2px solid #000;
             background: white;
         }
-        
+
+        /* Header Section */
         .header-section {
-            background: #000;
-            padding: 3px;
-            margin-bottom: 15px;
-        }
-        
-        .top-bar {
-            background: white;
-            padding: 10px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .emblem-section {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        
-        .emblem-img {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto;
-        }
-        
-        .org-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 8px 0 3px 0;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .org-name-nepali {
-            font-size: 12px;
-            color: #333;
-            margin-bottom: 5px;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .admit-card-number {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 10px;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .main-content {
-            padding: 0 15px;
-        }
-        
-        .content-grid {
             display: table;
             width: 100%;
-            margin-bottom: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #000;
         }
-        
-        .left-section {
+
+        .header-left {
             display: table-cell;
-            width: 35%;
-            vertical-align: top;
-            padding-right: 10px;
+            width: 15%;
+            vertical-align: middle;
         }
-        
-        .center-section {
+
+        .logo-wrapper {
+            width: 80px;
+            height: 80px;
+        }
+
+        .noc-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-center {
+            display: table-cell;
+            width: 65%;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0 10px;
+        }
+
+        .org-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .org-subtitle {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 3px 0;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .exam-type {
+            font-size: 10px;
+            margin: 0 0 5px 0;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 5px 0 0 0;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .header-right {
+            display: table-cell;
+            width: 20%;
+            vertical-align: middle;
+        }
+
+        .photo-wrapper {
+            width: 120px;
+            height: 140px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            margin-left: auto;
+            position: relative;
+        }
+
+        .candidate-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* NOC Logo Stamp Overlay */
+        .noc-stamp-overlay {
+            position: absolute;
+            top: -15px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.9;
+            z-index: 10;
+        }
+
+        /* Content Section */
+        .content-section {
+            display: table;
+            width: 100%;
+            padding: 15px 20px;
+        }
+
+        .details-left {
+            display: table-cell;
+            width: 60%;
+            vertical-align: top;
+            padding-right: 15px;
+        }
+
+        .details-right {
             display: table-cell;
             width: 40%;
             vertical-align: top;
-            padding: 0 10px;
         }
-        
-        .right-section {
-            display: table-cell;
-            width: 25%;
-            vertical-align: top;
-        }
-        
-        .citizenship-box {
-            border: 1px solid #d00;
-            padding: 3px;
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f9f9f9;
-        }
-        
-        .citizenship-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .photo-box {
-            border: 1px solid #d00;
-            width: 100%;
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f9f9f9;
-        }
-        
-        .photo-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-        
-        .signature-box {
-            border: 1px solid #999;
-            margin-top: 10px;
-            height: 40px;
-            background: white;
-        }
-        
-        .signature-label {
-            font-size: 9px;
-            text-align: center;
-            margin-top: 2px;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .details-table {
+
+        /* Info Table */
+        .info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
+            margin-bottom: 10px;
         }
-        
-        .details-table td {
-            padding: 6px 8px;
-            border: 1px solid #999;
-            vertical-align: middle;
-            font-family: 'NotoSansDevanagari', sans-serif;
+
+        .info-table tr {
+            border-bottom: 1px solid #ddd;
         }
-        
-        .details-table .label-col {
-            background: #e8f4f8;
-            font-weight: bold;
-            width: 45%;
-            font-size: 10px;
-            white-space: nowrap;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .details-table .value-col {
-            background: white;
-            font-size: 10px;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .section-title {
-            background: #e8f4f8;
-            padding: 6px;
-            font-weight: bold;
-            text-align: center;
-            border: 1px solid #999;
-            margin: 12px 0 8px 0;
+
+        .info-table td {
+            padding: 5px 8px;
             font-size: 11px;
             font-family: 'NotoSansDevanagari', sans-serif;
         }
-        
-        .exam-details {
-            width: 100%;
-            margin: 10px 0;
-        }
-        
-        .exam-row {
-            display: table;
-            width: 100%;
-            border: 1px solid #999;
-        }
-        
-        .exam-label {
-            display: table-cell;
+
+        .info-table .label {
             width: 35%;
-            padding: 6px 8px;
-            background: #e8f4f8;
-            font-weight: bold;
-            border-right: 1px solid #999;
-            font-size: 10px;
-            vertical-align: middle;
-            font-family: 'NotoSansDevanagari', sans-serif;
+            font-weight: 500;
         }
-        
-        .exam-value {
-            display: table-cell;
-            padding: 6px 8px;
-            background: white;
-            font-size: 10px;
-            vertical-align: middle;
-            font-family: 'NotoSansDevanagari', sans-serif;
+
+        .info-table .value {
+            width: 65%;
         }
-        
-        .instructions {
+
+        .mt-2 {
             margin-top: 15px;
+        }
+
+        .instruction-text {
+            margin: 15px 0;
             padding: 10px;
-            background: #fffef5;
-            border: 1px solid #999;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
         }
-        
-        .instructions-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-align: center;
-            font-size: 11px;
-            font-family: 'NotoSansDevanagari', sans-serif;
-        }
-        
-        .instructions ul {
-            margin-left: 20px;
+
+        .instruction-text p {
             font-size: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 4px;
-            line-height: 1.5;
+            line-height: 1.6;
+            margin: 0;
             font-family: 'NotoSansDevanagari', sans-serif;
         }
-        
-        .footer-black {
-            background: #000;
-            padding: 3px;
-            margin-top: 15px;
+
+        /* Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        
-        .clearfix::after {
-            content: "";
+
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid #000;
+            padding: 5px 8px;
+            font-size: 10px;
+            text-align: left;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .schedule-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+
+        .schedule-table thead th:nth-child(1) {
+            width: 10%;
+        }
+
+        .schedule-table thead th:nth-child(2) {
+            width: 15%;
+        }
+
+        .schedule-table thead th:nth-child(3) {
+            width: 75%;
+        }
+
+        /* Citizenship and Signature */
+        .citizenship-wrapper {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            margin-bottom: 15px;
+        }
+
+        .citizenship-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .signature-section {
+            margin-top: 20px;
+        }
+
+        .signature-box {
+            width: 100%;
+            height: 60px;
+            border: 1px solid #000;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .candidate-signature {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .signature-labels {
             display: table;
-            clear: both;
+            width: 100%;
+            margin-top: 5px;
         }
-        
+
+        .signature-label-left,
+        .signature-label-right {
+            display: table-cell;
+            width: 50%;
+            font-size: 9px;
+            text-align: center;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .signature-label-left p,
+        .signature-label-right p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Instructions Section */
+        .instructions-section {
+            padding: 15px 20px;
+            border-top: 1px solid #000;
+        }
+
+        .instructions-section h4 {
+            font-size: 12px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
+
+        .instructions-section ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .instructions-section li {
+            font-size: 9px;
+            line-height: 1.5;
+            margin-bottom: 5px;
+            font-family: 'NotoSansDevanagari', sans-serif;
+        }
     </style>
 </head>
 <body>
-    <div class="admit-card">
-    
-        <!-- Header with Emblem -->
-        <div class="top-bar">
-            <div class="admit-card-number">
-                प्रवेश पत्र नं. {{ $application->roll_number ?? $application->id }}
-            </div>
+    <div class="admit-card-wrapper">
+        <div class="admit-card">
             
-            <div class="emblem-section">
-                @if(!empty($emblemImage))
-                    <img src="{{ $emblemImage }}" class="emblem-img" alt="Nepal Emblem">
-                @else
-                    <div class="emblem-img" style="border: 1px solid #ccc; border-radius: 50%; background: #f5f5f5;"></div>
-                @endif
-            </div>
-            
-            <div class="org-name">{{ $application->organization_name ?? 'लोक सेवा आयोग' }}</div>
-            <div class="org-name-nepali">{{ $application->post_title ?? 'नेपाल' }}</div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-grid">
-                <!-- Left: Citizenship Card -->
-                <div class="left-section">
-                    <div class="citizenship-box">
-                        @if(!empty($citizenshipImage))
-                            <img src="{{ $citizenshipImage }}" alt="Citizenship">
-                        @else
-                            <div style="text-align: center; color: #999;">
-                                <div style="font-size: 9px;">नागरिकता</div>
-                                <div style="font-size: 8px;">Citizenship Card</div>
-                            </div>
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="header-left">
+                    <div class="logo-wrapper">
+                        @if(!empty($nocLogoImage))
+                            <img src="{{ $nocLogoImage }}" alt="NOC Logo" class="noc-logo">
                         @endif
                     </div>
                 </div>
-                
-                <!-- Center: Details -->
-                <div class="center-section">
-                    <table class="details-table">
-                        <tr>
-                            <td class="label-col">क) नाम थर (अंग्रेजीमा)</td>
-                            <td class="value-col">{{ $application->name_english ?? $candidate->name }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">ख) नाम थर (देवनागरीमा)</td>
-                            <td class="value-col">{{ $application->name_nepali ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">ग) लिङ्ग</td>
-                            <td class="value-col">{{ $application->gender ?? $candidate->gender }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">घ) जन्म मिति (बि.सं.)</td>
-                            <td class="value-col">{{ $application->birth_date_bs ?? $candidate->date_of_birth_bs ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">ङ) बाबुको नाम (देवनागरीमा)</td>
-                            <td class="value-col">{{ $application->father_name_nepali ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">च) स्थायी ठेगाना</td>
-                            <td class="value-col">
-                                {{ $application->permanent_district ?? '' }}
-                                @if($application->permanent_municipality ?? '')
-                                    , {{ $application->permanent_municipality }}
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <div class="section-title">सम्पर्क विवरण / Contact Details</div>
-                    <table class="details-table">
-                        <tr>
-                            <td class="label-col">मोबाइल नम्बर</td>
-                            <td class="value-col">{{ $application->phone ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">नागरिकता नं</td>
-                            <td class="value-col">{{ $application->citizenship_number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">जारी मिति</td>
-                            <td class="value-col">{{ $application->citizenship_issue_date_bs ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label-col">जारी जिल्ला</td>
-                            <td class="value-col">{{ $application->citizenship_issue_district ?? '' }}</td>
-                        </tr>
-                    </table>
+                <div class="header-center">
+                    <h2 class="org-title">{{ $application->organization_name ?? 'नेपाल आयल निगम लिमिटेड' }}</h2>
+                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, टेकु' }}</h4>
+                    <p class="exam-type">{{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}</p>
+                    <h3 class="card-title">प्रवेश पत्र</h3>
                 </div>
-                
-                <!-- Right: Photo -->
-                <div class="right-section">
-                    <div class="photo-box">
+                <div class="header-right">
+                    <div class="photo-wrapper">
                         @if(!empty($photoImage))
-                            <img src="{{ $photoImage }}" alt="Photo">
+                            <img src="{{ $photoImage }}" alt="Photo" class="candidate-photo">
                         @else
-                            <div style="text-align: center; color: #999; font-size: 9px;">
-                                फोटो<br>Photo
+                            <div style="text-align: center; color: #999; font-size: 11px;">
+                                फोटो
                             </div>
                         @endif
+                        
+                        @if(!empty($nocLogoImage))
+                            <img src="{{ $nocLogoImage }}" alt="NOC Stamp" class="noc-stamp-overlay">
+                        @endif
                     </div>
-                    <div class="signature-box"></div>
-                    <div class="signature-label">
-                        <span style="font-family: 'NotoSansDevanagari';">उम्मेदवारको दस्तखत</span><br>
-                        <span style="font-family: Arial; font-size: 8px;">Candidate's Signature</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-section">
+                
+                <!-- Left: Candidate Details -->
+                <div class="details-left">
+                    <table class="info-table">
+                        <tr>
+                            <td class="label">रोल नं.</td>
+                            <td class="value">: {{ $application->roll_number ?? $application->id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">नाम, थर</td>
+                            <td class="value">: {{ $application->name_nepali ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Name, Surname</td>
+                            <td class="value">: {{ $application->name_english ?? $candidate->name }}</td>
+                        </tr>
+                    </table>
+
+                    <table class="info-table mt-2">
+                        <tr>
+                            <td class="label">विज्ञापन नं.</td>
+                            <td class="value">: {{ $application->advertisement_number ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">पद / तह</td>
+                            <td class="value">: {{ $application->post_title ?? '' }} / {{ $application->level ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">सेवा / समूह</td>
+                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">खुल्ला / समावेशी</td>
+                            <td class="value">: {{ $application->application_type ?? 'खुल्ला' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">नागरिता नं.</td>
+                            <td class="value">: {{ $application->citizenship_number ?? '' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="instruction-text">
+                        <p>देहाय बमोजिमको मिति तथा समयमा तिनुभएको उपयुक्त पदको परीक्षामा तपसिलबाट सूचित हुन अनुरोध गरिएको छ । विज्ञापनमा तोकिएको बर्ग बुझ नम्बरको ठहर भएको जुनसुकै अवस्थामा पनि यो अनुरोध पत्र रद्द हुनेछ ।</p>
                     </div>
 
+                    <!-- Exam Schedule Table -->
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>क्र.नं.</th>
+                                <th>पत्र</th>
+                                <th>मिति, समय</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>१</td>
+                                <td>प्रथम</td>
+                                <td>{{ $application->exam_date_first ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} ({{ $application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास' }})</td>
+                            </tr>
+                            <tr>
+                                <td>२</td>
+                                <td>द्वितिय</td>
+                                <td>{{ $application->exam_date_second ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} ({{ $application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास' }})</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right: Citizenship and Signature -->
+                <div class="details-right">
+                    <div class="citizenship-wrapper">
+                        @if(!empty($citizenshipImage))
+                            <img src="{{ $citizenshipImage }}" alt="Citizenship" class="citizenship-image">
+                        @else
+                            <div style="text-align: center; color: #999;">
+                                <p style="font-size: 11px; margin: 0;">नागरिकता प्रमाणपत्र</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            @if(!empty($signatureImage))
+                                <img src="{{ $signatureImage }}" alt="Signature" class="candidate-signature">
+                            @endif
+                        </div>
+                        <div class="signature-labels">
+                            <div class="signature-label-left">
+                                <p>उम्मेदवार दस्तखत</p>
+                            </div>
+                            <div class="signature-label-right">
+                                <p>आधिकारिक दस्तखत</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Exam Details -->
-            <div class="section-title">परीक्षा सम्बन्धी विवरण / Examination Details</div>
-            <div class="exam-details">
-                <div class="exam-row">
-                    <div class="exam-label">क) परीक्षाको प्रकार</div>
-                    <div class="exam-value">{{ $application->post_title ?? 'लिखित परीक्षा' }}</div>
-                </div>
-                <div class="exam-row">
-                    <div class="exam-label">ख) परीक्षा हुने मिति</div>
-                    <div class="exam-value">{{ date('Y-m-d', strtotime($application->exam_date)) }} ({{ date('l', strtotime($application->exam_date)) }})</div>
-                </div>
-                <div class="exam-row">
-                    <div class="exam-label">ग) परीक्षा हुने समय</div>
-                    <div class="exam-value">{{ $application->exam_time }}</div>
-                </div>
-                @if(isset($application->reporting_time) && $application->reporting_time)
-                <div class="exam-row">
-                    <div class="exam-label">घ) रिपोर्टिङ समय</div>
-                    <div class="exam-value" style="font-weight: bold; color: #d00;">{{ $application->reporting_time }}</div>
-                </div>
-                @endif
-                <div class="exam-row">
-                    <div class="exam-label">ङ) परीक्षा केन्द्र</div>
-                    <div class="exam-value">{{ $application->exam_venue }}</div>
-                </div>
-            </div>
-            
-            <!-- Instructions -->
-            <div class="instructions">
-                <div class="instructions-title">सम्बन्धित व्यक्तिलाई विशेष सूचनाहरु</div>
-                @if(isset($application->exam_instructions) && $application->exam_instructions)
-                    <div style="white-space: pre-line; font-family: 'NotoSansDevanagari', sans-serif;">{{ $application->exam_instructions }}</div>
-                @else
-                <ul>
-                    <li>परीक्षा भवन भित्र मोबाइल लैजान तथा प्रयोग गर्न पाईने छैन।</li>
-                    <li>परीक्षा हुने समय भन्दा कम्तिमा ३० मिनेट अगावै परीक्षा केन्द्रमा उपस्थित हुनुपर्नेछ।</li>
-                    <li>नीलो वा कालो कलम तथा अन्य आवश्यक सामानहरु आफै ल्याउनु पर्नेछ।</li>
-                    <li>परीक्षा शुरु भएपछि कुनै पनि हालतमा परीक्षा केन्द्रमा प्रवेश गर्न पाइने छैन।</li>
-                    <li>यो प्रवेश पत्र तथा फोटो सहितको नागरिकता अनिवार्य रुपमा साथमा ल्याउनु पर्नेछ।</li>
-                    <li>परीक्षा केन्द्रबाट परीक्षा सुरु हुने समय तथा बस्ने स्थान बारे जानकारी लिनुहोला।</li>
-                </ul>
-                @endif
+
+            <!-- Instructions Section -->
+            <div class="instructions-section">
+                <h4>उम्मेदवारले पालन गर्नुपर्ने निम्नाहरू :</h4>
+                <ol>
+                    <li>उम्मेदवारले उपस्थितिसमय काखोली मसी भएको इन्टर/कलम मात्र प्रयोग गर्नुपर्नेछ।</li>
+                    <li>प्रवेश पत्र बिना कुनै पनि उम्मेदवारलाई परीक्षामा सम्मिलित नगराइने र प्रवेश पत्र अनिवार्य रूपमा साथमा लिइ परीक्षा सञ्चालन हुन्छसम्म कायाप्त राख्न र प्रत्येक प्रश्न पत्रको परीक्षा प्रस्तुत हुन्दाको कालावधि १ घण्टा अगावै प्रवेश कार्यालय बुझाउनुपर्दछ ।</li>
+                    <li>लिखित परीक्षा नहीजुन मान्यता प्राप्त अन्तर्गत हुने दिनमा पनि प्रदेयेश रुपमें प्रस्तृत हुनेछ । ।</li>
+                    <li>लिखित परीक्षा सुरु भई ३० मिनेट बग्ने समयावधि गुज्रेपछि परीक्षा हलमा प्रवेश गर्न नपाईने र उक्त समयसम्म प्रवेश गर्न नपाई विना अनुमति गत्यागना प्रवेश नै दिइने छैन । त्यस्तो परीक्षा हलमा प्रवेश नगर्न आएस अर्लीको संक्षिप्त पनि हुनेछन् वन्द्यार्यो छैन ।</li>
+                    <li>परीक्षा हलमा प्रवेश गर्दा केवटी पनि उम्मेदवारहरुको परीक्षा भाबिर जानु अनुरोध छिटोई छ ।</li>
+                    <li>परीक्षा हलमा मोबाइल, क्यालक्यूलेटर, क्यामेरा, पेजर आदि जास्तै राखू हुँदैन । उम्मेदवारले आफसंग क्यानबारी र संबन्धित पत्र हुनैछ । ।</li>
+                    <li>परीक्षा हलमा उम्मेदवारले परीक्षा पदबारी निपुणता कुनै पनि आवमा कुरुना जैनदखाने परीक्षा हलबाट निस्काशन गरी तुसैम्मा काग्स्मा बग्गीगमेमा गरावरिद् गरीश र लिस्काही निर्काशन गरीएका उम्मेदवारकै पत्र विज्ञापित परीक्षा कार्यक्रम ब्रिदीस हुने छैन ।</li>
+                    <li>उम्मेदवारले परीक्षा दिएको दिनमा हानिन आफिवार्य रुपमा गर्नुनुपर्ने छ ।</li>
+                    <li>परीक्षा भवनमा झोला, मोबाइल फोन तथा अन्य इलेक्ट्रोनिक्स डिभाइइएहरु लैजान निषेध गरिएको छ।</li>
+                    <li>परीक्षा संचालन हुने ठिन आफनोमै विना पर्ने त्यस्मा आफनोमै पुरे नम्बरको कुनै जिम्मा निषेध परीक्षा कार्यक्रम ब्रिदीको हुने छैन।</li>
+                    <li>सदुद्वार बहुउत्तर (Multiple Choice) प्रश्नको उत्तर शेड्डा आफिवार्य KEY उत्तरपुस्तिका लेखुपर्दछ । नदोषी उत्तरपुस्तिकामा ब्याप पद नदुष्ट साईं बदुसार ओएअंजो छुनै अक्षर (Capital Letter) मा A, B, C, D लेखिएको उत्तरमार्ट मात्र मान्यता दिइनेछ।</li>
+                    <li>परीक्षाना सम्बन्धित निकायबाट गारी भएको प्रवेश पत्र तथा आनोनैं नामसङ्कार वा नेपालि राज्य बाट्नै फाटो सर्मुरो कुनै पत्र विदबोध्न अनिबार्य रुपमा लिई आफुनु पर्नेछ।</li>
+                    <li>कुनै उम्मेदवारले प्रश्नपत्रमा राष्टको उत्तयोको सम्बन्धमा सोधु पर्न परीक्षामा सम्मिलित अन्य उम्मेदवारलाई बाधा नपुर्ने निरोक्ष्यैलाई सोधु पर्नेछ ।</li>
+                </ol>
             </div>
         </div>
     </div>

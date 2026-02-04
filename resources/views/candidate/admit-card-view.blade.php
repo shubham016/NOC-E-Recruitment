@@ -20,11 +20,6 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a>
-    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item active">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -34,195 +29,172 @@
         <span>Change Password</span>
     </a>
 @endsection
-<div class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
-            <a href="{{ route('candidate.admit-card') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Admit Cards
-            </a>
-        
-       <!-- <a href="{{ route('candidate.admit-card.download', $application->id) }}" class="btn btn-primary float-end">
-                <i class="bi bi-download"></i> Download PDF
-            </a> -->
-        
-            <button onclick="window.print()" class="btn btn-info float-end me-2">
-                <i class="bi bi-printer"></i> Print or Save as PDF
-            </button>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-lg" id="admit-card-print" style="max-width: 210mm; margin: 0 auto;">
-                <div class="card-body p-0">
-                    <!-- Header -->
-                    <div class="p-3 text-center border-bottom" style="position: relative;">
-                        <div style="position: absolute; left: 15px; top: 15px; font-size: 11px;">
-                            प्रवेश पत्र नं. {{ isset($application->id) ? $application->id : $application->id }}
-                        </div>
-                        
-                        <div class="mb-2">
-                            @if(file_exists(public_path('storage/Emblem_of_Nepal.svg')))
-                                <img src="{{ asset('storage/Emblem_of_Nepal.svg') }}" 
-                                     style="width: 60px; height: 60px; margin: 0 auto; display: block;" 
-                                     alt="Nepal Emblem">
-                            @else
-                                <div style="width: 60px; height: 60px; margin: 0 auto; border: 1px solid #ccc; border-radius: 50%; background: #f5f5f5;"></div>
-                            @endif
-                        </div>
-                        <h4 class="mb-1">{{ $application->organization_name ?? 'लोक सेवा आयोग' }}</h4>
-                        <p class="mb-0 text-secondary">{{ $application->post_title ?? 'नेपाल' }}</p>
+<div class="document-button">
+    <a href="{{ route('candidate.admit-card') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Admit Cards
+    </a>
+    <button onclick="window.print()" class="btn btn-info float-end">
+        <i class="bi bi-printer"></i> Print or Save as PDF
+    </button>
+</div>
+
+<div class="admit-card-wrapper" id="printableArea">
+    <div class="inner-card-wrapper">
+        <div class="admit-card">
+            
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="header-left">
+                    <div class="logo-wrapper">
+                        @if(file_exists(public_path('img/noc-logo.png')))
+                            <img src="{{ asset('img/noc-logo.png') }}" alt="NOC Logo" class="noc-logo">
+                        @endif
                     </div>
-                    
-                    <!-- Main Content -->
-                    <div class="p-3">
-                        <div class="row">
-                            <!-- Left: Citizenship -->
-                            <div class="col-md-4">
-                                <div class="border border-danger p-2 text-center" style="height: 200px; background: #f9f9f9; display: flex; align-items: center; justify-content: center;">
-                                    @if(isset($application->citizenship_id_document) && $application->citizenship_id_document)
-                                        <img src="{{ asset('storage/' . $application->citizenship_id_document) }}" 
-                                             alt="Citizenship" 
-                                             style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                                    @else
-                                        <div>
-                                            <div style="font-size: 12px;">नागरिकता</div>
-                                            <div style="font-size: 11px;">Citizenship Card</div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            <!-- Center: Details -->
-                            <div class="col-md-5">
-                                <table class="table table-bordered table-sm mb-3" style="font-size: 11px;">
-                                    <tr>
-                                        <td class="bg-light" style="width: 50%;"><strong>क) नाम थर (अंग्रेजीमा)</strong></td>
-                                        <td>{{ $application->name_english ?? $candidate->name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>ख) नाम थर (देवनागरीमा)</strong></td>
-                                        <td>{{ $application->name_nepali ?? '' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>ग) लिङ्ग</strong></td>
-                                        <td>{{ $application->gender ?? $candidate->gender }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>घ) जन्म मिति (बि.सं.)</strong></td>
-                                        <td>{{ $application->birth_date_bs ?? $candidate->date_of_birth_bs ?? '' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>ङ) बाबुको नाम (देवनागरीमा)</strong></td>
-                                        <td>{{ $application->father_name_nepali ?? '' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>च) स्थायी ठेगाना</strong></td>
-                                        <td>
-                                            {{ $application->permanent_district ?? '' }}
-                                            @if(isset($application->permanent_municipality))
-                                                , {{ $application->permanent_municipality }}
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </table>
-                                
-                                <div class="bg-light p-2 text-center mb-2" style="font-size: 12px;">
-                                    <strong>सम्पर्क विवरण / Contact Details</strong>
-                                </div>
-                                <table class="table table-bordered table-sm" style="font-size: 11px;">
-                                    <tr>
-                                        <td class="bg-light" style="width: 50%;"><strong>मोबाइल नम्बर</strong></td>
-                                        <td>{{ $application->phone ?? '' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>नागरिकता नं</strong></td>
-                                        <td>{{ $application->citizenship_number }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>जारी मिति</strong></td>
-                                        <td>{{ $application->citizenship_issue_date_bs ?? '' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-light"><strong>जारी जिल्ला</strong></td>
-                                        <td>{{ $application->citizenship_issue_district ?? '' }}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                            
-                            <!-- Right: Photo -->
-                            <div class="col-md-3">
-                                <div class="border border-danger text-center" style="height: 200px; background: #f9f9f9; display: flex; align-items: center; justify-content: center;">
-                                    @if(isset($application->passport_size_photo) && $application->passport_size_photo)
-                                        <img src="{{ asset('storage/' . $application->passport_size_photo) }}" 
-                                             alt="Photo" 
-                                             style="max-width: 100%; max-height: 100%; object-fit: cover;">
-                                    @else
-                                        <div>
-                                            <i class="bi bi-person" style="font-size: 2rem;"></i>
-                                            <p class="mb-0 mt-1" style="font-size: 11px;">Photo</p>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="border mt-2" style="height: 50px; background: white;"></div>
-                                <div class="text-center mt-1" style="font-size: 10px;">
-                                    उम्मेदवारको दस्तखत<br>
-                                    <small>Candidate's Signature</small>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+                <div class="header-center">
+                    <h2 class="org-title">{{ $application->organization_name ?? 'नेपाल आयल निगम लिमिटेड' }}</h2>
+                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, टेकु' }}</h4>
+                    <p class="exam-type">{{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}</p>
+                    <h3 class="card-title">प्रवेश पत्र</h3>
+                </div>
+                <div class="header-right">
+                    <div class="photo-wrapper">
+                        @if(isset($application->passport_size_photo) && $application->passport_size_photo)
+                            <img src="{{ asset('storage/' . $application->passport_size_photo) }}" alt="Photo" class="candidate-photo">
+                        @else
+                            <div class="photo-placeholder">फोटो</div>
+                        @endif
                         
-                        <!-- Exam Details -->
-                        <div class="mt-3">
-                            <div class="bg-light p-2 text-center mb-2" style="font-size: 12px;">
-                                <strong>परीक्षा सम्बन्धी विवरण / Examination Details</strong>
+                        <!-- NOC Logo Stamp Overlay -->
+                        @if(file_exists(public_path('img/images.jpg')))
+                            <img src="{{ asset('img/images.jpg') }}" alt="NOC Stamp" class="noc-stamp-overlay">
+                        @elseif(file_exists(public_path('images/images.jpg')))
+                            <img src="{{ asset('images/images.jpg') }}" alt="NOC Stamp" class="noc-stamp-overlay">
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-section">
+                
+                <!-- Left: Candidate Details -->
+                <div class="details-left">
+                    <table class="info-table">
+                        <tr>
+                            <td class="label">रोल नं.</td>
+                            <td class="value">: {{ $application->roll_number ?? $application->id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">नाम, थर</td>
+                            <td class="value">: {{ $application->name_nepali ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Name, Surname</td>
+                            <td class="value">: {{ $application->name_english ?? $candidate->name }}</td>
+                        </tr>
+                    </table>
+
+                    <table class="info-table mt-2">
+                        <tr>
+                            <td class="label">विज्ञापन नं.</td>
+                            <td class="value">: {{ $application->advertisement_number ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">पद / तह</td>
+                            <td class="value">: {{ $application->post_title ?? '' }} / {{ $application->level ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">सेवा / समूह</td>
+                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">खुल्ला / समावेशी</td>
+                            <td class="value">: {{ $application->application_type ?? 'खुल्ला' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">नागरिता नं.</td>
+                            <td class="value">: {{ $application->citizenship_number ?? '' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="instruction-text">
+                        <p>देहाय बमोजिमको मिति तथा समयमा तिनुभएको उपयुक्त पदको परीक्षामा तपसिलबाट सूचित हुन अनुरोध गरिएको छ । विज्ञापनमा तोकिएको बर्ग बुझ नम्बरको ठहर भएको जुनसुकै अवस्थामा पनि यो अनुरोध पत्र रद्द हुनेछ ।</p>
+                    </div>
+
+                    <!-- Exam Schedule Table -->
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>क्र.नं.</th>
+                                <th>पत्र</th>
+                                <th>मिति, समय</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>१</td>
+                                <td>प्रथम</td>
+                                <td>{{ $application->exam_date_first ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                            </tr>
+                            <tr>
+                                <td>२</td>
+                                <td>द्वितिय</td>
+                                <td>{{ $application->exam_date_second ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right: Citizenship and Signature -->
+                <div class="details-right">
+                    <div class="citizenship-wrapper">
+                        @if(isset($application->citizenship_id_document) && $application->citizenship_id_document)
+                            <img src="{{ asset('storage/' . $application->citizenship_id_document) }}" alt="Citizenship" class="citizenship-image">
+                        @else
+                            <div class="citizenship-placeholder">
+                                <p>नागरिकता प्रमाणपत्र</p>
                             </div>
-                            <table class="table table-bordered table-sm" style="font-size: 11px;">
-                                <tr>
-                                    <td class="bg-light" style="width: 35%;"><strong>क) परीक्षाको प्रकार / Type</strong></td>
-                                    <td>{{ $application->post_title ?? 'लिखित परीक्षा' }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="bg-light"><strong>ख) परीक्षा हुने मिति / Date</strong></td>
-                                    <td>{{ date('Y-m-d', strtotime($application->exam_date)) }} ({{ date('l', strtotime($application->exam_date)) }})</td>
-                                </tr>
-                                <tr>
-                                    <td class="bg-light"><strong>ग) परीक्षा हुने समय / Time</strong></td>
-                                    <td>{{ $application->exam_time }}</td>
-                                </tr>
-                                @if(isset($application->reporting_time) && $application->reporting_time)
-                                <tr>
-                                    <td class="bg-light"><strong>घ) रिपोर्टिङ समय / Reporting</strong></td>
-                                    <td class="text-danger fw-bold">{{ $application->reporting_time }}</td>
-                                </tr>
-                                @endif
-                                <tr>
-                                    <td class="bg-light"><strong>ङ) परीक्षा केन्द्र / Center</strong></td>
-                                    <td>{{ $application->exam_venue }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <!-- Instructions -->
-                        <div class="border p-3 mt-3" style="background: #fffef5; font-size: 11px;">
-                            <div class="text-center mb-2">
-                                <strong>सम्बन्धित व्यक्तिलाई विशेष सूचनाहरु / Instructions</strong>
-                            </div>
-                            @if(isset($application->exam_instructions) && $application->exam_instructions)
-                                <div style="white-space: pre-line;">{{ $application->exam_instructions }}</div>
-                            @else
-                            <ul style="line-height: 1.6;">
-                                <li>परीक्षा भवन भित्र मोबाइल लैजान तथा प्रयोग गर्न पाईने छैन।</li>
-                                <li>परीक्षा हुने समय भन्दा कम्तिमा ३० मिनेट अगावै परीक्षा केन्द्रमा उपस्थित हुनुपर्नेछ।</li>
-                                <li>नीलो वा कालो सिसा कलम तथा अन्य आवश्यक सामानहरु आफै ल्याउनु पर्नेछ।</li>
-                                <li>परीक्षा शुरु भएपछि प्रवेश गर्न पाइने छैन।</li>
-                                <li>यो प्रवेश पत्र तथा फोटो सहितको नागरिकता प्रमाणपत्र अनिवार्य साथमा ल्याउनु पर्नेछ।</li>
-                                <li>परीक्षा केन्द्रबाट विशेष समय र बस्ने स्थान बारे जानकारी लिनुहोला।</li>
-                            </ul>
+                        @endif
+                    </div>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            @if(isset($application->signature) && $application->signature)
+                                <img src="{{ asset('storage/' . $application->signature) }}" alt="Signature" class="candidate-signature">
                             @endif
+                        </div>
+                        <div class="signature-labels">
+                            <div class="signature-label-left">
+                                <p>उम्मेदवार दस्तखत</p>
+                            </div>
+                            <div class="signature-label-right">
+                                <p>आधिकारिक दस्तखत</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="instructions-section">
+                <h4>उम्मेदवारले पालन गर्नुपर्ने निम्नाहरू :</h4>
+                <ol>
+                    <li>उम्मेदवारले उपस्थितिसमय काखोली मसी भएको इन्टर/कलम मात्र प्रयोग गर्नुपर्नेछ।</li>
+                    <li>प्रवेश पत्र बिना कुनै पनि उम्मेदवारलाई परीक्षामा सम्मिलित नगराइने र प्रवेश पत्र अनिवार्य रूपमा साथमा लिइ परीक्षा सञ्चालन हुन्छसम्म कायाप्त राख्न र प्रत्येक प्रश्न पत्रको परीक्षा प्रस्तुत हुन्दाको कालावधि १ घण्टा अगावै प्रवेश कार्यालय बुझाउनुपर्दछ ।</li>
+                    <li>लिखित परीक्षा नहीजुन मान्यता प्राप्त अन्तर्गत हुने दिनमा पनि प्रदेयेश रुपमें प्रस्तृत हुनेछ । ।</li>
+                    <li>लिखित परीक्षा सुरु भई ३० मिनेट बग्ने समयावधि गुज्रेपछि परीक्षा हलमा प्रवेश गर्न नपाईने र उक्त समयसम्म प्रवेश गर्न नपाई विना अनुमति गत्यागना प्रवेश नै दिइने छैन । त्यस्तो परीक्षा हलमा प्रवेश नगर्न आएस अर्लीको संक्षिप्त पनि हुनेछन् वन्द्यार्यो छैन ।</li>
+                    <li>परीक्षा हलमा प्रवेश गर्दा केवटी पनि उम्मेदवारहरुको परीक्षा भाबिर जानु अनुरोध छिटोई छ ।</li>
+                    <li>परीक्षा हलमा मोबाइल, क्यालक्यूलेटर, क्यामेरा, पेजर आदि जास्तै राखू हुँदैन । उम्मेदवारले आफसंग क्यानबारी र संबन्धित पत्र हुनैछ । ।</li>
+                    <li>परीक्षा हलमा उम्मेदवारले परीक्षा पदबारी निपुणता कुनै पनि आवमा कुरुना जैनदखाने परीक्षा हलबाट निस्काशन गरी तुसैम्मा काग्स्मा बग्गीगमेमा गरावरिद् गरीश र लिस्काही निर्काशन गरीएका उम्मेदवारकै पत्र विज्ञापित परीक्षा कार्यक्रम ब्रिदीस हुने छैन ।</li>
+                    <li>उम्मेदवारले परीक्षा दिएको दिनमा हानिन आफिवार्य रुपमा गर्नुनुपर्ने छ ।</li>
+                    <li>परीक्षा भवनमा झोला, मोबाइल फोन तथा अन्य इलेक्ट्रोनिक्स डिभाइइएहरु लैजान निषेध गरिएको छ।</li>
+                    <li>परीक्षा संचालन हुने ठिन आफनोमै विना पर्ने त्यस्मा आफनोमै पुरे नम्बरको कुनै जिम्मा निषेध परीक्षा कार्यक्रम ब्रिदीको हुने छैन।</li>
+                    <li>सदुद्वार बहुउत्तर (Multiple Choice) प्रश्नको उत्तर शेड्डा आफिवार्य KEY उत्तरपुस्तिका लेखुपर्दछ । नदोषी उत्तरपुस्तिकामा ब्याप पद नदुष्ट साईं बदुसार ओएअंजो छुनै अक्षर (Capital Letter) मा A, B, C, D लेखिएको उत्तरमार्ट मात्र मान्यता दिइनेछ।</li>
+                    <li>परीक्षाना सम्बन्धित निकायबाट गारी भएको प्रवेश पत्र तथा आनोनैं नामसङ्कार वा नेपालि राज्य बाट्नै फाटो सर्मुरो कुनै पत्र विदबोध्न अनिबार्य रुपमा लिई आफुनु पर्नेछ।</li>
+                    <li>कुनै उम्मेदवारले प्रश्नपत्रमा राष्टको उत्तयोको सम्बन्धमा सोधु पर्न परीक्षामा सम्मिलित अन्य उम्मेदवारलाई बाधा नपुर्ने निरोक्ष्यैलाई सोधु पर्नेछ ।</li>
+                </ol>
             </div>
         </div>
     </div>
@@ -230,25 +202,343 @@
 
 @push('styles')
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Mukta', sans-serif;
+    font-size: 14px;
+    background: #f5f5f5;
+}
+
+.admit-card-wrapper {
+    width: 100%;
+    padding: 10px 20px;
+    background: white;
+}
+
+.inner-card-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.admit-card {
+    border: 2px solid #000;
+    padding: 0;
+    background: white;
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    padding: 15px 20px;
+    border-bottom: 1px solid #000;
+    align-items: center;
+}
+
+.header-left {
+    width: 15%;
+}
+
+.logo-wrapper {
+    width: 80px;
+    height: 80px;
+}
+
+.header-center {
+    width: 65%;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.org-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: #000;
+}
+
+.org-subtitle {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 3px 0;
+    color: #333;
+}
+
+.exam-type {
+    font-size: 11px;
+    margin: 0 0 5px 0;
+    color: #555;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 5px 0 0 0;
+    color: #000;
+}
+
+.header-right {
+    width: 20%;
+}
+
+.photo-wrapper {
+    width: 120px;
+    height: 140px;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    margin-left: auto;
+    position: relative;
+}
+
+.candidate-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    color: #999;
+    font-size: 12px;
+}
+
+/* NOC Logo Stamp Overlay */
+.noc-stamp-overlay {
+    position: absolute;
+    top: -15px;
+    left: -30px;
+    width: 80px;
+    height: 80px;
+    opacity: 0.9;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Content Section */
+.content-section {
+    display: flex;
+    padding: 15px 20px;
+    gap: 20px;
+}
+
+.details-left {
+    width: 60%;
+}
+
+.details-right {
+    width: 40%;
+}
+
+/* Info Table */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.info-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.info-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+.info-table .label {
+    width: 35%;
+    font-weight: 500;
+}
+
+.info-table .value {
+    width: 65%;
+}
+
+.mt-2 {
+    margin-top: 15px;
+}
+
+.instruction-text {
+    margin: 15px 0;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+.instruction-text p {
+    font-size: 11px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Schedule Table */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    font-size: 11px;
+    text-align: left;
+}
+
+.schedule-table th {
+    background: #f0f0f0;
+    font-weight: 600;
+}
+
+.schedule-table thead th:nth-child(1) {
+    width: 10%;
+}
+
+.schedule-table thead th:nth-child(2) {
+    width: 15%;
+}
+
+.schedule-table thead th:nth-child(3) {
+    width: 75%;
+}
+
+/* Citizenship and Signature */
+.citizenship-wrapper {
+    width: 100%;
+    height: 200px;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    margin-bottom: 15px;
+}
+
+.citizenship-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.citizenship-placeholder {
+    color: #999;
+    text-align: center;
+}
+
+.citizenship-placeholder p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.signature-section {
+    margin-top: 20px;
+}
+
+.signature-box {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #000;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.candidate-signature {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.signature-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.signature-label-left,
+.signature-label-right {
+    font-size: 10px;
+    text-align: center;
+}
+
+.signature-label-left p,
+.signature-label-right p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Instructions Section */
+.instructions-section {
+    padding: 15px 20px;
+    border-top: 1px solid #000;
+}
+
+.instructions-section h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.instructions-section ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.instructions-section li {
+    font-size: 10px;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+
+.document-button {
+    margin-bottom: 15px;
+    padding: 8px 15px;
+}
+
+.document-button .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Print Styles */
 @media print {
-    .btn, nav, .navbar, .sidebar, footer {
+    body {
+        background: white;
+    }
+
+    .document-button,
+    .btn, 
+    nav, 
+    .navbar, 
+    .sidebar, 
+    footer,
+    header {
         display: none !important;
     }
-    
-    #admit-card-print {
-        box-shadow: none !important;
-        margin: 0 !important;
-        max-width: 100% !important;
+
+    .admit-card-wrapper {
+        padding: 0;
     }
-    
-    body {
-        background: white !important;
+
+    .inner-card-wrapper {
+        max-width: 100%;
     }
-    
-    .container-fluid {
-        padding: 0 !important;
+
+    .admit-card {
+        border: 2px solid #000;
+    }
+
+    @page {
+        margin: 10mm;
+        size: A4;
     }
 }
+
+
 </style>
 @endpush
 @endsection

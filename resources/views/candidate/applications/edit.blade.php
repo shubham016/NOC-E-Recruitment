@@ -116,6 +116,10 @@
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="text" name="email" id="email" class="form-control" value="{{ old('Email Address', $applicationform->email) }}" required>
                         </div>
+                        <div class="col-md-3">
+                            <label for="phone" class="form-label">Phone <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
+                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $applicationform->phone) }}" required>
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
@@ -138,8 +142,8 @@
                             <input type="number" name="age" id="age" class="form-control" min="0" value="{{ old('age', $applicationform->age) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="phone" class="form-label">Phone <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
-                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $applicationform->phone) }}" required>
+                            <label for="alternate_phone_number" class="form-label">Alternate Phone Number <span class="text-danger">*</span> <small>(वैकल्पिक फोन नम्बर)</small></label>
+                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control" value="{{ old('alternate_phone_number', $applicationform->alternate_phone_number) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="gender" class="form-label">Gender <span class="text-danger">*</span> <small>(लिङ्ग)</small></label>
@@ -579,7 +583,13 @@
 
                             <small class="text-muted d-block">Max size: 2MB (multiple allowed)</small>
                         </div>
-
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
+                            <input type="file" name="signature" id="signature" class="form-control" value="{{ old('signature', $applicationform->signature ?? '') }}" accept="image/*,application/pdf" required>
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
                     </div>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" {{ old('terms_agree', $applicationform->terms_agree) ? 'checked' : '' }} required>

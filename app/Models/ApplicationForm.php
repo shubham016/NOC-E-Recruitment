@@ -28,6 +28,7 @@ class ApplicationForm extends Model
         'position',
         'age',
         'phone',
+        'alternate_phone_number',
         'gender',
         'marital_status',
         'blood_group',
@@ -102,6 +103,7 @@ class ApplicationForm extends Model
         'noc_id_card',
         'ethnic_certificate',
         'disability_certificate',
+        'signature',
 
         // System
         'status',
