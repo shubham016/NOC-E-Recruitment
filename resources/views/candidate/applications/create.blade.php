@@ -511,67 +511,176 @@
                     </div>
                 </div>
 
-<!-- step 6: Upload Documents -->
-                <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
+            <!-- step 6: Upload Documents -->
+                            <div class="step d-none" id="step6">
+                <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
+                        
+                        @if(isset($draftApplication->passport_size_photo) && $draftApplication->passport_size_photo)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->passport_size_photo) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="passport_size_photo" value="{{ $draftApplication->passport_size_photo }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                        @endif
+                    </div>
 
-                        <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
+                    <div class="col-md-6">
+                        <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
+                        
+                        @if(isset($draftApplication->citizenship_id_document) && $draftApplication->citizenship_id_document)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->citizenship_id_document) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="citizenship_id_document" value="{{ $draftApplication->citizenship_id_document }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                        @endif
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                        
+                        @if(isset($draftApplication->transcript) && $draftApplication->transcript)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->transcript) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="transcript" value="{{ $draftApplication->transcript }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="character" class="form-label">
-                                Character Certificate <span class="text-danger">*</span>
-                            </label>
-                            <input type="file"
-                                name="character"
-                                id="character"
-                                class="form-control"
-                                accept="image/*,application/pdf"
-                                multiple
-                                required>
-                            <small class="text-muted d-block">Max size: 2MB (multiple allowed)</small>
-                        </div>
+                        @endif
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
+
+                    <div class="col-md-6">
+                        <label for="character" class="form-label">
+                            Character Certificate <span class="text-danger">*</span>
+                        </label>
+                        
+                        @if(isset($draftApplication->character) && $draftApplication->character)
+                            <div class="alert alert-info mb-2">
+                                <i class="bi bi-file-earmark-check"></i> 
+                                <strong>Previously uploaded files:</strong>
+                                <div class="mt-2">
+                                    @php
+                                        $characterFiles = is_string($draftApplication->character) ? json_decode($draftApplication->character, true) : $draftApplication->character;
+                                        if (!is_array($characterFiles)) {
+                                            $characterFiles = [$draftApplication->character];
+                                        }
+                                    @endphp
+                                    @foreach($characterFiles as $index => $file)
+                                        <div class="d-inline-block me-2">
+                                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                View File {{ $index + 1 }}
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <input type="file" name="character[]" id="character" class="form-control" accept="image/*,application/pdf" multiple>
+                            <input type="hidden" name="character" value="{{ is_array($draftApplication->character) ? json_encode($draftApplication->character) : $draftApplication->character }}">
+                            <small class="text-muted d-block">Upload new files to replace existing ones. Max size: 2MB (multiple allowed)</small>
+                        @else
+                            <input type="file" name="character[]" id="character" class="form-control" accept="image/*,application/pdf" multiple required>
+                            <small class="text-muted d-block">Max size: 2MB (multiple allowed)</small>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal)<span class="text-danger">*</span></label>
+                        
+                        @if(isset($draftApplication->equivalent) && $draftApplication->equivalent)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->equivalent) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="equivalent" value="{{ $draftApplication->equivalent }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                        @endif
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="work_experience" class="form-label">Work Experience Document<span class="text-danger">*</span></label>
+                        
+                        @if(isset($draftApplication->work_experience) && $draftApplication->work_experience)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->work_experience) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="work_experience" value="{{ $draftApplication->work_experience }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                        @endif
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
+                        
+                        @if(isset($draftApplication->signature) && $draftApplication->signature)
+                            <div class="alert alert-info mb-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="bi bi-file-earmark-check"></i> 
+                                    <strong>Previously uploaded</strong>
+                                    <a href="{{ asset('storage/' . $draftApplication->signature) }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                </div>
+                            </div>
+                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*,application/pdf">
+                            <input type="hidden" name="signature" value="{{ $draftApplication->signature }}">
+                            <small class="text-muted d-block">Upload new file to replace existing one. Max size: 2MB</small>
+                        @else
                             <input type="file" name="signature" id="signature" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                        @endif
                     </div>
+                </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-primary next-btn">Next</button>
                     </div>
+                    
                 </div>
 
 <!-- STEP 7: Review Application Before Payment -->
@@ -702,7 +811,6 @@
                         <div class="alert alert-warning mt-3">
                             Please complete payment first to enable final submission.
                         </div>
-
                     </div>
 
                     <!-- AFTER PAYMENT SECTION -->

@@ -116,10 +116,6 @@
                             <strong>Position Level:</strong> {{ $job->position_level }}
                         </p>
                         <p class="mb-2">
-                                    <i class="bi bi-person-fill"></i>
-                                    <strong>Minimum Age:</strong> {{ $job->minimum_age}}
-                                </p>
-                        <p class="mb-2">
                                     <i class="bi bi-broadcast-pin"></i>
                                     <strong>Advertisement Number:</strong> {{ $job->advertisement_no}}
                                 </p>
