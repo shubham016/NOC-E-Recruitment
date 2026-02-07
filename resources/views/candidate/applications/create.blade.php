@@ -545,17 +545,17 @@
                                 accept="image/*,application/pdf"
                                 multiple
                                 required>
-                            <small class="text-muted d-block">Max size: 2MB (multiple allowed)</small>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
+                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal)</label>
                             <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            <label for="work_experience" class="form-label">Work Experience Document<span class="text-danger">*</span></label>
                             <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
@@ -574,7 +574,7 @@
                     </div>
                 </div>
 
-<!-- STEP 7: Review Application Before Payment -->
+<!-- STEP 7: Preview Application Before Payment -->
                 <div class="step d-none" id="step7">
                     <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
 
