@@ -226,45 +226,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Vacancy Summary -->
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted mb-2">Total Vacancies</h6>
-                            <h3 class="text-primary mb-0">{{ $jobs->total() }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted mb-2">Active Positions</h6>
-                            <h3 class="text-success mb-0">
-                                {{ $jobs->where('status', 'active')->count() }}
-                            </h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted mb-2">Total Posts</h6>
-                            <h3 class="text-info mb-0">
-                                {{ $jobs->sum('number_of_posts') }}
-                            </h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Print Button -->
-            <div class="text-center mt-4">
-                <button class="btn btn-primary" onclick="window.print()">
-                    <i class="bi bi-printer"></i> Print Vacancies
-                </button>
-            </div>
         </div>
     </div>
 
