@@ -1,44 +1,44 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Vacancy Management')
+@section('title', 'Post New Vacancy')
 
 @section('portal-name', 'Admin Portal')
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
+@section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
 @section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
+@section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('common.dashboard') }}</span>
     </a>
     <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
+        <span>{{ __('dashboard.post_vacancy') }}</span>
         <span class="badge bg-primary ms-auto">{{ $stats['total'] }}</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
+        <span>{{ __('dashboard.applications') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-people"></i>
-        <span>Candidates</span>
+        <span>{{ __('dashboard.candidates') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
-        <span>Reviewers</span>
+        <span>{{ __('dashboard.reviewers') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
+        <span>{{ __('dashboard.reports') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
-        <span>Settings</span>
+        <span>{{ __('common.settings') }}</span>
     </a>
 @endsection
 
@@ -182,7 +182,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                        <small class="text-muted">Total Vacancy</small>
+                        <small class="text-muted">{{ __('dashboard.total_jobs') }}</small>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
-                        <small class="text-muted">Active Vacancy</small>
+                        <small class="text-muted">{{ __('dashboard.active_jobs') }}</small>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
-                        <small class="text-muted">Closed</small>
+                        <small class="text-muted">{{ __('dashboard.closed_jobs') }}</small>
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
-                        <small class="text-muted">Draft</small>
+                        <small class="text-muted">{{ __('dashboard.draft_jobs') }}</small>
                     </div>
                 </div>
             </div>
@@ -261,7 +261,7 @@
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="bi bi-search me-2"></i>Search
+                                <i class="bi bi-search me-2"></i>{{ __('common.search') }}
                             </button>
                             @if(request()->hasAny(['search', 'status', 'job_type']))
                                 <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
@@ -280,7 +280,7 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <i class="bi bi-list-ul text-primary me-2"></i>Vacancy Listings
+                    <i class="bi bi-list-ul text-primary me-2"></i>Vacancy List
                 </h6>
                 <span class="badge bg-primary ms-2"> Total {{ $jobs->total() }}</span>
             </div>
@@ -289,20 +289,21 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 modern-table">
                     <thead class="table-light">
-                        <tr>
-                            <th>S.N</th>
-                            <th>Advertisement No</th>
-                            <th>Position</th>
-                            <th>Service</th>
-                            <th>Type</th>
-                            <th class="ps-4">Demand</th>
-                            <th>Qualifications</th>
-                            <th class="ps-4">Deadline</th>
-                            <th>Applications</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
+                    <tr>
+                        <th>{{ __('jobs.serial_number') }}</th>
+                        <th>{{ __('jobs.advertisement_no') }}</th>
+                        <th>{{ __('jobs.position') }}</th>
+                        <th>{{ __('jobs.service') }}</th>
+                        <th>{{ __('jobs.type') }}</th>
+                        <th class="ps-4">{{ __('jobs.demand') }}</th>
+                        <th>{{ __('jobs.qualifications') }}</th>
+                        <th class="ps-4">{{ __('jobs.deadline') }}</th>
+                        <th>{{ __('jobs.applications') }}</th>
+                        <th>{{ __('jobs.status') }}</th>
+                        <th class="text-center">{{ __('jobs.actions') }}</th>
+                    </tr>
                     </thead>
+
                     <tbody class="text-center align-middle">
                         @forelse($jobs as $job)
                             @php
@@ -350,16 +351,13 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary"
-                                            title="View">
+                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="{{ __('common.view') }}">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary"
-                                            title="Edit">
+                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary" title="{{ __('common.edit') }}">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger"
-                                            onclick="confirmDelete({{ $job->id }})" title="Delete">
+                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $job->id }})" title="{{ __('common.delete') }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>

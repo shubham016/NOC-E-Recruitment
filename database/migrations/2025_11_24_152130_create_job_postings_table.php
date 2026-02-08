@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('job_postings', function (Blueprint $table) {
             $table->id();
-            
+
             // Government-specific fields
             $table->string('advertisement_no')->unique();
             $table->string('title');
@@ -21,28 +21,38 @@ return new class extends Migration
             $table->text('description');
             $table->text('requirements');
             $table->text('minimum_qualification');
-            
+
             // Department and Service
             $table->string('department')->default('Government Department');
             $table->string('service_group');
-            
+
             // Category fields
             $table->enum('category', ['open', 'inclusive'])->default('open');
             $table->string('inclusive_type')->nullable();
             $table->integer('number_of_posts')->default(1);
-            
+
             // Location and Type
             $table->string('location')->default('Nepal');
             $table->string('job_type')->default('permanent');
-                        
+
+            // Salary fields (optional)
+            $table->decimal('salary_min', 10, 2)->nullable();
+            $table->decimal('salary_max', 10, 2)->nullable();
+
             // Deadline and Status
             $table->date('deadline');
             $table->enum('status', ['draft', 'active', 'closed'])->default('active');
-            
-            // Posted by admin
-            $table->foreignId('posted_by')->constrained('admins')->onDelete('cascade');
-            
+
+            // Posted by fields
+            $table->unsignedBigInteger('posted_by');
+            $table->string('posted_by_type')->default('admin');
+
             $table->timestamps();
+
+            // Add indexes for better performance
+            $table->index(['status', 'deadline']);
+            $table->index(['posted_by', 'posted_by_type']);
+            $table->index('category');
         });
     }
 

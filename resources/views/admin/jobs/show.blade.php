@@ -2,20 +2,47 @@
 
 @section('title', 'Vacancy Details')
 
-@section('portal-name', 'Admin Portal')
+@php
+    // Dynamically detect which guard is authenticated
+    if (Auth::guard('admin')->check()) {
+        $currentUser = Auth::guard('admin')->user();
+        $portalName = 'Admin Portal';
+        $userRole = 'System Administrator';
+        $dashboardRoute = route('admin.dashboard');
+        $logoutRoute = route('admin.logout');
+        $jobsIndexRoute = route('admin.jobs.index');
+        $jobsEditRoute = route('admin.jobs.edit', $job->id);
+        $jobsDuplicateRoute = route('admin.jobs.duplicate', $job->id);
+        $jobsChangeStatusRoute = route('admin.jobs.changeStatus', $job->id);
+        $jobsDestroyRoute = route('admin.jobs.destroy', $job->id);
+    } else {
+        $currentUser = Auth::guard('hr_administrator')->user();
+        $portalName = 'HR Administrator Portal';
+        $userRole = 'HR Administrator';
+        $dashboardRoute = route('hr-administrator.dashboard');
+        $logoutRoute = route('hr-administrator.logout');
+        $jobsIndexRoute = route('hr-administrator.jobs.index');
+        $jobsEditRoute = route('hr-administrator.jobs.edit', $job->id);
+        $jobsDuplicateRoute = route('hr-administrator.jobs.duplicate', $job->id);
+        $jobsChangeStatusRoute = route('hr-administrator.jobs.changeStatus', $job->id);
+        $jobsDestroyRoute = route('hr-administrator.jobs.destroy', $job->id);
+    }
+@endphp
+
+@section('portal-name', $portalName)
 @section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
-@section('logout-route', route('admin.logout'))
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name)
+@section('user-role', $userRole)
+@section('user-initial', strtoupper(substr($currentUser->name, 0, 1)))
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
+    <a href="{{ $dashboardRoute }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item active">
+    <a href="{{ $jobsIndexRoute }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
         <span>Vacancy Postings</span>
     </a>
@@ -217,14 +244,12 @@
         .deadline-nepali {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #bb2124
-;
+            color: #bb2124;
         }
 
         .deadline-english {
             font-size: 0.9rem;
             color: #bb2124;
-;
         }
     </style>
 @endsection
@@ -243,7 +268,7 @@
                 </h3>
                 <p class="mb-0 opacity-90">विज्ञापन विवरण</p>
             </div>
-            <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ $jobsIndexRoute }}" class="btn btn-light btn-lg">
                 <i class="bi bi-arrow-left me-2"></i>Back to List
             </a>
         </div>
@@ -349,21 +374,15 @@
                 <div class="detail-row">
                     <div class="detail-label">Application Deadline</div>
                     <div class="detail-value">
-                        {{-- <div class="deadline-box"> --}}
-                            {{-- <div class="d-flex align-items-center gap-3"> --}}
-                                {{-- <i class="bi bi-calendar-check-fill text-warning fs-4"></i> --}}
-                                <div>
-                                    <div class="deadline-nepali" id="deadline-bs-display">
-                                        <i class="bi bi-hourglass-split me-1"></i>Loading...
-                                    </div>
-                                    <div class="deadline-english">
-                                        <i class="bi bi-calendar-date me-1"></i>
-                                        <strong>{{ $job->deadline->format('Y-M-d') }}</strong>
-                                        {{-- <span class="ms-2">({{ $job->deadline->diffForHumans() }})</span> --}}
-                                    </div>
-                                </div>
-                            {{-- </div> --}}
-                        {{-- </div> --}}
+                        <div>
+                            <div class="deadline-nepali" id="deadline-bs-display">
+                                <i class="bi bi-hourglass-split me-1"></i>Loading...
+                            </div>
+                            <div class="deadline-english">
+                                <i class="bi bi-calendar-date me-1"></i>
+                                <strong>{{ $job->deadline->format('Y-m-d') }}</strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -498,11 +517,11 @@
                 </div>
 
                 <div class="d-grid gap-2">
-                    <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-danger action-btn">
+                    <a href="{{ $jobsEditRoute }}" class="btn btn-outline-danger action-btn">
                         <i class="bi bi-pencil-square me-2"></i>Edit Vacancy
                     </a>
 
-                    <form action="{{ route('admin.jobs.duplicate', $job->id) }}" method="POST">
+                    <form action="{{ $jobsDuplicateRoute }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-outline-secondary action-btn w-100">
                             <i class="bi bi-files me-2"></i>Duplicate Vacancy
@@ -510,7 +529,7 @@
                     </form>
 
                     @if($job->status == 'active')
-                        <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST">
+                        <form action="{{ $jobsChangeStatusRoute }}" method="POST">
                             @csrf
                             <input type="hidden" name="status" value="closed">
                             <button type="submit" class="btn btn-outline-warning action-btn w-100"
@@ -519,7 +538,7 @@
                             </button>
                         </form>
                     @elseif($job->status == 'closed')
-                        <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST">
+                        <form action="{{ $jobsChangeStatusRoute }}" method="POST">
                             @csrf
                             <input type="hidden" name="status" value="active">
                             <button type="submit" class="btn btn-outline-success action-btn w-100"
@@ -529,7 +548,7 @@
                         </form>
                     @endif
 
-                    <form action="{{ route('admin.jobs.destroy', $job->id) }}" method="POST">
+                    <form action="{{ $jobsDestroyRoute }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger action-btn w-100"
@@ -607,7 +626,7 @@
                     <div>
                         <strong class="d-block">Application Deadline</strong>
                         <small class="text-danger d-block" id="timeline-deadline-bs">Loading BS date...</small>
-                        <small class="text-danger">{{ $job->deadline->format('Y-M-d') }}</small>
+                        <small class="text-danger">{{ $job->deadline->format('Y-m-d') }}</small>
                     </div>
                 </div>
             </div>

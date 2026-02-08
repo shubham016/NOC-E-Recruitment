@@ -10,16 +10,8 @@ class HRAdministrator extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The table associated with the model.
-     */
     protected $table = 'hr_administrators';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -29,34 +21,23 @@ class HRAdministrator extends Authenticatable
         'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-        ];
-    }
+    // FIXED: Changed from method to property format for Laravel 12
+    protected $casts = [
+        'password' => 'hashed',
+    ];
 
     /**
-     * Get all job postings created by this HR Administrator
+     * Get job postings created by this HR Administrator
+     * Uses 'posted_by' as the foreign key in job_postings table
      */
     public function jobPostings()
     {
-        return $this->hasMany(JobPosting::class, 'posted_by');
+        return $this->hasMany(JobPosting::class, 'posted_by', 'id');
     }
 
     /**
@@ -67,56 +48,54 @@ class HRAdministrator extends Authenticatable
         return $this->hasManyThrough(
             Application::class,
             JobPosting::class,
-            'posted_by', // Foreign key on job_postings table
+            'posted_by',      // Foreign key on job_postings table
             'job_posting_id', // Foreign key on applications table
-            'id', // Local key on hr_administrators table
-            'id' // Local key on job_postings table
+            'id',             // Local key on hr_administrators table
+            'id'              // Local key on job_postings table
         );
     }
 
     /**
-     * Scope a query to only include active administrators.
+     * Alias for jobPostings - for backward compatibility
      */
+    public function myJobPostings()
+    {
+        return $this->jobPostings();
+    }
+
+    /**
+     * Alias for applications - for backward compatibility
+     */
+    public function myApplications()
+    {
+        return $this->applications();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to only include inactive administrators.
-     */
     public function scopeInactive($query)
     {
         return $query->where('status', 'inactive');
     }
 
-    /**
-     * Check if the administrator is active.
-     */
     public function isActive(): bool
     {
         return $this->status === 'active';
     }
 
-    /**
-     * Check if the administrator is inactive.
-     */
     public function isInactive(): bool
     {
         return $this->status === 'inactive';
     }
 
-    /**
-     * Get the administrator's full name.
-     */
     public function getFullNameAttribute(): string
     {
         return $this->name;
     }
 
-    /**
-     * Get the administrator's initials.
-     */
     public function getInitialsAttribute(): string
     {
         $words = explode(' ', $this->name);
@@ -126,9 +105,6 @@ class HRAdministrator extends Authenticatable
         return strtoupper(substr($this->name, 0, 2));
     }
 
-    /**
-     * Get the photo URL.
-     */
     public function getPhotoUrlAttribute(): string
     {
         if ($this->photo) {

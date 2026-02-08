@@ -2,47 +2,94 @@
 
 @section('title', 'Create HR Administrator')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
-@section('logout-route', route('admin.logout'))
+@php
+    // Detect which guard is authenticated
+    $isAdmin = Auth::guard('admin')->check();
+    $isHRAdmin = Auth::guard('hr_administrator')->check();
+    $currentUser = $isAdmin ? Auth::guard('admin')->user() : Auth::guard('hr_administrator')->user();
+    
+    // Set portal configuration based on user type
+    $portalName = $isAdmin ? 'Admin Portal' : 'HR Administrator Portal';
+    $brandIcon = $isAdmin ? 'bi bi-shield-check' : 'bi bi-person-badge';
+    $userRole = $isAdmin ? 'System Administrator' : 'HR Administrator';
+    $dashboardRoute = $isAdmin ? route('admin.dashboard') : route('hr-administrator.dashboard');
+    $logoutRoute = $isAdmin ? route('admin.logout') : route('hr-administrator.logout');
+@endphp
+
+@section('portal-name', $portalName)
+@section('brand-icon', $brandIcon)
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name ?? 'Guest')
+@section('user-role', $userRole)
+@section('user-initial', $currentUser ? strtoupper(substr($currentUser->name, 0, 1)) : 'G')
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-    </a>
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-check"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @if($isAdmin)
+        {{-- Super Admin Sidebar --}}
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
+            <i class="bi bi-person-badge"></i>
+            <span>HR Administrators</span>
+        </a>
+        <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @else
+        {{-- HR Administrator Sidebar --}}
+        <a href="{{ route('hr-administrator.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('hr-administrator.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('hr-administrator.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('hr-administrator.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="{{ route('hr-administrator.profile.show') }}" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @endif
 @endsection
 
 @section('content')
@@ -237,10 +284,10 @@
             font-size: 0.75rem;
         }
 
-        /* Password Strength */
+        /* Password strength */
         .password-strength {
-            margin-top: 0.75rem;
             display: none;
+            margin-top: 0.5rem;
         }
 
         .password-strength.active {
@@ -248,31 +295,36 @@
         }
 
         .strength-bar {
-            height: 6px;
-            border-radius: 3px;
+            height: 4px;
             background: #e5e7eb;
+            border-radius: 2px;
             overflow: hidden;
-            margin-top: 0.5rem;
         }
 
         .strength-fill {
             height: 100%;
+            width: 0;
             transition: all 0.3s;
-            border-radius: 3px;
         }
 
-        /* Info Box */
+        .strength-text {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Info box */
         .info-box {
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             border: 1px solid #bfdbfe;
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
         }
 
         .info-box-title {
-            font-weight: 700;
+            font-weight: 600;
             color: #1e40af;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -285,22 +337,21 @@
 
         .info-box li {
             color: #1e40af;
-            margin-bottom: 0.5rem;
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
         }
 
-        /* Buttons */
+        /* Custom button styles */
         .btn-custom {
-            padding: 0.75rem 2rem;
+            padding: 0.75rem 1.5rem;
             font-weight: 600;
             border-radius: 8px;
-            font-size: 0.9375rem;
             transition: all 0.2s;
-            border: none;
         }
 
         .btn-primary-custom {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
             color: white;
         }
 
@@ -311,230 +362,269 @@
         }
 
         .btn-secondary-custom {
-            background: #b6becc;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
             color: #374151;
         }
 
         .btn-secondary-custom:hover {
-            background: #c3c6cc;
+            background: #e5e7eb;
+            color: #1f2937;
         }
     </style>
 
-    <div class="container-fluid px-4 py-4">
-
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #3b82f6;">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.hr-administrators.index') }}"
-                        style="color: #3b82f6;">HR Administrators</a></li>
-                <li class="breadcrumb-item active">Create New</li>
-            </ol>
-        </nav>
-
-        <!-- Page Header -->
-        <div class="mb-4">
-            <h2 class="fw-bold mb-2" style="color: #1e3a8a;">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1" style="color: #1e3a8a; font-weight: 700;">
                 <i class="bi bi-person-plus-fill me-2"></i>Create New HR Administrator
-            </h2>
-            <p class="text-muted mb-0">Add a new HR Administrator account to manage the recruitment system</p>
+            </h1>
+            <p class="text-muted mb-0">Add a new HR Administrator to manage recruitment activities</p>
         </div>
+        <a href="{{ $isAdmin ? route('admin.hr-administrators.index') : route('hr-administrator.dashboard') }}" class="btn btn-custom btn-secondary-custom">
+            <i class="bi bi-arrow-left me-2"></i>Back
+        </a>
+    </div>
 
+    <!-- Alert Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Please fix the following errors:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Create Form -->
+    {{-- Only Admin can create HR Administrators --}}
+    @if($isAdmin)
         <form action="{{ route('admin.hr-administrators.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="row g-4">
-                <!-- Main Form Column -->
+            <div class="row">
+                <!-- Left Column - Main Form -->
                 <div class="col-lg-8">
-
-                    <!-- Personal Information -->
+                    <!-- Personal Information Section -->
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-icon">
-                                <i class="bi bi-person-circle"></i>
+                                <i class="bi bi-person"></i>
                             </div>
-                            <h3 class="section-title">Personal Information</h3>
+                            <h2 class="section-title">Personal Information</h2>
                         </div>
 
-                        <div class="row g-3">
+                        <div class="row g-4">
+                            <!-- Full Name -->
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    Full Name<span class="required-star">*</span>
+                                <label for="name" class="form-label">
+                                    Full Name <span class="required-star">*</span>
                                 </label>
-                                <input type="text" name="name" id="name"
-                                    class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
-                                    placeholder="Enter full name" required>
+                                <div class="input-group">
+                                    <span class="input-group-text input-icon">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control @error('name') is-invalid @enderror" 
+                                           id="name" 
+                                           name="name" 
+                                           value="{{ old('name') }}" 
+                                           placeholder="Enter full name"
+                                           required>
+                                </div>
                                 @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
+                            <!-- Email -->
                             <div class="col-md-6">
-                                <label class="form-label">Phone Number</label>
-                                <div class="input-group">
-                                    <span class="input-group-text input-icon">
-                                        <i class="bi bi-telephone"></i>
-                                    </span>
-                                    <input type="text" name="phone"
-                                        class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}"
-                                        placeholder="+977-98********">
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Account Credentials -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="bi bi-shield-lock"></i>
-                            </div>
-                            <h3 class="section-title">Account Credentials</h3>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">
-                                    Email Address<span class="required-star">*</span>
+                                <label for="email" class="form-label">
+                                    Email Address <span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-envelope"></i>
                                     </span>
-                                    <input type="email" name="email"
-                                        class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
-                                        placeholder="admin@noc.gov.np" required>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <input type="email" 
+                                           class="form-control @error('email') is-invalid @enderror" 
+                                           id="email" 
+                                           name="email" 
+                                           value="{{ old('email') }}" 
+                                           placeholder="admin@example.com"
+                                           required>
                                 </div>
                                 <small class="helper-text">
-                                    <i class="bi bi-info-circle"></i> This email will be used for login credentials
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    This email will be used for login and notifications
                                 </small>
+                                @error('email')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
+                            <!-- Phone -->
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    Password<span class="required-star">*</span>
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text input-icon">
+                                        <i class="bi bi-telephone"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control @error('phone') is-invalid @enderror" 
+                                           id="phone" 
+                                           name="phone" 
+                                           value="{{ old('phone') }}" 
+                                           placeholder="+977-9XXXXXXXXX">
+                                </div>
+                                @error('phone')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">
+                                    Account Status <span class="required-star">*</span>
+                                </label>
+                                <select class="form-select @error('status') is-invalid @enderror" 
+                                        id="status" 
+                                        name="status" 
+                                        required>
+                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>
+                                        Active - Can login immediately
+                                    </option>
+                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                        Inactive - Cannot login until activated
+                                    </option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                            <h2 class="section-title">Security Credentials</h2>
+                        </div>
+
+                        <div class="row g-4">
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">
+                                    Password <span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-lock"></i>
                                     </span>
-                                    <input type="password" name="password" id="password"
-                                        class="form-control @error('password') is-invalid @enderror" required>
-                                    <button class="btn btn-outline-secondary" type="button"
-                                        onclick="togglePasswordVisibility('password', 'passwordIcon')">
+                                    <input type="password" 
+                                           class="form-control @error('password') is-invalid @enderror" 
+                                           id="password" 
+                                           name="password" 
+                                           placeholder="Enter password"
+                                           required>
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePasswordVisibility('password', 'passwordIcon')">
                                         <i class="bi bi-eye" id="passwordIcon"></i>
                                     </button>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
-                                <small class="helper-text">
-                                    <i class="bi bi-shield-check"></i> Minimum 8 characters with letters and numbers
-                                </small>
 
                                 <!-- Password Strength Indicator -->
                                 <div class="password-strength" id="passwordStrength">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <small class="text-muted">Password Strength:</small>
-                                        <small class="fw-bold" id="strengthText"></small>
-                                    </div>
                                     <div class="strength-bar">
                                         <div class="strength-fill" id="strengthFill"></div>
                                     </div>
+                                    <span class="strength-text" id="strengthText"></span>
                                 </div>
+
+                                <small class="helper-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Minimum 8 characters with letters and numbers
+                                </small>
+                                @error('password')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
+                            <!-- Confirm Password -->
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    Confirm Password<span class="required-star">*</span>
+                                <label for="password_confirmation" class="form-label">
+                                    Confirm Password <span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-lock-fill"></i>
                                     </span>
-                                    <input type="password" name="password_confirmation" id="password_confirmation"
-                                        class="form-control" required>
-                                    <button class="btn btn-outline-secondary" type="button"
-                                        onclick="togglePasswordVisibility('password_confirmation', 'confirmIcon')">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="password_confirmation" 
+                                           name="password_confirmation" 
+                                           placeholder="Confirm password"
+                                           required>
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePasswordVisibility('password_confirmation', 'confirmIcon')">
                                         <i class="bi bi-eye" id="confirmIcon"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Account Status -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="bi bi-toggle-on"></i>
-                            </div>
-                            <h3 class="section-title">Account Status</h3>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">
-                                    Initial Status<span class="required-star">*</span>
-                                </label>
-                                <select name="status" class="form-select @error('status') is-invalid @enderror" required>
-                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>
-                                        ✓ Active - Can login immediately
-                                    </option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
-                                        ✗ Inactive - Cannot login until activated
-                                    </option>
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- Sidebar Column -->
+                <!-- Right Column - Photo & Info -->
                 <div class="col-lg-4">
-
-                    <!-- Profile Photo Upload -->
+                    <!-- Photo Upload Section -->
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-icon">
-                                <i class="bi bi-image"></i>
+                                <i class="bi bi-camera"></i>
                             </div>
-                            <h3 class="section-title">Profile Photo</h3>
+                            <h2 class="section-title">Profile Photo</h2>
                         </div>
 
                         <div class="photo-upload-container" id="photoUploadContainer">
-                            <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/jpg,image/png"
-                                style="display: none;">
+                            <input type="file" 
+                                   id="photoInput" 
+                                   name="photo" 
+                                   accept="image/jpeg,image/jpg,image/png" 
+                                   class="d-none">
 
-                            <!-- Preview Wrapper -->
                             <div class="photo-preview-wrapper" id="photoPreviewWrapper">
-                                <img id="photoPreview" class="photo-preview" alt="Preview">
+                                <img src="" alt="Preview" class="photo-preview" id="photoPreview">
                             </div>
 
-                            <!-- Upload Icon & Text -->
                             <div id="uploadPrompt">
                                 <div class="upload-icon">
-                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <i class="bi bi-cloud-upload"></i>
                                 </div>
-                                <div class="upload-text">Upload Profile Photo</div>
-                                <div class="upload-subtext">
-                                    Drag and drop or click to browse
-                                </div>
-                                <button type="button" class="upload-button"
-                                    onclick="document.getElementById('photoInput').click()">
-                                    <i class="bi bi-folder2-open me-2"></i>Choose File
-                                </button>
+                                <p class="upload-text">Upload Profile Photo</p>
+                                <p class="upload-subtext">Drag and drop or click to browse</p>
+                                <span class="upload-button">Choose File</span>
                             </div>
 
                             <button type="button" class="remove-photo-btn" id="removePhotoBtn">
@@ -590,7 +680,13 @@
                 </button>
             </div>
         </form>
-    </div>
+    @else
+        {{-- HR Administrators cannot create other HR Administrators --}}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Access Denied:</strong> Only System Administrators can create HR Administrator accounts.
+        </div>
+    @endif
 @endsection
 
 @section('scripts')
@@ -603,37 +699,39 @@
         const uploadPrompt = document.getElementById('uploadPrompt');
         const removePhotoBtn = document.getElementById('removePhotoBtn');
 
-        // Click to upload
-        photoUploadContainer.addEventListener('click', function (e) {
-            if (e.target !== removePhotoBtn && !removePhotoBtn.contains(e.target)) {
-                photoInput.click();
-            }
-        });
+        if (photoUploadContainer) {
+            // Click to upload
+            photoUploadContainer.addEventListener('click', function (e) {
+                if (e.target !== removePhotoBtn && !removePhotoBtn.contains(e.target)) {
+                    photoInput.click();
+                }
+            });
 
-        // File input change
-        photoInput.addEventListener('change', handleFileSelect);
+            // File input change
+            photoInput.addEventListener('change', handleFileSelect);
 
-        // Drag and drop
-        photoUploadContainer.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            photoUploadContainer.classList.add('dragover');
-        });
+            // Drag and drop
+            photoUploadContainer.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                photoUploadContainer.classList.add('dragover');
+            });
 
-        photoUploadContainer.addEventListener('dragleave', function (e) {
-            e.preventDefault();
-            photoUploadContainer.classList.remove('dragover');
-        });
+            photoUploadContainer.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                photoUploadContainer.classList.remove('dragover');
+            });
 
-        photoUploadContainer.addEventListener('drop', function (e) {
-            e.preventDefault();
-            photoUploadContainer.classList.remove('dragover');
+            photoUploadContainer.addEventListener('drop', function (e) {
+                e.preventDefault();
+                photoUploadContainer.classList.remove('dragover');
 
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                photoInput.files = files;
-                handleFileSelect();
-            }
-        });
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    photoInput.files = files;
+                    handleFileSelect();
+                }
+            });
+        }
 
         function handleFileSelect() {
             const file = photoInput.files[0];
@@ -667,28 +765,32 @@
         }
 
         // Remove photo
-        removePhotoBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            photoInput.value = '';
-            photoPreview.src = '';
-            photoPreviewWrapper.classList.remove('active');
-            uploadPrompt.style.display = 'block';
-            removePhotoBtn.classList.remove('active');
-        });
+        if (removePhotoBtn) {
+            removePhotoBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                photoInput.value = '';
+                photoPreview.src = '';
+                photoPreviewWrapper.classList.remove('active');
+                uploadPrompt.style.display = 'block';
+                removePhotoBtn.classList.remove('active');
+            });
+        }
 
         // Toggle password visibility
         function togglePasswordVisibility(fieldId, iconId) {
             const field = document.getElementById(fieldId);
             const icon = document.getElementById(iconId);
 
-            if (field.type === 'password') {
-                field.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
-            } else {
-                field.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
+            if (field && icon) {
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    field.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
             }
         }
 
@@ -698,77 +800,82 @@
         const strengthText = document.getElementById('strengthText');
         const strengthFill = document.getElementById('strengthFill');
 
-        passwordInput.addEventListener('input', function () {
-            const password = this.value;
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function () {
+                const password = this.value;
 
-            if (password.length === 0) {
-                passwordStrength.classList.remove('active');
-                return;
-            }
+                if (password.length === 0) {
+                    passwordStrength.classList.remove('active');
+                    return;
+                }
 
-            passwordStrength.classList.add('active');
+                passwordStrength.classList.add('active');
 
-            let strength = 0;
+                let strength = 0;
 
-            // Length
-            if (password.length >= 8) strength += 25;
-            if (password.length >= 12) strength += 15;
+                // Length
+                if (password.length >= 8) strength += 25;
+                if (password.length >= 12) strength += 15;
 
-            // Contains lowercase
-            if (/[a-z]/.test(password)) strength += 15;
+                // Contains lowercase
+                if (/[a-z]/.test(password)) strength += 15;
 
-            // Contains uppercase
-            if (/[A-Z]/.test(password)) strength += 15;
+                // Contains uppercase
+                if (/[A-Z]/.test(password)) strength += 15;
 
-            // Contains numbers
-            if (/\d/.test(password)) strength += 15;
+                // Contains numbers
+                if (/\d/.test(password)) strength += 15;
 
-            // Contains special characters
-            if (/[^A-Za-z0-9]/.test(password)) strength += 15;
+                // Contains special characters
+                if (/[^A-Za-z0-9]/.test(password)) strength += 15;
 
-            // Update UI
-            let text = '';
-            let color = '';
+                // Update UI
+                let text = '';
+                let color = '';
 
-            if (strength < 40) {
-                text = 'Weak';
-                color = '#ef4444';
-            } else if (strength < 70) {
-                text = 'Medium';
-                color = '#f59e0b';
-            } else {
-                text = 'Strong';
-                color = '#10b981';
-            }
+                if (strength < 40) {
+                    text = 'Weak';
+                    color = '#ef4444';
+                } else if (strength < 70) {
+                    text = 'Medium';
+                    color = '#f59e0b';
+                } else {
+                    text = 'Strong';
+                    color = '#10b981';
+                }
 
-            strengthText.textContent = text;
-            strengthText.style.color = color;
-            strengthFill.style.width = strength + '%';
-            strengthFill.style.background = color;
-        });
+                strengthText.textContent = text;
+                strengthText.style.color = color;
+                strengthFill.style.width = strength + '%';
+                strengthFill.style.background = color;
+            });
+        }
 
         // Form validation
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const password = document.getElementById('password').value;
-            const passwordConfirm = document.getElementById('password_confirmation').value;
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const password = document.getElementById('password').value;
+                const passwordConfirm = document.getElementById('password_confirmation').value;
 
-            if (password !== passwordConfirm) {
-                e.preventDefault();
-                alert('Passwords do not match!');
-                return false;
-            }
+                if (password !== passwordConfirm) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                    return false;
+                }
 
-            if (password.length < 8) {
-                e.preventDefault();
-                alert('Password must be at least 8 characters long!');
-                return false;
-            }
+                if (password.length < 8) {
+                    e.preventDefault();
+                    alert('Password must be at least 8 characters long!');
+                    return false;
+                }
 
-            if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-                e.preventDefault();
-                alert('Password must contain both letters and numbers!');
-                return false;
-            }
-        });
+                if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+                    e.preventDefault();
+                    alert('Password must contain both letters and numbers!');
+                    return false;
+                }
+            });
+        }
     </script>
 @endsection
