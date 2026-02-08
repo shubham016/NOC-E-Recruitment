@@ -454,7 +454,7 @@ class ApplicationFormController extends Controller
             'name_english' => 'required|string|max:255',
             'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
-            'age' => 'required|integer|min:18|max:100',
+            'age' => 'required|integer|min:18|max:40',
             'phone' => 'required|string',
             'email' => 'required|email',
             'gender' => 'required|in:Male,Female,Other',
