@@ -95,7 +95,14 @@ class JobManagementController extends Controller
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        $validated['posted_by'] = Auth::guard('admin')->id();
+        // Set posted_by based on who is logged in
+        if (Auth::guard('admin')->check()) {
+            $validated['posted_by'] = Auth::guard('admin')->id();
+        } elseif (Auth::guard('hr_administrator')->check()) {
+            $validated['posted_by'] = Auth::guard('hr_administrator')->id();
+        } else {
+            $validated['posted_by'] = Auth::guard('admin')->id();
+        }
 
         $job = JobPosting::create($validated);
 
@@ -200,7 +207,14 @@ class JobManagementController extends Controller
         $newJob->title = $job->title . ' (Copy)';
         $newJob->advertisement_no = $job->advertisement_no . '-COPY';
         $newJob->status = 'draft';
-        $newJob->posted_by = Auth::guard('admin')->id();
+
+        // Set posted_by for duplicated job
+        if (Auth::guard('admin')->check()) {
+            $newJob->posted_by = Auth::guard('admin')->id();
+        } elseif (Auth::guard('hr_administrator')->check()) {
+            $newJob->posted_by = Auth::guard('hr_administrator')->id();
+        }
+
         $newJob->deadline = now()->addDays(30);
         $newJob->save();
 

@@ -2,47 +2,94 @@
 
 @section('title', 'Edit HR Administrator')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
-@section('logout-route', route('admin.logout'))
+@php
+    // Detect which guard is authenticated
+    $isAdmin = Auth::guard('admin')->check();
+    $isHRAdmin = Auth::guard('hr_administrator')->check();
+    $currentUser = $isAdmin ? Auth::guard('admin')->user() : Auth::guard('hr_administrator')->user();
+    
+    // Set portal configuration based on user type
+    $portalName = $isAdmin ? 'Admin Portal' : 'HR Administrator Portal';
+    $brandIcon = $isAdmin ? 'bi bi-shield-check' : 'bi bi-person-badge';
+    $userRole = $isAdmin ? 'System Administrator' : 'HR Administrator';
+    $dashboardRoute = $isAdmin ? route('admin.dashboard') : route('hr-administrator.dashboard');
+    $logoutRoute = $isAdmin ? route('admin.logout') : route('hr-administrator.logout');
+@endphp
+
+@section('portal-name', $portalName)
+@section('brand-icon', $brandIcon)
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name ?? 'Guest')
+@section('user-role', $userRole)
+@section('user-initial', $currentUser ? strtoupper(substr($currentUser->name, 0, 1)) : 'G')
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-    </a>
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-check"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @if($isAdmin)
+        {{-- Super Admin Sidebar --}}
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
+            <i class="bi bi-person-badge"></i>
+            <span>HR Administrators</span>
+        </a>
+        <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @else
+        {{-- HR Administrator Sidebar --}}
+        <a href="{{ route('hr-administrator.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('hr-administrator.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('hr-administrator.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('hr-administrator.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="{{ route('hr-administrator.profile.show') }}" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @endif
 @endsection
 
 @section('content')
@@ -337,10 +384,14 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #3b82f6;">Dashboard</a>
+                <li class="breadcrumb-item">
+                    <a href="{{ $dashboardRoute }}" style="color: #3b82f6;">Dashboard</a>
                 </li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.hr-administrators.index') }}"
-                        style="color: #3b82f6;">HR Administrators</a></li>
+                @if($isAdmin)
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('admin.hr-administrators.index') }}" style="color: #3b82f6;">HR Administrators</a>
+                    </li>
+                @endif
                 <li class="breadcrumb-item active">Edit Administrator</li>
             </ol>
         </nav>
@@ -353,12 +404,14 @@
                 </h2>
                 <p class="text-muted mb-0">Update administrator information and settings</p>
             </div>
-            <a href="{{ route('admin.hr-administrators.show', $hrAdministrator->id) }}" class="btn btn-outline-primary">
-                <i class="bi bi-eye me-2"></i>View Profile
-            </a>
+            @if($isAdmin)
+                <a href="{{ route('admin.hr-administrators.show', $hrAdministrator->id) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-eye me-2"></i>View Profile
+                </a>
+            @endif
         </div>
 
-        <form action="{{ route('admin.hr-administrators.update', $hrAdministrator->id) }}" method="POST"
+        <form action="{{ $isAdmin ? route('admin.hr-administrators.update', $hrAdministrator->id) : route('hr-administrator.profile.update') }}" method="POST"
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -504,34 +557,36 @@
                         </div>
                     </div>
 
-                    <!-- Account Status -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="bi bi-toggle-on"></i>
+                    <!-- Account Status - Only visible to Admin -->
+                    @if($isAdmin)
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="bi bi-toggle-on"></i>
+                                </div>
+                                <h3 class="section-title">Account Status</h3>
                             </div>
-                            <h3 class="section-title">Account Status</h3>
-                        </div>
 
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">
-                                    Account Status<span class="required-star">*</span>
-                                </label>
-                                <select name="status" class="form-select @error('status') is-invalid @enderror" required>
-                                    <option value="active" {{ old('status', $hrAdministrator->status) == 'active' ? 'selected' : '' }}>
-                                        ✓ Active - Can login immediately
-                                    </option>
-                                    <option value="inactive" {{ old('status', $hrAdministrator->status) == 'inactive' ? 'selected' : '' }}>
-                                        ✗ Inactive - Cannot login until activated
-                                    </option>
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">
+                                        Account Status<span class="required-star">*</span>
+                                    </label>
+                                    <select name="status" class="form-select @error('status') is-invalid @enderror" required>
+                                        <option value="active" {{ old('status', $hrAdministrator->status) == 'active' ? 'selected' : '' }}>
+                                            ✓ Active - Can login immediately
+                                        </option>
+                                        <option value="inactive" {{ old('status', $hrAdministrator->status) == 'inactive' ? 'selected' : '' }}>
+                                            ✗ Inactive - Cannot login until activated
+                                        </option>
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
 
                 </div>
 
@@ -631,7 +686,7 @@
 
             <!-- Form Actions -->
             <div class="d-flex gap-3 justify-content-end mt-4">
-                <a href="{{ route('admin.hr-administrators.index') }}" class="btn btn-custom btn-secondary-custom">
+                <a href="{{ $isAdmin ? route('admin.hr-administrators.index') : route('hr-administrator.dashboard') }}" class="btn btn-custom btn-secondary-custom">
                     <i class="bi bi-x-circle me-2"></i>Cancel
                 </a>
                 <button type="submit" class="btn btn-custom btn-primary-custom">

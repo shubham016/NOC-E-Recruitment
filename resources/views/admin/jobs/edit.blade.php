@@ -1,13 +1,13 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Vacancy')
+@section('title', 'Post New Vacancy') 
 
 @section('portal-name', 'Admin Portal')
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
+@section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
 @section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
+@section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')

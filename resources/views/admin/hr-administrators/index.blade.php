@@ -2,56 +2,94 @@
 
 @section('title', 'HR Administrators Management')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
-@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
-@section('logout-route', route('admin.logout'))
+@php
+    // Detect which guard is authenticated
+    $isAdmin = Auth::guard('admin')->check();
+    $isHRAdmin = Auth::guard('hr_administrator')->check();
+    $currentUser = $isAdmin ? Auth::guard('admin')->user() : Auth::guard('hr_administrator')->user();
+    
+    // Set portal configuration based on user type
+    $portalName = $isAdmin ? 'Admin Portal' : 'HR Administrator Portal';
+    $brandIcon = $isAdmin ? 'bi bi-shield-check' : 'bi bi-person-badge';
+    $userRole = $isAdmin ? 'System Administrator' : 'HR Administrator';
+    $dashboardRoute = $isAdmin ? route('admin.dashboard') : route('hr-administrator.dashboard');
+    $logoutRoute = $isAdmin ? route('admin.logout') : route('hr-administrator.logout');
+@endphp
+
+@section('portal-name', $portalName)
+@section('brand-icon', $brandIcon)
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name ?? 'Guest')
+@section('user-role', $userRole)
+@section('user-initial', $currentUser ? strtoupper(substr($currentUser->name, 0, 1)) : 'G')
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    {{-- <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Vacancy List</span>
-        <span class="badge bg-primary ms-auto">{{ $stats['total_jobs'] }}</span>
-    </a> --}}
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-    </a>
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-check"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @if($isAdmin)
+        {{-- Super Admin Sidebar --}}
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item active">
+            <i class="bi bi-person-badge"></i>
+            <span>HR Administrators</span>
+        </a>
+        <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @else
+        {{-- HR Administrator Sidebar --}}
+        <a href="{{ route('hr-administrator.dashboard') }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancies</span>
+        </a>
+        <a href="{{ route('hr-administrator.applications.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Applications</span>
+        </a>
+        <a href="{{ route('hr-administrator.candidates.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Candidates</span>
+        </a>
+        <a href="{{ route('hr-administrator.reviewers.index') }}" class="sidebar-menu-item">
+            <i class="bi bi-person-check"></i>
+            <span>Reviewers</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-bar-chart"></i>
+            <span>Reports</span>
+        </a>
+        <a href="{{ route('hr-administrator.profile.show') }}" class="sidebar-menu-item">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    @endif
 @endsection
 
 @section('content')
@@ -785,12 +823,14 @@
                         Manage HR Administrator accounts, permissions, and access control
                     </p>
                 </div>
-                <div class="col-lg-4 text-end">
-                    <a href="{{ route('admin.hr-administrators.create') }}" class="hero-cta">
-                        <i class="bi bi-plus-circle-fill"></i>
-                        Create Administrator
-                    </a>
-                </div>
+                @if($isAdmin)
+                    <div class="col-lg-4 text-end">
+                        <a href="{{ route('admin.hr-administrators.create') }}" class="hero-cta">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            Create Administrator
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -855,7 +895,7 @@
                     <p>Refine your search with multiple criteria</p>
                 </div>
             </div>
-            <form action="{{ route('admin.hr-administrators.index') }}" method="GET">
+            <form action="{{ $isAdmin ? route('admin.hr-administrators.index') : '#' }}" method="GET">
                 <div class="row g-3">
                     <!-- Search Query -->
                     <div class="col-lg-4 col-md-6">
@@ -886,7 +926,7 @@
                                     <i class="bi bi-search"></i>
                                     Search
                                 </button>
-                                <a href="{{ route('admin.hr-administrators.index') }}" class="btn-reset-modern">
+                                <a href="{{ $isAdmin ? route('admin.hr-administrators.index') : '#' }}" class="btn-reset-modern">
                                     <i class="bi bi-arrow-clockwise"></i>
                                 </a>
                             </div>
@@ -964,59 +1004,63 @@
                                     </td>
                                     <td>
                                         <div class="actions-cell">
-                                            <a href="{{ route('admin.hr-administrators.show', $admin->id) }}" class="action-btn-table action-view-table" title="View">
+                                            <a href="{{ $isAdmin ? route('admin.hr-administrators.show', $admin->id) : '#' }}" class="action-btn-table action-view-table" title="View">
                                                 <i class="bi bi-eye-fill"></i>
                                             </a>
-                                            <a href="{{ route('admin.hr-administrators.edit', $admin->id) }}" class="action-btn-table action-edit-table" title="Edit">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
-                                            <button type="button" class="action-btn-table action-toggle-table" data-bs-toggle="modal" data-bs-target="#toggleModal{{ $admin->id }}" title="Toggle">
-                                                <i class="bi bi-arrow-repeat"></i>
-                                            </button>
-                                            <button type="button" class="action-btn-table action-delete-table" onclick="deleteAdmin({{ $admin->id }})" title="Delete">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </button>
+                                            @if($isAdmin)
+                                                <a href="{{ route('admin.hr-administrators.edit', $admin->id) }}" class="action-btn-table action-edit-table" title="Edit">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <button type="button" class="action-btn-table action-toggle-table" data-bs-toggle="modal" data-bs-target="#toggleModal{{ $admin->id }}" title="Toggle">
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                </button>
+                                                <button type="button" class="action-btn-table action-delete-table" onclick="deleteAdmin({{ $admin->id }})" title="Delete">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
 
-                                <!-- Toggle Status Modal -->
-                                <div class="modal fade" id="toggleModal{{ $admin->id }}" tabindex="-1">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                                            <form action="{{ route('admin.hr-administrators.toggle-status', $admin->id) }}" method="POST">
-                                                @csrf
-                                                <div class="modal-header border-bottom" style="padding: 1.5rem;">
-                                                    <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
-                                                        <i class="bi bi-arrow-repeat me-2"></i>Change Administrator Status
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body p-4">
-                                                    <p class="mb-3" style="font-size: 1.0625rem;">
-                                                        Are you sure you want to {{ $admin->status == 'active' ? 'deactivate' : 'activate' }} 
-                                                        <strong>{{ $admin->name }}</strong>?
-                                                    </p>
-                                                    @if($admin->status == 'active')
-                                                        <div class="alert alert-warning mb-0">
-                                                            <i class="bi bi-exclamation-triangle me-2"></i>
-                                                            <small>This administrator will not be able to log in once deactivated.</small>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="modal-footer border-top" style="padding: 1rem 1.5rem;">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                        <i class="bi bi-x-circle me-2"></i>Cancel
-                                                    </button>
-                                                    <button type="submit" class="btn btn-{{ $admin->status == 'active' ? 'warning' : 'success' }}">
-                                                        <i class="bi bi-check-circle me-2"></i>
-                                                        {{ $admin->status == 'active' ? 'Deactivate' : 'Activate' }}
-                                                    </button>
-                                                </div>
-                                            </form>
+                                @if($isAdmin)
+                                    <!-- Toggle Status Modal -->
+                                    <div class="modal fade" id="toggleModal{{ $admin->id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                                                <form action="{{ route('admin.hr-administrators.toggle-status', $admin->id) }}" method="POST">
+                                                    @csrf
+                                                    <div class="modal-header border-bottom" style="padding: 1.5rem;">
+                                                        <h5 class="modal-title fw-bold" style="color: #1e3a8a;">
+                                                            <i class="bi bi-arrow-repeat me-2"></i>Change Administrator Status
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body p-4">
+                                                        <p class="mb-3" style="font-size: 1.0625rem;">
+                                                            Are you sure you want to {{ $admin->status == 'active' ? 'deactivate' : 'activate' }} 
+                                                            <strong>{{ $admin->name }}</strong>?
+                                                        </p>
+                                                        @if($admin->status == 'active')
+                                                            <div class="alert alert-warning mb-0">
+                                                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                                                <small>This administrator will not be able to log in once deactivated.</small>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="modal-footer border-top" style="padding: 1rem 1.5rem;">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="bi bi-x-circle me-2"></i>Cancel
+                                                        </button>
+                                                        <button type="submit" class="btn btn-{{ $admin->status == 'active' ? 'warning' : 'success' }}">
+                                                            <i class="bi bi-check-circle me-2"></i>
+                                                            {{ $admin->status == 'active' ? 'Deactivate' : 'Activate' }}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -1047,11 +1091,11 @@
                         @endif
                     </p>
                     @if(request()->hasAny(['search', 'status']))
-                        <a href="{{ route('admin.hr-administrators.index') }}" class="btn-empty-action-premium">
+                        <a href="{{ $isAdmin ? route('admin.hr-administrators.index') : '#' }}" class="btn-empty-action-premium">
                             <i class="bi bi-arrow-clockwise"></i>
                             Clear All Filters
                         </a>
-                    @else
+                    @elseif($isAdmin)
                         <a href="{{ route('admin.hr-administrators.create') }}" class="btn-empty-action-premium">
                             <i class="bi bi-plus-circle-fill"></i>
                             Create First Administrator
@@ -1063,22 +1107,26 @@
     </div>
 
     <!-- Delete Forms -->
-    @foreach($administrators as $admin)
-        <form id="deleteForm{{ $admin->id }}" action="{{ route('admin.hr-administrators.destroy', $admin->id) }}" method="POST" style="display: none;">
-            @csrf
-            @method('DELETE')
-        </form>
-    @endforeach
+    @if($isAdmin)
+        @foreach($administrators as $admin)
+            <form id="deleteForm{{ $admin->id }}" action="{{ route('admin.hr-administrators.destroy', $admin->id) }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+        @endforeach
+    @endif
 
 @endsection
 
 @section('scripts')
     <script>
-        function deleteAdmin(id) {
-            if (confirm('⚠️ Are you sure you want to delete this administrator?\n\nThis action cannot be undone and will remove all associated data.')) {
-                document.getElementById('deleteForm' + id).submit();
+        @if($isAdmin)
+            function deleteAdmin(id) {
+                if (confirm('⚠️ Are you sure you want to delete this administrator?\n\nThis action cannot be undone and will remove all associated data.')) {
+                    document.getElementById('deleteForm' + id).submit();
+                }
             }
-        }
+        @endif
 
         // Auto-dismiss alerts after 5 seconds
         setTimeout(() => {

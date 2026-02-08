@@ -555,7 +555,7 @@
                     <div class="jobs-card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0 fw-bold" style="color: #1e3a8a;">
-                                <i class="bi bi-briefcase me-2"></i>Recent Vacancy Postings
+                                <i class="bi bi-briefcase me-2"></i>Recent Vacancies
                             </h5>
                             <span class="badge bg-primary">{{ $recentJobs->count() }} Vacancies</span>
                         </div>
@@ -564,7 +564,7 @@
                         <table class="jobs-table">
                             <thead>
                                 <tr>
-                                    <th>Job Title</th>
+                                    <th>Vacancy Title</th>
                                     <th>Department</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Posted</th>
@@ -576,16 +576,16 @@
                                     <tr>
                                         <td>
                                             <div class="fw-semibold" style="color: #1e3a8a;">{{ $job->title }}</div>
-                                            <small class="text-muted">{{ $job->advertisement_no }}</small>
+                                            {{-- <small class="text-muted">{{ $job->advertisement_no }}</small>  --}}
                                         </td>
-                                        <td>{{ $job->department }}</td>
+                                        <td>{{ $job->service_group }}</td>
                                         <td class="text-center">
                                             <span class="badge {{ $job->status == 'active' ? 'bg-success' : 'bg-secondary' }}">
                                                 {{ ucfirst($job->status) }}
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <small>{{ $job->created_at->format('M d, Y') }}</small>
+                                            <small>{{ $job->created_at->format('Y-m-d') }}</small>
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ $isAdmin ? route('admin.jobs.show', $job->id) : route('hr-administrator.jobs.show', $job->id) }}"
@@ -656,7 +656,7 @@
                             <div class="permission-icon">
                                 <i class="bi bi-check"></i>
                             </div>
-                            <span>Manage Job Postings</span>
+                            <span>Manage Vacancies</span>
                         </li>
                         <li>
                             <div class="permission-icon">

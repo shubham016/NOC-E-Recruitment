@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') NOC E-Recruitment Management System</title>
+    <title>@yield('title') - {{ __('common.system_name') }}</title>
     <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
 
     <!-- Bootstrap 5 CSS -->
@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <!-- Nepali Datepicker  -->
-    <link href="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/css/nepali.datepicker.v5.0.6.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/css/nepali.datepicker.v5.0.6.min.css"
+        rel="stylesheet" type="text/css" />
 
     <style>
         :root {
@@ -420,33 +421,35 @@
                 font-size: 0.8rem;
             }
         }
+
         /* Footer Styles */
-        
-            #footer {
-                background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
-                color: white;
-                padding: 1.5rem 0;
-                margin-top: 3rem;
-            }
 
-            #footer p {
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 15px;
-            }
+        #footer {
+            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
 
-            /* Ensure main-content has proper min-height for footer to stay at bottom */
-            .main-content {
-                margin-left: var(--sidebar-width);
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
+        #footer p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
 
-            .content-area {
-                padding: 2rem 1.5rem;
-                flex: 1; 
-            }
+        /* Ensure main-content has proper min-height for footer to stay at bottom */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-area {
+            padding: 2rem 1.5rem;
+            flex: 1;
+        }
+
         @yield('custom-styles');
     </style>
 </head>
@@ -489,6 +492,38 @@
                 </button>
 
                 <div class="user-menu">
+                    <!-- Language Switcher -->
+                    <div class="dropdown me-3">
+                        <button class="btn btn-sm btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
+                            type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="min-width: 100px; font-weight: 600;">
+                            <i class="bi bi-translate"></i>
+                            @if(app()->getLocale() == 'ne')
+                                <span>नेपाली</span>
+                            @else
+                                <span>EN</span>
+                            @endif
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="languageDropdown">
+                            <li>
+                                <a class="dropdown-item {{ app()->getLocale() == 'en' ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('language.switch', 'en') }}">
+                                    <i
+                                        class="bi bi-check-circle{{ app()->getLocale() == 'en' ? '-fill' : '' }} me-2"></i>
+                                    English (En)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ app()->getLocale() == 'ne' ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('language.switch', 'ne') }}">
+                                    <i
+                                        class="bi bi-check-circle{{ app()->getLocale() == 'ne' ? '-fill' : '' }} me-2"></i>
+                                    नेपाली (नेपा)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="text-end d-none d-md-block">
                         <div class="fw-semibold">@yield('user-name')</div>
                         <small class="text-muted">@yield('user-role')</small>
@@ -500,14 +535,18 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i
+                                        class="bi bi-person me-2"></i>{{ __('Profile') }}</a></li>
+                            <li><a class="dropdown-item" href="#"><i
+                                        class="bi bi-gear me-2"></i>{{ __('Settings') }}</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <form method="POST" action="@yield('logout-route')">
                                     @csrf
                                     <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                        <i class="bi bi-box-arrow-right me-2"></i>{{ __('Logout') }}
                                     </button>
                                 </form>
                             </li>
@@ -522,9 +561,9 @@
         </div>
 
         <!-- Footer -->
-        <footer id="footer">
+       <footer id="footer">
             <div class="container text-center">
-                <p class="mb-0">Copyrights &copy; {{ date('Y') }} Nepal Oil Corporation</p>
+                <p class="mb-0">Copyright &copy; {{ date('Y') }}. Nepal Oil Corporation</p>
             </div>
         </footer>
     </div>
@@ -537,20 +576,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Official Nepali Date Picker -->
-    <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js"></script>
+    <script
+        src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js"></script>
 
     <script>
         console.log('🚀 Dashboard initializing...');
-        
+
         // ============================================
         // EMBEDDED ACCURATE NEPALI DATE CONVERTER
         // No external CDN dependency - 100% reliable
         // Data source: Official Nepali Calendar
         // ============================================
-        
-        (function() {
+
+        (function () {
             'use strict';
-            
+
             // Official Nepali Calendar Data (days in each month for each year)
             // This is the ACCURATE data used by official converters
             const bsMonthData = {
@@ -720,10 +760,10 @@
             }
 
             // BS to AD conversion
-            window.bsToAD = function(bsDateStr) {
+            window.bsToAD = function (bsDateStr) {
                 try {
                     console.log('🔄 Converting BS→AD:', bsDateStr);
-                    
+
                     const parts = bsDateStr.split('-').map(Number);
                     const bsYear = parts[0];
                     const bsMonth = parts[1];
@@ -741,10 +781,10 @@
                     const adDate = new Date(adRefDate);
                     adDate.setDate(adDate.getDate() + totalDays);
 
-                    const result = adDate.getFullYear() + '-' + 
-                                   String(adDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                   String(adDate.getDate()).padStart(2, '0');
-                    
+                    const result = adDate.getFullYear() + '-' +
+                        String(adDate.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(adDate.getDate()).padStart(2, '0');
+
                     console.log('✅ BS→AD Result:', result);
                     return result;
                 } catch (error) {
@@ -754,10 +794,10 @@
             };
 
             // AD to BS conversion
-            window.adToBS = function(adDateStr) {
+            window.adToBS = function (adDateStr) {
                 try {
                     console.log('🔄 Converting AD→BS:', adDateStr);
-                    
+
                     const adDate = new Date(adDateStr);
                     if (isNaN(adDate.getTime())) {
                         console.error('Invalid AD date');
@@ -795,10 +835,10 @@
                         bsDay += getDaysInBsMonth(bsYear, bsMonth);
                     }
 
-                    const result = bsYear + '-' + 
-                                   String(bsMonth).padStart(2, '0') + '-' + 
-                                   String(bsDay).padStart(2, '0');
-                    
+                    const result = bsYear + '-' +
+                        String(bsMonth).padStart(2, '0') + '-' +
+                        String(bsDay).padStart(2, '0');
+
                     console.log('✅ AD→BS Result:', result);
                     return result;
                 } catch (error) {
@@ -813,7 +853,7 @@
         })();
 
         // Sidebar Toggle
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.getElementById('sidebarToggle');
             const body = document.body;
             const isMobile = window.innerWidth <= 768;
@@ -826,7 +866,7 @@
             }
 
             if (toggleBtn) {
-                toggleBtn.addEventListener('click', function(e) {
+                toggleBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     body.classList.toggle('sidebar-collapsed');
                     if (!isMobile) {
@@ -837,7 +877,7 @@
 
             const mobileToggle = document.getElementById('mobileToggle');
             if (mobileToggle) {
-                mobileToggle.addEventListener('click', function() {
+                mobileToggle.addEventListener('click', function () {
                     document.getElementById('sidebar').classList.toggle('show');
                 });
             }

@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
+use App\Models\HRAdministrator;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -17,12 +18,17 @@ class AdminDashboardController extends Controller
         $stats = [
             'total_jobs' => JobPosting::count(),
             'active_jobs' => JobPosting::where('status', 'active')->count(),
+            'closed_jobs' => JobPosting::where('status', 'closed')->count(),
+            'draft_jobs' => JobPosting::where('status', 'draft')->count(),
             'total_applications' => Application::count(),
             'pending_applications' => Application::whereIn('status', ['pending', 'under_review'])->count(),
             'shortlisted' => Application::where('status', 'shortlisted')->count(),
+            'rejected' => Application::where('status', 'rejected')->count(),
             'total_candidates' => Candidate::count(),
             'total_reviewers' => Reviewer::count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
+            'total_hr_admins' => HRAdministrator::count(),
+            'active_hr_admins' => HRAdministrator::where('status', 'active')->count(),
         ];
 
         // This Month Statistics
@@ -73,12 +79,34 @@ class AdminDashboardController extends Controller
         // Reviewer Statistics
         $reviewerStats = Reviewer::where('status', 'active')
             ->withCount([
-                'applications as total_reviewed',
+                'applications as total_reviewed' => function ($query) {
+                    $query->whereIn('status', ['shortlisted', 'rejected', 'reviewed']);
+                },
                 'applications as pending' => function ($query) {
-                    $query->where('status', 'pending');
+                    $query->where('status', 'under_review');
                 }
             ])
             ->orderBy('total_reviewed', 'desc')
+            ->limit(5)
+            ->get();
+
+        // HR Administrator Performance
+        // Using raw query to avoid the snake_case column name issue
+        $hrAdminStats = HRAdministrator::where('status', 'active')
+            ->select('hr_administrators.*')
+            ->selectSub(function ($query) {
+                $query->selectRaw('count(*)')
+                    ->from('job_postings')
+                    ->whereColumn('job_postings.posted_by', 'hr_administrators.id')
+                    ->whereMonth('job_postings.created_at', now()->month)
+                    ->whereYear('job_postings.created_at', now()->year);
+            }, 'jobs_posted')
+            ->orderBy('jobs_posted', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Recent Job Postings
+        $recentJobs = JobPosting::latest()
             ->limit(5)
             ->get();
 
@@ -88,7 +116,9 @@ class AdminDashboardController extends Controller
             'growth',
             'topJobs',
             'recentApplications',
-            'reviewerStats'
+            'reviewerStats',
+            'hrAdminStats',
+            'recentJobs'
         ));
     }
 
