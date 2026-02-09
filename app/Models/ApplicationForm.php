@@ -98,13 +98,14 @@ class ApplicationForm extends Model
         // File Uploads
         'passport_size_photo',
         'citizenship_id_document',
-        'resume_cv',
-        'educational_certificates',
         'noc_id_card',
         'ethnic_certificate',
         'disability_certificate',
         'signature',
-
+        'transcript',
+        'equivalent',
+        'work_experience',
+        'character',
         // System
         'status',
         'terms_agree',

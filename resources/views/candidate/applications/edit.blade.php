@@ -64,23 +64,27 @@
                     </div>
                     <div class="tab-item" data-step="3">
                         <span class="tab-circle">3</span>
-                        <span class="tab-label d-none d-md-inline">Address 1</span>
+                        <span class="tab-label d-none d-md-inline">Address</span>
                     </div>
                     <div class="tab-item" data-step="4">
                         <span class="tab-circle">4</span>
-                        <span class="tab-label d-none d-md-inline">Address 2</span>
+                        <span class="tab-label d-none d-md-inline">Education</span>
                     </div>
                     <div class="tab-item" data-step="5">
                         <span class="tab-circle">5</span>
-                        <span class="tab-label d-none d-md-inline">Education</span>
+                        <span class="tab-label d-none d-md-inline">Experience</span>
                     </div>
                     <div class="tab-item" data-step="6">
                         <span class="tab-circle">6</span>
-                        <span class="tab-label d-none d-md-inline">Experience</span>
+                        <span class="tab-label d-none d-md-inline">Documents</span>
                     </div>
                     <div class="tab-item" data-step="7">
                         <span class="tab-circle">7</span>
-                        <span class="tab-label d-none d-md-inline">Documents</span>
+                        <span class="tab-label d-none d-md-inline">Preview</span>
+                    </div>
+                    <div class="tab-item" data-step="8">
+                        <span class="tab-circle">8</span>
+                        <span class="tab-label d-none d-md-inline">Payment</span>
                     </div>
                 </div>
             </div>
@@ -398,15 +402,8 @@
                             <input type="text" name="permanent_house_number" id="permanent_house_number" class="form-control" value="{{ old('permanent_house_number', $applicationform->permanent_house_number) }}">
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
-                    </div>
-                </div>
 
-                {{-- STEP 4: Mailing Address --}}
-                <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-primary">Step 4 — Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-primary"> Mailing/Current Address</h5>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent', $applicationform->same_as_permanent) ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
@@ -454,9 +451,11 @@
                     </div>
                 </div>
 
-                {{-- STEP 5: Educational Background --}}
-                <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-primary">Step 5 — Educational Background</h5>
+                
+
+                {{-- STEP 4: Educational Background --}}
+                <div class="step d-none" id="step4">
+                    <h5 class="mb-4 text-primary">Step 4 — Educational Background</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="education_level" class="form-label">Highest Education Level <span class="text-danger">*</span></label>
@@ -491,9 +490,9 @@
                     </div>
                 </div>
 
-                {{-- STEP 6: Work Experience --}}
-                <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Work Experience</h5>
+                {{-- STEP 5: Work Experience --}}
+                <div class="step d-none" id="step5">
+                    <h5 class="mb-4 text-primary">Step 5 — Work Experience</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
@@ -504,18 +503,18 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="years_of_experience" class="form-label">Years of Experience<span class="text-danger">*</span></label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $applicationform->years_of_experience) }}"required>
+                            <label for="years_of_experience" class="form-label">Years of Experience</label>
+                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $applicationform->years_of_experience) }}">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="previous_organization" class="form-label">Previous Organization<span class="text-danger">*</span></label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $applicationform->previous_organization) }}"required>
+                            <label for="previous_organization" class="form-label">Previous Organization</label>
+                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $applicationform->previous_organization) }}">
                         </div>
                         <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position<span class="text-danger">*</span></label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $applicationform->previous_position) }}"required>
+                            <label for="previous_position" class="form-label">Previous Position</label>
+                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $applicationform->previous_position) }}">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -524,9 +523,9 @@
                     </div>
                 </div>
 
-                {{-- STEP 7: Upload Documents --}}
-                <div class="step d-none" id="step7">
-                    <h5 class="mb-4 text-primary">Step 7 — Upload Documents</h5>
+                {{-- STEP 6: Upload Documents --}}
+                <div class="step d-none" id="step6">
+                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="passport_size_photo" class="form-label">Passport Size Photo</label>
@@ -537,7 +536,7 @@
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document</label>
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
                             <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf">
                             @if($applicationform->citizenship_id_document)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank">View File</a></small>
@@ -547,61 +546,233 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="resume_cv" class="form-label">Resume/CV</label>
+                            <label for="resume_cv" class="form-label">Transcript Certificate</label>
                             <input type="file" name="resume_cv" id="resume_cv" class="form-control" accept="image/*,application/pdf">
                             @if($applicationform->resume_cv)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->resume_cv) }}" target="_blank">View File</a></small>
                             @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
-                        <div class="col-md-6">
-                            <label for="educational_certificates" class="form-label">Educational Certificates</label>
-                            <input type="file" name="educational_certificates[]" id="educational_certificates" class="form-control" accept="application/pdf,image/png,image/jpeg" multiple>
 
-                            @if($applicationform->educational_certificates)
-                                @php
-                                    $certificates = is_string($applicationform->educational_certificates) 
-                                        ? json_decode($applicationform->educational_certificates, true) 
-                                        : $applicationform->educational_certificates;
+                        <div class="col-md-6">
+                            <label for="educational_certificates" class="form-label">Character Certificate</label>
+                            <input type="file"
+                                name="educational_certificates[]"
+                                class="form-control"
+                                accept="image/*,application/pdf"
+                                multiple>
+                                                            @php
+                                    $files = json_decode($applicationform->educational_certificates, true);
+
+                                    // Handle double-encoded JSON
+                                    if (is_string($files)) {
+                                        $files = json_decode($files, true);
+                                    }
                                 @endphp
 
-                                @if(is_array($certificates) && count($certificates) > 0)
-                                    <small class="text-muted">
-                                        Current files: {{ count($certificates) }} educational certificate(s)
-                                    </small>
-                                    <div class="mt-2">
-                                        @foreach($certificates as $index => $cert)
-                                            <a href="{{ asset('storage/educational-certificates/' . basename($cert)) }}" 
-                                            target="_blank" 
-                                            class="btn btn-sm bg-light me-1 mb-1">
-                                                <i class="fas fa-certificate"></i> View Certificate {{ $index + 1 }}
-                                            </a>
-                                        @endforeach
-                                     </div>
-                                @endif
-                            @endif
+                                @if(is_array($files) && count($files))
+                                    <small class="text-muted">{{ count($files) }} file(s) uploaded</small><br>
 
-                            <small class="text-muted d-block">Max size: 2MB (multiple allowed)</small>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
-                            <input type="file" name="signature" id="signature" class="form-control" value="{{ old('signature', $applicationform->signature ?? '') }}" accept="image/*,application/pdf" required>
+                                    @foreach($files as $file)
+                                        <a href="{{ asset('storage/'.$file) }}" target="_blank">
+                                            View File
+                                        </a><br>
+                                    @endforeach
+                                @endif
+
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
-                    <div class="form-check mb-4">
-                        <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" {{ old('terms_agree', $applicationform->terms_agree) ? 'checked' : '' }} required>
-                        <label class="form-check-label" for="terms_agree">
-                            I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
-                        </label>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
+                            <input type="file" name="equivalent" id="equivalent" class="form-control" value="{{ old('equivalent', $applicationform->equivalent ?? '') }}" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            <input type="file" name="work_experience" id="work_experience" class="form-control" value="{{ old('work_experience', $applicationform->work_experience ?? '') }}" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+                        
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="signature" class="form-label">Signature</label>
+                            <input type="file" name="signature" id="signature" class="form-control" value="{{ old('signature', $applicationform->signature ?? '') }}" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+                        
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="submit" class="btn btn-success">Update Application</button>
+                        <button type="button" class="btn btn-primary next-btn">Next</button>
                     </div>
+</div>       
+                    <!-- STEP 7: Review Application Before Payment -->
+                <div class="step d-none" id="step7">
+                    <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
+
+                    <div class="alert alert-info">
+                        Please review all your details carefully before proceeding to payment.
+                    </div>
+
+                    <div id="previewContainer">
+
+                        <h6 class="text-secondary mt-3">Personal Information</h6>
+                        <table class="table table-bordered">
+                            <tr><th width="30%">Full Name (English)</th><td id="p_name_english"></td></tr>
+                            <tr><th>Full Name (Nepali)</th><td id="p_name_nepali"></td></tr>
+                            <tr><th>Email</th><td id="p_email"></td></tr>
+                            <tr><th>Birth Date (AD)</th><td id="p_birth_date_ad"></td></tr>
+                            <tr><th>Birth Date (BS)</th><td id="p_birth_date_bs"></td></tr>
+                            <tr><th>Phone</th><td id="p_phone"></td></tr>
+                            <tr><th>Gender</th><td id="p_gender"></td></tr>
+                            <tr><th>Marital Status</th><td id="p_marital_status"></td></tr>
+                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Blood Group</th><td id="p_blood_group"></td></tr>
+                        </table>
+
+                        <h6 class="text-secondary mt-4">Address Information</h6>
+                        <table class="table table-bordered">
+                            <tr><th width="30%">Permanent Address</th>
+                                <td id="p_permanent_address"></td></tr>
+
+                            <tr><th>Mailing Address</th>
+                                <td id="p_mailing_address"></td></tr>
+                        </table>
+
+                        <h6 class="text-secondary mt-4">Education</h6>
+                        <table class="table table-bordered">
+                            <tr><th width="30%">Education Level</th><td id="p_education_level"></td></tr>
+                            <tr><th>Field of Study</th><td id="p_field_of_study"></td></tr>
+                            <tr><th>Institution</th><td id="p_institution_name"></td></tr>
+                            <tr><th>Graduation Year</th><td id="p_graduation_year"></td></tr>
+                        </table>
+
+                        <h6 class="text-secondary mt-4">Work Experience</h6>
+                        <table class="table table-bordered">
+                            <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
+                            <tr><th>Years of Experience</th><td id="p_years_of_experience"></td></tr>
+                            <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
+                            <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
+                        </table>
+
+                        <h6 class="text-secondary mt-4">Uploaded Documents</h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th width="30%">Passport Size Photo</th>
+                                <td id="p_photo"></td>
+                            </tr>
+                            <tr>
+                                <th>Citizenship / ID Document</th>
+                                <td id="p_citizenship"></td>
+                            </tr>
+                            <tr>
+                                <th>Transcript</th>
+                                <td id="p_resume"></td>
+                            </tr>
+                            <tr>
+                                <th>Character</th>
+                                <td id="p_academic_certificate"></td>
+                            </tr>
+                            <tr>
+                                <th>Equivalent</th>
+                                <td id="p_equivalent"></td>
+                            </tr>
+                            <tr>
+                                <th>Signature</th>
+                                <td id="p_signature"></td>
+                            </tr>
+                            <tr>
+                                <th>Work Experience</th>
+                                <td id="p_work_experience"></td>
+                            </tr>
+                        </table>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                        </div>
+                    </div>
+                </div>
+  
+
+<!-- STEP 8: Payment Method -->
+                <div class="step d-none" id="step8">
+                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+
+                    <div id="paymentSection">
+
+                        <h6 class="mb-3">Choose Payment Gateway</h6>
+
+                        <div class="row text-center">
+
+                            <!-- eSewa -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('esewa')">
+                                    <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
+                                    <div>Pay with eSewa</div>
+                                </div>
+                            </div>
+
+                            <!-- Khalti -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('khalti')">
+                                    <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
+                                    <div>Pay with Khalti</div>
+                                </div>
+                            </div>
+
+                            <!-- ConnectIPS -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('connectips')">
+                                    <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
+                                    <div>Pay with ConnectIPS</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="alert alert-warning mt-3">
+                            Please complete payment first to enable final submission.
+                        </div>
+                        <!-- Save Draft Button -->
+                        <div class="mt-3 d-flex justify-content-center">
+                            <button type="button" class="btn btn-success" id="saveDraftBeforePayment">
+                                Save Draft & Pay Later
+                            </button>
+                        </div>
+
+                        
+
+                    </div>
+
+                    <!-- AFTER PAYMENT SECTION -->
+                    <div id="postPaymentSection" style="display:none;">
+
+                        <div class="alert alert-success">
+                            ✓ Payment completed successfully.
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                            <label class="form-check-label" for="terms_agree">
+                                I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                            <button type="submit" class="btn btn-success">Submit Application</button>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </form>
@@ -709,14 +880,40 @@
     /* Validation Styling */
     .is-invalid { border-color: #dc3545 !important; }
     .invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; display: block; }
+
+    /* PAYMENT CSS */
+    .payment-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .payment-box:hover {
+        background: #f5f5f5;
+    }
+
+    .payment-logo {
+        width: 150px;
+        height: 60px;
+        object-fit: contain;
+        margin-bottom: 10px;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+    
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
-    const totalSteps = 7;
+    const totalSteps = 8;
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
 
     // Update Tabs & Progress Line
@@ -745,6 +942,9 @@ document.addEventListener('DOMContentLoaded', function () {
             el.classList.add('active');
         }
         currentStep = step;
+        if (step === 7) {
+        populatePreview();
+        }
         updateTabsAndProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -802,12 +1002,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Next Button
     document.querySelectorAll('.next-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (validateStep(currentStep) && currentStep < totalSteps) {
-                showStep(currentStep + 1);
-            }
-        });
+    btn.addEventListener('click', () => {
+
+        if (!validateStep(currentStep)) {
+            return;
+        }
+
+        // BEFORE going to Step 7 → generate preview
+        if (currentStep === 6) {
+            populatePreview();
+        }
+
+        if (currentStep < totalSteps) {
+            showStep(currentStep + 1);
+        }
     });
+});
 
     // Previous Button
     document.querySelectorAll('.prev-btn').forEach(btn => {
@@ -856,7 +1066,230 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         showStep(1);
     }
+
 });
+    // ==================== PREVIEW FOR STEP 7 ====================
+    
+    function populatePreview() {
+
+        function val(id) {
+            return document.getElementById(id)?.value || '-';
+        }
+
+        function set(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        // Personal Info
+        set('p_name_english', val('name_english'));
+        set('p_name_nepali', val('name_nepali'));
+        set('p_email', val('email'));
+        set('p_birth_date_ad', val('birth_date_ad'));
+        set('p_birth_date_bs', val('birth_date_bs'));
+        set('p_phone', val('phone'));
+        set('p_gender', val('gender'));
+        set('p_marital_status', val('marital_status'));
+        set('p_nationality', val('nationality'));
+        set('p_blood_group', val('blood_group'));
+
+        // Address Info
+        const permanentAddress =
+            val('permanent_province') + ', ' +
+            val('permanent_district') + ', ' +
+            val('permanent_municipality') + ' - ' +
+            val('permanent_ward');
+
+        set('p_permanent_address', permanentAddress);
+
+        const mailingAddress =
+            val('mailing_province') + ', ' +
+            val('mailing_district') + ', ' +
+            val('mailing_municipality') + ' - ' +
+            val('mailing_ward');
+
+        set('p_mailing_address', mailingAddress);
+
+        // Education
+        set('p_education_level', val('education_level'));
+        set('p_field_of_study', val('field_of_study'));
+        set('p_institution_name', val('institution_name'));
+        set('p_graduation_year', val('graduation_year'));
+
+        // Experience
+        set('p_has_work_experience', val('has_work_experience'));
+        set('p_years_of_experience', val('years_of_experience'));
+        set('p_previous_organization', val('previous_organization'));
+        set('p_previous_position', val('previous_position'));
+
+        // ===== DOCUMENT PREVIEW WITH IMAGE DISPLAY =====
+
+        function previewFile(containerId, inputName) {
+            const input = document.querySelector(`input[name="${inputName}"]`);
+            const container = document.getElementById(containerId);
+
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (!input || !input.files || input.files.length === 0) {
+                container.textContent = 'Not Uploaded';
+                return;
+            }
+
+            const file = input.files[0];
+            const fileURL = URL.createObjectURL(file);
+
+            if (file.type.startsWith('image/')) {
+                container.innerHTML = `
+                    <img src="${fileURL}" 
+                         class="img-thumbnail" 
+                         style="max-width:150px; max-height:150px;">
+                    <div class="mt-1 small text-muted">${file.name}</div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <a href="${fileURL}" target="_blank">${file.name}</a>
+                `;
+            }
+        }
+
+        // Single file previews
+
+            @if($applicationform->passport_size_photo)
+                document.getElementById('p_photo').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->passport_size_photo) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_photo', 'passport_size_photo');
+            @endif
+            @if($applicationform->citizenship_id_document)
+                document.getElementById('p_citizenship').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->citizenship_id_document) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_citizenship', 'citizenship_id_document');
+            @endif
+
+            @if($applicationform->resume_cv)
+                document.getElementById('p_resume').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->resume_cv) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_resume', 'resume_cv');
+            @endif
+
+            @if($applicationform->signature)
+                document.getElementById('p_signature').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->signature) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_signature', 'signature');
+            @endif
+
+            @if($applicationform->equivalent)
+                document.getElementById('p_equivalent').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->equivalent) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_equivalent', 'equivalent');
+            @endif
+
+            @if($applicationform->work_experience)
+                document.getElementById('p_work_experience').innerHTML =
+                    `<a href="{{ asset('storage/'.$applicationform->work_experience) }}" target="_blank">View Uploaded File</a>`;
+            @else
+                previewFile('p_work_experience', 'work_experience');
+            @endif
+
+
+
+
+        // Multiple Educational Certificates Preview
+        const eduContainer = document.getElementById('p_academic_certificate');
+
+    @if($applicationform->educational_certificates)
+        (function () {
+            let files = @json($applicationform->educational_certificates);
+
+            // handle double-encoded JSON
+            if (typeof files === 'string') {
+                try {
+                    files = JSON.parse(files);
+                } catch (e) {
+                    files = [];
+                }
+            }
+
+            if (!Array.isArray(files) || files.length === 0) {
+                eduContainer.textContent = 'Not Uploaded';
+                return;
+            }
+
+            let html = '';
+
+            files.forEach(function (file, index) {
+                html += `
+                    <a href="{{ asset('storage') }}/${file}"
+                       target="_blank"
+                       class="d-block">
+                        View File ${index + 1}
+                    </a>
+                `;
+            });
+
+            eduContainer.innerHTML = html;
+        })();
+    @else
+        eduContainer.textContent = 'Not Uploaded';
+    @endif
+    }
+
+    document.getElementById('saveDraftBeforePayment').addEventListener('click', function() {
+        const formData = new FormData(document.querySelector('form')); // assumes this is inside a <form>
+        formData.append('save_as_draft', true); // mark as draft
+
+        fetch('/save-draft', { // replace with your actual endpoint
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                alert('Draft saved successfully! You can pay later.');
+            } else {
+                alert('Failed to save draft. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the draft.');
+        });
+    });
+
+    // PAYMENT GATEWAYS
+    // window.startPayment = function(gateway) {
+
+    //     const draftId = document.getElementById('draft_id')?.value;
+
+    //     if (!draftId) {
+    //         alert("Application draft not found. Please complete form properly.");
+    //         return;
+    //     }
+
+    //     let url = "";
+
+    //     if (gateway === "esewa") {
+    //         url = "/payment/esewa/start/" + draftId;
+    //     }
+    //     else if (gateway === "khalti") {
+    //         url = "/payment/khalti/start/" + draftId;
+    //     }
+    //     else if (gateway === "connectips") {
+    //         url = "/payment/connectips/start/" + draftId;
+    //     }
+
+    //     window.location.href = url;
+    // }
+
+    // console.log('✓ Form initialized with strict validation, conditional file uploads, preview, and auto-save');
+    // console.log('Draft ID on load:', draftIdInput ? draftIdInput.value : 'none');
+
 </script>
 @endpush
 @endsection

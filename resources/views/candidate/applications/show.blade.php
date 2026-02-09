@@ -435,11 +435,11 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <strong>Resume/CV:</strong>
+                        <strong>Character Certificate:</strong>
                         <p class="mb-0">
-                            @if($applicationform->resume_cv)
-                                <a href="{{ asset('storage/' . $applicationform->resume_cv) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Resume
+                            @if($applicationform->character)
+                                <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank" class="btn btn-sm bg-light">
+                                    <i class="fas fa-image"></i> View Certificate
                                 </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>
@@ -447,13 +447,39 @@
                         </p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Educational Certificates:</strong>
+                        <strong>Equivalency Certificate:</strong>
                         <p class="mb-0">
-                            @if($applicationform->educational_certificates)
+                            @if($applicationform->equivalent)
+                                <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank" class="btn btn-sm bg-light">
+                                    <i class="fas fa-file-pdf"></i> View Certificate
+                                </a>
+                            @else
+                                <span class="text-muted">Not uploaded</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Work Experience Certificate:</strong>
+                        <p class="mb-0">
+                            @if($applicationform->work_experience)
+                                <a href="{{ asset('storage/' . $applicationform->work_experience) }}" target="_blank" class="btn btn-sm bg-light">
+                                    <i class="fas fa-file-alt"></i> View Certificate
+                                </a>
+                            @else
+                                <span class="text-muted">Not uploaded</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Transcript Certificate:</strong>
+                        <p class="mb-0">
+                            @if($applicationform->transcript)
                                 @php
-                                    $certificates = is_string($applicationform->educational_certificates) 
-                                        ? json_decode($applicationform->educational_certificates, true) 
-                                        : $applicationform->educational_certificates;
+                                    $certificates = is_string($applicationform->transcript) 
+                                        ? json_decode($applicationform->transcript, true) 
+                                        : $applicationform->transcript;
                                 @endphp
                                 @if(is_array($certificates) && count($certificates) > 0)
                                     @foreach($certificates as $index => $cert)

@@ -20,9 +20,16 @@ class ApplicationFormController extends Controller
         'resume_cv'                => 'resumes',
         'educational_certificates' => 'educational-certificates',
         'passport_size_photo'      => 'passport-photos',
-        'signature'  => 'signature',
+        'signature'                => 'signatures',
+        'transcript'               => 'transcripts',
+        'character'                => 'character-certificates',
+        'equivalent'               => 'equivalency-certificates',
+        'work_experience'          => 'work-experience-documents',
     ];
 
+    /**
+     * Display a listing of applications
+     */
     public function index()
     {
         if (!Session::has('candidate_logged_in')) {
@@ -41,6 +48,9 @@ class ApplicationFormController extends Controller
         return view('candidate.applications.index', compact('forms'));
     }
 
+    /**
+     * Show the form for creating a new application
+     */
     public function create($jobId = null)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -101,40 +111,10 @@ class ApplicationFormController extends Controller
                 'candidate_id' => $candidate->id,
                 'has_draft_id' => $request->has('draft_id'),
                 'draft_id' => $request->draft_id,
-                'job_posting_id' => $request->job_posting_id
+                'job_posting_id' => $request->job_posting_id,
+                'has_files' => $this->hasAnyFiles($request),
+                'files_present' => array_keys($request->allFiles())
             ]);
-
-            // Get all data except files and tokens
-            $data = $request->except([
-                '_token',
-                '_method',
-                ...array_keys($this->fileFields)
-            ]);
-
-            // Only handle file uploads if files are actually present
-            if ($this->hasAnyFiles($request)) {
-                $fileData = $this->handleFileUploads($request, null, true);
-                $data = array_merge($data, $fileData);
-            }
-
-            // Handle same_as_permanent checkbox
-            if ($request->boolean('same_as_permanent')) {
-                $mailingData = $this->copyPermanentToMailing($request);
-                $data = array_merge($data, $mailingData);
-            }
-
-            // Add required fields
-            $data['citizenship_number'] = $candidate->citizenship_number;
-            $data['status'] = 'draft';
-            
-            if ($request->filled('job_posting_id')) {
-                $data['job_posting_id'] = $request->job_posting_id;
-            }
-
-            // Remove empty values that might cause issues
-            $data = array_filter($data, function($value) {
-                return !is_null($value) && $value !== '';
-            });
 
             // Find or create draft
             $draft = null;
@@ -170,12 +150,58 @@ class ApplicationFormController extends Controller
                 Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
             }
 
+            // Get all data except files and tokens
+            $data = $request->except([
+                '_token',
+                '_method',
+                'character',
+                ...array_keys($this->fileFields),
+                'existing_passport_size_photo',
+                'existing_citizenship_id_document',
+                'existing_transcript',
+                'existing_character',
+                'existing_signature'
+            ]);
+
+            // Handle same_as_permanent checkbox
+            if ($request->boolean('same_as_permanent')) {
+                $mailingData = $this->copyPermanentToMailing($request);
+                $data = array_merge($data, $mailingData);
+            }
+
+            // Add required fields
+            $data['citizenship_number'] = $candidate->citizenship_number;
+            $data['status'] = 'draft';
+            
+            if ($request->filled('job_posting_id')) {
+                $data['job_posting_id'] = $request->job_posting_id;
+            }
+
+            // Remove empty values that might cause issues
+            $data = array_filter($data, function($value) {
+                return !is_null($value) && $value !== '';
+            });
+
+            // Create or update draft
             if ($draft) {
                 $draft->update($data);
                 Log::info('Draft updated', ['draft_id' => $draft->id]);
             } else {
                 $draft = ApplicationForm::create($data);
                 Log::info('Draft created', ['draft_id' => $draft->id]);
+            }
+
+            // Handle file uploads if any files are present
+            if ($this->hasAnyFiles($request)) {
+                $fileData = $this->handleFileUploads($request, $draft, true);
+                if (!empty($fileData)) {
+                    $draft->update($fileData);
+                    Log::info('Files uploaded for draft', [
+                        'draft_id' => $draft->id, 
+                        'files' => array_keys($fileData),
+                        'file_paths' => $fileData
+                    ]);
+                }
             }
 
             return response()->json([
@@ -213,6 +239,9 @@ class ApplicationFormController extends Controller
         return false;
     }
 
+    /**
+     * Store a newly created application
+     */
     public function store(Request $request)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -224,11 +253,13 @@ class ApplicationFormController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
 
+        // Validate the request
         $validated = $request->validate(
             $this->validationRules(),
             $this->validationMessages()
         );
 
+        // Check job eligibility if applying for a job
         if ($request->has('job_posting_id')) {
             $job = JobPosting::find($request->job_posting_id);
             
@@ -249,6 +280,7 @@ class ApplicationFormController extends Controller
                     ->withErrors(['error' => 'You have already applied for this position.']);
             }
 
+            // Check eligibility
             $applicationData = (object) [
                 'age' => $request->age,
                 'education_level' => $request->education_level,
@@ -270,20 +302,36 @@ class ApplicationFormController extends Controller
             }
         }
 
-        $data = $request->except(array_keys($this->fileFields));
+        // Get all data except files
+        $data = $request->except([
+            ...array_keys($this->fileFields), 
+            'character',
+            'existing_passport_size_photo',
+            'existing_citizenship_id_document',
+            'existing_transcript',
+            'existing_character',
+            'existing_signature'
+        ]);
         
         // Check if updating a draft
         $existingDraft = null;
         if ($request->has('draft_id')) {
-            $existingDraft = ApplicationForm::find($request->draft_id);
+            $existingDraft = ApplicationForm::where('id', $request->draft_id)
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->where('status', 'draft')
+                ->first();
         }
         
-        $data = array_merge($data, $this->handleFileUploads($request, $existingDraft));
+        // Handle file uploads (pass existing draft to preserve files if no new upload)
+        $uploadedFiles = $this->handleFileUploads($request, $existingDraft, false);
+        $data = array_merge($data, $uploadedFiles);
 
+        // Handle same as permanent address
         if ($request->boolean('same_as_permanent')) {
             $data = array_merge($data, $this->copyPermanentToMailing($request));
         }
 
+        // Add job posting ID if exists
         if ($request->has('job_posting_id')) {
             $data['job_posting_id'] = $request->job_posting_id;
         }
@@ -294,15 +342,19 @@ class ApplicationFormController extends Controller
         if ($existingDraft) {
             // Update the draft to final submission
             $existingDraft->update($data);
+            $application = $existingDraft;
         } else {
             // Create new application
-            ApplicationForm::create($data);
+            $application = ApplicationForm::create($data);
         }
 
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application submitted successfully!');
     }
 
+    /**
+     * Display the specified application
+     */
     public function show(ApplicationForm $applicationform)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -322,6 +374,9 @@ class ApplicationFormController extends Controller
         return view('candidate.applications.show', compact('applicationform'));
     }
 
+    /**
+     * Show the form for editing the specified application
+     */
     public function edit(ApplicationForm $applicationform)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -341,6 +396,9 @@ class ApplicationFormController extends Controller
         return view('candidate.applications.edit', compact('applicationform'));
     }
 
+    /**
+     * Update the specified application
+     */
     public function update(Request $request, ApplicationForm $applicationform)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -362,8 +420,17 @@ class ApplicationFormController extends Controller
             $this->validationMessages()
         );
 
-        $data = $request->except(array_keys($this->fileFields));
-        $uploadedFiles = $this->handleFileUploads($request, $applicationform);
+        $data = $request->except([
+            ...array_keys($this->fileFields), 
+            'character',
+            'passport_size_photo',
+            'citizenship_id_document',
+            'transcript',
+            'character',
+            'signature'
+        ]);
+        
+        $uploadedFiles = $this->handleFileUploads($request, $applicationform, false);
 
         $data = array_merge($data, $uploadedFiles);
 
@@ -377,6 +444,9 @@ class ApplicationFormController extends Controller
             ->with('success', 'Application updated successfully!');
     }
 
+    /**
+     * Remove the specified application
+     */
     public function destroy(ApplicationForm $applicationform)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -400,6 +470,9 @@ class ApplicationFormController extends Controller
             ->with('success', 'Application deleted successfully!');
     }
 
+    /**
+     * Check eligibility for a job
+     */
     public function checkEligibility(Request $request, $jobId)
     {
         if (!Session::has('candidate_logged_in')) {
@@ -448,46 +521,82 @@ class ApplicationFormController extends Controller
         return response()->json($eligibility);
     }
 
+    /**
+     * Validation rules for application form
+     */
     private function validationRules($isStore = true)
     {
         $rules = [
             'name_english' => 'required|string|max:255',
             'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
+            'birth_date_bs' => 'required|string',
             'age' => 'required|integer|min:18|max:40',
             'phone' => 'required|string',
             'email' => 'required|email',
             'gender' => 'required|in:Male,Female,Other',
             'citizenship_number' => 'required|string|max:50',
+            'citizenship_issue_date_bs' => 'required|string',
             'citizenship_issue_district' => 'required|string',
             'permanent_province' => 'required|string',
             'permanent_district' => 'required|string',
             'permanent_municipality' => 'required|string',
             'permanent_ward' => 'required|string|max:50',
+            'mailing_province' => 'required|string',
+            'mailing_district' => 'required|string',
+            'mailing_municipality' => 'required|string',
+            'mailing_ward' => 'required|string|max:50',
             'father_name_english' => 'required|string',
             'mother_name_english' => 'required|string',
             'grandfather_name_english' => 'required|string',
+            'father_qualification' => 'required|string',
+            'mother_qualification' => 'required|string',
+            'parent_occupation' => 'required|string',
             'nationality' => 'required|string',
+            'blood_group' => 'required|string',
             'marital_status' => 'required|string',
-            'education_level' => 'nullable|string',
+            'religion' => 'required|string',
+            'community' => 'required|string',
+            'ethnic_group' => 'required|in:Dalit,Janajati,Madhesi,Brahmin/Chhetri,Other',
+            'mother_tongue' => 'required|string',
+            'employment_status' => 'required|string',
+            'education_level' => 'required|string',
+            'field_of_study' => 'required|string',
+            'institution_name' => 'required|string',
+            'graduation_year' => 'required|integer|min:1950|max:2030',
+            'has_work_experience' => 'required|in:Yes,No',
 
             'same_as_permanent' => 'nullable|boolean',
             'physical_disability' => 'required|in:yes,no',
             'noc_employee' => 'required|in:yes,no',
-            'ethnic_group' => 'required|in:Dalit,Janajati,Madhesi,Brahmin/Chhetri,Other',
             'job_posting_id' => 'nullable|exists:job_postings,id',
-            'advertisement_no' => 'nullable|string',
-            'department' => 'nullable|string',
-            'applying_position' => 'nullable|string',
-            'alternate_phone_number' => 'nullable|digits:10',
+            'advertisement_no' => 'required|string',
+            'department' => 'required|string',
+            'applying_position' => 'required|string',
+            'alternate_phone_number' => 'required|digits:10',
 
-            'citizenship_id_document' => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'resume_cv'               => $isStore ? 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048' : 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-            'passport_size_photo'     => $isStore ? 'required|image|mimes:jpg,jpeg,png,webp|max:2048' : 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
-            'educational_certificates'     => 'nullable|array',
-            'educational_certificates.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'educational_certificates' => 'nullable|array',
+            'educational_certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
+
+        // File validation - required on store unless already exists in draft
+        if ($isStore) {
+            $rules['citizenship_id_document'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['passport_size_photo'] = 'required|image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['transcript'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['character'] = 'file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        } else {
+            $rules['citizenship_id_document'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['passport_size_photo'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['transcript'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['character'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['signature'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
 
         // Conditional validation for NOC ID Card
         if ($isStore) {
@@ -503,7 +612,7 @@ class ApplicationFormController extends Controller
             $rules['disability_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
-        // Conditional validation for Ethnic Certificate (required for Dalit and Janajati)
+        // Conditional validation for Ethnic Certificate
         if ($isStore) {
             $rules['ethnic_certificate'] = 'required_if:ethnic_group,Dalit,Janajati|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         } else {
@@ -513,6 +622,9 @@ class ApplicationFormController extends Controller
         return $rules;
     }
 
+    /**
+     * Custom validation messages
+     */
     private function validationMessages()
     {
         return [
@@ -530,28 +642,83 @@ class ApplicationFormController extends Controller
             'ethnic_certificate.required_if' => 'Ethnic Certificate is required for Dalit and Janajati ethnic groups.',
             'ethnic_certificate.mimes' => 'Ethnic Certificate must be an image (JPEG, JPG, PNG) or PDF.',
             'ethnic_certificate.max' => 'Ethnic Certificate must not exceed 2MB.',
+
+            'passport_size_photo.required' => 'Passport size photo is required.',
+            'citizenship_id_document.required' => 'Citizenship/ID document is required.',
+            'transcript.required' => 'Transcript certificate is required.',
+            'character.required' => 'Character certificate is required.',
+            'signature.required' => 'Signature is required.',
         ];
     }
 
+    /**
+     * Handle file uploads for the application
+     */
     private function handleFileUploads(Request $request, ?ApplicationForm $model = null, $isDraft = false)
     {
         $data = [];
 
         foreach ($this->fileFields as $field => $folder) {
 
-            if (!$request->hasFile($field)) continue;
+            // Special handling for character field (multiple files)
+            if ($field === 'character') {
+                if ($request->hasFile('character')) {
+                    $files = $request->file('character');
+                    
+                    // Only delete old files if NOT a draft OR if explicitly replacing
+                    if (!$isDraft && $model && $model->character) {
+                        $old = is_string($model->character) ? json_decode($model->character, true) : $model->character;
+                        if (is_array($old)) {
+                            foreach ($old as $path) {
+                                if (Storage::disk('public')->exists($path)) {
+                                    Storage::disk('public')->delete($path);
+                                }
+                            }
+                        }
+                    }
+
+                    // Upload new files
+                    $paths = [];
+                    foreach ($files as $file) {
+                        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                        $path = $file->storeAs($folder, $filename, 'public');
+                        $paths[] = $path;
+                    }
+
+                    $data['character'] = json_encode($paths);
+                    
+                } elseif ($model && $model->character) {
+                    // PRESERVE existing character files if no new upload
+                    $data['character'] = $model->character;
+                }
+                continue;
+            }
+
+            // Skip if no file uploaded
+            if (!$request->hasFile($field)) {
+                // PRESERVE existing files if model exists
+                if ($model && $model->$field) {
+                    $data[$field] = $model->$field;
+                }
+                continue;
+            }
 
             $files = $request->file($field);
 
+            // Handle multiple files (arrays) - for educational_certificates
             if (is_array($files)) {
 
-                if ($model && $model->$field) {
+                // Only delete old files if NOT a draft
+                if (!$isDraft && $model && $model->$field) {
                     $old = json_decode($model->$field, true) ?? [];
                     foreach ($old as $path) {
-                        Storage::disk('public')->delete($path);
+                        if (Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->delete($path);
+                        }
                     }
                 }
 
+                // Upload new files
                 $paths = [];
                 foreach ($files as $file) {
                     $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -562,11 +729,14 @@ class ApplicationFormController extends Controller
                 $data[$field] = json_encode($paths);
 
             } else {
+                // Handle single file
 
-                if ($model && $model->$field && Storage::disk('public')->exists($model->$field)) {
+                // Only delete old file if NOT a draft
+                if (!$isDraft && $model && $model->$field && Storage::disk('public')->exists($model->$field)) {
                     Storage::disk('public')->delete($model->$field);
                 }
 
+                // Upload new file
                 $filename = time() . '_' . uniqid() . '.' . $files->getClientOriginalExtension();
                 $path = $files->storeAs($folder, $filename, 'public');
                 $data[$field] = $path;
@@ -576,6 +746,9 @@ class ApplicationFormController extends Controller
         return $data;
     }
 
+    /**
+     * Copy permanent address to mailing address
+     */
     private function copyPermanentToMailing($request)
     {
         return [
@@ -588,6 +761,9 @@ class ApplicationFormController extends Controller
         ];
     }
 
+    /**
+     * Delete all associated files when deleting application
+     */
     private function deleteAssociatedFiles(ApplicationForm $model)
     {
         foreach ($this->fileFields as $field => $folder) {
@@ -598,10 +774,14 @@ class ApplicationFormController extends Controller
 
             if (is_array($paths)) {
                 foreach ($paths as $path) {
-                    Storage::disk('public')->delete($path);
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
                 }
             } else {
-                Storage::disk('public')->delete($model->$field);
+                if (Storage::disk('public')->exists($model->$field)) {
+                    Storage::disk('public')->delete($model->$field);
+                }
             }
         }
     }

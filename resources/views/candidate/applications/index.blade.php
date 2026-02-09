@@ -79,8 +79,10 @@
                                         @if($form->noc_id_card) <span class="badge bg-info">NOC</span> @endif
                                         @if($form->disability_certificate) <span class="badge bg-warning">DIS</span> @endif
                                         @if($form->citizenship_id_document) <span class="badge bg-success">CIT</span> @endif
-                                        @if($form->resume_cv) <span class="badge bg-primary">CV</span> @endif
-                                        @if($form->educational_certificates) <span class="badge bg-secondary">EDU</span> @endif
+                                        @if($form->work_experience) <span class="badge bg-primary">WE</span> @endif
+                                        @if($form->transcript) <span class="badge bg-secondary">TC</span> @endif
+                                        @if($form->character) <span class="badge bg-primary">CC</span> @endif
+                                        @if($form->signature) <span class="badge bg-secondary">S</span> @endif
                                         @if($form->ethnic_certificate) <span class="badge bg-dark">ETH</span> @endif
                                         @if($form->passport_size_photo) <span class="badge bg-primary">PSP</span> @endif
                                     </div>
@@ -107,7 +109,6 @@
         @else
             <div class="alert alert-info text-center">
                 <i class="fas fa-info-circle"></i> No records found.
-                <a href="{{ route('candidate.applications.create') }}" class="alert-link">Create first registration</a>
             </div>
         @endif
     </div>
