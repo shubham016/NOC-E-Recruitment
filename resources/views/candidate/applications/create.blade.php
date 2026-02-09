@@ -529,18 +529,18 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
-                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
+                            <label for="resume_cv" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            <input type="file" name="resume_cv" id="resume_cv" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
                         <div class="col-md-6">
-                            <label for="character" class="form-label">
+                            <label for="educational_certificates" class="form-label">
                                 Character Certificate <span class="text-danger">*</span>
                             </label>
                             <input type="file"
-                                name="character[]"
-                                id="character"
+                                name="educational_certificates[]"
+                                id="educational_certificates"
                                 class="form-control"
                                 accept="image/*,application/pdf"
                                 multiple
@@ -635,11 +635,11 @@
                             </tr>
                             <tr>
                                 <th>Transcript</th>
-                                <td id="p_transcript"></td>
+                                <td id="p_resume"></td>
                             </tr>
                             <tr>
                                 <th>Character</th>
-                                <td id="p_character"></td>
+                                <td id="p_academic_certificate"></td>
                             </tr>
                             <tr>
                                 <th>Equivalent</th>
@@ -671,10 +671,59 @@
 
                         <h6 class="mb-3">Choose Payment Gateway</h6>
 
-                         <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="submit" class="btn btn-success">Save Draft and Pay Later</button>
+                        <div class="row text-center">
+
+                            <!-- eSewa -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('esewa')">
+                                    <img src="/images/esewalogo.png" alt="eSewa" class="payment-logo">
+                                    <div>Pay with eSewa</div>
+                                </div>
                             </div>
+
+                            <!-- Khalti -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('khalti')">
+                                    <img src="/images/khaltilogo.png" alt="Khalti" class="payment-logo">
+                                    <div>Pay with Khalti</div>
+                                </div>
+                            </div>
+
+                            <!-- ConnectIPS -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="startPayment('connectips')">
+                                    <img src="/images/cipslogo.png" alt="ConnectIPS" class="payment-logo">
+                                    <div>Pay with ConnectIPS</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="alert alert-warning mt-3">
+                            Please complete payment first to enable final submission.
+                        </div>
+
+                    </div>
+
+                    <!-- AFTER PAYMENT SECTION -->
+                    <div id="postPaymentSection" style="display:none;">
+
+                        <div class="alert alert-success">
+                            ✓ Payment completed successfully.
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                            <label class="form-check-label" for="terms_agree">
+                                I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                            <button type="submit" class="btn btn-success">Submit Application</button>
+                        </div>
+
                     </div>
 
                 </div>
@@ -1353,14 +1402,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // Single file previews
         previewFile('p_photo', 'passport_size_photo');
         previewFile('p_citizenship', 'citizenship_id_document');
-        previewFile('p_transcript', 'transcript');
+        previewFile('p_resume', 'resume_cv');
         previewFile('p_signature', 'signature');
         previewFile('p_equivalent', 'equivalent');
         previewFile('p_work_experience', 'work_experience');
 
         // Multiple Educational Certificates Preview
-        const eduInput = document.querySelector('input[name="character[]"]');
-        const eduContainer = document.getElementById('p_character');
+        const eduInput = document.querySelector('input[name="educational_certificates[]"]');
+        const eduContainer = document.getElementById('p_academic_certificate');
 
         if (eduContainer) {
             eduContainer.innerHTML = '';
