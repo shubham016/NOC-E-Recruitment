@@ -39,13 +39,6 @@
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">View Application Details</h4>
             <div>
-                <a href="{{ route('candidate.applications.edit', $applicationform) }}"
-                    class="btn btn-warning btn-sm me-2">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-
-
-
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
@@ -618,11 +611,6 @@
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
-                <div>
-                    <a href="{{ route('candidate.applications.edit', $applicationform->id) }}" class="btn btn-warning me-2">
-                        <i class="fas fa-edit"></i> Edit Registration
-                    </a>
-                </div>
             </div>
         </div>
     </div>
