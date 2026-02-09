@@ -425,7 +425,7 @@
                         <p class="mb-0">
                             @if($applicationform->citizenship_id_document)
                                 <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-pdf"></i> View Document
+                                    <i class="fas fa-file-alt"></i> View Document
                                 </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>
@@ -439,7 +439,7 @@
                         <p class="mb-0">
                             @if($applicationform->character)
                                 <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-image"></i> View Certificate
+                                    <i class="fas fa-file-alt"></i> View Certificate
                                 </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>
@@ -451,7 +451,7 @@
                         <p class="mb-0">
                             @if($applicationform->equivalent)
                                 <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-pdf"></i> View Certificate
+                                    <i class="fas fa-file-alt"></i> View Certificate
                                 </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>
@@ -472,29 +472,21 @@
                             @endif
                         </p>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Transcript Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->transcript)
-                                @php
-                                    $certificates = is_string($applicationform->transcript) 
-                                        ? json_decode($applicationform->transcript, true) 
-                                        : $applicationform->transcript;
-                                @endphp
-                                @if(is_array($certificates) && count($certificates) > 0)
-                                    @foreach($certificates as $index => $cert)
-                                        <a href="{{ asset('storage/' . $cert) }}" target="_blank" class="btn btn-sm bg-light me-1 mb-1">
-                                            <i class="fas fa-certificate"></i> Certificate {{ $index + 1 }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <span class="text-muted">Not uploaded</span>
-                                @endif
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
-                    </div>
+                   <div class="col-md-6 mb-3">
+                    <strong>Transcript Certificate:</strong>
+                    <p class="mb-0">
+                        @if(!empty($applicationform->transcript))
+                            <a href="{{ asset('storage/' . $applicationform->transcript) }}"
+                            target="_blank"
+                            class="btn btn-sm bg-light">
+                                <i class="fas fa-file-alt"></i> View Certificate
+                            </a>
+                        @else
+                            <span class="text-muted">Not uploaded</span>
+                        @endif
+                    </p>
+                </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">

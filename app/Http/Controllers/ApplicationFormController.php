@@ -17,8 +17,6 @@ class ApplicationFormController extends Controller
         'noc_id_card'              => 'noc-id-cards',
         'disability_certificate'   => 'disability-certificates',
         'citizenship_id_document'  => 'citizenship-documents',
-        'resume_cv'                => 'resumes',
-        'educational_certificates' => 'educational-certificates',
         'passport_size_photo'      => 'passport-photos',
         'signature'                => 'signatures',
         'transcript'               => 'transcripts',
@@ -92,139 +90,133 @@ class ApplicationFormController extends Controller
         return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
     }
 
-    /**
-     * Auto-save draft via AJAX
-     */
+    
     public function saveDraft(Request $request)
-    {
-        if (!Session::has('candidate_logged_in')) {
-            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
-
-        try {
-            // Log incoming request for debugging
-            Log::info('Draft save attempt', [
-                'candidate_id' => $candidate->id,
-                'has_draft_id' => $request->has('draft_id'),
-                'draft_id' => $request->draft_id,
-                'job_posting_id' => $request->job_posting_id,
-                'has_files' => $this->hasAnyFiles($request),
-                'files_present' => array_keys($request->allFiles())
-            ]);
-
-            // Find or create draft
-            $draft = null;
-            
-            // First try to find by draft_id if provided
-            if ($request->filled('draft_id')) {
-                $draft = ApplicationForm::where('id', $request->draft_id)
-                    ->where('citizenship_number', $candidate->citizenship_number)
-                    ->where('status', 'draft')
-                    ->first();
-                    
-                Log::info('Found draft by ID', ['draft_id' => $draft ? $draft->id : null]);
-            }
-            
-            // If no draft found and job_posting_id exists, try to find existing draft for this job
-            if (!$draft && $request->filled('job_posting_id')) {
-                $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                    ->where('job_posting_id', $request->job_posting_id)
-                    ->where('status', 'draft')
-                    ->first();
-                    
-                Log::info('Found draft by job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
-            }
-            
-            // If still no draft, try to find any draft for this candidate
-            if (!$draft) {
-                $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                    ->where('status', 'draft')
-                    ->whereNull('job_posting_id')
-                    ->latest()
-                    ->first();
-                    
-                Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
-            }
-
-            // Get all data except files and tokens
-            $data = $request->except([
-                '_token',
-                '_method',
-                'character',
-                ...array_keys($this->fileFields),
-                'existing_passport_size_photo',
-                'existing_citizenship_id_document',
-                'existing_transcript',
-                'existing_character',
-                'existing_signature'
-            ]);
-
-            // Handle same_as_permanent checkbox
-            if ($request->boolean('same_as_permanent')) {
-                $mailingData = $this->copyPermanentToMailing($request);
-                $data = array_merge($data, $mailingData);
-            }
-
-            // Add required fields
-            $data['citizenship_number'] = $candidate->citizenship_number;
-            $data['status'] = 'draft';
-            
-            if ($request->filled('job_posting_id')) {
-                $data['job_posting_id'] = $request->job_posting_id;
-            }
-
-            // Remove empty values that might cause issues
-            $data = array_filter($data, function($value) {
-                return !is_null($value) && $value !== '';
-            });
-
-            // Create or update draft
-            if ($draft) {
-                $draft->update($data);
-                Log::info('Draft updated', ['draft_id' => $draft->id]);
-            } else {
-                $draft = ApplicationForm::create($data);
-                Log::info('Draft created', ['draft_id' => $draft->id]);
-            }
-
-            // Handle file uploads if any files are present
-            if ($this->hasAnyFiles($request)) {
-                $fileData = $this->handleFileUploads($request, $draft, true);
-                if (!empty($fileData)) {
-                    $draft->update($fileData);
-                    Log::info('Files uploaded for draft', [
-                        'draft_id' => $draft->id, 
-                        'files' => array_keys($fileData),
-                        'file_paths' => $fileData
-                    ]);
-                }
-            }
-
-            return response()->json([
-                'success' => true, 
-                'message' => 'Draft saved successfully',
-                'draft_id' => $draft->id,
-                'saved_at' => now()->format('h:i A')
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Draft save error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile()
-            ]);
-            
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error saving draft: ' . $e->getMessage()
-            ], 500);
-        }
+{
+    if (!Session::has('candidate_logged_in')) {
+        return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
     }
+
+    $candidate = DB::table('candidate_registration')
+        ->where('id', Session::get('candidate_id'))
+        ->first();
+
+    try {
+        // Log incoming request for debugging
+        Log::info('Draft save attempt', [
+            'candidate_id' => $candidate->id,
+            'has_draft_id' => $request->has('draft_id'),
+            'draft_id' => $request->draft_id,
+            'job_posting_id' => $request->job_posting_id,
+            'has_files' => $this->hasAnyFiles($request),
+            'files_present' => array_keys($request->allFiles())
+        ]);
+
+        // Find or create draft
+        $draft = null;
+        
+        if ($request->filled('draft_id')) {
+            $draft = ApplicationForm::where('id', $request->draft_id)
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->where('status', 'draft')
+                ->first();
+                
+            Log::info('Found draft by ID', ['draft_id' => $draft ? $draft->id : null]);
+        }
+        
+        if (!$draft && $request->filled('job_posting_id')) {
+            $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+                ->where('job_posting_id', $request->job_posting_id)
+                ->where('status', 'draft')
+                ->first();
+                
+            Log::info('Found draft by job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
+        }
+        
+        if (!$draft) {
+            $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+                ->where('status', 'draft')
+                ->whereNull('job_posting_id')
+                ->latest()
+                ->first();
+                
+            Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
+        }
+
+        // Get all data except files and tokens
+        $data = $request->except([
+            '_token',
+            '_method',
+            ...array_keys($this->fileFields)
+        ]);
+
+        // Handle same_as_permanent checkbox
+        if ($request->boolean('same_as_permanent')) {
+            $mailingData = $this->copyPermanentToMailing($request);
+            $data = array_merge($data, $mailingData);
+        }
+
+        // Add required fields
+        $data['citizenship_number'] = $candidate->citizenship_number;
+        $data['status'] = 'draft';
+        
+        if ($request->filled('job_posting_id')) {
+            $data['job_posting_id'] = $request->job_posting_id;
+        }
+
+        // Remove empty values
+        $data = array_filter($data, function($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        // Create or update draft
+        if ($draft) {
+            $draft->update($data);
+            Log::info('Draft updated', ['draft_id' => $draft->id]);
+        } else {
+            $draft = ApplicationForm::create($data);
+            Log::info('Draft created', ['draft_id' => $draft->id]);
+        }
+
+        // Handle file uploads
+        $fileData = [];
+        if ($this->hasAnyFiles($request)) {
+            Log::info('Processing file uploads', ['files' => array_keys($request->allFiles())]);
+            
+            $fileData = $this->handleFileUploads($request, $draft, true);
+            
+            if (!empty($fileData)) {
+                $draft->update($fileData);
+                Log::info('Files saved successfully', [
+                    'draft_id' => $draft->id, 
+                    'saved_files' => array_keys($fileData),
+                    'file_paths' => $fileData
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Draft saved successfully',
+            'draft_id' => $draft->id,
+            'saved_at' => now()->format('h:i A'),
+            'files_saved' => !empty($fileData) ? array_keys($fileData) : []
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Draft save error', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ]);
+        
+        return response()->json([
+            'success' => false, 
+            'message' => 'Error saving draft: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
     /**
      * Check if request has any files to upload
@@ -303,15 +295,7 @@ class ApplicationFormController extends Controller
         }
 
         // Get all data except files
-        $data = $request->except([
-            ...array_keys($this->fileFields), 
-            'character',
-            'existing_passport_size_photo',
-            'existing_citizenship_id_document',
-            'existing_transcript',
-            'existing_character',
-            'existing_signature'
-        ]);
+        $data = $request->except(array_keys($this->fileFields));
         
         // Check if updating a draft
         $existingDraft = null;
@@ -420,15 +404,7 @@ class ApplicationFormController extends Controller
             $this->validationMessages()
         );
 
-        $data = $request->except([
-            ...array_keys($this->fileFields), 
-            'character',
-            'passport_size_photo',
-            'citizenship_id_document',
-            'transcript',
-            'character',
-            'signature'
-        ]);
+        $data = $request->except(array_keys($this->fileFields));
         
         $uploadedFiles = $this->handleFileUploads($request, $applicationform, false);
 
@@ -574,9 +550,6 @@ class ApplicationFormController extends Controller
             'department' => 'required|string',
             'applying_position' => 'required|string',
             'alternate_phone_number' => 'required|digits:10',
-
-            'educational_certificates' => 'nullable|array',
-            'educational_certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
 
         // File validation - required on store unless already exists in draft
@@ -584,7 +557,7 @@ class ApplicationFormController extends Controller
             $rules['citizenship_id_document'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['passport_size_photo'] = 'required|image|mimes:jpg,jpeg,png,webp|max:2048';
             $rules['transcript'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['character'] = 'file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['character'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
@@ -655,96 +628,50 @@ class ApplicationFormController extends Controller
      * Handle file uploads for the application
      */
     private function handleFileUploads(Request $request, ?ApplicationForm $model = null, $isDraft = false)
-    {
-        $data = [];
+{
+    $data = [];
 
-        foreach ($this->fileFields as $field => $folder) {
-
-            // Special handling for character field (multiple files)
-            if ($field === 'character') {
-                if ($request->hasFile('character')) {
-                    $files = $request->file('character');
-                    
-                    // Only delete old files if NOT a draft OR if explicitly replacing
-                    if (!$isDraft && $model && $model->character) {
-                        $old = is_string($model->character) ? json_decode($model->character, true) : $model->character;
-                        if (is_array($old)) {
-                            foreach ($old as $path) {
-                                if (Storage::disk('public')->exists($path)) {
-                                    Storage::disk('public')->delete($path);
-                                }
-                            }
-                        }
-                    }
-
-                    // Upload new files
-                    $paths = [];
-                    foreach ($files as $file) {
-                        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                        $path = $file->storeAs($folder, $filename, 'public');
-                        $paths[] = $path;
-                    }
-
-                    $data['character'] = json_encode($paths);
-                    
-                } elseif ($model && $model->character) {
-                    // PRESERVE existing character files if no new upload
-                    $data['character'] = $model->character;
-                }
-                continue;
+    foreach ($this->fileFields as $field => $folder) {
+        // Skip if no file uploaded
+        if (!$request->hasFile($field)) {
+            // PRESERVE existing files if model exists
+            if ($model && $model->$field) {
+                $data[$field] = $model->$field;
             }
-
-            // Skip if no file uploaded
-            if (!$request->hasFile($field)) {
-                // PRESERVE existing files if model exists
-                if ($model && $model->$field) {
-                    $data[$field] = $model->$field;
-                }
-                continue;
-            }
-
-            $files = $request->file($field);
-
-            // Handle multiple files (arrays) - for educational_certificates
-            if (is_array($files)) {
-
-                // Only delete old files if NOT a draft
-                if (!$isDraft && $model && $model->$field) {
-                    $old = json_decode($model->$field, true) ?? [];
-                    foreach ($old as $path) {
-                        if (Storage::disk('public')->exists($path)) {
-                            Storage::disk('public')->delete($path);
-                        }
-                    }
-                }
-
-                // Upload new files
-                $paths = [];
-                foreach ($files as $file) {
-                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs($folder, $filename, 'public');
-                    $paths[] = $path;
-                }
-
-                $data[$field] = json_encode($paths);
-
-            } else {
-                // Handle single file
-
-                // Only delete old file if NOT a draft
-                if (!$isDraft && $model && $model->$field && Storage::disk('public')->exists($model->$field)) {
-                    Storage::disk('public')->delete($model->$field);
-                }
-
-                // Upload new file
-                $filename = time() . '_' . uniqid() . '.' . $files->getClientOriginalExtension();
-                $path = $files->storeAs($folder, $filename, 'public');
-                $data[$field] = $path;
-            }
+            continue;
         }
 
-        return $data;
+        $file = $request->file($field);
+        
+        // Validate file
+        if (!$file->isValid()) {
+            Log::warning("Invalid file upload for field: $field");
+            continue;
+        }
+
+        // Only delete old file if NOT a draft AND file exists
+        if (!$isDraft && $model && $model->$field && Storage::disk('public')->exists($model->$field)) {
+            Storage::disk('public')->delete($model->$field);
+            Log::info("Deleted old file", ['field' => $field, 'path' => $model->$field]);
+        }
+
+        // Upload new file
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs($folder, $filename, 'public');
+        
+        Log::info("File uploaded successfully", [
+            'field' => $field,
+            'filename' => $filename,
+            'path' => $path,
+            'folder' => $folder,
+            'full_path' => storage_path('app/public/' . $path)
+        ]);
+        
+        $data[$field] = $path;
     }
+
+    return $data;
+}
 
     /**
      * Copy permanent address to mailing address
@@ -767,21 +694,10 @@ class ApplicationFormController extends Controller
     private function deleteAssociatedFiles(ApplicationForm $model)
     {
         foreach ($this->fileFields as $field => $folder) {
-
             if (!$model->$field) continue;
 
-            $paths = json_decode($model->$field, true);
-
-            if (is_array($paths)) {
-                foreach ($paths as $path) {
-                    if (Storage::disk('public')->exists($path)) {
-                        Storage::disk('public')->delete($path);
-                    }
-                }
-            } else {
-                if (Storage::disk('public')->exists($model->$field)) {
-                    Storage::disk('public')->delete($model->$field);
-                }
+            if (Storage::disk('public')->exists($model->$field)) {
+                Storage::disk('public')->delete($model->$field);
             }
         }
     }

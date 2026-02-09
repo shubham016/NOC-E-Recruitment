@@ -529,21 +529,19 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="resume_cv" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
-                            <input type="file" name="resume_cv" id="resume_cv" class="form-control" accept="image/*,application/pdf" required>
+                        <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
-
                         <div class="col-md-6">
-                            <label for="educational_certificates" class="form-label">
+                            <label for="character" class="form-label">
                                 Character Certificate <span class="text-danger">*</span>
                             </label>
                             <input type="file"
-                                name="educational_certificates[]"
-                                id="educational_certificates"
+                                name="character"
+                                id="character"
                                 class="form-control"
                                 accept="image/*,application/pdf"
-                                multiple
                                 required>
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
@@ -635,11 +633,11 @@
                             </tr>
                             <tr>
                                 <th>Transcript</th>
-                                <td id="p_resume"></td>
+                                <td id="p_transcript"></td>
                             </tr>
                             <tr>
                                 <th>Character</th>
-                                <td id="p_academic_certificate"></td>
+                                <td id="p_character"></td>
                             </tr>
                             <tr>
                                 <th>Equivalent</th>
@@ -676,7 +674,7 @@
                             <!-- eSewa -->
                             <div class="col-md-4 mb-3">
                                 <div class="payment-box" onclick="startPayment('esewa')">
-                                    <img src="/images/esewalogo.png" alt="eSewa" class="payment-logo">
+                                    <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
                                     <div>Pay with eSewa</div>
                                 </div>
                             </div>
@@ -684,7 +682,7 @@
                             <!-- Khalti -->
                             <div class="col-md-4 mb-3">
                                 <div class="payment-box" onclick="startPayment('khalti')">
-                                    <img src="/images/khaltilogo.png" alt="Khalti" class="payment-logo">
+                                    <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
                                     <div>Pay with Khalti</div>
                                 </div>
                             </div>
@@ -692,7 +690,7 @@
                             <!-- ConnectIPS -->
                             <div class="col-md-4 mb-3">
                                 <div class="payment-box" onclick="startPayment('connectips')">
-                                    <img src="/images/cipslogo.png" alt="ConnectIPS" class="payment-logo">
+                                    <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
                                     <div>Pay with ConnectIPS</div>
                                 </div>
                             </div>
@@ -862,6 +860,7 @@
 </style>
 @endpush
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
@@ -977,80 +976,75 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function autoSave() {
-        if (isSaving) {
-            console.log('Already saving, skipping...');
-            return;
-        }
-        
-        isSaving = true;
-        console.log('Starting auto-save...');
-        showAutoSaveStatus('💾 Saving draft...', 'info');
+    if (isSaving) {
+        console.log('Already saving, skipping...');
+        return;
+    }
+    
+    isSaving = true;
+    console.log('Starting auto-save...');
+    showAutoSaveStatus('💾 Saving draft...', 'info');
 
-        const formData = new FormData(form);
-        
-        // Add draft_id if exists
-        if (draftIdInput && draftIdInput.value) {
-            formData.set('draft_id', draftIdInput.value);
-            console.log('Draft ID:', draftIdInput.value);
-        }
+    const formData = new FormData(form);
+    
+    // Add draft_id if exists
+    if (draftIdInput && draftIdInput.value) {
+        formData.set('draft_id', draftIdInput.value);
+        console.log('Draft ID:', draftIdInput.value);
+    }
 
-        // Remove file inputs from auto-save (files should only be uploaded on final submit)
-        const fileInputs = form.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(input => {
-            formData.delete(input.name);
-            formData.delete(input.name + '[]'); // For array inputs
-        });
-
-        // Log what we're sending
-        console.log('Form data being sent:');
-        for (let pair of formData.entries()) {
+    // Log what we're sending
+    console.log('Form data being sent:');
+    for (let pair of formData.entries()) {
+        if (pair[1] instanceof File) {
+            console.log(pair[0] + ': [FILE] ' + pair[1].name);
+        } else {
             console.log(pair[0] + ': ' + pair[1]);
         }
-
-        fetch('{{ route("candidate.applications.saveDraft") }}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            
-            // Check if response is ok
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return response.json();
-        })
-        .then(data => {
-            console.log('Server response:', data);
-            
-            if (data.success) {
-                showAutoSaveStatus('✓ Draft saved', 'success');
-                
-                // Update draft_id if this was first save
-                if (data.draft_id && (!draftIdInput.value || draftIdInput.value === '')) {
-                    draftIdInput.value = data.draft_id;
-                    console.log('Draft ID updated to:', data.draft_id);
-                }
-            } else {
-                console.error('Save failed:', data.message);
-                showAutoSaveStatus('⚠ ' + (data.message || 'Failed to save'), 'warning');
-            }
-        })
-        .catch(error => {
-            console.error('Auto-save error:', error);
-            showAutoSaveStatus('✕ Save failed: ' + error.message, 'danger');
-        })
-        .finally(() => {
-            isSaving = false;
-            console.log('Auto-save complete');
-        });
     }
+
+    fetch('{{ route("candidate.applications.saveDraft") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('Server response:', data);
+        
+        if (data.success) {
+            showAutoSaveStatus('✓ Draft saved', 'success');
+            
+            if (data.draft_id && (!draftIdInput.value || draftIdInput.value === '')) {
+                draftIdInput.value = data.draft_id;
+                console.log('Draft ID updated to:', data.draft_id);
+            }
+        } else {
+            console.error('Save failed:', data.message);
+            showAutoSaveStatus('⚠ ' + (data.message || 'Failed to save'), 'warning');
+        }
+    })
+    .catch(error => {
+        console.error('Auto-save error:', error);
+        showAutoSaveStatus('✕ Save failed: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        isSaving = false;
+        console.log('Auto-save complete');
+    });
+}
 
     // Trigger auto-save on input changes (debounced)
     form.addEventListener('input', function(e) {
@@ -1114,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function validateStep(step) {
         const stepEl = document.getElementById('step' + step);
-        if (!stepEl) return false;
+        if (!stepEl) return true; // If step doesn't exist, consider it valid
 
         // Clear previous validation errors
         stepEl.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
@@ -1175,12 +1169,22 @@ document.addEventListener('DOMContentLoaded', function () {
         return isValid;
     }
 
-    // Clickable Tabs - STRICT VALIDATION
+    // Clickable Tabs - Allow backward navigation, validate forward navigation
     document.querySelectorAll('.tab-item').forEach(tab => {
-        tab.addEventListener('click', () => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
             const targetStep = parseInt(tab.getAttribute('data-step'));
             
-            // Allow clicking on previous steps (backward navigation)
+            console.log('Tab clicked:', targetStep, 'Current step:', currentStep);
+            
+            // Allow clicking on current step (refresh)
+            if (targetStep === currentStep) {
+                return;
+            }
+            
+            // Allow clicking on previous steps (backward navigation) - NO VALIDATION
             if (targetStep < currentStep) {
                 showStep(targetStep);
                 return;
@@ -1202,16 +1206,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (canProceed) {
                     showStep(targetStep);
                 }
-            } else if (targetStep === currentStep) {
-                // Already on this step, do nothing
-                return;
             }
         });
     });
 
-    // Next Button - STRICT VALIDATION
+    // Next Button - Validate current step before moving
     document.querySelectorAll('.next-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Next button clicked from step:', currentStep);
+            
             // Validate current step before moving
             if (!validateStep(currentStep)) {
                 return; // Stop if validation fails
@@ -1229,7 +1235,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Previous Button - No validation needed for going back
     document.querySelectorAll('.prev-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Previous button clicked from step:', currentStep);
+            
             if (currentStep > 1) {
                 clearTimeout(autoSaveTimeout);
                 autoSave();
@@ -1402,43 +1413,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Single file previews
         previewFile('p_photo', 'passport_size_photo');
         previewFile('p_citizenship', 'citizenship_id_document');
-        previewFile('p_resume', 'resume_cv');
+        previewFile('p_transcript', 'transcript');
         previewFile('p_signature', 'signature');
         previewFile('p_equivalent', 'equivalent');
         previewFile('p_work_experience', 'work_experience');
-
-        // Multiple Educational Certificates Preview
-        const eduInput = document.querySelector('input[name="educational_certificates[]"]');
-        const eduContainer = document.getElementById('p_academic_certificate');
-
-        if (eduContainer) {
-            eduContainer.innerHTML = '';
-
-            if (eduInput && eduInput.files.length > 0) {
-                for (let i = 0; i < eduInput.files.length; i++) {
-                    const file = eduInput.files[i];
-                    const fileURL = URL.createObjectURL(file);
-
-                    const div = document.createElement('div');
-                    div.className = 'mb-2';
-
-                    if (file.type.startsWith('image/')) {
-                        div.innerHTML = `
-                            <img src="${fileURL}" 
-                                 class="img-thumbnail me-2" 
-                                 style="max-width:120px; max-height:120px;">
-                            <span class="small">${file.name}</span>
-                        `;
-                    } else {
-                        div.innerHTML = `<a href="${fileURL}" target="_blank">${file.name}</a>`;
-                    }
-
-                    eduContainer.appendChild(div);
-                }
-            } else {
-                eduContainer.textContent = 'Not Uploaded';
-            }
-        }
+        previewFile('p_character', 'character');
     }
 
     // PAYMENT GATEWAYS

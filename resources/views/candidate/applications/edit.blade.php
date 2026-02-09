@@ -18,11 +18,6 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a>
-    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -118,7 +113,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="text" name="email" id="email" class="form-control" value="{{ old('Email Address', $applicationform->email) }}" required>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $applicationform->email) }}" required>
                         </div>
                         <div class="col-md-3">
                             <label for="phone" class="form-label">Phone <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
@@ -312,10 +307,13 @@
                             @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="mother_tongue" class="form-label">Mother Tongue <span class="text-danger">*</span> <small>(मातृभाषा)</small></label>
                             <input type="text" name="mother_tongue" id="mother_tongue" class="form-control" value="{{ old('mother_tongue', $applicationform->mother_tongue) }}" required>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="employment_status" class="form-label">Employment Status <span class="text-danger">*</span> <small>(रोजगार स्थिति)</small></label>
                             <select name="employment_status" id="employment_status" class="form-select" required>
@@ -323,13 +321,6 @@
                                 <option value="employed" {{ old('employment_status', $applicationform->employment_status) == 'employed' ? 'selected' : '' }}>Employed</option>
                                 <option value="unemployed" {{ old('employment_status', $applicationform->employment_status) == 'unemployed' ? 'selected' : '' }}>Unemployed</option>
                             </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="employment_other" class="form-label">Other Employment Details</label>
-                            <input type="text" name="employment_other" id="employment_other" class="form-control" value="{{ old('employment_other', $applicationform->employment_other) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="physical_disability" class="form-label">Physical Disability <span class="text-danger">*</span> <small>(कुनै पनि असक्षमता?)</small></label>
@@ -340,13 +331,6 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="disability_other" class="form-label">Disability Details</label>
-                            <input type="text" name="disability_other" id="disability_other" class="form-control" value="{{ old('disability_other', $applicationform->disability_other) }}">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
                             <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
                             <input type="file" name="disability_certificate" id="disability_certificate" class="form-control" accept="image/*,application/pdf">
                             @if($applicationform->disability_certificate)
@@ -403,7 +387,7 @@
                         </div>
                     </div>
 
-                    <h5 class="mb-4 text-primary"> Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-primary mt-4">Mailing/Current Address</h5>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent', $applicationform->same_as_permanent) ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
@@ -477,11 +461,11 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="institution_name" class="form-label">Institution Name<span class="text-danger">*</span></label>
-                            <input type="text" name="institution_name" id="institution_name" class="form-control" value="{{ old('institution_name', $applicationform->institution_name) }}"required>
+                            <input type="text" name="institution_name" id="institution_name" class="form-control" value="{{ old('institution_name', $applicationform->institution_name) }}" required>
                         </div>
                         <div class="col-md-6">
                             <label for="graduation_year" class="form-label">Graduation Year<span class="text-danger">*</span></label>
-                            <input type="number" name="graduation_year" id="graduation_year" class="form-control" min="1950" max="2030" value="{{ old('graduation_year', $applicationform->graduation_year) }}"required>
+                            <input type="number" name="graduation_year" id="graduation_year" class="form-control" min="1950" max="2030" value="{{ old('graduation_year', $applicationform->graduation_year) }}" required>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -529,14 +513,14 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="passport_size_photo" class="form-label">Passport Size Photo</label>
-                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf">
+                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*">
                             @if($applicationform->passport_size_photo)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" target="_blank">View File</a></small>
                             @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span></label>
                             <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf">
                             @if($applicationform->citizenship_id_document)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank">View File</a></small>
@@ -546,40 +530,21 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="resume_cv" class="form-label">Transcript Certificate</label>
-                            <input type="file" name="resume_cv" id="resume_cv" class="form-control" accept="image/*,application/pdf">
-                            @if($applicationform->resume_cv)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->resume_cv) }}" target="_blank">View File</a></small>
+                            <label for="transcript" class="form-label">Transcript Certificate</label>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf">
+                            @if($applicationform->transcript)
+                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->transcript) }}" target="_blank">View File</a></small>
                             @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="educational_certificates" class="form-label">Character Certificate</label>
-                            <input type="file"
-                                name="educational_certificates[]"
-                                class="form-control"
-                                accept="image/*,application/pdf"
-                                multiple>
-                                                            @php
-                                    $files = json_decode($applicationform->educational_certificates, true);
-
-                                    // Handle double-encoded JSON
-                                    if (is_string($files)) {
-                                        $files = json_decode($files, true);
-                                    }
-                                @endphp
-
-                                @if(is_array($files) && count($files))
-                                    <small class="text-muted">{{ count($files) }} file(s) uploaded</small><br>
-
-                                    @foreach($files as $file)
-                                        <a href="{{ asset('storage/'.$file) }}" target="_blank">
-                                            View File
-                                        </a><br>
-                                    @endforeach
-                                @endif
-
+                       <div class="col-md-6">
+                            <label for="character" class="form-label">Character Certificate</label>
+                            {{-- FIXED: Added closing > tag --}}
+                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf"> 
+                            @if($applicationform->character)
+                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank">View File</a></small>
+                            @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
@@ -587,33 +552,44 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
-                            <input type="file" name="equivalent" id="equivalent" class="form-control" value="{{ old('equivalent', $applicationform->equivalent ?? '') }}" accept="image/*,application/pdf">
+                            {{-- FIXED: Removed value attribute from file input --}}
+                            <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
+                            @if($applicationform->equivalent)
+                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank">View File</a></small>
+                            @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
                         <div class="col-md-6">
                             <label for="work_experience" class="form-label">Work Experience Document</label>
-                            <input type="file" name="work_experience" id="work_experience" class="form-control" value="{{ old('work_experience', $applicationform->work_experience ?? '') }}" accept="image/*,application/pdf">
+                            {{-- FIXED: Removed value attribute from file input --}}
+                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
+                            @if($applicationform->work_experience)
+                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->work_experience) }}" target="_blank">View File</a></small>
+                            @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
-                        
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="signature" class="form-label">Signature</label>
-                            <input type="file" name="signature" id="signature" class="form-control" value="{{ old('signature', $applicationform->signature ?? '') }}" accept="image/*,application/pdf">
+                            {{-- FIXED: Removed value attribute from file input --}}
+                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*">
+                            @if($applicationform->signature)
+                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank">View File</a></small>
+                            @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
-                        
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-primary next-btn">Next</button>
                     </div>
-</div>       
-                    <!-- STEP 7: Review Application Before Payment -->
+                </div>       
+                
+                <!-- STEP 7: Review Application Before Payment -->
                 <div class="step d-none" id="step7">
                     <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
 
@@ -674,11 +650,11 @@
                             </tr>
                             <tr>
                                 <th>Transcript</th>
-                                <td id="p_resume"></td>
+                                <td id="p_transcript"></td>
                             </tr>
                             <tr>
                                 <th>Character</th>
-                                <td id="p_academic_certificate"></td>
+                                <td id="p_character"></td>
                             </tr>
                             <tr>
                                 <th>Equivalent</th>
@@ -696,85 +672,11 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="submit" class="btn btn-success">Update Application</button>
                         </div>
                     </div>
                 </div>
-  
-
-<!-- STEP 8: Payment Method -->
-                <div class="step d-none" id="step8">
-                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
-
-                    <div id="paymentSection">
-
-                        <h6 class="mb-3">Choose Payment Gateway</h6>
-
-                        <div class="row text-center">
-
-                            <!-- eSewa -->
-                            <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('esewa')">
-                                    <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
-                                    <div>Pay with eSewa</div>
-                                </div>
-                            </div>
-
-                            <!-- Khalti -->
-                            <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('khalti')">
-                                    <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
-                                    <div>Pay with Khalti</div>
-                                </div>
-                            </div>
-
-                            <!-- ConnectIPS -->
-                            <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('connectips')">
-                                    <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
-                                    <div>Pay with ConnectIPS</div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="alert alert-warning mt-3">
-                            Please complete payment first to enable final submission.
-                        </div>
-                        <!-- Save Draft Button -->
-                        <div class="mt-3 d-flex justify-content-center">
-                            <button type="button" class="btn btn-success" id="saveDraftBeforePayment">
-                                Save Draft & Pay Later
-                            </button>
-                        </div>
-
-                        
-
-                    </div>
-
-                    <!-- AFTER PAYMENT SECTION -->
-                    <div id="postPaymentSection" style="display:none;">
-
-                        <div class="alert alert-success">
-                            ✓ Payment completed successfully.
-                        </div>
-
-                        <div class="form-check mb-4">
-                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
-                            <label class="form-check-label" for="terms_agree">
-                                I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
-                            </label>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="submit" class="btn btn-success">Submit Application</button>
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <!-- STEP 8: Payment -->
             </form>
         </div>
     </div>
@@ -782,7 +684,6 @@
 
 @push('styles')
 <style>
-
     /* Clickable Tabs Styling */
     .step-tabs {
         position: relative;
@@ -880,40 +781,14 @@
     /* Validation Styling */
     .is-invalid { border-color: #dc3545 !important; }
     .invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; display: block; }
-
-    /* PAYMENT CSS */
-    .payment-box {
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-        height: 160px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .payment-box:hover {
-        background: #f5f5f5;
-    }
-
-    .payment-logo {
-        width: 150px;
-        height: 60px;
-        object-fit: contain;
-        margin-bottom: 10px;
-    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
-    const totalSteps = 8;
+    const totalSteps = 7; // Changed from 8 to 7 since no payment step
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
 
     // Update Tabs & Progress Line
@@ -930,7 +805,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Update progress line width
         const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-        document.querySelector('.progress-line').style.width = progressPercent + '%';
+        const progressLine = document.querySelector('.progress-line');
+        if (progressLine) {
+            progressLine.style.width = progressPercent + '%';
+        }
     }
 
     // Show Specific Step
@@ -943,7 +821,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         currentStep = step;
         if (step === 7) {
-        populatePreview();
+            populatePreview();
         }
         updateTabsAndProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -952,7 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Validate Current Step
     function validateStep(step) {
         const stepEl = document.getElementById('step' + step);
-        if (!stepEl) return false;
+        if (!stepEl) return true;
 
         // Clear previous errors
         stepEl.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
@@ -988,11 +866,9 @@ document.addEventListener('DOMContentLoaded', function () {
         tab.addEventListener('click', () => {
             const targetStep = parseInt(tab.getAttribute('data-step'));
             
-            // Allow jumping only to previous or current step (or next if valid)
             if (targetStep < currentStep || (targetStep === currentStep + 1 && validateStep(currentStep))) {
                 showStep(targetStep);
             } else if (targetStep > currentStep) {
-                // Try to go forward only if current is valid
                 if (validateStep(currentStep)) {
                     showStep(targetStep);
                 }
@@ -1002,22 +878,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Next Button
     document.querySelectorAll('.next-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+        btn.addEventListener('click', () => {
+            if (!validateStep(currentStep)) {
+                return;
+            }
 
-        if (!validateStep(currentStep)) {
-            return;
-        }
+            if (currentStep === 6) {
+                populatePreview();
+            }
 
-        // BEFORE going to Step 7 → generate preview
-        if (currentStep === 6) {
-            populatePreview();
-        }
-
-        if (currentStep < totalSteps) {
-            showStep(currentStep + 1);
-        }
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        });
     });
-});
 
     // Previous Button
     document.querySelectorAll('.prev-btn').forEach(btn => {
@@ -1033,7 +907,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (this.checked) {
             ['province', 'district', 'municipality', 'ward', 'tole', 'house_number'].forEach(field => {
                 const perm = document.getElementById('permanent_' + field)?.value || '';
-                document.getElementById('mailing_' + field).value = perm;
+                const mailingField = document.getElementById('mailing_' + field);
+                if (mailingField) {
+                    mailingField.value = perm;
+                }
             });
         }
     });
@@ -1067,11 +944,8 @@ document.addEventListener('DOMContentLoaded', function () {
         showStep(1);
     }
 
-});
-    // ==================== PREVIEW FOR STEP 7 ====================
-    
+    // Preview Population Function
     function populatePreview() {
-
         function val(id) {
             return document.getElementById(id)?.value || '-';
         }
@@ -1099,7 +973,6 @@ document.addEventListener('DOMContentLoaded', function () {
             val('permanent_district') + ', ' +
             val('permanent_municipality') + ' - ' +
             val('permanent_ward');
-
         set('p_permanent_address', permanentAddress);
 
         const mailingAddress =
@@ -1107,7 +980,6 @@ document.addEventListener('DOMContentLoaded', function () {
             val('mailing_district') + ', ' +
             val('mailing_municipality') + ' - ' +
             val('mailing_ward');
-
         set('p_mailing_address', mailingAddress);
 
         // Education
@@ -1122,8 +994,7 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_previous_organization', val('previous_organization'));
         set('p_previous_position', val('previous_position'));
 
-        // ===== DOCUMENT PREVIEW WITH IMAGE DISPLAY =====
-
+        // Document Preview Function
         function previewFile(containerId, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`);
             const container = document.getElementById(containerId);
@@ -1154,142 +1025,59 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Single file previews
+        // File previews with existing files check
+        @if($applicationform->passport_size_photo)
+            document.getElementById('p_photo').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->passport_size_photo) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_photo', 'passport_size_photo');
+        @endif
 
-            @if($applicationform->passport_size_photo)
-                document.getElementById('p_photo').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->passport_size_photo) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_photo', 'passport_size_photo');
-            @endif
-            @if($applicationform->citizenship_id_document)
-                document.getElementById('p_citizenship').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->citizenship_id_document) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_citizenship', 'citizenship_id_document');
-            @endif
+        @if($applicationform->citizenship_id_document)
+            document.getElementById('p_citizenship').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->citizenship_id_document) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_citizenship', 'citizenship_id_document');
+        @endif
 
-            @if($applicationform->resume_cv)
-                document.getElementById('p_resume').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->resume_cv) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_resume', 'resume_cv');
-            @endif
+        @if($applicationform->transcript)
+            document.getElementById('p_transcript').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->transcript) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_transcript', 'transcript');
+        @endif
 
-            @if($applicationform->signature)
-                document.getElementById('p_signature').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->signature) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_signature', 'signature');
-            @endif
+        @if($applicationform->character)
+            document.getElementById('p_character').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->character) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_character', 'character');
+        @endif
 
-            @if($applicationform->equivalent)
-                document.getElementById('p_equivalent').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->equivalent) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_equivalent', 'equivalent');
-            @endif
+        @if($applicationform->signature)
+            document.getElementById('p_signature').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->signature) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_signature', 'signature');
+        @endif
 
-            @if($applicationform->work_experience)
-                document.getElementById('p_work_experience').innerHTML =
-                    `<a href="{{ asset('storage/'.$applicationform->work_experience) }}" target="_blank">View Uploaded File</a>`;
-            @else
-                previewFile('p_work_experience', 'work_experience');
-            @endif
+        @if($applicationform->equivalent)
+            document.getElementById('p_equivalent').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->equivalent) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_equivalent', 'equivalent');
+        @endif
 
-
-
-
-        // Multiple Educational Certificates Preview
-        const eduContainer = document.getElementById('p_academic_certificate');
-
-    @if($applicationform->educational_certificates)
-        (function () {
-            let files = @json($applicationform->educational_certificates);
-
-            // handle double-encoded JSON
-            if (typeof files === 'string') {
-                try {
-                    files = JSON.parse(files);
-                } catch (e) {
-                    files = [];
-                }
-            }
-
-            if (!Array.isArray(files) || files.length === 0) {
-                eduContainer.textContent = 'Not Uploaded';
-                return;
-            }
-
-            let html = '';
-
-            files.forEach(function (file, index) {
-                html += `
-                    <a href="{{ asset('storage') }}/${file}"
-                       target="_blank"
-                       class="d-block">
-                        View File ${index + 1}
-                    </a>
-                `;
-            });
-
-            eduContainer.innerHTML = html;
-        })();
-    @else
-        eduContainer.textContent = 'Not Uploaded';
-    @endif
+        @if($applicationform->work_experience)
+            document.getElementById('p_work_experience').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->work_experience) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_work_experience', 'work_experience');
+        @endif
     }
 
-    document.getElementById('saveDraftBeforePayment').addEventListener('click', function() {
-        const formData = new FormData(document.querySelector('form')); // assumes this is inside a <form>
-        formData.append('save_as_draft', true); // mark as draft
-
-        fetch('/save-draft', { // replace with your actual endpoint
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success){
-                alert('Draft saved successfully! You can pay later.');
-            } else {
-                alert('Failed to save draft. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while saving the draft.');
-        });
-    });
-
-    // PAYMENT GATEWAYS
-    // window.startPayment = function(gateway) {
-
-    //     const draftId = document.getElementById('draft_id')?.value;
-
-    //     if (!draftId) {
-    //         alert("Application draft not found. Please complete form properly.");
-    //         return;
-    //     }
-
-    //     let url = "";
-
-    //     if (gateway === "esewa") {
-    //         url = "/payment/esewa/start/" + draftId;
-    //     }
-    //     else if (gateway === "khalti") {
-    //         url = "/payment/khalti/start/" + draftId;
-    //     }
-    //     else if (gateway === "connectips") {
-    //         url = "/payment/connectips/start/" + draftId;
-    //     }
-
-    //     window.location.href = url;
-    // }
-
-    // console.log('✓ Form initialized with strict validation, conditional file uploads, preview, and auto-save');
-    // console.log('Draft ID on load:', draftIdInput ? draftIdInput.value : 'none');
-
+    console.log('✓ Edit form initialized with validation and preview');
+});
 </script>
 @endpush
 @endsection
