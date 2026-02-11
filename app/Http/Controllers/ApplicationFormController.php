@@ -508,7 +508,7 @@ class ApplicationFormController extends Controller
             'birth_date_ad' => 'required|date',
             'birth_date_bs' => 'required|string',
             'age' => 'required|integer|min:18|max:40',
-            'phone' => 'required|string',
+            'phone' => 'required|digits:10',
             'email' => 'required|email',
             'gender' => 'required|in:Male,Female,Other',
             'citizenship_number' => 'required|string|max:50',
@@ -539,7 +539,7 @@ class ApplicationFormController extends Controller
             'education_level' => 'required|string',
             'field_of_study' => 'required|string',
             'institution_name' => 'required|string',
-            'graduation_year' => 'required|integer|min:1950|max:2030',
+            'graduation_year' => 'required|integer',
             'has_work_experience' => 'required|in:Yes,No',
 
             'same_as_permanent' => 'nullable|boolean',

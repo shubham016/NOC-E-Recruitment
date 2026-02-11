@@ -803,7 +803,7 @@
         left: 0;
         height: 4px;
         background: #0d6efd;
-        width: 14.28%; /* Will be updated via JS */
+        width: 14.28%; 
         transition: width 0.4s ease;
         z-index: 1;
     }
@@ -937,7 +937,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleEthnicCertificateRequirement() {
         if (!ethnicGroup || !ethnicCertificate) return;
         
-        if (ethnicGroup.value === 'Dalit' || ethnicGroup.value === 'Janajati') {
+        if (ethnicGroup.value === 'Dalit' || ethnicGroup.value === 'Janajati'|| ethnicGroup.value === 'Madhesi') {
             ethnicCertificate.setAttribute('required', 'required');
             if (ethnicCertificateLabel && !ethnicCertificateLabel.querySelector('.text-danger')) {
                 ethnicCertificateLabel.innerHTML += ' <span class="text-danger">*</span>';
