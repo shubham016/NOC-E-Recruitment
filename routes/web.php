@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ReviewerAuthController;
 use App\Http\Controllers\Auth\CandidateAuthController;
@@ -38,10 +37,6 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
-
-// Language Switcher Route (accessible to all users)
-Route::get('/language/{locale}', [LanguageController::class, 'switch'])
-    ->name('language.switch');
 
 /*
 |--------------------------------------------------------------------------
@@ -365,10 +360,3 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     });
 });
 
-
-
-//test
-
-Route::get('/test-translation', function () {
-    return view('test-translation');
-});

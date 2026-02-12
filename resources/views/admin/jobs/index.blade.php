@@ -13,32 +13,32 @@
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>{{ __('common.dashboard') }}</span>
+        <span>Dashboard</span>
     </a>
     <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
-        <span>{{ __('dashboard.post_vacancy') }}</span>
+        <span>Post Vacancy</span>
         <span class="badge bg-primary ms-auto">{{ $stats['total'] }}</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>{{ __('dashboard.applications') }}</span>
+        <span>Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-people"></i>
-        <span>{{ __('dashboard.candidates') }}</span>
+        <span>Candidates</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
-        <span>{{ __('dashboard.reviewers') }}</span>
+        <span>Reviewers</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
-        <span>{{ __('dashboard.reports') }}</span>
+        <span>Reports</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
-        <span>{{ __('common.settings') }}</span>
+        <span>Settings</span>
     </a>
 @endsection
 
@@ -182,7 +182,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                        <small class="text-muted">{{ __('dashboard.total_jobs') }}</small>
+                        <small class="text-muted">Total Jobs</small>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
-                        <small class="text-muted">{{ __('dashboard.active_jobs') }}</small>
+                        <small class="text-muted">Active Jobs</small>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
-                        <small class="text-muted">{{ __('dashboard.closed_jobs') }}</small>
+                        <small class="text-muted">Closed Jobs</small>
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
-                        <small class="text-muted">{{ __('dashboard.draft_jobs') }}</small>
+                        <small class="text-muted">Draft Jobs</small>
                     </div>
                 </div>
             </div>
@@ -261,7 +261,7 @@
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="bi bi-search me-2"></i>{{ __('common.search') }}
+                                <i class="bi bi-search me-2"></i>Search
                             </button>
                             @if(request()->hasAny(['search', 'status', 'job_type']))
                                 <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
@@ -290,17 +290,17 @@
                 <table class="table table-hover align-middle mb-0 modern-table">
                     <thead class="table-light">
                     <tr>
-                        <th>{{ __('jobs.serial_number') }}</th>
-                        <th>{{ __('jobs.advertisement_no') }}</th>
-                        <th>{{ __('jobs.position') }}</th>
-                        <th>{{ __('jobs.service') }}</th>
-                        <th>{{ __('jobs.type') }}</th>
-                        <th class="ps-4">{{ __('jobs.demand') }}</th>
-                        <th>{{ __('jobs.qualifications') }}</th>
-                        <th class="ps-4">{{ __('jobs.deadline') }}</th>
-                        <th>{{ __('jobs.applications') }}</th>
-                        <th>{{ __('jobs.status') }}</th>
-                        <th class="text-center">{{ __('jobs.actions') }}</th>
+                        <th>Sr. No.</th>
+                        <th>Advertisement No.</th>
+                        <th>Position</th>
+                        <th>Service</th>
+                        <th>Type</th>
+                        <th class="ps-4">Demand</th>
+                        <th>Qualifications</th>
+                        <th class="ps-4">Deadline</th>
+                        <th>Applications</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                     </thead>
 
@@ -351,13 +351,13 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="{{ __('common.view') }}">
+                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary" title="{{ __('common.edit') }}">
+                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $job->id }})" title="{{ __('common.delete') }}">
+                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $job->id }})" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>

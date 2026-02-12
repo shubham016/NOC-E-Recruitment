@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', __('jobs.post_new_vacancy'))
+@section('title', 'Post New Vacancy')
 
 @section('portal-name', 'Admin Portal')
 @section('brand-icon', 'bi bi-shield-check')
@@ -13,31 +13,31 @@
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>{{ __('common.dashboard') }}</span>
+        <span>Dashboard</span>
     </a>
     <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
-        <span>{{ __('dashboard.post_vacancy') }}</span>
+        <span>Post Vacancy</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>{{ __('dashboard.applications') }}</span>
+        <span>Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-people"></i>
-        <span>{{ __('dashboard.candidates') }}</span>
+        <span>Candidates</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
-        <span>{{ __('dashboard.reviewers') }}</span>
+        <span>Reviewers</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
-        <span>{{ __('dashboard.reports') }}</span>
+        <span>Reports</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
-        <span>{{ __('common.settings') }}</span>
+        <span>Settings</span>
     </a>
 @endsection
 
@@ -238,7 +238,7 @@
                     <span>नेपाल सरकार | Government of Nepal</span>
                 </div>
                 <h3 class="fw-bold mb-2">
-                    <i class="bi bi-file-earmark-post-fill me-2"></i>{{ __('jobs.post_new_vacancy') }}
+                    <i class="bi bi-file-earmark-post-fill me-2"></i>Post New Vacancy
                 </h3>
                 <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
@@ -271,13 +271,13 @@
             <div class="col-lg-8">
                 <div class="form-card">
                     <h5 class="fw-bold mb-4 text-danger">
-                        <i class="bi bi-pencil-square me-2"></i>{{ __('jobs.vacancy_details') }}
+                        <i class="bi bi-pencil-square me-2"></i>Vacancy Details
                     </h5>
 
                     <!-- Advertisement Number -->
                     <div class="mb-4">
                         <label for="advertisement_no" class="form-label">
-                            <span>{{ __('jobs.advertisement_no') }} <span class="required">*</span></span>
+                            <span>Advertisement No. <span class="required">*</span></span>
                             <span class="nepali-text">विज्ञापन नं.</span>
                         </label>
                         <input type="text"
@@ -297,7 +297,7 @@
                     <!-- Position/Level (Dropdown) -->
                     <div class="mb-4">
                         <label for="position_level" class="form-label">
-                            <span>{{ __('jobs.position') }} <span class="required">*</span></span>
+                            <span>Position <span class="required">*</span></span>
                             <span class="nepali-text">पद / तह</span>
                         </label>
                         <select class="form-select form-select-lg @error('position_level') is-invalid @enderror"
@@ -331,7 +331,7 @@
                     <!-- Service/Group -->
                     <div class="mb-4">
                         <label for="service_group" class="form-label">
-                            <span>{{ __('jobs.service') }} <span class="required">*</span></span>
+                            <span>Service <span class="required">*</span></span>
                             <span class="nepali-text">सेवा / समूह</span>
                         </label>
                         <select class="form-select form-select-lg @error('service_group') is-invalid @enderror"
@@ -362,7 +362,7 @@
                     <!-- Open/Inclusive Category -->
                     <div class="mb-4">
                         <label for="category" class="form-label">
-                            <span>{{ __('jobs.Open/Inclusive') }} <span class="required">*</span></span>
+                            <span>Open/Inclusive <span class="required">*</span></span>
                             <span class="nepali-text">खुल्ला/समावेशी</span>
                         </label>
                         <div class="row g-3">
@@ -394,7 +394,7 @@
                         <!-- Inclusive Sub-Category (Conditional) -->
                         <div class="inclusive-subcategory" id="inclusiveSubCategory">
                             <label for="inclusive_type" class="form-label">
-                                <span>{{ __('jobs.inclusive_type') }} <span class="required">*</span></span>
+                                <span>Inclusive Type <span class="required">*</span></span>
                                 <span class="nepali-text">समावेशी प्रकार</span>
                             </label>
                             <select class="form-select form-select-lg @error('inclusive_type') is-invalid @enderror"
