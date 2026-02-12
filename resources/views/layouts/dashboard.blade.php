@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - {{ __('common.system_name') }}</title>
+    <title>@yield('title') - NOC E-Recruitment System</title>
     <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
 
     <!-- Bootstrap 5 CSS -->
@@ -492,38 +492,6 @@
                 </button>
 
                 <div class="user-menu">
-                    <!-- Language Switcher -->
-                    <div class="dropdown me-3">
-                        <button class="btn btn-sm btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                            type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="min-width: 100px; font-weight: 600;">
-                            <i class="bi bi-translate"></i>
-                            @if(app()->getLocale() == 'ne')
-                                <span>नेपाली</span>
-                            @else
-                                <span>EN</span>
-                            @endif
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="languageDropdown">
-                            <li>
-                                <a class="dropdown-item {{ app()->getLocale() == 'en' ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('language.switch', 'en') }}">
-                                    <i
-                                        class="bi bi-check-circle{{ app()->getLocale() == 'en' ? '-fill' : '' }} me-2"></i>
-                                    English (En)
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item {{ app()->getLocale() == 'ne' ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('language.switch', 'ne') }}">
-                                    <i
-                                        class="bi bi-check-circle{{ app()->getLocale() == 'ne' ? '-fill' : '' }} me-2"></i>
-                                    नेपाली (नेपा)
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
                     <div class="text-end d-none d-md-block">
                         <div class="fw-semibold">@yield('user-name')</div>
                         <small class="text-muted">@yield('user-role')</small>
@@ -536,9 +504,9 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="#"><i
-                                        class="bi bi-person me-2"></i>{{ __('Profile') }}</a></li>
+                                        class="bi bi-person me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="#"><i
-                                        class="bi bi-gear me-2"></i>{{ __('Settings') }}</a></li>
+                                        class="bi bi-gear me-2"></i>Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -546,7 +514,7 @@
                                 <form method="POST" action="@yield('logout-route')">
                                     @csrf
                                     <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>{{ __('Logout') }}
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
                                     </button>
                                 </form>
                             </li>
