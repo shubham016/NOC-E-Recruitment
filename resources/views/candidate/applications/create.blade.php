@@ -652,6 +652,12 @@
                                 <td id="p_work_experience"></td>
                             </tr>
                         </table>
+                        <div class="form-check mb-4">
+                                <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                                <label class="form-check-label" for="terms_agree">
+                                    I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
+                                </label>
+                            </div>
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -666,6 +672,12 @@
                     <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
+                        @if(isset($payment) && $payment->status == 'paid')
+                        <div class="alert alert-success mb-3">
+                            ✓ Payment already completed via {{ strtoupper($payment->gateway) }}
+                        </div>
+                        @endif
+
 
                         <h6 class="mb-3">Choose Payment Gateway</h6>
 
@@ -673,7 +685,7 @@
 
                             <!-- eSewa -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('esewa')">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('esewa')" }}">
                                     <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
                                     <div>Pay with eSewa</div>
                                 </div>
@@ -681,7 +693,8 @@
 
                             <!-- Khalti -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('khalti')">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('khalti')" }}">
+
                                     <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
                                     <div>Pay with Khalti</div>
                                 </div>
@@ -689,32 +702,34 @@
 
                             <!-- ConnectIPS -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('connectips')">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('connectips')" }}">
+
                                     <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
                                     <div>Pay with ConnectIPS</div>
                                 </div>
                             </div>
 
+                            <!-- <div class="alert alert-warning mt-3">
+                            Please complete payment first to enable final submission.
+                            </div> -->
+                            
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                                <button type="button" id="saveDraftBtn" class="btn btn-success">Save Application and Pay Later</button>
+                            </div>
+
                         </div>
 
-                        <div class="alert alert-warning mt-3">
-                            Please complete payment first to enable final submission.
-                        </div>
+                        
 
                     </div>
 
                     <!-- AFTER PAYMENT SECTION -->
-                    <div id="postPaymentSection" style="display:none;">
+                    <!-- <div id="postPaymentSection" style="display:none;">
 
                         <div class="alert alert-success">
                             ✓ Payment completed successfully.
-                        </div>
-
-                        <div class="form-check mb-4">
-                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
-                            <label class="form-check-label" for="terms_agree">
-                                I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
-                            </label>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -722,7 +737,7 @@
                             <button type="submit" class="btn btn-success">Submit Application</button>
                         </div>
 
-                    </div>
+                    </div> -->
 
                 </div>
 
@@ -863,6 +878,95 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('=== DEBUG: Checking Save Draft Button ===');
+    
+    // Save Draft Button Handler - ADD THIS
+setTimeout(() => {
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    console.log('Attaching save draft handler...', saveDraftBtn);
+    
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Save Draft button clicked!');
+            
+            // Validate all steps before saving
+            let allValid = true;
+            for (let i = 1; i <= 7; i++) { // Validate steps 1-7 (exclude payment step)
+                if (!validateStep(i)) {
+                    allValid = false;
+                    showStep(i); // Jump to first invalid step
+                    showAutoSaveStatus('⚠ Please complete all required fields before saving', 'danger');
+                    return false;
+                }
+            }
+            
+            if (!allValid) {
+                return;
+            }
+            
+            // Show loading state
+            saveDraftBtn.disabled = true;
+            saveDraftBtn.textContent = 'Saving...';
+            showAutoSaveStatus('💾 Saving your application...', 'info');
+            
+            const formData = new FormData(form);
+            
+            // Add draft_id if exists
+            if (draftIdInput && draftIdInput.value) {
+                formData.set('draft_id', draftIdInput.value);
+            }
+            
+            console.log('Sending draft data...');
+            
+            fetch('{{ route("candidate.applications.saveDraft") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response received:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    showAutoSaveStatus('✓ Application saved successfully! You can complete payment later.', 'success');
+                    
+                    if (data.draft_id) {
+                        draftIdInput.value = data.draft_id;
+                    }
+                    
+                    // Redirect to applications page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '{{ route("candidate.applications.index") }}';
+                    }, 2000);
+                } else {
+                    showAutoSaveStatus('✕ Failed to save: ' + (data.message || 'Unknown error'), 'danger');
+                    saveDraftBtn.disabled = false;
+                    saveDraftBtn.textContent = 'Save Application and Pay Later';
+                }
+            })
+            .catch(error => {
+                console.error('Save error:', error);
+                showAutoSaveStatus('✕ Error saving application: ' + error.message, 'danger');
+                saveDraftBtn.disabled = false;
+                saveDraftBtn.textContent = 'Save Application and Pay Later';
+            });
+        });
+        
+        console.log('✓ Save Draft handler attached successfully');
+    } else {
+        console.error('✕ Save Draft button not found!');
+    }
+}, 1000);
     let currentStep = 1;
     const totalSteps = 8;
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
@@ -1433,13 +1537,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let url = "";
 
         if (gateway === "esewa") {
-            url = "/payment/esewa/start/" + draftId;
+            url = "/candidate/payment/esewa/start/" + draftId;
         }
         else if (gateway === "khalti") {
-            url = "/payment/khalti/start/" + draftId;
+            url = "/candidate/payment/khalti/start/" + draftId;
         }
         else if (gateway === "connectips") {
-            url = "/payment/connectips/start/" + draftId;
+            url = "/candidate/payment/connectips/start/" + draftId;
         }
 
         window.location.href = url;

@@ -50,8 +50,9 @@
                             <th>I.D</th>
                             <th>Name</th>
                             <th>Phone</th>
-                            <th>Citizenship No.</th>
-                            <th>Submitted</th>
+                            <th>Post</th>
+                            <th>Adv. No.</th>
+                            <th>Roll. No.</th>
                             <th width="180">Documents</th>
                             <th width="160">Actions</th>
                         </tr>
@@ -72,8 +73,9 @@
                                 <td>{{ $loop->iteration + ($forms->currentPage() - 1) * $forms->perPage() }}</td>
                                 <td><strong>{{ $form->name_english ?? '-' }}</strong></td>
                                 <td>{{ $form->phone ?? '-' }}</td>
-                                <td>{{ $form->citizenship_number ?? '-' }}</td>
-                                <td>{{ $form->created_at->format('M d, Y') }}</td>
+                                <td>{{ $form->applying_position ?? '-' }}</td>
+                                <td>{{ $form->advertisement_no ?? '-' }}</td>
+                                <td>{{ $form->roll_number ?? '-' }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if($form->noc_id_card) <span class="badge bg-info">NOC</span> @endif
@@ -94,6 +96,9 @@
                                         </a>
                                         <a href="{{ route('candidate.applications.edit', $form->id) }}" class="btn btn-warning" title="Edit">
                                             <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ route('candidate.admit-card.view', $form->id) }}" class="btn btn-dark" title="Admit Card">
+                                            <i class="fas bi-person-vcard"></i>
                                         </a>
                                     </div>
                                 </td>

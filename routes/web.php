@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AdmitCardController;
 use App\Http\Controllers\CandidateResultController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +122,30 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
                 Route::put('/{id}', [App\Http\Controllers\ApplicationFormController::class, 'update'])->name('update');
             });
         });
+
+            
+            /*
+            |--------------------------------------------------------------------------
+            | Payment Routes (Inside Candidate Middleware)
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('payment')->group(function () {
+
+                // eSewa
+                Route::get('/esewa/start/{draftId}', [PaymentController::class, 'startEsewa'])->name('payment.esewa.start');
+                Route::get('/esewa/success', [PaymentController::class, 'esewaSuccess'])->name('payment.esewa.success');
+                Route::get('/esewa/failure', [PaymentController::class, 'esewaFailure'])->name('payment.esewa.failure');
+
+                // Khalti (later)
+                Route::get('/khalti/start/{draftId}', [PaymentController::class, 'startKhalti']);
+
+                // ConnectIPS (later)
+                Route::get('/connectips/start/{draftId}', [PaymentController::class, 'startConnectIps']);
+
+                
+            });
+
+
         Route::get('/my-profile', [\App\Http\Controllers\CandidateController::class, 'profile'])->name('my-profile');
         
         // Change Password Routes 

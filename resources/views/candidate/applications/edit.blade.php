@@ -670,13 +670,73 @@
                             </tr>
                         </table>
 
+                        <div class="form-check mb-4">
+                                <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                                <label class="form-check-label" for="terms_agree">
+                                    I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
+                                </label>
+                            </div>
+
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="submit" class="btn btn-success">Update Application</button>
+                            <button type="button" class="btn btn-primary next-btn">Next</button>
                         </div>
                     </div>
                 </div>
-            <!-- STEP 8: Payment -->
+
+
+            <!-- STEP 8: Payment Method -->
+                <div class="step d-none" id="step8">
+                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+
+                    <div id="paymentSection">
+                        @if(isset($payment) && $payment->status == 'paid')
+                        <div class="alert alert-success mb-3">
+                            ✓ Payment already completed via {{ strtoupper($payment->gateway) }}
+                        </div>
+                        @endif
+
+
+                        <h6 class="mb-3">Choose Payment Gateway</h6>
+
+                        <div class="row text-center">
+
+                            <!-- eSewa -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('esewa')" }}">
+                                    <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
+                                    <div>Pay with eSewa</div>
+                                </div>
+                            </div>
+
+                            <!-- Khalti -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('khalti')" }}">
+
+                                    <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
+                                    <div>Pay with Khalti</div>
+                                </div>
+                            </div>
+
+                            <!-- ConnectIPS -->
+                            <div class="col-md-4 mb-3">
+                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('connectips')" }}">
+
+                                    <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
+                                    <div>Pay with ConnectIPS</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                            <a href="{{ route('candidate.applications.index') }}" class="btn btn-primary">
+                                Save Your Application
+                            </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -781,14 +841,40 @@
     /* Validation Styling */
     .is-invalid { border-color: #dc3545 !important; }
     .invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; display: block; }
+
+    /* PAYMENT CSS */
+    .payment-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .payment-box:hover {
+        background: #f5f5f5;
+    }
+
+    .payment-logo {
+        width: 150px;
+        height: 60px;
+        object-fit: contain;
+        margin-bottom: 10px;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    
     let currentStep = 1;
-    const totalSteps = 7; // Changed from 8 to 7 since no payment step
+    const totalSteps = 8; // Changed from 8 to 7 since no payment step
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
 
     // Update Tabs & Progress Line
@@ -1076,7 +1162,35 @@ document.addEventListener('DOMContentLoaded', function () {
         @endif
     }
 
-    console.log('✓ Edit form initialized with validation and preview');
+    // PAYMENT GATEWAYS
+    window.startPayment = function(gateway) {
+
+    const applicationId = "{{ $applicationform->id ?? '' }}";
+
+    if (!applicationId) {
+        alert("Application ID not found. Please save the form first.");
+        return;
+    }
+
+    let url = "";
+
+    if (gateway === "esewa") {
+        url = "/candidate/payment/esewa/start/" + applicationId;
+    }
+    else if (gateway === "khalti") {
+        url = "/candidate/payment/khalti/start/" + applicationId;
+    }
+    else if (gateway === "connectips") {
+        url = "/candidate/payment/connectips/start/" + applicationId;
+    }
+
+    window.location.href = url;
+}
+
+
+    console.log('✓ Form initialized with strict validation, conditional file uploads, preview, and auto-save');
+    console.log('Application ID on load:', applicationId);
+
 });
 </script>
 @endpush
