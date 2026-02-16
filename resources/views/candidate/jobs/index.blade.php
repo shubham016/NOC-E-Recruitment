@@ -88,32 +88,6 @@
                     <input type="text" name="search" class="form-control" placeholder="Search by Vacancy title..."
                         value="{{ request('search') }}">
                 </div>
-                <div class="col-md-3">
-                    <select name="department" class="form-select">
-                        <option value="">All Departments</option>
-                        <option value="Engineering" {{ request('department') == 'Engineering' ? 'selected' : '' }}>
-                            Engineering</option>
-                        <option value="Administration" {{ request('department') == 'Administration' ? 'selected' : '' }}>Administration</option>
-                        <option value="Finance" {{ request('department') == 'Finance' ? 'selected' : '' }}>Finance
-                        </option>
-                        <option value="Human Resources" {{ request('department') == 'Human Resources' ? 'selected' : '' }}>Human Resources</option>
-                        <option value="Operations" {{ request('department') == 'Operations' ? 'selected' : '' }}>
-                            Operations</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select name="location" class="form-select">
-                        <option value="">All Locations</option>
-                        <option value="Kathmandu" {{ request('location') == 'Kathmandu' ? 'selected' : '' }}>Kathmandu
-                        </option>
-                        <option value="Pokhara" {{ request('location') == 'Pokhara' ? 'selected' : '' }}>Pokhara
-                        </option>
-                        <option value="Lalitpur" {{ request('location') == 'Lalitpur' ? 'selected' : '' }}>Lalitpur
-                        </option>
-                        <option value="Bhaktapur" {{ request('location') == 'Bhaktapur' ? 'selected' : '' }}>Bhaktapur
-                        </option>
-                    </select>
-                </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-search"></i> Search
@@ -139,11 +113,9 @@
                             <th class="text-center">S.N.</th>
                             <th>Job Title</th>
                             <th>Department</th>
-                            <th>Location</th>
                             <th>Category</th>
                             <th class="text-center">Vacancies</th>
                             <th>Position Level</th>
-                            <th class="text-center">Min. Age</th>
                             <th>Advertisement No.</th>
                             <th>Deadline</th>
                             <th class="text-center">Status</th>
@@ -172,10 +144,6 @@
                             </td>
                             <td>{{ $job->service_group }}</td>
                             <td>
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                {{ $job->location }}
-                            </td>
-                            <td>
                                 <span class="badge bg-info text-dark">
                                     {{ ucfirst($job->category) }}
                                 </span>
@@ -184,7 +152,6 @@
                                 <strong class="text-success">{{ $job->number_of_posts }}</strong>
                             </td>
                             <td>{{ $job->position_level }}</td>
-                            <td class="text-center">{{ $job->minimum_age }}</td>
                             <td>{{ $job->advertisement_no }}</td>
                             <td>
                                 <i class="fas fa-calendar text-warning"></i>
