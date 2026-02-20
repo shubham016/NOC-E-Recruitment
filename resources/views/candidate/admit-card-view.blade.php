@@ -53,8 +53,8 @@
                     </div>
                 </div>
                 <div class="header-center">
-                    <h2 class="org-title">{{ $application->organization_name ?? 'नेपाल आयल निगम लिमिटेड' }}</h2>
-                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, टेकु' }}</h4>
+                    <h2 class="org-title">{{ 'नेपाल आयल निगम लिमिटेड' }}</h2>
+                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, बबरमहल' }}</h4>
                     <p class="exam-type">{{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}</p>
                     <h3 class="card-title">प्रवेश पत्र</h3>
                 </div>
