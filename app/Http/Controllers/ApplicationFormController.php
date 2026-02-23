@@ -362,23 +362,28 @@ class ApplicationFormController extends Controller
      * Show the form for editing the specified application
      */
     public function edit(ApplicationForm $applicationform)
-    {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
-
-        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
-            return redirect()->route('candidate.applications.index')
-                ->withErrors(['error' => 'Unauthorized access']);
-        }
-
-        return view('candidate.applications.edit', compact('applicationform'));
+{
+    if (!Session::has('candidate_logged_in')) {
+        return redirect()->route('candidate.login');
     }
+
+    $candidate = DB::table('candidate_registration')
+        ->where('id', Session::get('candidate_id'))
+        ->first();
+
+    if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+        return redirect()->route('candidate.applications.index')
+            ->withErrors(['error' => 'Unauthorized access']);
+    }
+
+    // ✅ Block editing after payment/submission
+    if ($applicationform->status !== 'draft') {
+        return redirect()->route('candidate.applications.index')
+            ->with('error', 'This application has already been submitted and cannot be edited.');
+    }
+
+    return view('candidate.applications.edit', compact('applicationform'));
+}
 
     /**
      * Update the specified application

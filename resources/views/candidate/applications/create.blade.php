@@ -134,16 +134,16 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
-                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? '') }}" required>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? $job->advertisement_no ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
-                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $draftApplication->applying_position ?? '') }}" required>
+                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $draftApplication->applying_position ?? $job->title ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
                             <input type="text" name="department" id="department" class="form-control" 
-                                value="{{ old('department', $draftApplication->department ?? '') }}" required>
+                                value="{{ old('department', $draftApplication->department ?? $job->service_group ?? '') }}" readonly>
                         </div>
                     </div>
 

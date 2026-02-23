@@ -52,6 +52,7 @@
                             <th>Phone</th>
                             <th>Post</th>
                             <th>Adv. No.</th>
+                            <th>Status</th>
                             <th>Roll. No.</th>
                             <th width="180">Documents</th>
                             <th width="160">Actions</th>
@@ -75,6 +76,7 @@
                                 <td>{{ $form->phone ?? '-' }}</td>
                                 <td>{{ $form->applying_position ?? '-' }}</td>
                                 <td>{{ $form->advertisement_no ?? '-' }}</td>
+                                <td>{{ $form->status ?? '-' }}</td>
                                 <td>{{ $form->roll_number ?? '-' }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
@@ -94,9 +96,12 @@
                                         <a href="{{ route('candidate.applications.show', $form->id) }}" class="btn btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('candidate.applications.edit', $form->id) }}" class="btn btn-warning" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+                                       @if($form->status === 'draft')
+                                            <a href="{{ route('candidate.applications.edit', $form->id) }}"
+                                            class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        @endif
                                         <a href="{{ route('candidate.admit-card.view', $form->id) }}" class="btn btn-dark" title="Admit Card">
                                             <i class="fas bi-person-vcard"></i>
                                         </a>
