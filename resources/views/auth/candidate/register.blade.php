@@ -254,6 +254,83 @@
                         <small class="text-muted">Letters, numbers, and underscores only</small>
                     </div>
 
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-muted mb-3"><i class="bi bi-shield-check me-2"></i>Citizenship Information (Optional)</h6>
+
+                    <div class="row">
+                        <!-- Gender -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Gender <span class="nepali-label">(लिङ्ग)</span>
+                            </label>
+                            <select name="gender" class="form-control @error('gender') is-invalid @enderror">
+                                <option value="">Select Gender</option>
+                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            @error('gender')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Date of Birth BS -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Date of Birth (BS) <span class="nepali-label">(जन्म मिति)</span>
+                            </label>
+                            <input type="text" name="date_of_birth_bs"
+                                class="form-control @error('date_of_birth_bs') is-invalid @enderror"
+                                placeholder="YYYY-MM-DD" value="{{ old('date_of_birth_bs') }}">
+                            @error('date_of_birth_bs')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Citizenship Number -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Citizenship No. <span class="nepali-label">(नागरिकता नं.)</span>
+                            </label>
+                            <input type="text" name="citizenship_number"
+                                class="form-control @error('citizenship_number') is-invalid @enderror"
+                                placeholder="Citizenship Number" value="{{ old('citizenship_number') }}">
+                            @error('citizenship_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Citizenship Issue District -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Issue District <span class="nepali-label">(जारी जिल्ला)</span>
+                            </label>
+                            <input type="text" name="citizenship_issue_district"
+                                class="form-control @error('citizenship_issue_district') is-invalid @enderror"
+                                placeholder="Issue District" value="{{ old('citizenship_issue_district') }}">
+                            @error('citizenship_issue_district')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Citizenship Issue Date BS -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Issue Date (BS) <span class="nepali-label">(जारी मिति)</span>
+                            </label>
+                            <input type="text" name="citizenship_issue_date_bs"
+                                class="form-control @error('citizenship_issue_date_bs') is-invalid @enderror"
+                                placeholder="YYYY-MM-DD" value="{{ old('citizenship_issue_date_bs') }}">
+                            @error('citizenship_issue_date_bs')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
                     <div class="row">
                         <!-- Password -->
                         <div class="col-md-6 mb-3">

@@ -689,7 +689,7 @@
             </div>
 
             <div class="stat-box orange">
-                <div class="stat-number">{{ $applicationStats['pending'] + $applicationStats['under_review'] }}</div>
+                <div class="stat-number">{{ $applicationStats['pending'] + $applicationStats['approved'] }}</div>
                 <div class="stat-label">Pending Review</div>
             </div>
 
@@ -929,7 +929,8 @@
                                         $badgeClass = match ($application->status) {
                                             'shortlisted' => 'badge-active',
                                             'rejected' => 'badge-inactive',
-                                            'under_review' => 'badge-verified',
+                                            'approved' => 'badge-verified',
+                                            'selected' => 'badge-verified',
                                             default => 'badge-pending'
                                         };
                                     @endphp

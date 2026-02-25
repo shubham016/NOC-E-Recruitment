@@ -23,9 +23,13 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+    <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
+        <i class="bi bi-card-heading"></i>
+        <span>Admit Card</span>
+    </a>
+    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
+        <i class="bi bi-trophy"></i>
+        <span>Results</span>
     </a>
     <a href="{{ route('candidate.profile.edit') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>

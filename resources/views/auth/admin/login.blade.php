@@ -1,11 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Admin Login')
-<link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png"
-    style="height: auto; width: auto; border-radius: 80;">
 
 @section('custom-styles')
     <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
         .login-wrapper {
             min-height: 100vh;
             display: flex;

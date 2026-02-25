@@ -39,6 +39,14 @@ class Reviewer extends Authenticatable
     }
 
     /**
+     * Relationship: Reviewer has many application forms
+     */
+    public function applicationForms()
+    {
+        return $this->hasMany(ApplicationForm::class, 'reviewer_id');
+    }
+
+    /**
      * Get the full photo URL
      */
     public function getPhotoUrlAttribute()

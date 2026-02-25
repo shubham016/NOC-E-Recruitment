@@ -452,6 +452,8 @@
 
         @yield('custom-styles');
     </style>
+
+    @stack('styles')
 </head>
 
 <body>

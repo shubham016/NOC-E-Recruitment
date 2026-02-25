@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Reviewer;
 use App\Models\Application;
+use App\Models\ApplicationForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,22 @@ class ReviewerController extends Controller
         if ($request->filled('department')) {
             $query->where('department', $request->department);
         }
+
+        // Add counts for reviewed and pending applications
+        $query->withCount([
+            'applicationForms as total_reviewed' => function ($q) {
+                // Only count as reviewed if reviewer has actually reviewed
+                $q->where(function ($query) {
+                    $query->whereNotNull('reviewed_at')
+                          ->orWhereNotNull('reviewer_notes');
+                });
+            },
+            'applicationForms as pending' => function ($q) {
+                // Assigned to reviewer but not yet reviewed
+                $q->whereNull('reviewed_at')
+                  ->whereNull('reviewer_notes');
+            }
+        ]);
 
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
@@ -109,17 +126,22 @@ class ReviewerController extends Controller
 
         // Get review statistics
         $stats = [
-            'total_assigned' => Application::where('reviewer_id', $reviewer->id)->count(),
-            'pending_review' => Application::where('reviewer_id', $reviewer->id)
-                ->where('status', 'under_review')->count(),
-            'reviewed' => Application::where('reviewer_id', $reviewer->id)
-                ->whereIn('status', ['reviewed', 'shortlisted', 'rejected'])->count(),
-            'shortlisted' => Application::where('reviewer_id', $reviewer->id)
-                ->where('status', 'shortlisted')->count(),
+            'total_assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)->count(),
+            'pending_review' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->whereNull('reviewed_at')
+                ->whereNull('reviewer_notes')
+                ->count(),
+            'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where(function ($q) {
+                    $q->whereNotNull('reviewed_at')
+                      ->orWhereNotNull('reviewer_notes');
+                })->count(),
+            'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'approved')->count(),
         ];
 
         // Get recent applications assigned to this reviewer
-        $recentApplications = Application::where('reviewer_id', $reviewer->id)
+        $recentApplications = ApplicationForm::where('reviewer_id', $reviewer->id)
             ->with(['jobPosting', 'candidate'])
             ->latest()
             ->take(5)

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,12 +20,11 @@ class CandidateManagementController extends Controller
 
         $candidates = Candidate::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('mobile_number', 'like', "%{$search}%")
-                    ->orWhere('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
+                    ->orWhere('mobile_number', 'like', "%{$search}%");
             })
             ->when($status, function ($query, $status) {
                 $query->where('status', $status);
@@ -53,7 +52,7 @@ class CandidateManagementController extends Controller
     {
         $candidate = Candidate::withCount('applications')->findOrFail($id);
 
-        $applications = Application::where('candidate_id', $id)
+        $applications = ApplicationForm::where('candidate_id', $id)
             ->with('jobPosting', 'reviewer')
             ->latest()
             ->get();
@@ -61,9 +60,10 @@ class CandidateManagementController extends Controller
         $applicationStats = [
             'total' => $applications->count(),
             'pending' => $applications->where('status', 'pending')->count(),
-            'under_review' => $applications->where('status', 'under_review')->count(),
+            'approved' => $applications->where('status', 'approved')->count(),
             'shortlisted' => $applications->where('status', 'shortlisted')->count(),
             'rejected' => $applications->where('status', 'rejected')->count(),
+            'selected' => $applications->where('status', 'selected')->count(),
         ];
 
         return view('admin.candidates.show', compact('candidate', 'applications', 'applicationStats'));

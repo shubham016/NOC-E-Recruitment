@@ -23,7 +23,7 @@ class CandidateAuthController extends Controller
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
         }
-        return view('auth.candidate.login');
+        return view('candidate.login');
     }
 
     /**
@@ -32,39 +32,47 @@ class CandidateAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username_or_email' => 'required',
+            'email' => 'required',
             'password' => 'required',
         ], [
-            'username_or_email.required' => 'Username or Email is required.',
+            'email.required' => 'Email or Username is required.',
         ]);
 
-        // Find candidate by username or email
-        $candidate = Candidate::findByUsernameOrEmail($request->username_or_email);
+        // Find candidate by username, email, or citizenship number
+        $candidate = Candidate::findByCredential($request->email);
 
         if (!$candidate) {
             return back()->withErrors([
-                'username_or_email' => 'No account found with this username or email.',
-            ])->withInput($request->only('username_or_email'));
+                'email' => 'No account found with this email, username, or citizenship number.',
+            ])->withInput($request->only('email'));
         }
 
         // Check if email is verified
         if (!$candidate->hasVerifiedEmail()) {
             return back()->withErrors([
-                'username_or_email' => 'Please verify your email address first. Check your inbox for the OTP code.',
-            ])->withInput($request->only('username_or_email'));
+                'email' => 'Please verify your email address first. Check your inbox for the OTP code.',
+            ])->withInput($request->only('email'));
         }
 
         // Check if account is active
         if ($candidate->status !== 'active') {
             return back()->withErrors([
-                'username_or_email' => 'Your account is inactive. Please contact support.',
-            ])->withInput($request->only('username_or_email'));
+                'email' => 'Your account is inactive. Please contact support.',
+            ])->withInput($request->only('email'));
         }
 
-        // Attempt login with username
-        $loginField = filter_var($request->username_or_email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        // Determine login field: email, citizenship_number, or username
+        $identifier = $request->email;
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $loginField = 'email';
+        } elseif ($candidate->citizenship_number === $identifier) {
+            $loginField = 'citizenship_number';
+        } else {
+            $loginField = 'username';
+        }
+
         $credentials = [
-            $loginField => $request->username_or_email,
+            $loginField => $identifier,
             'password' => $request->password,
         ];
 
@@ -74,8 +82,8 @@ class CandidateAuthController extends Controller
         }
 
         return back()->withErrors([
-            'username_or_email' => 'The provided credentials do not match our records.',
-        ])->withInput($request->only('username_or_email'));
+            'email' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('email'));
     }
 
     /**
@@ -86,7 +94,7 @@ class CandidateAuthController extends Controller
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
         }
-        return view('auth.candidate.register');
+        return view('candidate.register');
     }
 
     /**
@@ -102,6 +110,11 @@ class CandidateAuthController extends Controller
             'email' => 'required|string|email|max:255|unique:candidates,email',
             'username' => 'required|string|max:255|unique:candidates,username|regex:/^[a-zA-Z0-9_]+$/',
             'password' => 'required|string|min:8|confirmed',
+            'gender' => 'nullable|in:male,female,other',
+            'date_of_birth_bs' => 'nullable|string|max:20',
+            'citizenship_number' => 'nullable|string|max:255|unique:candidates,citizenship_number',
+            'citizenship_issue_district' => 'nullable|string|max:255',
+            'citizenship_issue_date_bs' => 'nullable|string|max:20',
         ], [
             'first_name.required' => 'First Name is required.',
             'last_name.required' => 'Last Name is required.',
@@ -115,6 +128,7 @@ class CandidateAuthController extends Controller
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'citizenship_number.unique' => 'This citizenship number is already registered.',
         ]);
 
         try {
@@ -127,6 +141,11 @@ class CandidateAuthController extends Controller
                 'email' => $validated['email'],
                 'mobile_number' => $validated['mobile_number'],
                 'password' => Hash::make($validated['password']),
+                'gender' => $validated['gender'] ?? null,
+                'date_of_birth_bs' => $validated['date_of_birth_bs'] ?? null,
+                'citizenship_number' => $validated['citizenship_number'] ?? null,
+                'citizenship_issue_district' => $validated['citizenship_issue_district'] ?? null,
+                'citizenship_issue_date_bs' => $validated['citizenship_issue_date_bs'] ?? null,
                 'status' => 'active',
                 'email_verified_at' => null, // Not verified yet
             ]);

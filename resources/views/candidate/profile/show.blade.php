@@ -23,9 +23,13 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Vacancies</span>
+    <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
+        <i class="bi bi-card-heading"></i>
+        <span>Admit Card</span>
+    </a>
+    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
+        <i class="bi bi-trophy"></i>
+        <span>Results</span>
     </a>
     <a href="{{ route('candidate.profile.show') }}" class="sidebar-menu-item active">
         <i class="bi bi-person"></i>
@@ -461,8 +465,8 @@
             </div>
 
             <div class="stat-box purple">
-                <div class="stat-number">{{ $applicationStats['under_review'] }}</div>
-                <div class="stat-label">Under Review</div>
+                <div class="stat-number">{{ $applicationStats['approved'] ?? $applicationStats['under_review'] ?? 0 }}</div>
+                <div class="stat-label">Approved</div>
             </div>
 
             <div class="stat-box green">
@@ -510,6 +514,36 @@
                             <td class="label">Username</td>
                             <td class="value">{{ $candidate->username }}</td>
                         </tr>
+                        @if($candidate->gender)
+                        <tr>
+                            <td class="label">Gender</td>
+                            <td class="value">{{ ucfirst($candidate->gender) }}</td>
+                        </tr>
+                        @endif
+                        @if($candidate->date_of_birth_bs)
+                        <tr>
+                            <td class="label">Date of Birth (BS)</td>
+                            <td class="value">{{ $candidate->date_of_birth_bs }}</td>
+                        </tr>
+                        @endif
+                        @if($candidate->citizenship_number)
+                        <tr>
+                            <td class="label">Citizenship No.</td>
+                            <td class="value">{{ $candidate->citizenship_number }}</td>
+                        </tr>
+                        @endif
+                        @if($candidate->citizenship_issue_district)
+                        <tr>
+                            <td class="label">Issue District</td>
+                            <td class="value">{{ $candidate->citizenship_issue_district }}</td>
+                        </tr>
+                        @endif
+                        @if($candidate->citizenship_issue_date_bs)
+                        <tr>
+                            <td class="label">Issue Date (BS)</td>
+                            <td class="value">{{ $candidate->citizenship_issue_date_bs }}</td>
+                        </tr>
+                        @endif
                     </table>
                 </div>
             </div>

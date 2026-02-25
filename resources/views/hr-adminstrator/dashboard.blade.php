@@ -329,11 +329,10 @@
                                             <small class="text-muted">{{ Str::limit($application->jobPosting->title ?? '', 25) }}</small>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge 
+                                            <span class="badge
                                                 {{ $application->status == 'pending' ? 'bg-warning' : '' }}
-                                                {{ $application->status == 'shortlisted' ? 'bg-success' : '' }}
+                                                {{ $application->status == 'approved' ? 'bg-success' : '' }}
                                                 {{ $application->status == 'rejected' ? 'bg-danger' : '' }}
-                                                {{ $application->status == 'under_review' ? 'bg-info' : '' }}
                                             ">
                                                 {{ ucfirst(str_replace('_', ' ', $application->status)) }}
                                             </span>

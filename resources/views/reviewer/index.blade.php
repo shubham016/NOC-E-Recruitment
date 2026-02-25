@@ -252,7 +252,8 @@
                     <select class="form-select" name="status" onchange="this.form.submit()">
                         <option value="">All Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="selected" {{ request('status') == 'selected' ? 'selected' : '' }}>Selected</option>
                         <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
@@ -389,7 +390,8 @@
 
                             $statusBadge = match($application->status) {
                                 'pending' => 'bg-warning text-dark',
-                                'under_review' => 'bg-info text-white',
+                                'approved' => 'bg-info text-white',
+                                'selected' => 'bg-primary text-white',
                                 'shortlisted' => 'bg-success text-white',
                                 'rejected' => 'bg-danger text-white',
                                 default => 'bg-secondary text-white'
@@ -474,8 +476,8 @@
     <button class="btn btn-danger btn-sm" onclick="bulkAction('rejected')">
         <i class="bi bi-x-circle me-1"></i>Reject
     </button>
-    <button class="btn btn-info btn-sm" onclick="bulkAction('under_review')">
-        <i class="bi bi-arrow-repeat me-1"></i>Under Review
+    <button class="btn btn-info btn-sm" onclick="bulkAction('approved')">
+        <i class="bi bi-arrow-repeat me-1"></i>Approved
     </button>
     <button class="btn btn-outline-light btn-sm" onclick="clearSelection()">
         <i class="bi bi-x-lg"></i>
@@ -618,8 +620,8 @@
                                         <button type="button" class="btn btn-danger btn-action" data-status="rejected">
                                             <i class="bi bi-x-circle me-2"></i>Reject
                                         </button>
-                                        <button type="button" class="btn btn-info btn-action" data-status="under_review">
-                                            <i class="bi bi-arrow-repeat me-2"></i>Under Review
+                                        <button type="button" class="btn btn-info btn-action" data-status="approved">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Approved
                                         </button>
                                     </div>
                                 </form>
@@ -722,7 +724,8 @@
         function getStatusClass(status) {
             const classes = {
                 'pending': 'bg-warning text-dark',
-                'under_review': 'bg-info text-white',
+                'approved': 'bg-info text-white',
+                'selected': 'bg-primary text-white',
                 'shortlisted': 'bg-success text-white',
                 'rejected': 'bg-danger text-white',
                 'accepted': 'bg-primary text-white'

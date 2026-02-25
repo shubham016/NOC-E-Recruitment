@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class JobBrowsingController extends Controller
 {
@@ -68,13 +70,20 @@ class JobBrowsingController extends Controller
             ->filter();
 
         // Check which jobs candidate has already applied for
-        $candidate = auth()->guard('candidate')->user()->candidate;
         $appliedJobIds = [];
 
-        if ($candidate) {
-            $appliedJobIds = Application::where('candidate_id', $candidate->id)
-                ->pluck('job_posting_id')
-                ->toArray();
+        if (Session::has('candidate_logged_in')) {
+            $candidate = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->first();
+            
+            if ($candidate) {
+                $appliedJobIds = DB::table('application_form')
+                    ->where('citizenship_number', $candidate->citizenship_number)
+                    ->whereNotNull('job_posting_id')
+                    ->pluck('job_posting_id')
+                    ->toArray();
+            }
         }
 
         return view('candidate.jobs.index', compact(
@@ -97,20 +106,28 @@ class JobBrowsingController extends Controller
             ->findOrFail($id);
 
         // Check if candidate already applied
-        $candidate = auth()->guard('candidate')->user()->candidate;
         $hasApplied = false;
         $application = null;
 
-        if ($candidate) {
-            $hasApplied = Application::where('candidate_id', $candidate->id)
-                ->where('job_posting_id', $id)
-                ->exists();
-
-            // Get candidate's application if exists
-            if ($hasApplied) {
-                $application = Application::where('candidate_id', $candidate->id)
+        if (Session::has('candidate_logged_in')) {
+            $candidate = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->first();
+            
+            if ($candidate) {
+                // Check if candidate already applied using citizenship_number and job_posting_id
+                $hasApplied = DB::table('application_form')
+                    ->where('citizenship_number', $candidate->citizenship_number)
                     ->where('job_posting_id', $id)
-                    ->first();
+                    ->exists();
+
+                // Get candidate's application if exists
+                if ($hasApplied) {
+                    $application = DB::table('application_form')
+                        ->where('citizenship_number', $candidate->citizenship_number)
+                        ->where('job_posting_id', $id)
+                        ->first();
+                }
             }
         }
 

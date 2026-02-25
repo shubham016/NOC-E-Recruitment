@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
@@ -20,10 +20,10 @@ class AdminDashboardController extends Controller
             'active_jobs' => JobPosting::where('status', 'active')->count(),
             'closed_jobs' => JobPosting::where('status', 'closed')->count(),
             'draft_jobs' => JobPosting::where('status', 'draft')->count(),
-            'total_applications' => Application::count(),
-            'pending_applications' => Application::whereIn('status', ['pending', 'under_review'])->count(),
-            'shortlisted' => Application::where('status', 'shortlisted')->count(),
-            'rejected' => Application::where('status', 'rejected')->count(),
+            'total_applications' => ApplicationForm::count(),
+            'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
+            'approved' => ApplicationForm::where('status', 'approved')->count(),
+            'rejected' => ApplicationForm::where('status', 'rejected')->count(),
             'total_candidates' => Candidate::count(),
             'total_reviewers' => Reviewer::count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
@@ -36,7 +36,7 @@ class AdminDashboardController extends Controller
             'jobs_posted' => JobPosting::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
-            'applications' => Application::whereMonth('created_at', now()->month)
+            'applications' => ApplicationForm::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
             'candidates' => Candidate::whereMonth('created_at', now()->month)
@@ -49,7 +49,7 @@ class AdminDashboardController extends Controller
             'jobs_posted' => JobPosting::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
                 ->count(),
-            'applications' => Application::whereMonth('created_at', now()->subMonth()->month)
+            'applications' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
                 ->count(),
             'candidates' => Candidate::whereMonth('created_at', now()->subMonth()->month)
@@ -65,13 +65,13 @@ class AdminDashboardController extends Controller
         ];
 
         // Top Jobs by Applications
-        $topJobs = JobPosting::withCount('applications')
-            ->orderBy('applications_count', 'desc')
+        $topJobs = JobPosting::withCount('applicationForms')
+            ->orderBy('application_forms_count', 'desc')
             ->limit(5)
             ->get();
 
         // Recent Applications (last 10)
-        $recentApplications = Application::with(['candidate', 'jobPosting'])
+        $recentApplications = ApplicationForm::with(['candidate', 'jobPosting'])
             ->latest()
             ->limit(10)
             ->get();
@@ -79,11 +79,17 @@ class AdminDashboardController extends Controller
         // Reviewer Statistics
         $reviewerStats = Reviewer::where('status', 'active')
             ->withCount([
-                'applications as total_reviewed' => function ($query) {
-                    $query->whereIn('status', ['shortlisted', 'rejected', 'reviewed']);
+                'applicationForms as total_reviewed' => function ($query) {
+                    // Only count as reviewed if reviewer has actually reviewed (added notes or reviewed_at is set)
+                    $query->where(function ($q) {
+                        $q->whereNotNull('reviewed_at')
+                          ->orWhereNotNull('reviewer_notes');
+                    });
                 },
-                'applications as pending' => function ($query) {
-                    $query->where('status', 'under_review');
+                'applicationForms as pending' => function ($query) {
+                    // Assigned to reviewer but not yet reviewed
+                    $query->whereNull('reviewed_at')
+                          ->whereNull('reviewer_notes');
                 }
             ])
             ->orderBy('total_reviewed', 'desc')

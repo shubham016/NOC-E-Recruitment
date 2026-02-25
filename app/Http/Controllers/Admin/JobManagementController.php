@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
@@ -19,7 +19,7 @@ class JobManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = JobPosting::query()->with('postedBy')->withCount('applications');
+        $query = JobPosting::query()->with('postedBy')->withCount('applicationForms');
 
         // Search
         if ($request->filled('search')) {
@@ -79,14 +79,13 @@ class JobManagementController extends Controller
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
-            'service_group' => 'required|string|max:100',
+            'department' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
-            'department' => 'required|string|max:100',
             'location' => 'required|string|max:100',
             'job_type' => 'required|in:permanent,temporary,contract',
             'salary_min' => 'nullable|numeric|min:0',
@@ -116,17 +115,18 @@ class JobManagementController extends Controller
      */
     public function show($id)
     {
-        $job = JobPosting::with(['applications.candidate', 'applications.reviewer', 'postedBy'])
-            ->withCount('applications')
+        $job = JobPosting::with(['applicationForms.candidate', 'applicationForms.reviewer', 'postedBy'])
+            ->withCount('applicationForms')
             ->findOrFail($id);
 
         // Application statistics
         $applicationStats = [
-            'total' => $job->applications->count(),
-            'pending' => $job->applications->where('status', 'pending')->count(),
-            'under_review' => $job->applications->where('status', 'under_review')->count(),
-            'shortlisted' => $job->applications->where('status', 'shortlisted')->count(),
-            'rejected' => $job->applications->where('status', 'rejected')->count(),
+            'total' => $job->applicationForms->count(),
+            'pending' => $job->applicationForms->where('status', 'pending')->count(),
+            'approved' => $job->applicationForms->where('status', 'approved')->count(),
+            'shortlisted' => $job->applicationForms->where('status', 'shortlisted')->count(),
+            'rejected' => $job->applicationForms->where('status', 'rejected')->count(),
+            'selected' => $job->applicationForms->where('status', 'selected')->count(),
         ];
 
         return view('admin.jobs.show', compact('job', 'applicationStats'));
@@ -152,14 +152,13 @@ class JobManagementController extends Controller
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
-            'service_group' => 'required|string|max:100',
+            'department' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
-            'department' => 'required|string|max:100',
             'location' => 'required|string|max:100',
             'job_type' => 'required|in:permanent,temporary,contract',
             'salary_min' => 'nullable|numeric|min:0',
@@ -183,7 +182,7 @@ class JobManagementController extends Controller
         $job = JobPosting::findOrFail($id);
 
         // Check if job has applications
-        if ($job->applications()->count() > 0) {
+        if ($job->applicationForms()->count() > 0) {
             return redirect()
                 ->route('admin.jobs.index')
                 ->with('error', 'Cannot delete vacancy with existing applications. Please close it instead.');

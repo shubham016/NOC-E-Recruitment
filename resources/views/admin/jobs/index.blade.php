@@ -182,7 +182,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                        <small class="text-muted">Total Jobs</small>
+                        <small class="text-muted">Total Vacancy</small>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
-                        <small class="text-muted">Active Jobs</small>
+                        <small class="text-muted">Active Vacancy</small>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
-                        <small class="text-muted">Closed Jobs</small>
+                        <small class="text-muted">Closed Vacancy</small>
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
-                        <small class="text-muted">Draft Jobs</small>
+                        <small class="text-muted">Draft Vacancy</small>
                     </div>
                 </div>
             </div>
@@ -245,19 +245,7 @@
                             <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         </select>
                     </div>
-                    {{-- <div class="col-md-2">
-                        <select class="form-select" name="job_type">
-                            <option value="">All Types</option>
-                            <option value="permanent" {{ request('job_type') == 'permanent' ? 'selected' : '' }}>Permanent
-                            </option>
-                            <option value="temporary" {{ request('job_type') == 'temporary' ? 'selected' : '' }}>Temporary
-                            </option>
-                            <option value="contract" {{ request('job_type') == 'contract' ? 'selected' : '' }}>Contract
-                            </option>
-                            <option value="internship" {{ request('job_type') == 'internship' ? 'selected' : '' }}>Internship
-                            </option>
-                        </select>
-                    </div> --}}
+                   
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
@@ -287,20 +275,20 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 modern-table">
+                <table class="table table-hover align-middle mb-0 modern-table w-100" style="table-layout: auto; white-space: nowrap;">
                     <thead class="table-light">
                     <tr>
-                        <th>Sr. No.</th>
-                        <th>Advertisement No.</th>
-                        <th>Position</th>
-                        <th>Service</th>
-                        <th>Type</th>
-                        <th class="ps-4">Demand</th>
-                        <th>Qualifications</th>
-                        <th class="ps-4">Deadline</th>
-                        <th>Applications</th>
-                        <th>Status</th>
-                        <th class="text-center">Actions</th>
+                        <th class="text-center text-uppercase">S.N</th>
+                        <th class="text-center text-uppercase">Advertisement No.</th>
+                        <th class="text-center text-uppercase">Position</th>
+                        <th class="text-center text-uppercase">Department</th>
+                        <th class="text-center text-uppercase">Type</th>
+                        <th class="text-center text-uppercase">Demand</th>
+                        <th class="text-center text-uppercase">Deadline</th>
+                        <th class="text-center text-uppercase">Qualifications</th>
+                        <th class="text-center text-uppercase">Applications</th>
+                        <th class="text-center text-uppercase">Status</th>
+                        <th class="text-center text-uppercase">Actions</th>
                     </tr>
                     </thead>
 
@@ -321,15 +309,14 @@
                                 <td>{{ $jobs->firstItem() + $loop->index }}</td>
                                 <td>{{ $job->advertisement_no }}</td>
                                 <td>{{ $job->position_level }}</td>
-                                <td>{{ $job->service_group }}</td>
+                                <td>{{ $job->department }}</td>
 
                                 <td>
                                     <span class="badge bg-light text-dark">{{ ucfirst($job->category) }}</span>
                                 </td>
 
-                                <td class="ps-4">{{ $job->number_of_posts }}</td>
+                                <td>{{ $job->number_of_posts }}</td>
 
-                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
                                 <td>
                                     <div>
                                         {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
@@ -341,15 +328,18 @@
                                         <small class="text-danger">{{ $job->deadline->format('Y-m-d') }}</small>
                                     </div>
                                 </td>
+
+                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
+
                                 <td>
-                                    <span class="badge bg-primary">{{ $job->applications_count ?? 0 }}</span>
+                                    <span class="badge bg-primary">{{ $job->application_forms_count ?? 0 }}</span>
                                 </td>
                                 <td>
                                     <span class="badge {{ $statusBadge }}">
                                         {{ ucfirst($job->status) }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="View">
                                             <i class="bi bi-eye"></i>

@@ -23,9 +23,13 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bookmark"></i>
-        <span>Saved Jobs</span>
+    <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
+        <i class="bi bi-card-heading"></i>
+        <span>Admit Card</span>
+    </a>
+    <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
+        <i class="bi bi-trophy"></i>
+        <span>Results</span>
     </a>
     <a href="{{ route('candidate.profile.edit') }}" class="sidebar-menu-item active">
         <i class="bi bi-person"></i>
@@ -387,6 +391,76 @@
                             <input type="text" class="form-control"
                                 value="NOC-{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}" disabled>
                             <small class="form-text">System generated</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citizenship Information -->
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <i class="bi bi-card-text"></i>
+                        Citizenship Information
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select name="gender" class="form-control @error('gender') is-invalid @enderror">
+                                <option value="">Select Gender</option>
+                                <option value="male" {{ old('gender', $candidate->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender', $candidate->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ old('gender', $candidate->gender) == 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            @error('gender')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth (BS)</label>
+                            <input type="text" name="date_of_birth_bs"
+                                class="form-control @error('date_of_birth_bs') is-invalid @enderror"
+                                value="{{ old('date_of_birth_bs', $candidate->date_of_birth_bs) }}" placeholder="YYYY-MM-DD">
+                            @error('date_of_birth_bs')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Citizenship Number</label>
+                            <input type="text" name="citizenship_number"
+                                class="form-control @error('citizenship_number') is-invalid @enderror"
+                                value="{{ old('citizenship_number', $candidate->citizenship_number) }}">
+                            @error('citizenship_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Issue District</label>
+                            <input type="text" name="citizenship_issue_district"
+                                class="form-control @error('citizenship_issue_district') is-invalid @enderror"
+                                value="{{ old('citizenship_issue_district', $candidate->citizenship_issue_district) }}">
+                            @error('citizenship_issue_district')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Issue Date (BS)</label>
+                            <input type="text" name="citizenship_issue_date_bs"
+                                class="form-control @error('citizenship_issue_date_bs') is-invalid @enderror"
+                                value="{{ old('citizenship_issue_date_bs', $candidate->citizenship_issue_date_bs) }}" placeholder="YYYY-MM-DD">
+                            @error('citizenship_issue_date_bs')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>

@@ -19,7 +19,6 @@ class JobPosting extends Model
         'requirements',
         'minimum_qualification',
         'department',
-        'service_group',
         'category',
         'inclusive_type',
         'number_of_posts',
@@ -28,9 +27,13 @@ class JobPosting extends Model
         'salary_min',
         'salary_max',
         'deadline',
+        'deadline_bs',
         'status',
         'posted_by',
         'posted_by_type',
+        'min_age',
+        'max_age',
+        'required_education',
     ];
 
     protected $casts = [
@@ -38,14 +41,24 @@ class JobPosting extends Model
         'salary_min' => 'decimal:2',
         'salary_max' => 'decimal:2',
         'number_of_posts' => 'integer',
+        'min_age' => 'integer',
+        'max_age' => 'integer',
     ];
 
     /**
-     * Get all applications for this job posting
+     * Get all applications for this job posting (LEGACY - old Application model)
      */
     public function applications()
     {
         return $this->hasMany(Application::class, 'job_posting_id');
+    }
+
+    /**
+     * Get all application forms for this job posting (NEW - ApplicationForm model)
+     */
+    public function applicationForms()
+    {
+        return $this->hasMany(ApplicationForm::class, 'job_posting_id');
     }
 
     /**
@@ -115,5 +128,19 @@ class JobPosting extends Model
     {
         return $query->where('posted_by_type', $userType)
                     ->where('posted_by', $userId);
+    }
+
+    /**
+     * Check if a candidate is eligible for this job based on age
+     */
+    public function isEligible($candidateAge)
+    {
+        if ($this->min_age && $candidateAge < $this->min_age) {
+            return false;
+        }
+        if ($this->max_age && $candidateAge > $this->max_age) {
+            return false;
+        }
+        return true;
     }
 }

@@ -578,7 +578,7 @@
                                             <div class="fw-semibold" style="color: #1e3a8a;">{{ $job->title }}</div>
                                             {{-- <small class="text-muted">{{ $job->advertisement_no }}</small>  --}}
                                         </td>
-                                        <td>{{ $job->service_group }}</td>
+                                        <td>{{ $job->department }}</td>
                                         <td class="text-center">
                                             <span class="badge {{ $job->status == 'active' ? 'bg-success' : 'bg-secondary' }}">
                                                 {{ ucfirst($job->status) }}
