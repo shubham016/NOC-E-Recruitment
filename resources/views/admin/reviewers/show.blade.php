@@ -213,7 +213,7 @@
     /* Applications Card */
     .applications-card {
         background: white;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #000;
         border-radius: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
@@ -222,30 +222,52 @@
     .applications-card-header {
         padding: 1.5rem;
         background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #000;
     }
 
     .applications-table {
         width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
     .applications-table thead {
         background: #f9fafb;
     }
 
-    .applications-table th {
+    .applications-table thead th {
         padding: 1rem;
         font-weight: 600;
         color: #374151;
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.025em;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
     }
 
-    .applications-table td {
+    .applications-table thead th:last-child {
+        border-right: none;
+    }
+
+    .applications-table tbody td {
         padding: 1rem;
         color: #1f2937;
-        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        vertical-align: middle;
+    }
+
+    .applications-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .applications-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .applications-table tbody tr {
+        transition: all 0.2s;
     }
 
     .applications-table tr:hover {
@@ -459,10 +481,10 @@
         <div class="col-lg-3 col-md-6">
             <div class="stat-card">
                 <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
-                <div class="stat-value" style="color: #059669;">{{ $stats['shortlisted'] }}</div>
-                <div class="stat-label">Shortlisted</div>
+                <div class="stat-value" style="color: #059669;">{{ $stats['approved'] }}</div>
+                <div class="stat-label">Approved</div>
             </div>
         </div>
     </div>
@@ -480,45 +502,49 @@
                     </div>
                 </div>
                 @if($recentApplications->count() > 0)
-                    <table class="applications-table">
+                    <table class="applications-table" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>Candidate</th>
-                                <th>Job Position</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Applied On</th>
-                                <th class="text-center">Actions</th>
+                                <th class="text-center text-uppercase" style="width: 25%;">Candidate</th>
+                                <th class="text-center text-uppercase" style="width: 30%;">Vacancy Position</th>
+                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Status</th>
+                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Applied</th>
+                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($recentApplications as $application)
                                 <tr>
-                                    <td>
+                                    <td class="text-center">
                                         <div class="fw-semibold" style="color: #065f46;">{{ $application->candidate->name }}</div>
                                         <small class="text-muted">{{ $application->candidate->email }}</small>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <div class="fw-semibold">{{ $application->jobPosting->title }}</div>
                                         <small class="text-muted">{{ $application->jobPosting->advertisement_no }}</small>
                                     </td>
-                                    <td class="text-center">
-                                        <span class="badge 
-                                            @if($application->status == 'shortlisted') bg-success
+                                    <td class="text-center" style="white-space: nowrap;">
+                                        <span class="badge
+                                            @if($application->status == 'pending') bg-warning
+                                            @elseif($application->status == 'approved') bg-success
                                             @elseif($application->status == 'rejected') bg-danger
-                                            @elseif($application->status == 'under_review') bg-warning
-                                            @elseif($application->status == 'reviewed') bg-info
                                             @else bg-secondary
                                             @endif">
                                             {{ ucfirst(str_replace('_', ' ', $application->status)) }}
                                         </span>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" style="white-space: nowrap;">
                                         <small>{{ $application->created_at->format('M d, Y') }}</small>
                                     </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('admin.applications.show', $application->id) }}" class="btn btn-sm btn-outline-success">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                    <td class="text-center" style="white-space: nowrap;">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="{{ route('admin.applications.show', $application->id) }}" class="btn btn-sm btn-outline-success" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteApplication({{ $application->id }})" title="Delete Application">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -619,7 +645,7 @@
                         <div class="permission-icon">
                             <i class="bi bi-check"></i>
                         </div>
-                        <span>Shortlist Candidates</span>
+                        <span>Approve/Reject Applications</span>
                     </li>
                 </ul>
             </div>
@@ -695,11 +721,19 @@
     </div>
 </div>
 
-<!-- Delete Form -->
+<!-- Delete Reviewer Form -->
 <form id="deleteForm" action="{{ route('admin.reviewers.destroy', $reviewer->id) }}" method="POST" style="display: none;">
     @csrf
     @method('DELETE')
 </form>
+
+<!-- Delete Application Forms -->
+@foreach($recentApplications as $application)
+    <form id="deleteApplicationForm{{ $application->id }}" action="{{ route('admin.applications.destroy', $application->id) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+@endforeach
 
 @endsection
 
@@ -708,6 +742,12 @@
     function deleteReviewer() {
         if (confirm('⚠️ Are you sure you want to delete this reviewer?\n\nThis action cannot be undone and will remove all associated data.')) {
             document.getElementById('deleteForm').submit();
+        }
+    }
+
+    function deleteApplication(id) {
+        if (confirm('⚠️ Are you sure you want to delete this application?\n\nThis action cannot be undone and will remove all application data.')) {
+            document.getElementById('deleteApplicationForm' + id).submit();
         }
     }
 

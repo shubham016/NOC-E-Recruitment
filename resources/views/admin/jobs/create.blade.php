@@ -328,31 +328,31 @@
                         </small>
                     </div>
 
-                    <!-- Service/Group -->
+                    <!-- Department -->
                     <div class="mb-4">
-                        <label for="service_group" class="form-label">
-                            <span>Service <span class="required">*</span></span>
+                        <label for="department" class="form-label">
+                            <span>Department <span class="required">*</span></span>
                             <span class="nepali-text">सेवा / समूह</span>
                         </label>
-                        <select class="form-select form-select-lg @error('service_group') is-invalid @enderror"
-                            id="service_group" name="service_group" required>
-                            <option value="">-- Select Service/Group --</option>
-                            <option value="Administration" {{ old('service_group') == 'Administration' ? 'selected' : '' }}>
+                        <select class="form-select form-select-lg @error('department') is-invalid @enderror"
+                            id="department" name="department" required>
+                            <option value="">-- Select Department --</option>
+                            <option value="Administration" {{ old('department') == 'Administration' ? 'selected' : '' }}>
                                 Non-Technical / Administration (प्रशासन)</option>
-                            <option value="Accounting" {{ old('service_group') == 'Accounting' ? 'selected' : '' }}>
+                            <option value="Accounting" {{ old('department') == 'Accounting' ? 'selected' : '' }}>
                                 Non-Technical / Accounting (लेखा)</option>
-                            <option value="Engineering" {{ old('service_group') == 'Engineering' ? 'selected' : '' }}>
+                            <option value="Engineering" {{ old('department') == 'Engineering' ? 'selected' : '' }}>
                                 Technical / Engineering (ईन्जिनियरिङ्ग)</option>
-                            <option value="Computer" {{ old('service_group') == 'Computer' ? 'selected' : '' }}>Technical /
+                            <option value="Computer" {{ old('department') == 'Computer' ? 'selected' : '' }}>Technical /
                                 (Computer / IT) (प्राविधिक / विविध / आइ.टी)</option>
-                            <option value="Lab" {{ old('service_group') == 'Lab' ? 'selected' : '' }}>Technical / Lab
+                            <option value="Lab" {{ old('department') == 'Lab' ? 'selected' : '' }}>Technical / Lab
                                 (प्राविधिक / ल्याव)</option>
-                            <option value="TahaBinaako" {{ old('service_group') == 'TahaBinaako' ? 'selected' : '' }}>
+                            <option value="TahaBinaako" {{ old('department') == 'TahaBinaako' ? 'selected' : '' }}>
                                 Technical / Taha Binaako (प्राविधिक / तहविहिन)</option>
-                            <option value="Operator" {{ old('service_group') == 'Operator' ? 'selected' : '' }}>Browser
+                            <option value="Operator" {{ old('department') == 'Operator' ? 'selected' : '' }}>Browser
                                 Operator / Taha Binaako (बाउजर अपरेटर / तहविहिन)</option>
                         </select>
-                        @error('service_group')
+                        @error('department')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -482,6 +482,7 @@
                                     id="deadline_bs"
                                     placeholder="YYYY-MM-DD"
                                     autocomplete="off">
+                                <input type="hidden" name="deadline_bs" id="deadline_bs_hidden">
                                 <small class="form-text text-primary">
                                     <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
                                 </small>
@@ -497,7 +498,7 @@
                                     id="deadline_ad"
                                     name="deadline"
                                     placeholder="YYYY-MM-DD"
-                                    value="{{ old('deadline', now()->addDays(30)->format('Y-m-d')) }}"
+                                    value="{{ old('deadline', '') }}"
                                     required
                                     readonly>
                                 <small class="form-text">
@@ -552,7 +553,7 @@
                                 <td id="preview-position" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Service/Group</th>
+                                <th>Department</th>
                                 <td id="preview-service" class="fw-semibold">-</td>
                             </tr>
                             <tr>
@@ -708,20 +709,27 @@
                 
                 console.log('📅 BS Date changed (polling detected):', currentBSValue);
                 lastBSValue = currentBSValue;
-                
+
                 // Convert Nepali numerals to English for calculation
                 const bsValueEnglish = nepaliToEnglish(currentBSValue);
                 console.log('🔢 After numeral conversion:', bsValueEnglish);
-                
+
+                // Update hidden field with English numerals for database
+                const hiddenField = document.getElementById('deadline_bs_hidden');
+                if (hiddenField) {
+                    hiddenField.value = bsValueEnglish;
+                    console.log('✅ Hidden BS field updated:', bsValueEnglish);
+                }
+
                 // Convert BS to AD
                 const adValue = window.bsToAD(bsValueEnglish);
                 console.log('✅ AD Result:', adValue);
-                
+
                 if (adValue) {
                     // Update the English date field (this goes to database)
                     deadlineAD.value = adValue;
                     console.log('✅ English date field updated:', adValue);
-                    
+
                     // Update BS preview with Nepali numerals
                     if (previewDeadlineBS) {
                         // Convert back to Nepali numerals for display
@@ -729,7 +737,7 @@
                         previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
                         console.log('✅ BS Preview:', bsNepali);
                     }
-                    
+
                     // Update AD preview in YYYY-MM-DD format
                     if (previewDeadlineAD) {
                         previewDeadlineAD.textContent = adValue; // Already in YYYY-MM-DD format
@@ -739,24 +747,64 @@
             }
         }, 200); // Check every 200ms
 
-        // Initialize with default AD date on page load
+        // Initialize on page load
         setTimeout(function() {
-            if (deadlineAD.value && !$('#deadline_bs').val()) {
-                console.log('📅 Initializing with default AD date:', deadlineAD.value);
-                
+            const existingBSValue = $('#deadline_bs').val();
+
+            // If BS field already has a value (from old input), convert English numerals to Nepali
+            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
+                console.log('📅 Converting existing Deadline BS to Nepali numerals:', existingBSValue);
+                const bsNepali = englishToNepali(existingBSValue);
+                $('#deadline_bs').val(bsNepali);
+                lastBSValue = bsNepali;
+
+                // Set hidden field with English numerals for database
+                const hiddenField = document.getElementById('deadline_bs_hidden');
+                if (hiddenField) {
+                    hiddenField.value = existingBSValue;
+                }
+
+                console.log('✅ Deadline BS converted to Nepali:', bsNepali);
+
+                // Also update AD field if empty
+                if (!deadlineAD.value) {
+                    const adValue = window.bsToAD(existingBSValue);
+                    if (adValue) {
+                        deadlineAD.value = adValue;
+                    }
+                }
+
+                // Update previews
+                if (previewDeadlineBS) {
+                    previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                }
+                if (previewDeadlineAD) {
+                    previewDeadlineAD.textContent = deadlineAD.value;
+                }
+            }
+            // If only AD value exists, convert to BS
+            else if (deadlineAD.value && !existingBSValue) {
+                console.log('📅 Initializing Deadline BS from existing AD date:', deadlineAD.value);
+
                 const bsValue = window.adToBS(deadlineAD.value);
                 console.log('✅ Initial BS (English numerals):', bsValue);
-                
+
                 if (bsValue) {
                     // Convert to Nepali numerals for display in picker
                     const bsNepali = englishToNepali(bsValue);
-                    
+
                     // Set the BS field with Nepali numerals
                     $('#deadline_bs').val(bsNepali);
-                    lastBSValue = bsNepali; // Prevent polling from re-processing
-                    
+                    lastBSValue = bsNepali;
+
+                    // Set hidden field with English numerals for database
+                    const hiddenField = document.getElementById('deadline_bs_hidden');
+                    if (hiddenField) {
+                        hiddenField.value = bsValue;
+                    }
+
                     console.log('✅ Initial BS (Nepali numerals):', bsNepali);
-                    
+
                     // Update previews
                     if (previewDeadlineBS) {
                         previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
@@ -814,7 +862,7 @@
         const previewMappings = {
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
             'position_level': { preview: 'preview-position', default: '-' },
-            'service_group': { preview: 'preview-service', default: '-' },
+            'department': { preview: 'preview-service', default: '-' },
             'number_of_posts': { preview: 'preview-posts', default: '-' },
             'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
         };
@@ -865,7 +913,7 @@
                 document.getElementById('hidden_title').value = positionLevel;
 
                 let descriptionText = 'Position: ' + positionLevel + '\n' +
-                    'Service/Group: ' + document.getElementById('service_group').value + '\n' +
+                    'Department: ' + document.getElementById('department').value + '\n' +
                     'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
 
                 const inclusiveType = document.getElementById('inclusive_type').value;

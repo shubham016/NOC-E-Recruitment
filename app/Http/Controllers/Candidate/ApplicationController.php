@@ -88,7 +88,7 @@ class ApplicationController extends Controller
             'noc_employee' => 'required|string',
 
             // Personal Information
-            'birth_date_ad' => 'required|date|before:today',
+            'birth_date_ad' => 'required|date|before_or_equal:today',
             'birth_date_bs' => 'nullable|string|max:20',
             'age' => 'required|integer|min:18|max:65',
             'phone' => 'required|string|max:20',
@@ -263,7 +263,7 @@ class ApplicationController extends Controller
             'noc_employee' => 'required|string',
 
             // Personal Information
-            'birth_date_ad' => 'required|date|before:today',
+            'birth_date_ad' => 'required|date|before_or_equal:today',
             'birth_date_bs' => 'nullable|string|max:20',
             'age' => 'required|integer|min:18|max:65',
             'phone' => 'required|string|max:20',

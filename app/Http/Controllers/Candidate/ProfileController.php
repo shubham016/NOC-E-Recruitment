@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApplicationForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,15 +19,16 @@ class ProfileController extends Controller
 
         // Get application statistics
         $applicationStats = [
-            'total' => $candidate->applications()->count(),
-            'pending' => $candidate->applications()->where('status', 'pending')->count(),
-            'under_review' => $candidate->applications()->where('status', 'under_review')->count(),
-            'shortlisted' => $candidate->applications()->where('status', 'shortlisted')->count(),
-            'rejected' => $candidate->applications()->where('status', 'rejected')->count(),
+            'total' => $candidate->applicationForms()->where('status', '!=', 'draft')->count(),
+            'pending' => $candidate->applicationForms()->where('status', 'pending')->count(),
+            'approved' => $candidate->applicationForms()->where('status', 'approved')->count(),
+            'shortlisted' => $candidate->applicationForms()->where('status', 'shortlisted')->count(),
+            'rejected' => $candidate->applicationForms()->where('status', 'rejected')->count(),
         ];
 
         // Get recent applications
-        $recentApplications = $candidate->applications()
+        $recentApplications = $candidate->applicationForms()
+            ->where('status', '!=', 'draft')
             ->with('jobPosting')
             ->latest()
             ->take(5)
@@ -60,6 +62,11 @@ class ProfileController extends Controller
             'city' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
+            'gender' => 'nullable|in:male,female,other',
+            'date_of_birth_bs' => 'nullable|string|max:20',
+            'citizenship_number' => 'nullable|string|max:255|unique:candidates,citizenship_number,' . $candidate->id,
+            'citizenship_issue_district' => 'nullable|string|max:255',
+            'citizenship_issue_date_bs' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -69,9 +76,14 @@ class ProfileController extends Controller
             'last_name' => $validated['last_name'],
             'mobile_number' => $validated['mobile_number'],
             'email' => $validated['email'],
-            'city' => $validated['city'],
-            'state' => $validated['state'],
-            'country' => $validated['country'],
+            'city' => $validated['city'] ?? null,
+            'state' => $validated['state'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'gender' => $validated['gender'] ?? null,
+            'date_of_birth_bs' => $validated['date_of_birth_bs'] ?? null,
+            'citizenship_number' => $validated['citizenship_number'] ?? null,
+            'citizenship_issue_district' => $validated['citizenship_issue_district'] ?? null,
+            'citizenship_issue_date_bs' => $validated['citizenship_issue_date_bs'] ?? null,
         ];
 
         // Update password if provided

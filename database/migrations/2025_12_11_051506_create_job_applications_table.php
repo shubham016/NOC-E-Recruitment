@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        Schema::dropIfExists('applications');
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');

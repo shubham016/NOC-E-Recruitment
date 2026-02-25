@@ -1,9 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Reviewer Login')
 
 @section('custom-styles')
 <style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
     .login-wrapper {
         min-height: 100vh;
         display: flex;

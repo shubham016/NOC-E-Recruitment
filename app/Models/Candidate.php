@@ -4,33 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 
-class Candidate extends Authenticatable implements MustVerifyEmail
+class Candidate extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'first_name',
         'middle_name',
         'last_name',
-        'name',
         'username',
         'email',
-        'email_verified_at',
         'mobile_number',
         'password',
-        'profile_picture',
         'city',
         'state',
         'country',
-        'qualification',
-        'skills',
-        'resume_path',
+        'resume',
         'status',
+        'email_verified_at',
+        'gender',
+        'date_of_birth_bs',
+        'citizenship_number',
+        'citizenship_issue_district',
+        'citizenship_issue_date_bs',
         'notification_settings',
         'privacy_settings',
-
     ];
 
     protected $hidden = [
@@ -38,71 +38,35 @@ class Candidate extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'notification_settings' => 'array',
-        'privacy_settings' => 'array',
-    ];
-
-    /**
-     * Boot method to auto-generate full name
-     */
-    protected static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-
-        // When creating a new candidate
-        static::creating(function ($candidate) {
-            $candidate->name = static::generateFullName(
-                $candidate->first_name,
-                $candidate->middle_name,
-                $candidate->last_name
-            );
-        });
-
-        // When updating a candidate
-        static::updating(function ($candidate) {
-            // Only regenerate name if name fields changed
-            if ($candidate->isDirty(['first_name', 'middle_name', 'last_name'])) {
-                $candidate->name = static::generateFullName(
-                    $candidate->first_name,
-                    $candidate->middle_name,
-                    $candidate->last_name
-                );
-            }
-        });
+        return [
+            'password' => 'hashed',
+            'email_verified_at' => 'datetime',
+        ];
     }
 
     /**
-     * Generate full name from first, middle, and last name
+     * Get the candidate's full name (computed from first, middle, last name)
      */
-    public static function generateFullName($firstName, $middleName, $lastName)
+    public function getNameAttribute(): string
     {
-        $parts = array_filter([$firstName, $middleName, $lastName]);
+        $parts = array_filter([$this->first_name, $this->middle_name, $this->last_name]);
         return implode(' ', $parts);
     }
 
     /**
-     * Get full name attribute
+     * Check if candidate's email is verified
      */
-    public function getFullNameAttribute()
+    public function hasVerifiedEmail(): bool
     {
-        return $this->name;
+        return $this->email_verified_at !== null;
     }
 
     /**
-     * Check if email is verified
+     * Mark the candidate's email as verified
      */
-    public function hasVerifiedEmail()
-    {
-        return !is_null($this->email_verified_at);
-    }
-
-    /**
-     * Mark email as verified
-     */
-    public function markEmailAsVerified()
+    public function markEmailAsVerified(): bool
     {
         return $this->forceFill([
             'email_verified_at' => $this->freshTimestamp(),
@@ -110,21 +74,38 @@ class Candidate extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Find candidate by username or email (for login)
+     * Find candidate by email, username, or citizenship number (for login)
      */
-    public static function findByUsernameOrEmail($identifier)
+    public static function findByCredential($identifier)
     {
-        return static::where('username', $identifier)
-            ->orWhere('email', $identifier)
+        return static::where('email', $identifier)
+            ->orWhere('username', $identifier)
+            ->orWhere('citizenship_number', $identifier)
             ->first();
     }
 
     /**
-     * Get all applications for this candidate
+     * Get all applications (old model) for this candidate
      */
     public function applications()
     {
         return $this->hasMany(Application::class);
+    }
+
+    /**
+     * Get all application forms for this candidate
+     */
+    public function applicationForms()
+    {
+        return $this->hasMany(ApplicationForm::class);
+    }
+
+    /**
+     * Get all results for this candidate
+     */
+    public function results()
+    {
+        return $this->hasMany(Result::class);
     }
 
     /**

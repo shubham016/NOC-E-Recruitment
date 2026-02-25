@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,17 +16,22 @@ class CandidateDashboardController extends Controller
 
         // Get candidate statistics
         $stats = [
-            'total_applications' => Application::where('candidate_id', $candidate->id)->count(),
-            'pending' => Application::where('candidate_id', $candidate->id)
+            'total_applications' => ApplicationForm::where('candidate_id', $candidate->id)
+                ->where('status', '!=', 'draft')
+                ->count(),
+            'drafts' => ApplicationForm::where('candidate_id', $candidate->id)
+                ->where('status', 'draft')
+                ->count(),
+            'pending' => ApplicationForm::where('candidate_id', $candidate->id)
                 ->where('status', 'pending')
                 ->count(),
-            'under_review' => Application::where('candidate_id', $candidate->id)
-                ->where('status', 'under_review')
+            'approved' => ApplicationForm::where('candidate_id', $candidate->id)
+                ->where('status', 'approved')
                 ->count(),
-            'shortlisted' => Application::where('candidate_id', $candidate->id)
+            'shortlisted' => ApplicationForm::where('candidate_id', $candidate->id)
                 ->where('status', 'shortlisted')
                 ->count(),
-            'rejected' => Application::where('candidate_id', $candidate->id)
+            'rejected' => ApplicationForm::where('candidate_id', $candidate->id)
                 ->where('status', 'rejected')
                 ->count(),
             'active_jobs' => JobPosting::where('status', 'active')
@@ -34,15 +39,16 @@ class CandidateDashboardController extends Controller
                 ->count(),
         ];
 
-        // Recent applications
-        $recentApplications = Application::where('candidate_id', $candidate->id)
+        // Recent applications (non-draft)
+        $recentApplications = ApplicationForm::where('candidate_id', $candidate->id)
+            ->where('status', '!=', 'draft')
             ->with('jobPosting')
             ->latest()
             ->limit(5)
             ->get();
 
         // Recommended jobs (jobs the candidate hasn't applied to)
-        $appliedJobIds = Application::where('candidate_id', $candidate->id)
+        $appliedJobIds = ApplicationForm::where('candidate_id', $candidate->id)
             ->pluck('job_posting_id')
             ->toArray();
 
@@ -53,11 +59,20 @@ class CandidateDashboardController extends Controller
             ->limit(6)
             ->get();
 
+        // Flat counts for shradha's dashboard view
+        $applicationsCount = $stats['total_applications'];
+        $jobpostingsCount = $stats['active_jobs'];
+
+        // Set candidate name in session for layout
+        session(['candidate_name' => $candidate->name]);
+
         return view('candidate.dashboard', compact(
             'stats',
             'recentApplications',
             'recommendedJobs',
-            'candidate'
+            'candidate',
+            'applicationsCount',
+            'jobpostingsCount'
         ));
     }
 }

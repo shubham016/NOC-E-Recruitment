@@ -35,24 +35,18 @@ return new class extends Migration
             $table->string('location')->default('Nepal');
             $table->string('job_type')->default('permanent');
 
-            // Salary fields (optional)
-            $table->decimal('salary_min', 10, 2)->nullable();
-            $table->decimal('salary_max', 10, 2)->nullable();
+            // // Salary (optional)
+            // $table->decimal('salary_min', 10, 2)->nullable();
+            // $table->decimal('salary_max', 10, 2)->nullable();
 
             // Deadline and Status
             $table->date('deadline');
             $table->enum('status', ['draft', 'active', 'closed'])->default('active');
 
-            // Posted by fields
-            $table->unsignedBigInteger('posted_by');
-            $table->string('posted_by_type')->default('admin');
+            // Posted by admin
+            $table->foreignId('posted_by')->constrained('admins')->onDelete('cascade');
 
             $table->timestamps();
-
-            // Add indexes for better performance
-            $table->index(['status', 'deadline']);
-            $table->index(['posted_by', 'posted_by_type']);
-            $table->index('category');
         });
     }
 

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use App\Models\Reviewer;
 use App\Models\JobPosting;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class AdminApplicationController extends Controller
@@ -13,14 +14,16 @@ class AdminApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query
-        $query = Application::with(['candidate', 'jobPosting', 'reviewer']);
+        $query = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+            ->where('status', '!=', 'draft');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->whereHas('candidate', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%")
+                    $q2->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 })->orWhereHas('jobPosting', function ($q2) use ($search) {
                     $q2->where('title', 'like', "%{$search}%")
@@ -68,17 +71,15 @@ class AdminApplicationController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // Status options
-        $statuses = ['pending', 'under_review', 'shortlisted', 'rejected', 'withdrawn'];
+        // Status options (Admin Portal handles only initial review: pending, approved, rejected)
+        $statuses = ['pending', 'approved', 'rejected'];
 
         // Calculate statistics
         $stats = [
-            'total' => Application::count(),
-            'pending' => Application::where('status', 'pending')->count(),
-            'under_review' => Application::where('status', 'under_review')->count(),
-            'shortlisted' => Application::where('status', 'shortlisted')->count(),
-            'rejected' => Application::where('status', 'rejected')->count(),
-            'withdrawn' => Application::where('status', 'withdrawn')->count(),
+            'total' => ApplicationForm::where('status', '!=', 'draft')->count(),
+            'pending' => ApplicationForm::where('status', 'pending')->count(),
+            'approved' => ApplicationForm::where('status', 'approved')->count(),
+            'rejected' => ApplicationForm::where('status', 'rejected')->count(),
         ];
 
         // Return view with all variables
@@ -91,12 +92,12 @@ class AdminApplicationController extends Controller
         ));
     }
 
-    public function show(Application $application)
+    public function show(ApplicationForm $application)
     {
         $application->load(['candidate', 'jobPosting', 'reviewer']);
 
         $reviewers = Reviewer::where('status', 'active')->get();
-        $statuses = ['pending', 'under_review', 'shortlisted', 'rejected', 'withdrawn'];
+        $statuses = ['pending', 'approved', 'rejected'];
 
         return view('admin.applications.show', compact(
             'application',
@@ -105,10 +106,10 @@ class AdminApplicationController extends Controller
         ));
     }
 
-    public function updateStatus(Request $request, Application $application)
+    public function updateStatus(Request $request, ApplicationForm $application)
     {
         $request->validate([
-            'status' => 'required|in:pending,under_review,shortlisted,rejected,withdrawn',
+            'status' => 'required|in:pending,approved,rejected',
             'admin_notes' => 'nullable|string|max:1000'
         ]);
 
@@ -121,7 +122,7 @@ class AdminApplicationController extends Controller
         return redirect()->back()->with('success', 'Application status updated successfully!');
     }
 
-    public function assignReviewer(Request $request, Application $application)
+    public function assignReviewer(Request $request, ApplicationForm $application)
     {
         $request->validate([
             'reviewer_id' => 'required|exists:reviewers,id'
@@ -129,13 +130,13 @@ class AdminApplicationController extends Controller
 
         $application->update([
             'reviewer_id' => $request->reviewer_id,
-            'status' => 'under_review'
+            'status' => 'approved'
         ]);
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully!');
     }
 
-    public function destroy(Application $application)
+    public function destroy(ApplicationForm $application)
     {
         $application->delete();
 
@@ -148,8 +149,8 @@ class AdminApplicationController extends Controller
         $request->validate([
             'action' => 'required|in:delete,update_status,assign_reviewer',
             'application_ids' => 'required|array',
-            'application_ids.*' => 'exists:applications,id',
-            'status' => 'required_if:action,update_status|in:pending,under_review,shortlisted,rejected,withdrawn',
+            'application_ids.*' => 'exists:application_form,id',
+            'status' => 'required_if:action,update_status|in:pending,approved,rejected',
             'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id'
         ]);
 
@@ -157,12 +158,12 @@ class AdminApplicationController extends Controller
 
         switch ($request->action) {
             case 'delete':
-                Application::whereIn('id', $applicationIds)->delete();
+                ApplicationForm::whereIn('id', $applicationIds)->delete();
                 $message = 'Selected applications deleted successfully!';
                 break;
 
             case 'update_status':
-                Application::whereIn('id', $applicationIds)->update([
+                ApplicationForm::whereIn('id', $applicationIds)->update([
                     'status' => $request->status,
                     'reviewed_at' => now(),
                 ]);
@@ -170,9 +171,9 @@ class AdminApplicationController extends Controller
                 break;
 
             case 'assign_reviewer':
-                Application::whereIn('id', $applicationIds)->update([
+                ApplicationForm::whereIn('id', $applicationIds)->update([
                     'reviewer_id' => $request->reviewer_id,
-                    'status' => 'under_review'
+                    'status' => 'approved'
                 ]);
                 $message = 'Reviewer assigned to selected applications!';
                 break;
@@ -182,5 +183,24 @@ class AdminApplicationController extends Controller
         }
 
         return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Reset payment for an application (Admin only - for testing/fixing issues)
+     */
+    public function resetPayment(ApplicationForm $application)
+    {
+        // Delete all payment records for this application
+        Payment::where('draft_id', $application->id)->delete();
+
+        // Reset application status back to draft
+        $application->update([
+            'status' => 'draft',
+            'submitted_at' => null,
+        ]);
+
+        return redirect()
+            ->route('admin.applications.show', $application->id)
+            ->with('success', 'Payment has been reset successfully. Application status set back to draft.');
     }
 }

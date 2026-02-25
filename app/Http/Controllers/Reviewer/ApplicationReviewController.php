@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Reviewer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
-use App\Models\Job;
+use App\Models\ApplicationForm;
+use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,19 +17,22 @@ class ApplicationReviewController extends Controller
     public function index(Request $request)
     {
         $reviewer = Auth::guard('reviewer')->user();
-        
-        // Start query
-        $query = Application::with(['candidate', 'job']);
+
+        // Start query - only show applications assigned to this reviewer
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+            ->where('reviewer_id', $reviewer->id)
+            ->where('status', '!=', 'draft');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->whereHas('candidate', function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%");
                 })
-                ->orWhereHas('job', function($q) use ($search) {
+                ->orWhereHas('jobPosting', function($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%");
                 });
             });
@@ -39,14 +42,14 @@ class ApplicationReviewController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
-            // Default to pending and under_review
-            $query->whereIn('status', ['pending', 'under_review']);
+            // Default to pending and approved (under review)
+            $query->whereIn('status', ['pending', 'approved']);
         }
 
         // Priority filter (based on deadline)
         if ($request->filled('priority')) {
             $priority = $request->priority;
-            $query->whereHas('job', function($q) use ($priority) {
+            $query->whereHas('jobPosting', function($q) use ($priority) {
                 $now = now();
                 switch($priority) {
                     case 'high':
@@ -75,17 +78,17 @@ class ApplicationReviewController extends Controller
 
         // Job filter
         if ($request->filled('job_id')) {
-            $query->where('job_id', $request->job_id);
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
-        
+
         if ($sortBy === 'deadline') {
-            $query->join('job_postings', 'applications.job_posting_id', '=', 'job_postings.id')
+            $query->join('job_postings', 'application_form.job_posting_id', '=', 'job_postings.id')
                   ->orderBy('job_postings.deadline', $sortOrder)
-                  ->select('applications.*');
+                  ->select('application_form.*');
         } else {
             $query->orderBy($sortBy, $sortOrder);
         }
@@ -94,14 +97,22 @@ class ApplicationReviewController extends Controller
         $applications = $query->paginate(15)->withQueryString();
 
         // Get all jobs for filter dropdown
-        $jobs = Job::orderBy('title')->get();
+        $jobs = JobPosting::orderBy('title')->get();
 
-        // Statistics
+        // Statistics - only for this reviewer's assigned applications
         $stats = [
-            'total' => Application::count(),
-            'pending' => Application::whereIn('status', ['pending', 'under_review'])->count(),
-            'shortlisted' => Application::where('status', 'shortlisted')->count(),
-            'rejected' => Application::where('status', 'rejected')->count(),
+            'total' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', '!=', 'draft')
+                ->count(),
+            'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'pending')
+                ->count(),
+            'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'approved')
+                ->count(),
+            'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'rejected')
+                ->count(),
         ];
 
         return view('reviewer.applications.index', compact('applications', 'jobs', 'stats'));
@@ -112,7 +123,11 @@ class ApplicationReviewController extends Controller
      */
     public function show($id)
     {
-        $application = Application::with(['candidate', 'job', 'reviewer'])
+        $reviewer = Auth::guard('reviewer')->user();
+
+        // Only show applications assigned to this reviewer
+        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+            ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
         return view('reviewer.applications.show', compact('application'));
@@ -123,7 +138,11 @@ class ApplicationReviewController extends Controller
      */
     public function getDetails($id)
     {
-        $application = Application::with(['candidate', 'job', 'reviewer'])
+        $reviewer = Auth::guard('reviewer')->user();
+
+        // Only show applications assigned to this reviewer
+        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+            ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
         return response()->json([
@@ -132,17 +151,16 @@ class ApplicationReviewController extends Controller
                 'id' => $application->id,
                 'candidate_name' => $application->candidate->name,
                 'candidate_email' => $application->candidate->email,
-                'candidate_phone' => $application->candidate->phone,
-                'candidate_address' => $application->candidate->address,
-                'job_title' => $application->job->title,
-                'job_department' => $application->job->department,
-                'job_location' => $application->job->location,
-                'job_type' => $application->job->job_type,
-                'salary_range' => $application->job->salary_min && $application->job->salary_max 
-                    ? '$' . number_format($application->job->salary_min) . ' - $' . number_format($application->job->salary_max)
+                'candidate_phone' => $application->phone ?? $application->candidate->mobile_number,
+                'job_title' => $application->jobPosting->title,
+                'job_department' => $application->jobPosting->department,
+                'job_location' => $application->jobPosting->location,
+                'job_type' => $application->jobPosting->job_type,
+                'salary_range' => $application->jobPosting->salary_min && $application->jobPosting->salary_max
+                    ? 'Rs. ' . number_format($application->jobPosting->salary_min) . ' - Rs. ' . number_format($application->jobPosting->salary_max)
                     : 'Not specified',
                 'cover_letter' => $application->cover_letter,
-                'resume' => $application->candidate->resume,
+                'resume' => $application->resume,
                 'status' => $application->status,
                 'applied_at' => $application->created_at->format('M d, Y h:i A'),
                 'reviewer_notes' => $application->reviewer_notes,
@@ -158,17 +176,20 @@ class ApplicationReviewController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:under_review,shortlisted,rejected,accepted',
+            'status' => 'required|in:pending,approved,rejected',
             'reviewer_notes' => 'nullable|string|max:1000',
         ]);
 
-        $application = Application::findOrFail($id);
         $reviewer = Auth::guard('reviewer')->user();
+
+        // Only allow updating applications assigned to this reviewer
+        $application = ApplicationForm::where('reviewer_id', $reviewer->id)
+            ->findOrFail($id);
 
         $application->update([
             'status' => $request->status,
             'reviewer_notes' => $request->reviewer_notes,
-            'reviewed_by' => $reviewer->id,
+            'reviewer_id' => $reviewer->id,
             'reviewed_at' => now(),
         ]);
 
@@ -186,34 +207,24 @@ class ApplicationReviewController extends Controller
     {
         $request->validate([
             'application_ids' => 'required|array',
-            'application_ids.*' => 'exists:applications,id',
-            'status' => 'required|in:under_review,shortlisted,rejected',
+            'application_ids.*' => 'exists:application_form,id',
+            'status' => 'required|in:pending,approved,rejected',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
 
-        Application::whereIn('id', $request->application_ids)
+        // Only update applications assigned to this reviewer
+        ApplicationForm::whereIn('id', $request->application_ids)
+            ->where('reviewer_id', $reviewer->id)
             ->update([
                 'status' => $request->status,
-                'reviewed_by' => $reviewer->id,
+                'reviewer_id' => $reviewer->id,
                 'reviewed_at' => now(),
             ]);
 
         return response()->json([
             'success' => true,
             'message' => count($request->application_ids) . ' applications updated successfully!',
-        ]);
-    }
-
-    /**
-     * Export applications to Excel
-     */
-    public function export(Request $request)
-    {
-        // This will be implemented later with Laravel Excel
-        return response()->json([
-            'success' => false,
-            'message' => 'Export feature coming soon!'
         ]);
     }
 }

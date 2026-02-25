@@ -3,121 +3,184 @@
 namespace App\Http\Controllers\HRAdministrator;
 
 use App\Http\Controllers\Controller;
-use App\Models\JobPosting;
-use App\Models\Application;
-use App\Models\Candidate;
+use App\Models\ApplicationForm;
 use App\Models\Reviewer;
+use App\Models\JobPosting;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
-class HRAdministratorDashboardController extends Controller
+class HRApplicationController extends Controller
 {
-    /**
-     * Display HR Administrator dashboard
-     */
-    public function index()
-    {
-        $hrAdmin = Auth::guard('hr_administrator')->user();
-        $hrAdministrator = $hrAdmin; // Required by the view
+    public function index(Request $request)
+    {
+        // Initialize query - show all submitted applications
+        $query = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+            ->where('status', '!=', 'draft');
 
-        // SIMPLE FIX: Show ALL jobs in the system
-        // This makes sense for a government recruitment system where
-        // HR admins should see all active vacancies
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('candidate', function ($q2) use ($search) {
+                    $q2->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('jobPosting', function ($q2) use ($search) {
+                    $q2->where('title', 'like', "%{$search}%")
+                        ->orWhere('advertisement_no', 'like', "%{$search}%");
+                });
+            });
+        }
 
-        $stats = [
-            // Show ALL jobs statistics
-            'total_jobs' => JobPosting::count(),
-            'active_jobs' => JobPosting::where('status', 'active')->count(),
-            'closed_jobs' => JobPosting::where('status', 'closed')->count(),
-            'draft_jobs' => JobPosting::where('status', 'draft')->count(),
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
-            // Show ALL applications statistics
-            'pending_applications' => Application::where('status', 'pending')->count(),
-            'total_applications' => Application::count(),
+        // Job filter
+        if ($request->filled('job_id')) {
+            $query->where('job_posting_id', $request->job_id);
+        }
 
-            // Other statistics
-            'total_candidates' => Candidate::count(),
-            'total_reviewers' => Reviewer::where('status', 'active')->count(),
-            'active_reviewers' => Reviewer::where('status', 'active')->count(),
-        ];
+        // Reviewer filter
+        if ($request->filled('reviewer_id')) {
+            $query->where('reviewer_id', $request->reviewer_id);
+        }
 
-        // For backward compatibility with the view
-        $stats['total_jobs_posted'] = $stats['total_jobs'];
+        // Date filters
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
 
-        // Growth statistics (this month vs last month)
-        $thisMonthStart = now()->startOfMonth();
-        $lastMonthStart = now()->subMonth()->startOfMonth();
-        $lastMonthEnd = now()->subMonth()->endOfMonth();
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
 
-        $thisMonth = [
-            'jobs_posted' => JobPosting::whereBetween('created_at', [$thisMonthStart, now()])->count(),
-            'applications' => Application::whereBetween('created_at', [$thisMonthStart, now()])->count(),
-            'candidates' => Candidate::whereBetween('created_at', [$thisMonthStart, now()])->count(),
-        ];
+        // Paginate results
+        $applications = $query->paginate(20)->withQueryString();
 
-        $lastMonth = [
-            'jobs_posted' => JobPosting::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
-            'applications' => Application::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
-            'candidates' => Candidate::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
-        ];
+        // Get all jobs for filter dropdown
+        $jobs = JobPosting::select('id', 'title', 'advertisement_no')->get();
 
-        // Calculate growth percentage
-        $growth = [
-            'jobs_posted' => $this->calculateGrowth($thisMonth['jobs_posted'], $lastMonth['jobs_posted']),
-            'applications' => $this->calculateGrowth($thisMonth['applications'], $lastMonth['applications']),
-            'candidates' => $this->calculateGrowth($thisMonth['candidates'], $lastMonth['candidates']),
-        ];
+        // Get all active reviewers for filter dropdown
+        $reviewers = Reviewer::select('id', 'name', 'email')
+            ->where('status', 'active')
+            ->get();
 
-        // Recent applications - show ALL recent applications
-        $recentApplications = Application::with(['candidate', 'jobPosting'])
-            ->latest()
-            ->take(5)
-            ->get();
+        // Status options
+        $statuses = ['pending', 'approved', 'rejected'];
 
-        // Recent jobs - show ALL recent jobs
-        $recentJobs = JobPosting::latest()
-            ->take(5)
-            ->get();
+        // Calculate statistics
+        $stats = [
+            'total' => ApplicationForm::where('status', '!=', 'draft')->count(),
+            'pending' => ApplicationForm::where('status', 'pending')->count(),
+            'approved' => ApplicationForm::where('status', 'approved')->count(),
+            'rejected' => ApplicationForm::where('status', 'rejected')->count(),
+        ];
 
-        // Top jobs by application count - show ALL jobs
-        $topJobs = JobPosting::withCount('applications')
-            ->orderBy('applications_count', 'desc')
-            ->take(5)
-            ->get();
+        return view('hr-administrator.applications.index', compact(
+            'applications',
+            'jobs',
+            'reviewers',
+            'statuses',
+            'stats'
+        ));
+    }
 
-        // Active reviewers with stats
-        $reviewerStats = Reviewer::where('status', 'active')
-            ->withCount([
-                'applications as total_reviewed' => function ($q) {
-                    $q->whereIn('status', ['reviewed', 'shortlisted', 'rejected']);
-                },
-                'applications as pending' => function ($q) {
-                    $q->where('status', 'under_review');
-                }
-            ])
-            ->take(5)
-            ->get();
+    public function show(ApplicationForm $application)
+    {
+        $application->load(['candidate', 'jobPosting', 'reviewer']);
 
-        return view('admin.hr-administrators.show', compact(
-            'hrAdministrator',
-            'stats',
-            'recentJobs',
-            'growth',
-            'thisMonth',
-            'recentApplications',
-            'topJobs',
-            'reviewerStats'
-        ));
-    }
+        $reviewers = Reviewer::where('status', 'active')->get();
+        $statuses = ['pending', 'approved', 'rejected'];
 
-    /**
-     * Calculate growth percentage
-     */
-    private function calculateGrowth($current, $previous)
-    {
-        if ($previous == 0) {
-            return $current > 0 ? 100 : 0;
-        }
-        return round((($current - $previous) / $previous) * 100, 1);
-    }
+        return view('hr-administrator.applications.show', compact(
+            'application',
+            'reviewers',
+            'statuses'
+        ));
+    }
+
+    public function updateStatus(Request $request, ApplicationForm $application)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected',
+            'admin_notes' => 'nullable|string|max:1000'
+        ]);
+
+        $application->update([
+            'status' => $request->status,
+            'admin_notes' => $request->admin_notes,
+            'reviewed_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Application status updated successfully!');
+    }
+
+    public function assignReviewer(Request $request, ApplicationForm $application)
+    {
+        $request->validate([
+            'reviewer_id' => 'required|exists:reviewers,id'
+        ]);
+
+        $application->update([
+            'reviewer_id' => $request->reviewer_id,
+            'status' => 'approved'
+        ]);
+
+        return redirect()->back()->with('success', 'Reviewer assigned successfully!');
+    }
+
+    public function destroy(ApplicationForm $application)
+    {
+        $application->delete();
+
+        return redirect()->route('hr-administrator.applications.index')
+            ->with('success', 'Application deleted successfully!');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:delete,update_status,assign_reviewer',
+            'application_ids' => 'required|array',
+            'application_ids.*' => 'exists:application_form,id',
+            'status' => 'required_if:action,update_status|in:pending,approved,rejected',
+            'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id'
+        ]);
+
+        $applicationIds = $request->application_ids;
+
+        switch ($request->action) {
+            case 'delete':
+                ApplicationForm::whereIn('id', $applicationIds)->delete();
+                $message = 'Selected applications deleted successfully!';
+                break;
+
+            case 'update_status':
+                ApplicationForm::whereIn('id', $applicationIds)->update([
+                    'status' => $request->status,
+                    'reviewed_at' => now(),
+                ]);
+                $message = 'Status updated for selected applications!';
+                break;
+
+            case 'assign_reviewer':
+                ApplicationForm::whereIn('id', $applicationIds)->update([
+                    'reviewer_id' => $request->reviewer_id,
+                    'status' => 'approved'
+                ]);
+                $message = 'Reviewer assigned to selected applications!';
+                break;
+
+            default:
+                $message = 'Invalid action';
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
 }

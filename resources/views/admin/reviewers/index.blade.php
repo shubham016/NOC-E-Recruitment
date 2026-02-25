@@ -946,10 +946,12 @@
                         <thead>
                             <tr>
                                 <th style="width: 50px;">S.N</th>
-                                <th style="width: 300px;">Reviewer</th>
-                                <th style="width: 250px;">Contact</th>
-                                <th style="width: 200px;">Department</th>
-                                <th class="text-center" style="width: 150px;">Status</th>
+                                <th style="width: 250px;">Reviewer</th>
+                                <th style="width: 200px;">Contact</th>
+                                <th style="width: 180px;">Department</th>
+                                <th class="text-center" style="width: 120px;">Reviewed</th>
+                                <th class="text-center" style="width: 120px;">Pending</th>
+                                <th class="text-center" style="width: 120px;">Status</th>
                                 <th class="text-center" style="width: 150px;">Actions</th>
                             </tr>
                         </thead>
@@ -996,6 +998,18 @@
                                         @else
                                             {{-- <span style="color: #9ca3af;">—</span> --}}
                                         @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                            <i class="bi bi-check-circle-fill" style="color: #059669; font-size: 1rem;"></i>
+                                            <span style="font-weight: 700; color: #374151; font-size: 1.125rem;">{{ $reviewer->total_reviewed ?? 0 }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                            <i class="bi bi-hourglass" style="color: #f59e0b; font-size: 1rem;"></i>
+                                            <span style="font-weight: 700; color: #374151; font-size: 1.125rem;">{{ $reviewer->pending ?? 0 }}</span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         <span

@@ -224,7 +224,8 @@
                     <select class="form-select" name="status">
                         <option value="">All Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="selected" {{ request('status') == 'selected' ? 'selected' : '' }}>Selected</option>
                         <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
@@ -371,7 +372,8 @@
 
                             $statusBadge = match($application->status) {
                                 'pending' => 'bg-warning text-dark',
-                                'under_review' => 'bg-info text-white',
+                                'approved' => 'bg-info text-white',
+                                'selected' => 'bg-primary text-white',
                                 'shortlisted' => 'bg-success text-white',
                                 'rejected' => 'bg-danger text-white',
                                 default => 'bg-secondary text-white'
@@ -602,8 +604,8 @@
                                         <button type="button" class="btn btn-danger btn-action" data-status="rejected">
                                             <i class="bi bi-x-circle me-2"></i>Reject Application
                                         </button>
-                                        <button type="button" class="btn btn-info btn-action" data-status="under_review">
-                                            <i class="bi bi-arrow-repeat me-2"></i>Mark Under Review
+                                        <button type="button" class="btn btn-info btn-action" data-status="approved">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Mark Approved
                                         </button>
                                     </div>
                                 </form>
@@ -702,7 +704,8 @@
         function getStatusClass(status) {
             const classes = {
                 'pending': 'bg-warning text-dark',
-                'under_review': 'bg-info text-white',
+                'approved': 'bg-info text-white',
+                'selected': 'bg-primary text-white',
                 'shortlisted': 'bg-success text-white',
                 'rejected': 'bg-danger text-white',
                 'accepted': 'bg-primary text-white'

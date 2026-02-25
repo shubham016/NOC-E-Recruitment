@@ -18,12 +18,11 @@
     <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
-        <span class="badge bg-primary ms-auto"></span>
     </a>
     <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Vacancy List</span>
-        <span class="badge bg-primary ms-auto">{{ $stats['total_jobs'] }}</span>
+        <span class="badge bg-primary ms-auto">{{ $stats['active_jobs'] }}</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
@@ -45,7 +44,7 @@
     <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item">
         <i class="bi bi-person-badge"></i>
         <span>HR Administrators</span>
-        <span class="badge bg-success ms-auto">{{ \App\Models\Admin::where('status', 'active')->count() }}</span>
+        <span class="badge bg-success ms-auto">{{ $stats['active_hr_admins'] }}</span>
     </a>
 
     <a href="#" class="sidebar-menu-item">
@@ -74,6 +73,7 @@
             --warning: #f59e0b;
             --info: #3b82f6;
             --danger: #ef4444;
+            --purple: #8b5cf6;
 
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
@@ -129,8 +129,8 @@
         /* Stats Grid - Perfect Alignment */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
             margin-bottom: 32px;
         }
 
@@ -139,6 +139,7 @@
             border: var(--border);
             border-radius: var(--radius);
             padding: 24px;
+            text-align: center;
             transition: all 0.2s ease;
         }
 
@@ -148,14 +149,14 @@
         }
 
         .stat-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            margin-bottom: 16px;
+            margin: 0 auto 16px;
         }
 
         .stat-value {
@@ -204,6 +205,33 @@
         .stat-text {
             font-size: 13px;
             color: var(--gray-500);
+        }
+
+        /* Purple Color Utilities */
+        .bg-purple {
+            background-color: var(--purple) !important;
+        }
+
+        .text-purple {
+            color: var(--purple) !important;
+        }
+
+        .bg-purple.bg-opacity-10 {
+            background-color: rgba(139, 92, 246, 0.1) !important;
+        }
+
+        /* Ensure top navbar sticks */
+        .top-navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: var(--sidebar-width) !important;
+            right: 0 !important;
+            z-index: 1000 !important;
+        }
+
+        /* Add padding to content-area to account for fixed navbar */
+        .content-area {
+            padding-top: calc(80px + 2rem) !important;
         }
 
         /* Content Layout - Perfect Grid */
@@ -325,9 +353,14 @@
             color: #92400e;
         }
 
-        .badge-under_review {
+        .badge-approved {
             background: #dbeafe;
             color: #1e40af;
+        }
+
+        .badge-selected {
+            background: #e0e7ff;
+            color: #3730a3;
         }
 
         .badge-shortlisted {
@@ -655,7 +688,7 @@
             </div>
             <div class="stat-value">{{ $stats['active_jobs'] }}</div>
             <div class="stat-label">Active Vacancies</div>
-            <div class="stat-meta">
+            <!-- <div class="stat-meta">
                 @if($growth['jobs_posted'] != 0)
                     <span class="stat-badge {{ $growth['jobs_posted'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['jobs_posted'] > 0 ? 'up' : 'down' }}"></i>
@@ -663,7 +696,7 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['jobs_posted'] }} this month</span>
-            </div>
+            </div> -->
         </div>
 
         <!-- Stat 2 -->
@@ -673,7 +706,7 @@
             </div>
             <div class="stat-value">{{ $stats['pending_applications'] }}</div>
             <div class="stat-label">Pending Reviews</div>
-            <div class="stat-meta">
+            <!-- <div class="stat-meta">
                 @if($growth['applications'] != 0)
                     <span class="stat-badge {{ $growth['applications'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['applications'] > 0 ? 'up' : 'down' }}"></i>
@@ -681,7 +714,7 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['applications'] }} received</span>
-            </div>
+            </div> -->
         </div>
 
         <!-- Stat 3 - Total Candidates -->
@@ -691,7 +724,7 @@
             </div>
             <div class="stat-value">{{ $stats['total_candidates'] }}</div>
             <div class="stat-label">Registered Candidates</div>
-            <div class="stat-meta">
+            <!-- <div class="stat-meta">
                 @if($growth['candidates'] != 0)
                     <span class="stat-badge {{ $growth['candidates'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['candidates'] > 0 ? 'up' : 'down' }}"></i>
@@ -699,7 +732,7 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['candidates'] }} this month</span>
-            </div>
+            </div> -->
         </div>
 
         <!-- Stat 4 -->
@@ -709,9 +742,21 @@
             </div>
             <div class="stat-value">{{ $stats['active_reviewers'] }}</div>
             <div class="stat-label">Active Reviewers</div>
-            <div class="stat-meta">
+            <!-- <div class="stat-meta">
                 <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
+            </div> -->
+        </div>
+
+        <!-- Stat 5 - HR Administrators/Approvers -->
+        <div class="stat-box">
+            <div class="stat-icon bg-purple bg-opacity-10 text-purple">
+                <i class="bi bi-person-check-fill"></i>
             </div>
+            <div class="stat-value">{{ $stats['active_hr_admins'] }}</div>
+            <div class="stat-label">Active Approvers</div>
+            <!-- <div class="stat-meta">
+                <span class="stat-text">{{ $stats['total_hr_admins'] }} total approvers</span>
+            </div> -->
         </div>
     </div>
 
@@ -765,7 +810,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="bi bi-trophy-fill text-warning"></i>
+                        <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
                         Total Vacancies by Applications
                     </h3>
                 </div>
@@ -786,7 +831,7 @@
                                 </p>
                             </div>
                             <div class="job-count-box">
-                                <div class="job-count">{{ $job->applications_count }}</div>
+                                <div class="job-count">{{ $job->application_forms_count ?? 0 }}</div>
                                 <div class="job-count-label">Applications</div>
                             </div>
                         </div>

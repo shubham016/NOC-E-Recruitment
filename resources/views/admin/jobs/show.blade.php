@@ -207,10 +207,12 @@
 
         .qualification-box {
             background: #f9fafb;
-            border-left: 4px solid #dc2626;
-            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 0.5rem 1.75rem 1rem;
             border-radius: 6px;
-            white-space: pre-wrap;
+            white-space: pre-line;
+            text-align: left;
+            margin: 0;
         }
 
         .timeline-item {
@@ -319,8 +321,8 @@
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Service / Group</div>
-                    <div class="detail-value">{{ $job->service_group }}</div>
+                    <div class="detail-label">Department</div>
+                    <div class="detail-value">{{ $job->department }}</div>
                 </div>
 
                 <div class="detail-row">
@@ -344,19 +346,19 @@
                 @endif
 
                 <div class="detail-row">
-                    <div class="detail-label">Demand Post (Number)</div>
+                    <div class="detail-label">Post Demand</div>
                     <div class="detail-value">
                         <strong class="text-danger fs-5">{{ $job->number_of_posts }}</strong>
                         <small class="text-muted ms-2">positions available</small>
                     </div>
                 </div>
 
-                <div class="detail-row">
+                <!-- <div class="detail-row">
                     <div class="detail-label">Department</div>
                     <div class="detail-value">{{ $job->department }}</div>
-                </div>
+                </div> -->
 
-                <div class="detail-row">
+                <!-- <div class="detail-row">
                     <div class="detail-label">Location</div>
                     <div class="detail-value">
                         <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ $job->location }}
@@ -368,7 +370,7 @@
                     <div class="detail-value">
                         <span class="badge bg-secondary">{{ ucfirst($job->job_type) }}</span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Enhanced Deadline Display with Nepali Date -->
                 <div class="detail-row">
@@ -432,12 +434,12 @@
             @endif
 
             <!-- Applications List -->
-            @if($job->applications_count > 0)
+            @if($job->application_forms_count > 0)
                 <div class="detail-card">
                     <div class="detail-header">
                         <h5 class="fw-bold text-danger mb-0">
                             <i class="bi bi-people-fill me-2"></i>Recent Applications
-                            <span class="badge bg-danger ms-2">{{ $job->applications_count }}</span>
+                            <span class="badge bg-danger ms-2">{{ $job->application_forms_count }}</span>
                         </h5>
                     </div>
 
@@ -452,7 +454,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($job->applications->take(5) as $application)
+                                @forelse($job->applicationForms->take(5) as $application)
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -468,10 +470,11 @@
                                         </td>
                                         <td>{{ $application->created_at->format('M d, Y') }}</td>
                                         <td>
-                                            <span class="badge 
+                                            <span class="badge
                                                             {{ $application->status == 'pending' ? 'bg-warning' : '' }}
-                                                            {{ $application->status == 'under_review' ? 'bg-info' : '' }}
+                                                            {{ $application->status == 'approved' ? 'bg-info' : '' }}
                                                             {{ $application->status == 'shortlisted' ? 'bg-success' : '' }}
+                                                            {{ $application->status == 'selected' ? 'bg-primary' : '' }}
                                                             {{ $application->status == 'rejected' ? 'bg-danger' : '' }}">
                                                 {{ ucfirst(str_replace('_', ' ', $application->status)) }}
                                             </span>
@@ -494,10 +497,10 @@
                         </table>
                     </div>
 
-                    @if($job->applications_count > 5)
+                    @if($job->application_forms_count > 5)
                         <div class="text-center mt-3">
                             <a href="#" class="btn btn-outline-danger">
-                                View All {{ $job->applications_count }} Applications
+                                View All {{ $job->application_forms_count }} Applications
                                 <i class="bi bi-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -582,8 +585,8 @@
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-info bg-opacity-10 rounded">
-                            <div class="fs-3 fw-bold text-info">{{ $applicationStats['under_review'] ?? 0 }}</div>
-                            <small class="text-muted">Under Review</small>
+                            <div class="fs-3 fw-bold text-info">{{ $applicationStats['approved'] ?? 0 }}</div>
+                            <small class="text-muted">Approved</small>
                         </div>
                     </div>
                     <div class="col-6">

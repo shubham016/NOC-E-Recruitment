@@ -1,0 +1,779 @@
+/**
+ * Government of Nepal - Professional E-Recruitment System
+ * Elegant, Clean, Industry-Standard Design
+ * Nepal Oil Corporation
+ */
+
+/* ============================================
+   GOVERNMENT COLOR PALETTE - Official Nepal
+   ============================================ */
+:root {
+    /* Primary - Nepal Government Blue */
+    --gov-primary: #1e40af;
+    --gov-primary-light: #3b82f6;
+    --gov-primary-dark: #1e3a8a;
+    --gov-primary-hover: #1d4ed8;
+
+    /* Status Colors */
+    --gov-success: #059669;
+    --gov-success-light: #10b981;
+    --gov-warning: #d97706;
+    --gov-danger: #dc2626;
+    --gov-info: #0284c7;
+
+    /* Neutral Grays - Professional */
+    --gov-gray-50: #f9fafb;
+    --gov-gray-100: #f3f4f6;
+    --gov-gray-200: #e5e7eb;
+    --gov-gray-300: #d1d5db;
+    --gov-gray-400: #9ca3af;
+    --gov-gray-500: #6b7280;
+    --gov-gray-600: #4b5563;
+    --gov-gray-700: #374151;
+    --gov-gray-800: #1f2937;
+    --gov-gray-900: #111827;
+
+    /* Spacing Scale */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    /* Shadows - Elegant & Subtle */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================
+   PAGE LAYOUT - Professional Structure
+   ============================================ */
+.gov-page-container {
+    background: var(--gov-gray-50);
+    min-height: 100vh;
+}
+
+/* Page Header - Elegant Gradient */
+.gov-page-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    margin: -1.5rem -1.5rem 2rem -1.5rem;
+    padding: 2.5rem 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.gov-page-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.gov-page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: white;
+    letter-spacing: -0.025em;
+    position: relative;
+    z-index: 1;
+}
+
+.gov-page-subtitle {
+    font-size: 1rem;
+    opacity: 0.95;
+    margin-bottom: 0;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   STATISTICS CARDS - Modern & Engaging
+   ============================================ */
+.gov-stats-card {
+    background: white;
+    border: 1px solid var(--gov-gray-200);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.gov-stats-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(
+        90deg,
+        var(--gov-primary) 0%,
+        var(--gov-primary-light) 100%
+    );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.gov-stats-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--gov-primary-light);
+}
+
+.gov-stats-card:hover::before {
+    transform: scaleX(1);
+}
+
+.gov-stats-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin: auto;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.gov-stats-number {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: var(--gov-gray-900);
+    letter-spacing: -0.02em;
+}
+
+.gov-stats-label {
+    font-size: 0.9375rem;
+    color: var(--gov-gray-600);
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+/* ============================================
+   PROFESSIONAL CARDS - Clean & Structured
+   ============================================ */
+.gov-card {
+    background: white;
+    border: 1px solid var(--gov-gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-lg);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.gov-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.gov-card-header {
+    background: linear-gradient(to bottom, white 0%, var(--gov-gray-50) 100%);
+    border-bottom: 2px solid var(--gov-gray-200);
+    padding: 1.25rem 1.75rem;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: var(--gov-gray-900);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.gov-card-header i {
+    color: var(--gov-primary);
+    font-size: 1.125rem;
+}
+
+.gov-card-body {
+    padding: 1.75rem;
+}
+
+.gov-card-body-no-padding {
+    padding: 0;
+}
+
+/* ============================================
+   PROFESSIONAL TABLES - Clear & Organized
+   ============================================ */
+.gov-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+}
+
+/* Table Header */
+.gov-table thead {
+    background: linear-gradient(to bottom, var(--gov-gray-50) 0%, white 100%);
+}
+
+.gov-table thead th {
+    background: var(--gov-gray-50);
+    color: var(--gov-gray-700);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.125rem 1.25rem;
+    border-bottom: 2px solid var(--gov-gray-300);
+    border-top: 1px solid var(--gov-gray-200);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.gov-table thead th:first-child {
+    border-left: 1px solid var(--gov-gray-200);
+    border-top-left-radius: 0;
+}
+
+.gov-table thead th:last-child {
+    border-right: 1px solid var(--gov-gray-200);
+    border-top-right-radius: 0;
+}
+
+/* Table Body */
+.gov-table tbody td {
+    padding: 1.125rem 1.25rem;
+    border-bottom: 1px solid var(--gov-gray-200);
+    border-left: 1px solid var(--gov-gray-200);
+    border-right: 1px solid var(--gov-gray-200);
+    font-size: 0.9375rem;
+    color: var(--gov-gray-700);
+    vertical-align: middle;
+    background: white;
+    transition: background-color 0.2s ease;
+}
+
+.gov-table tbody tr:hover td {
+    background-color: var(--gov-gray-50);
+}
+
+.gov-table tbody tr:last-child td {
+    border-bottom: 1px solid var(--gov-gray-200);
+}
+
+.gov-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0;
+}
+
+.gov-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0;
+}
+
+/* Detail Table (Two Column) */
+.gov-table-detail tbody td:first-child {
+    font-weight: 600;
+    background: var(--gov-gray-50);
+    color: var(--gov-gray-800);
+    width: 35%;
+}
+
+/* ============================================
+   BUTTONS - Professional & Accessible
+   ============================================ */
+.gov-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+}
+
+.gov-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+}
+
+.gov-btn-primary {
+    background: linear-gradient(
+        135deg,
+        var(--gov-primary) 0%,
+        var(--gov-primary-light) 100%
+    );
+    color: white;
+    box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+.gov-btn-primary:hover {
+    background: linear-gradient(
+        135deg,
+        var(--gov-primary-dark) 0%,
+        var(--gov-primary) 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(30, 64, 175, 0.3);
+    color: white;
+}
+
+.gov-btn-secondary {
+    background: white;
+    color: var(--gov-gray-700);
+    border: 2px solid var(--gov-gray-300);
+}
+
+.gov-btn-secondary:hover {
+    background: var(--gov-gray-50);
+    border-color: var(--gov-gray-400);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--gov-gray-900);
+}
+
+.gov-btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Action Buttons (Icon only) */
+.gov-action-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gov-gray-300);
+    background: white;
+    color: var(--gov-gray-600);
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.gov-action-btn:hover {
+    border-color: var(--gov-primary);
+    color: var(--gov-primary);
+    background: #eff6ff;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.gov-action-btn-success:hover {
+    border-color: var(--gov-success);
+    color: var(--gov-success);
+    background: #f0fdf4;
+}
+
+.gov-action-btn-danger:hover {
+    border-color: var(--gov-danger);
+    color: var(--gov-danger);
+    background: #fef2f2;
+}
+
+/* ============================================
+   BADGES - Professional Status Indicators
+   ============================================ */
+.gov-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.gov-badge-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
+.gov-badge-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+.gov-badge-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-color: #6ee7b7;
+}
+
+.gov-badge-primary {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    color: #3730a3;
+    border-color: #a5b4fc;
+}
+
+.gov-badge-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+
+.gov-badge-secondary {
+    /* background: linear-gradient(
+        135deg,
+        var(--gov-gray-100) 0%,
+        var(--gov-gray-200) 100%
+    ); */
+    color: var(--gov-gray-700);
+    /* border-color: var(--gov-gray-300); */
+}
+
+/* ============================================
+   FORM CONTROLS - Clean & Functional
+   ============================================ */
+.gov-form-control,
+.gov-form-select {
+    border: 2px solid var(--gov-gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    background: white;
+    color: var(--gov-gray-900);
+    }
+
+.gov-form-control:focus,
+.gov-form-select:focus {
+    border-color: var(--gov-primary);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+    outline: none;
+    background: white;
+   }
+
+.gov-form-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--gov-gray-800);
+    margin-bottom: 0.5rem;
+    display: block;
+    letter-spacing: 0.01em;
+}
+
+/* ============================================
+   ALERTS - Clear Communication
+   ============================================ */
+.gov-alert {
+    padding: 1.125rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.gov-alert i {
+    font-size: 1.25rem;
+}
+
+.gov-alert-success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+    border-color: #86efac;
+    color: #166534;
+}
+
+.gov-alert-danger {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.gov-alert-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #93c5fd;
+    color: #1e40af;
+}
+
+/* ============================================
+   AVATARS - Professional Identity
+   ============================================ */
+.gov-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    border: 2px solid var(--gov-gray-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.gov-avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+    border: 2px solid var(--gov-gray-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.gov-avatar-lg {
+    width: 130px;
+    height: 130px;
+    font-size: 3.5rem;
+    border-radius: var(--radius-lg);
+    border-width: 4px;
+}
+
+/* ============================================
+   TABS - Organized Content
+   ============================================ */
+.gov-tabs {
+    border-bottom: 2px solid var(--gov-gray-200);
+    padding: 0;
+    background: linear-gradient(to bottom, white 0%, var(--gov-gray-50) 100%);
+    margin: -1.75rem -1.75rem -0.25rem -0.75rem;
+    padding: 1.5rem 1.75rem;
+}
+
+.gov-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 1.125rem 0.75rem;
+    font-weight: 600;
+    color: var(--gov-gray-600);
+    transition: all 0.2s ease;
+    font-size: 0.9375rem;
+}
+
+.gov-tabs .nav-link:hover {
+    color: var(--gov-primary);
+    border-bottom-color: var(--gov-primary-light);
+    background: rgba(30, 64, 175, 0.03);
+}
+
+.gov-tabs .nav-link.active {
+    color: var(--gov-primary);
+    border-bottom-color: var(--gov-primary);
+    background: white;
+}
+
+/* ============================================
+   PAGINATION - Clear Navigation
+   ============================================ */
+.gov-pagination-footer {
+    background: linear-gradient(to top, var(--gov-gray-50) 0%, white 100%);
+    border-top: 2px solid var(--gov-gray-200);
+    padding: 1.25rem 1.75rem;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ============================================
+   EMPTY STATE - Helpful Guidance
+   ============================================ */
+.gov-empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+}
+
+.gov-empty-state-icon {
+    font-size: 5rem;
+    color: var(--gov-gray-300);
+    margin-bottom: 1.5rem;
+}
+
+.gov-empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gov-gray-800);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.gov-empty-state-text {
+    font-size: 1rem;
+    color: var(--gov-gray-600);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+/* ============================================
+   CANDIDATE HEADER - Prominent Display
+   ============================================ */
+.gov-candidate-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    border: none;
+    color: white;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.gov-candidate-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 70%
+    );
+    border-radius: 50%;
+}
+
+/* ============================================
+   TIMELINE - Activity History
+   ============================================ */
+.gov-timeline-item {
+    position: relative;
+    padding-bottom: 1.75rem;
+    border-left: 3px solid var(--gov-gray-200);
+    padding-left: 2.5rem;
+    margin-left: 1.5rem;
+}
+
+.gov-timeline-item:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+}
+
+.gov-timeline-icon {
+    position: absolute;
+    left: -1.75rem;
+    top: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   INFO BOXES - Highlighted Information
+   ============================================ */
+.gov-info-box {
+    background: linear-gradient(135deg, var(--gov-gray-50) 0%, white 100%);
+    border: 2px solid var(--gov-gray-200);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.gov-section-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--gov-gray-900);
+    margin-bottom: 1.125rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--gov-gray-200);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.gov-section-title i {
+    color: var(--gov-primary);
+}
+
+/* ============================================
+   BACK LINK - Navigation Aid
+   ============================================ */
+.gov-back-link {
+    color: var(--gov-gray-600);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.gov-back-link:hover {
+    color: var(--gov-primary);
+    gap: 0.875rem;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+    .gov-page-title {
+        font-size: 1.5rem;
+    }
+
+    .gov-stats-number {
+        font-size: 2rem;
+    }
+
+    .gov-table {
+        font-size: 0.875rem;
+    }
+
+    .gov-action-btn {
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.gov-text-sm {
+    font-size: 0.875rem;
+}
+.gov-text-md {
+    font-size: 0.9375rem;
+}
+.gov-text-lg {
+    font-size: 1.0625rem;
+}
+.gov-font-medium {
+    font-weight: 500;
+}
+.gov-font-semibold {
+    font-weight: 600;
+}
+.gov-font-bold {
+    font-weight: 700;
+}

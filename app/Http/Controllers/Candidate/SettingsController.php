@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\Hash;
 class SettingsController extends Controller
 {
     /**
+     * Show change password page
+     */
+    public function showChangePassword()
+    {
+        return view('candidate.change-password');
+    }
+
+    /**
      * Show settings page
      */
     public function index()

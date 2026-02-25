@@ -20,7 +20,10 @@ use App\Http\Controllers\HRAdministrator\HRCandidateController;
 use App\Http\Controllers\HRAdministrator\HRReviewerController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
-use App\Http\Controllers\Candidate\ApplicationController as CandidateApplicationController;
+use App\Http\Controllers\Candidate\ApplicationFormController as CandidateApplicationController;
+use App\Http\Controllers\Candidate\PaymentController;
+use App\Http\Controllers\Candidate\AdmitCardController;
+use App\Http\Controllers\Candidate\CandidateResultController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +92,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{application}/assign-reviewer', [AdminApplicationController::class, 'assignReviewer'])->name('assignReviewer');
             Route::delete('/{application}', [AdminApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [AdminApplicationController::class, 'bulkAction'])->name('bulkAction');
+            Route::delete('/{application}/reset-payment', [AdminApplicationController::class, 'resetPayment'])->name('resetPayment');
         });
 
         /*
@@ -332,13 +336,40 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
                 Route::get('/{id}/edit', [CandidateApplicationController::class, 'edit'])->name('edit');
                 Route::put('/{id}', [CandidateApplicationController::class, 'update'])->name('update');
             });
+
+            // Eligibility check (AJAX)
+            Route::get('/{jobId}/check-eligibility', [CandidateApplicationController::class, 'checkEligibilityAjax'])->name('checkEligibility');
         });
 
         // My Applications Routes (Direct access for list/show/delete)
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
+            Route::post('/', [CandidateApplicationController::class, 'storeFlat'])->name('store');
             Route::get('/{id}', [CandidateApplicationController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [CandidateApplicationController::class, 'editFlat'])->name('edit');
+            Route::put('/{id}', [CandidateApplicationController::class, 'updateFlat'])->name('update');
             Route::delete('/{id}', [CandidateApplicationController::class, 'destroy'])->name('destroy');
+        });
+
+        // Payment Routes (eSewa)
+        Route::prefix('payment')->name('payment.')->group(function () {
+            Route::get('/{applicationId}/esewa', [PaymentController::class, 'showEsewa'])->name('esewa');
+            Route::get('/success', [PaymentController::class, 'success'])->name('success');
+            Route::get('/failure', [PaymentController::class, 'failure'])->name('failure');
+        });
+
+        // Admit Card Routes
+        Route::prefix('admit-card')->name('admit-card.')->group(function () {
+            Route::get('/', [AdmitCardController::class, 'index'])->name('index');
+            Route::get('/{id}', [AdmitCardController::class, 'show'])->name('show');
+            Route::get('/{id}/download', [AdmitCardController::class, 'download'])->name('download');
+        });
+
+        // Results Routes
+        Route::prefix('results')->name('results.')->group(function () {
+            Route::get('/', [CandidateResultController::class, 'index'])->name('index');
+            Route::get('/search', [CandidateResultController::class, 'search'])->name('search');
+            Route::get('/{id}', [CandidateResultController::class, 'show'])->name('show');
         });
 
         // Profile Routes
@@ -357,6 +388,18 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::put('/privacy', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePrivacy'])->name('privacy.update');
             Route::delete('/account', [App\Http\Controllers\Candidate\SettingsController::class, 'deleteAccount'])->name('account.delete');
         });
+
+        /*
+        | Compatibility Routes (for shradha's view route names)
+        */
+        Route::get('/view-result', [CandidateResultController::class, 'index'])->name('viewresult');
+        Route::get('/view-result/{id}', [CandidateResultController::class, 'show'])->name('result.show');
+        Route::get('/admit-card', [AdmitCardController::class, 'index'])->name('admit-card');
+        Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
+        Route::get('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'showChangePassword'])->name('change-password');
+        Route::post('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePassword'])->name('password.update');
+        Route::post('/applications/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('applications.saveDraft');
+        Route::get('/payment/esewa/start/{applicationId}', [PaymentController::class, 'showEsewa'])->name('payment.esewa.start');
     });
 });
 
