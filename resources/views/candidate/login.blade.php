@@ -484,7 +484,7 @@
                             id="email"
                             name="email"
                             value="{{ old('email') }}"
-                            placeholder="Username / Email / Citizenship Number"
+                            placeholder="Email / Citizenship Number"
                             class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
                             required
                             autofocus

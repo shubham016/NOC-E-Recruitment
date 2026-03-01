@@ -590,12 +590,45 @@
                             <tr><th>Birth Date (AD)</th><td id="p_birth_date_ad"></td></tr>
                             <tr><th>Birth Date (BS)</th><td id="p_birth_date_bs"></td></tr>
                             <tr><th>Phone</th><td id="p_phone"></td></tr>
+                            <tr><th>Advertisement Number</th><td id="p_advertisement_no"></td></tr>
+                            <tr><th>Applying Position</th><td id="p_applying_position"></td></tr>
+                            <tr><th>Department</th><td id="p_department"></td></tr>
+                            <tr><th>Age</th><td id="p_age"></td></tr>
+                            <tr><th>Alternate Phone Number</th><td id="p_alternate_phone_number"></td></tr>
                             <tr><th>Gender</th><td id="p_gender"></td></tr>
                             <tr><th>Marital Status</th><td id="p_marital_status"></td></tr>
-                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Spouse Name (If Married)</th><td id="spouse_name_english"></td></tr>
+                            <tr><th>Spouse Nationality (If Married)</th><td id="p_spouse_nationality"></td></tr>
+                            <tr><th>Citizenship Number</th><td id="p_citizenship_number"></td></tr>
+                            <tr><th>Citizenship Issue Date (B.S)</th><td id="p_citizenship_issue_date_bs"></td></tr>
+                            <tr><th>Citizenship Issue District</th><td id="p_citizenship_issue_district"></td></tr>
+                            <tr><th>Father Name (बुबाको नाम)</th><td id="p_father_name_english"></td></tr>
+                            <tr><th>Mother Name (आमाको नाम)</th><td id="p_mother_name_english"></td></tr>
+                            <tr><th>Grandfather Name (हजुरबुबाको नाम)</th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father's Qualification (बुबाको योग्यता)</th><td id="p_father_qualification"></td></tr>
+                            <tr><th>Mother's Qualification (आमाको योग्यता)</th><td id="p_mother_qualification"></td></tr>
+                            <tr><th>Parent's Occupation</th><td id="p_parent_occupation"></td></tr>
                             <tr><th>Blood Group</th><td id="p_blood_group"></td></tr>
+                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Are you NOC Employee?</th><td id="p_noc_employee"></td></tr>
+                            <tr><th>NOC ID Card</th><td id="p_noc_id_card"></td></tr>
                         </table>
 
+                        <!-- General Information -->
+                            <h6 class="text-secondary mt-3">General Information</h6>
+                            <table class="table table-bordered">
+
+                                <tr><th width="30%">Religion</th><td id="p_religion"></td></tr>
+                                <tr><th>Community</th><td id="p_community"></td></tr>
+                                <tr><th>Ethnic Group</th><td id="p_ethnic_group"></td></tr>
+                                <tr><th>Mother Tongue</th><td id="p_mother_tongue"></td></tr>
+                                <tr><th>Employment Status</th><td id="p_employment_status"></td></tr>
+                                <tr><th>Physical Disability</th><td id="p_physical_disability"></td></tr>
+                                <tr><th>Ethnic Certificate</th><td id="p_ethnic_certificate"></td></tr>
+                                <tr><th>Disability Certificate</th><td id="p_disability_certificate"></td></tr>
+
+                            </table>
+                            <!-- Address Information -->
                         <h6 class="text-secondary mt-4">Address Information</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Permanent Address</th>
@@ -604,7 +637,7 @@
                             <tr><th>Mailing Address</th>
                                 <td id="p_mailing_address"></td></tr>
                         </table>
-
+                            <!-- Education -->
                         <h6 class="text-secondary mt-4">Education</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Education Level</th><td id="p_education_level"></td></tr>
@@ -612,7 +645,7 @@
                             <tr><th>Institution</th><td id="p_institution_name"></td></tr>
                             <tr><th>Graduation Year</th><td id="p_graduation_year"></td></tr>
                         </table>
-
+                            <!-- Work Experience -->
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
@@ -620,37 +653,16 @@
                             <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
                             <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
                         </table>
-
+                            <!-- Uploaded Documents -->
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
-                            <tr>
-                                <th width="30%">Passport Size Photo</th>
-                                <td id="p_photo"></td>
-                            </tr>
-                            <tr>
-                                <th>Citizenship / ID Document</th>
-                                <td id="p_citizenship"></td>
-                            </tr>
-                            <tr>
-                                <th>Transcript</th>
-                                <td id="p_transcript"></td>
-                            </tr>
-                            <tr>
-                                <th>Character</th>
-                                <td id="p_character"></td>
-                            </tr>
-                            <tr>
-                                <th>Equivalent</th>
-                                <td id="p_equivalent"></td>
-                            </tr>
-                            <tr>
-                                <th>Signature</th>
-                                <td id="p_signature"></td>
-                            </tr>
-                            <tr>
-                                <th>Work Experience</th>
-                                <td id="p_work_experience"></td>
-                            </tr>
+                            <tr><th width="30%">Passport Size Photo</th><td id="p_photo"></td></tr>
+                            <tr><th>Citizenship / ID Document</th><td id="p_citizenship"></td></tr>
+                            <tr><th>Transcript</th><td id="p_transcript"></td></tr>
+                            <tr><th>Character</th><td id="p_character"></td></tr>
+                            <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
+                            <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
                         </table>
                         <div class="form-check mb-4">
                                 <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
@@ -666,6 +678,7 @@
                     </div>
                 </div>
                     
+          
 
 <!-- STEP 8: Payment Method -->
                 <div class="step d-none" id="step8">
@@ -1228,6 +1241,22 @@ setTimeout(() => {
             // Skip if field is hidden
             if (field.closest('.d-none')) return;
             
+
+             // Handle checkbox validation
+            if (field.type === 'checkbox') {
+                if (!field.checked) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+
+                    const err = document.createElement('div');
+                    err.className = 'invalid-feedback';
+                    err.textContent = 'You must agree before continuing';
+                    field.parentNode.appendChild(err);
+
+                    if (!firstInvalid) firstInvalid = field;
+                }
+                return;
+            }
             // For file inputs, check if they have files (only if required)
             if (field.type === 'file') {
                 if (field.hasAttribute('required') && field.files.length === 0) {
@@ -1429,7 +1458,7 @@ setTimeout(() => {
         }
     });
 
-    // ==================== PREVIEW FOR STEP 7 ====================
+   // ==================== PREVIEW FOR STEP 7 ====================
     function populatePreview() {
 
         function val(id) {
@@ -1448,10 +1477,37 @@ setTimeout(() => {
         set('p_birth_date_ad', val('birth_date_ad'));
         set('p_birth_date_bs', val('birth_date_bs'));
         set('p_phone', val('phone'));
+        set('p_advertisement_no', val('advertisement_no'));
+        set('p_applying_position', val('applying_position'));
+        set('p_department', val('department'));
+        set('p_age', val('age'));
+        set('p_alternate_phone_number', val('alternate_phone_number'));
         set('p_gender', val('gender'));
         set('p_marital_status', val('marital_status'));
-        set('p_nationality', val('nationality'));
+        set('spouse_name_english', val('spouse_name_english'));
+        set('p_spouse_nationality', val('spouse_nationality'));
+        set('p_citizenship_number', val('citizenship_number'));
+        set('p_citizenship_issue_date_bs', val('citizenship_issue_date_bs'));
+        set('p_citizenship_issue_district', val('citizenship_issue_district'));
+        set('p_father_name_english', val('father_name_english'));
+        set('p_mother_name_english', val('mother_name_english'));
+        set('p_grandfather_name_english', val('grandfather_name_english'));
+        set('p_father_qualification', val('father_qualification'));
+        set('p_mother_qualification', val('mother_qualification'));
+        set('p_parent_occupation', val('parent_occupation'));
         set('p_blood_group', val('blood_group'));
+        set('p_nationality', val('nationality'));
+        set('p_noc_employee', val('noc_employee'));
+        
+
+        // General Information
+        set('p_religion', val('religion'));
+        set('p_community', val('community'));
+        set('p_ethnic_group', val('ethnic_group'));
+        set('p_mother_tongue', val('mother_tongue'));
+        set('p_employment_status', val('employment_status'));
+        set('p_physical_disability', val('physical_disability'));
+        
 
         // Address Info
         const permanentAddress =
@@ -1522,7 +1578,12 @@ setTimeout(() => {
         previewFile('p_equivalent', 'equivalent');
         previewFile('p_work_experience', 'work_experience');
         previewFile('p_character', 'character');
+        previewFile('p_noc_id_card', 'noc_id_card');
+        previewFile('p_ethnic_certificate', 'ethnic_certificate');
+        previewFile('p_disability_certificate', 'disability_certificate');
+        
     }
+
 
     // PAYMENT GATEWAYS
     window.startPayment = function(gateway) {
