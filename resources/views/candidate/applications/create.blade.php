@@ -34,7 +34,7 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-2">
+        <div class="card-header bg-light text-dark text-center py-2">
             <h3 class="mb-0 fw-bold">NOC | New Application Form</h3>
         </div>
         <div class="card-body px-5 pt-3 pb-5">
@@ -98,7 +98,7 @@
 
 <!-- STEP 1: Personal Info -->                  
                 <div class="step" id="step1">
-                    <h5 class="mb-4 text-primary">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-light">Step 1 — Personal Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -263,14 +263,14 @@
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 
 <!-- STEP 2: General Info -->                
                 <div class="step d-none" id="step2">
-                    <h5 class="mb-4 text-primary">Step 2 — General Information</h5>
+                    <h5 class="mb-4 text-light">Step 2 — General Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
@@ -347,13 +347,13 @@
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- STEP 3: Address -->
                 <div class="step d-none" id="step3">
-                    <h5 class="mb-4 text-primary">Step 3 — Permanent Address</h5>
+                    <h5 class="mb-4 text-light">Step 3 — Permanent Address</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="permanent_province" class="form-label">Province <span class="text-danger">*</span></label>
@@ -392,7 +392,7 @@
                         </div>
                     </div>
                     
-                    <h5 class="mb-4 text-primary mt-4">Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-light mt-4">Mailing/Current Address</h5>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent') ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
@@ -436,14 +436,14 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                
 <!-- step 4: Educational Background -->
                 <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-primary">Step 4 — Educational Background</h5>
+                    <h5 class="mb-4 text-light">Step 4 — Educational Background</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="education_level" class="form-label">Highest Education Level <span class="text-danger">*</span></label>
@@ -474,13 +474,13 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- step 5: Work Experience -->
                 <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-primary">Step 5 — Work Experience</h5>
+                    <h5 class="mb-4 text-light">Step 5 — Work Experience</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
@@ -507,13 +507,13 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- step 6: Upload Documents -->
                 <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
+                    <h5 class="mb-4 text-light">Step 6 — Upload Documents</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
@@ -568,13 +568,13 @@
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- STEP 7: Preview Application Before Payment -->
                 <div class="step d-none" id="step7">
-                    <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
+                    <h5 class="mb-4 text-light">Step 7 — Preview Application Before Payment</h5>
 
                     <div class="alert alert-info">
                         Please review all your details carefully before proceeding to payment.
@@ -661,7 +661,7 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="button" class="btn btn-light next-btn">Next</button>
                         </div>
                     </div>
                 </div>
@@ -669,7 +669,7 @@
 
 <!-- STEP 8: Payment Method -->
                 <div class="step d-none" id="step8">
-                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+                    <h5 class="mb-4 text-light">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
                         @if(isset($payment) && $payment->status == 'paid')
@@ -716,7 +716,7 @@
 
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                                <button type="button" id="saveDraftBtn" class="btn btn-success">Save Application and Pay Later</button>
+                                <button type="button" id="saveDraftBtn" class="btn btn-danger">Save Application and Pay Later</button>
                             </div>
 
                         </div>
@@ -793,22 +793,22 @@
     /* Active / Completed State */
     .tab-item.active .tab-circle,
     .tab-item.completed .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item.active .tab-label,
     .tab-item.completed .tab-label {
-        color: #0d6efd;
+        color: #000000;
         font-weight: 600;
     }
 
     /* Hover */
     .tab-item:hover .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item:hover .tab-label {
-        color: #0d6efd;
+        color: #000000;
     }
 
     /* Progress Line */
@@ -817,7 +817,7 @@
         bottom: -1px;
         left: 0;
         height: 4px;
-        background: #0d6efd;
+        background: #ff0000;
         width: 14.28%; 
         transition: width 0.4s ease;
         z-index: 1;
@@ -1425,7 +1425,7 @@ setTimeout(() => {
         
         if (allValid) {
             clearTimeout(autoSaveTimeout);
-            showAutoSaveStatus('📤 Submitting...', 'primary');
+            showAutoSaveStatus('📤 Submitting...', 'light');
         }
     });
 

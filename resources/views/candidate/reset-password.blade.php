@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Candidate Login')
+@section('title', 'Reset Password')
 
 @section('custom-styles')
 <style>
@@ -30,7 +30,7 @@
         position: relative;
     }
 
-    /* ─── Brand Logo at Top ─────────────────────────── */
+    /* ─── Brand ─────────────────────────────────────── */
     .noc-brand {
         text-align: center;
         margin-bottom: 1.5rem;
@@ -44,20 +44,9 @@
         line-height: 1;
     }
 
-    .noc-brand-text .brand-noc {
-        color: #1a2a4a;
-    }
-
-    .noc-brand-text .brand-dot {
-        color: #c0392b;
-        font-size: 2rem;
-    }
-
-    .noc-brand-text .brand-hris {
-        color: #1a2a4a;
-        font-size: 1.6rem;
-        font-weight: 500;
-    }
+    .noc-brand-text .brand-noc  { color: #1a2a4a; }
+    .noc-brand-text .brand-dot  { color: #c0392b; font-size: 2rem; }
+    .noc-brand-text .brand-hris { color: #1a2a4a; font-size: 1.6rem; font-weight: 500; }
 
     /* ─── Card ──────────────────────────────────────── */
     .noc-card {
@@ -75,31 +64,31 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── Left Panel (Logo) ─────────────────────────── */
+    /* ─── Left Panel ────────────────────────────────── */
     .noc-left {
         width: 300px;
         flex-shrink: 0;
-        background: linear-gradient(160deg, #ffffff 0%, #ffffff 100%);
+        background: #ffffff;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 3rem 2rem;
         position: relative;
+        gap: 1.5rem;
     }
 
     .noc-left::after {
         content: '';
         position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
+        right: 0; top: 0; bottom: 0;
         width: 4px;
         background: linear-gradient(180deg, #1a2a4a 0%, #c9a84c 50%, #1a7a6a 100%);
     }
 
     .noc-logo-circle {
-        width: 200px;
-        height: 200px;
+        width: 160px;
+        height: 160px;
         border-radius: 50%;
         border: 6px solid #1a2a4a;
         outline: 3px solid #c9a84c;
@@ -118,13 +107,51 @@
         object-fit: cover;
     }
 
-    /* fallback icon if image fails */
-    .noc-logo-circle .logo-fallback {
-        font-size: 5rem;
-        color: #1a2a4a;
+    .noc-left-info {
+        text-align: center;
     }
 
-    /* ─── Right Panel (Form) ────────────────────────── */
+    .noc-left-info .lock-icon {
+        font-size: 2rem;
+        color: #c9a84c;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .noc-left-info p {
+        font-size: 0.78rem;
+        color: #888;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+    }
+
+    /* Password strength bar */
+    .noc-strength-wrap {
+        margin-top: 0.4rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .noc-strength-bar {
+        height: 4px;
+        border-radius: 2px;
+        background: #e0e0e0;
+        overflow: hidden;
+        margin-bottom: 0.25rem;
+    }
+
+    .noc-strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 2px;
+        transition: width 0.3s, background 0.3s;
+    }
+
+    .noc-strength-label {
+        font-size: 0.72rem;
+        color: #999;
+    }
+
+    /* ─── Right Panel ───────────────────────────────── */
     .noc-right {
         flex: 1;
         display: flex;
@@ -132,7 +159,6 @@
         background: #ffffff;
     }
 
-    /* Header bar */
     .noc-form-header {
         background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #c9a84c 100%);
         padding: 1.2rem 2rem;
@@ -156,13 +182,11 @@
         font-size: 1.2rem;
     }
 
-    /* Form body */
     .noc-form-body {
         flex: 1;
         padding: 2rem 2.5rem 2rem;
     }
 
-    /* Subtitle */
     .noc-subtitle {
         font-size: 0.78rem;
         color: #888;
@@ -194,20 +218,6 @@
         align-items: center;
         gap: 0.5rem;
         animation: slideIn 0.3s ease;
-    }
-
-    /* Session message (logged out etc.) */
-    .noc-session-msg {
-        background: #fff8e1;
-        border-left: 4px solid #c9a84c;
-        border-radius: 2px;
-        padding: 0.65rem 1rem;
-        margin-bottom: 1.5rem;
-        font-size: 0.85rem;
-        color: #856404;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
     }
 
     @keyframes slideIn {
@@ -261,9 +271,25 @@
         transition: color 0.2s;
     }
 
-    .noc-input-group:focus-within .noc-input-icon {
-        color: #1a2a4a;
+    /* Toggle password visibility */
+    .noc-toggle-pw {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: color 0.2s;
+        background: none;
+        border: none;
+        padding: 0;
+        line-height: 1;
     }
+
+    .noc-toggle-pw:hover { color: #1a2a4a; }
+
+    .noc-input-group:focus-within .noc-input-icon { color: #1a2a4a; }
 
     .noc-invalid-feedback {
         font-size: 0.78rem;
@@ -274,36 +300,16 @@
         gap: 0.3rem;
     }
 
-    /* Remember me */
-    .noc-remember {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1.75rem;
-    }
-
-    .noc-remember input[type="checkbox"] {
-        accent-color: #1a2a4a;
-        width: 15px;
-        height: 15px;
-        cursor: pointer;
-    }
-
-    .noc-remember label {
-        font-size: 0.82rem;
-        color: #666;
-        cursor: pointer;
-    }
-
-    /* Bottom row: Manual link + Login button */
+    /* Actions row */
     .noc-form-actions {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        margin-top: 0.5rem;
     }
 
-    .noc-manual-link {
+    .noc-back-link {
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -314,7 +320,7 @@
         transition: color 0.2s;
     }
 
-    .noc-manual-link:hover {
+    .noc-back-link:hover {
         color: #1a2a4a;
         text-decoration: underline;
     }
@@ -342,9 +348,7 @@
         box-shadow: 0 6px 20px rgba(201,168,76,0.45);
     }
 
-    .noc-login-btn:active {
-        transform: translateY(0);
-    }
+    .noc-login-btn:active { transform: translateY(0); }
 
     /* Footer */
     .noc-form-footer {
@@ -389,33 +393,21 @@
         .noc-left::after {
             width: 100%;
             height: 4px;
-            top: auto;
-            right: 0;
-            left: 0;
-            bottom: 0;
+            top: auto; right: 0; left: 0; bottom: 0;
         }
 
-        .noc-logo-circle {
-            width: 130px;
-            height: 130px;
-        }
+        .noc-logo-circle { width: 110px; height: 110px; }
 
-        .noc-form-body {
-            padding: 1.5rem 1.5rem 1rem;
-        }
+        .noc-form-body { padding: 1.5rem 1.5rem 1rem; }
 
-        .noc-form-footer {
-            padding: 1rem 1.5rem;
-        }
+        .noc-form-footer { padding: 1rem 1.5rem; }
 
         .noc-form-actions {
             flex-direction: column-reverse;
             align-items: stretch;
         }
 
-        .noc-login-btn {
-            width: 100%;
-        }
+        .noc-login-btn { width: 100%; text-align: center; }
     }
 </style>
 @endsection
@@ -423,7 +415,7 @@
 @section('content')
 <div class="noc-login-page">
 
-    {{-- Brand name at top --}}
+    {{-- Brand --}}
     <div class="noc-brand">
         <div class="noc-brand-text">
             <span class="brand-noc">NOC</span><span class="brand-dot">•</span><span class="brand-hris">E-Recruitment</span>
@@ -444,26 +436,25 @@
                     <i class="bi bi-building"></i>
                 </span>
             </div>
+            <div class="noc-left-info">
+                <i class="bi bi-lock-fill lock-icon"></i>
+                <p>Choose a strong password with at least 8 characters. Your account security is important to us.</p>
+            </div>
         </div>
+
         {{-- ── Right: Form ── --}}
         <div class="noc-right">
 
             {{-- Header bar --}}
             <div class="noc-form-header">
-                <i class="bi bi-person-badge header-icon"></i>
-                <h2>Please Login</h2>
+                <i class="bi bi-shield-lock header-icon"></i>
+                <h2>Reset Password</h2>
             </div>
 
             {{-- Form body --}}
             <div class="noc-form-body">
 
-                {{-- Session / status message --}}
-                @if (session('status'))
-                    <div class="noc-session-msg">
-                        <i class="bi bi-info-circle-fill"></i>
-                        {{ session('status') }}
-                    </div>
-                @endif
+                <div class="noc-subtitle">Set New Password</div>
 
                 {{-- Error alert --}}
                 @if ($errors->any())
@@ -473,24 +464,22 @@
                     </div>
                 @endif
 
-                {{-- Login form --}}
-                <form method="POST" action="{{ route('candidate.login.post') }}" novalidate>
+                <form method="POST" action="{{ route('candidate.password.reset.post') }}" novalidate>
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
 
-                    {{-- Username / Email --}}
+                    {{-- Email (pre-filled, readonly) --}}
                     <div class="noc-input-group">
                         <input
                             type="email"
-                            id="email"
                             name="email"
-                            value="{{ old('email') }}"
-                            placeholder="Username / Email / Citizenship Number"
+                            value="{{ old('email', $email) }}"
+                            placeholder="Email Address"
                             class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
-                            required
-                            autofocus
-                            autocomplete="email"
+                            readonly
+                            style="background:#f0f0f0; color:#888; cursor:not-allowed;"
                         >
-                        <span class="noc-input-icon"><i class="bi bi-person"></i></span>
+                        <span class="noc-input-icon"><i class="bi bi-envelope-check"></i></span>
                         @error('email')
                             <div class="noc-invalid-feedback">
                                 <i class="bi bi-x-circle"></i> {{ $message }}
@@ -498,57 +487,68 @@
                         @enderror
                     </div>
 
-                    {{-- Password --}}
+                    {{-- New Password --}}
                     <div class="noc-input-group">
                         <input
                             type="password"
-                            id="password"
+                            id="new_password"
                             name="password"
-                            placeholder="Password"
+                            placeholder="New Password (min. 8 characters)"
                             class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
                             required
-                            autocomplete="current-password"
+                            autocomplete="new-password"
+                            oninput="checkStrength(this.value)"
                         >
-                        <span class="noc-input-icon"><i class="bi bi-lock"></i></span>
+                        <button type="button" class="noc-toggle-pw" onclick="togglePw('new_password', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
                         @error('password')
                             <div class="noc-invalid-feedback">
                                 <i class="bi bi-x-circle"></i> {{ $message }}
                             </div>
                         @enderror
+                        {{-- Strength bar --}}
+                        <div class="noc-strength-wrap">
+                            <div class="noc-strength-bar">
+                                <div class="noc-strength-fill" id="strengthFill"></div>
+                            </div>
+                            <span class="noc-strength-label" id="strengthLabel"></span>
+                        </div>
                     </div>
 
-                    {{-- Remember me --}}
-                    <div class="noc-remember">
-                        <input type="checkbox" id="remember" name="remember" value="1">
-                        <label for="remember">Keep me signed in</label>
-                    </div>
-                    <div style="text-align:right; margin-bottom:1.25rem; margin-top:-0.75rem;">
-                        <a href="{{ route('candidate.forgot-password') }}" 
-                        style="font-size:0.82rem; color:#1a6da8; text-decoration:none;">
-                            <i class="bi bi-question-circle"></i> Forgot Password?
-                        </a>
+                    {{-- Confirm Password --}}
+                    <div class="noc-input-group">
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="password_confirmation"
+                            placeholder="Confirm New Password"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="noc-toggle-pw" onclick="togglePw('confirm_password', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
 
-                    {{-- Actions row --}}
+                    {{-- Actions --}}
                     <div class="noc-form-actions">
-                        
-                        <!-- <a href="#" class="noc-manual-link">
-                            <i class="bi bi-journal-text"></i> Manual
-                        </a> -->
-
+                        <a href="{{ route('candidate.login') }}" class="noc-back-link">
+                            <i class="bi bi-arrow-left"></i> Back to Login
+                        </a>
                         <button type="submit" class="noc-login-btn">
-                            LOGIN
+                            RESET PASSWORD
                         </button>
                     </div>
 
                 </form>
             </div>
 
-            {{-- Footer: Register link --}}
+            {{-- Footer --}}
             <div class="noc-form-footer">
-                <span>New candidate?</span>
-                <a href="{{ route('candidate.register') }}">
-                    <i class="bi bi-person-plus"></i> Register here
+                <span>Remembered your password?</span>
+                <a href="{{ route('candidate.login') }}">
+                    <i class="bi bi-box-arrow-in-right"></i> Login here
                 </a>
             </div>
 
@@ -556,4 +556,45 @@
     </div>
 
 </div>
+
+<script>
+    // Toggle password visibility
+    function togglePw(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon  = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    // Password strength indicator
+    function checkStrength(value) {
+        const fill  = document.getElementById('strengthFill');
+        const label = document.getElementById('strengthLabel');
+
+        let score = 0;
+        if (value.length >= 8)               score++;
+        if (/[A-Z]/.test(value))             score++;
+        if (/[0-9]/.test(value))             score++;
+        if (/[^A-Za-z0-9]/.test(value))      score++;
+
+        const levels = [
+            { width: '0%',   color: '#e0e0e0', text: '' },
+            { width: '25%',  color: '#e74c3c', text: 'Weak' },
+            { width: '50%',  color: '#e67e22', text: 'Fair' },
+            { width: '75%',  color: '#f1c40f', text: 'Good' },
+            { width: '100%', color: '#27ae60', text: 'Strong' },
+        ];
+
+        const level = value.length === 0 ? levels[0] : levels[score];
+        fill.style.width      = level.width;
+        fill.style.background = level.color;
+        label.textContent     = level.text;
+        label.style.color     = level.color;
+    }
+</script>
 @endsection

@@ -45,7 +45,7 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title">
-        <i class="bi bi-search text-primary"></i> Browse Vacancies
+        <i class="bi bi-search text-dark"></i> Browse Vacancies
     </h1>
     <p class="page-subtitle">Find and apply for available positions</p>
 </div>
@@ -89,7 +89,7 @@
                         value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-light w-100">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
@@ -100,7 +100,7 @@
 
 @if($jobs->count() > 0)
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-light text-black">
             <h5 class="mb-0">
                 <i class="bi bi-table"></i> Available Vacancies
             </h5>
@@ -140,30 +140,30 @@
                         <tr>
                             <td class="text-center">{{ $jobs->firstItem() + $index }}</td>
                             <td>
-                                <strong class="text-primary">{{ $job->title }}</strong>
+                                <strong class="text-dark">{{ $job->title }}</strong>
                             </td>
                             <td>{{ $job->service_group }}</td>
                             <td>
-                                <span class="badge bg-info text-dark">
+                                <span class="text-dark">
                                     {{ ucfirst($job->category) }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                <strong class="text-success">{{ $job->number_of_posts }}</strong>
+                                <strong class="text-dark">{{ $job->number_of_posts }}</strong>
                             </td>
                             <td>{{ $job->position_level }}</td>
                             <td>{{ $job->advertisement_no }}</td>
                             <td>
-                                <i class="fas fa-calendar text-warning"></i>
+                                <i class="text-dark"></i>
                                 {{ \Carbon\Carbon::parse($job->application_deadline)->format('M d, Y') }}
                             </td>
                             <td class="text-center">
                                 @if($hasApplied)
-                                    <span class="badge bg-success">
+                                    <span class="badge bg-secondary">
                                         <i class="fas fa-check-circle"></i> Applied
                                     </span>
                                 @elseif($job->status === 'active')
-                                    <span class="badge bg-primary">
+                                    <span class="badge bg-success">
                                         <i class="bi bi-circle-fill"></i> Active
                                     </span>
                                 @else
@@ -175,13 +175,13 @@
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
                                     <a href="{{ route('candidate.jobs.show', $job->id) }}" 
-                                       class="btn btn-sm btn-outline-primary" 
+                                       class="btn btn-sm btn-outline-danger" 
                                        title="View Details">
                                         <i class="bi bi-eye"></i> Details
                                     </a>
                                     @if(!$hasApplied && $job->status === 'active')
                                         <button onclick="checkEligibilityAndApply({{ $job->id }})"
-                                            class="btn btn-sm btn-primary apply-btn-{{ $job->id }}"
+                                            class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
                                             title="Apply Now">
                                             <i class="fas fa-paper-plane"></i> Apply
                                         </button>
@@ -206,7 +206,7 @@
             <i class="bi bi-inbox display-1 text-muted mb-3"></i>
             <h4 class="text-muted">No Vacancies Available</h4>
             <p class="text-secondary">There are no vacancy postings matching your criteria at the moment.</p>
-            <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary mt-3">
+            <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger mt-3">
                 <i class="bi bi-house-door"></i> Back to Dashboard
             </a>
         </div>

@@ -14,4 +14,9 @@ class Payment extends Model
         'status',
         'txRef'
     ];
+
+    public function application()
+    {
+        return $this->belongsTo(\App\Models\ApplicationForm::class, 'draft_id');
+    }
 }

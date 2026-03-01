@@ -82,7 +82,7 @@
 
         <!-- Job Header -->
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-light text-dark">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <h3 class="mb-2">{{ $job->title }}</h3>
@@ -100,41 +100,33 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-2">
-                            <i class="fas fa-briefcase text-primary"></i>
                             <strong>Employment Type:</strong> {{ ucfirst($job->category) }}
                         </p>
                         <p class="mb-2">
-                            <i class="fas fa-users text-success"></i>
                             <strong>Number of Vacancies:</strong> {{ $job->number_of_posts }}
                         </p>
                         <p class="mb-2">
-                            <i class="fas fa-calendar text-info"></i>
                             <strong>Posted:</strong> {{ $job->created_at->format('M d, Y') }}
                         </p>
                         <p class="mb-2">
-                            <i class="fas fa-star text-warning"></i>
                             <strong>Position Level:</strong> {{ $job->position_level }}
                         </p>
                         <p class="mb-2">
-                                    <i class="bi bi-broadcast-pin"></i>
                                     <strong>Advertisement Number:</strong> {{ $job->advertisement_no}}
                                 </p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-2">
-                            <i class="fas fa-clock text-danger"></i>
                             <strong>Application Deadline:</strong>
                             <span class="text-danger fw-bold">
                                 {{ \Carbon\Carbon::parse($job->application_deadline)->format('F d, Y') }}
                             </span>
                         </p>
                         <p class="mb-2">
-                            <i class="fas fa-building text-primary"></i>
                             <strong>Service Group:</strong> {{ $job->service_group }}
                         </p>
                         @if($job->min_age || $job->max_age)
                             <p class="mb-2">
-                                <i class="fas fa-user-clock text-info"></i>
                                 <strong>Age Requirement:</strong> 
                                 @if($job->min_age && $job->max_age)
                                     {{ $job->min_age }} - {{ $job->max_age }} years
@@ -147,7 +139,6 @@
                         @endif
                         @if($job->minimum_qualification)
                             <p class="mb-2">
-                                <i class="fas fa-graduation-cap text-success"></i>
                                 <strong>Education:</strong> {{ $job->minimum_qualification }}
                             </p>
                         @endif
@@ -175,12 +166,12 @@
                         <div class="alert alert-success mb-0 flex-fill">
                             <i class="fas fa-check-circle"></i> You have already applied for this position
                         </div>
-                        <a href="{{ route('candidate.applications.index') }}" class="btn btn-primary">
+                        <a href="{{ route('candidate.applications.index') }}" class="btn btn-light">
                             <i class="fas fa-list"></i> View My Applications
                         </a>
                     @elseif($job->status === 'active')
                         <button onclick="checkEligibilityAndApply({{ $job->id }})" 
-                            class="btn btn-primary btn-lg" id="applyBtn">
+                            class="btn btn-light btn-lg" id="applyBtn">
                             <i class="fas fa-paper-plane"></i> Apply for This Position
                         </button>
                     @else
@@ -198,22 +189,22 @@
                 <ul class="nav nav-tabs card-header-tabs" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#description">
-                            <i class="fas fa-info-circle"></i> Description
+                            <i class="fas"></i> Description
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#requirements">
-                            <i class="fas fa-list-check"></i> Requirements
+                            <i class="fas"></i> Requirements
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#responsibilities">
-                            <i class="fas fa-tasks"></i> Responsibilities
+                            <i class="fas"></i> Responsibilities
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#benefits">
-                            <i class="fas fa-gift"></i> Benefits
+                            <i class="fas"></i> Benefits
                         </a>
                     </li>
                 </ul>
@@ -259,7 +250,7 @@
         @if(!$hasApplied && $job->status === 'active')
             <div class="text-center mt-4 mb-4">
                 <button onclick="checkEligibilityAndApply({{ $job->id }})" 
-                    class="btn btn-primary btn-lg" id="applyBtnBottom">
+                    class="btn btn-light btn-lg" id="applyBtnBottom">
                     <i class="fas fa-paper-plane"></i> Apply for This Position Now
                 </button>
             </div>

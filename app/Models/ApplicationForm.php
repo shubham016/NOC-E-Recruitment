@@ -171,4 +171,9 @@ class ApplicationForm extends Model
     {
         return $this->belongsTo(JobPosting::class, 'job_posting_id');
     }
+
+    public function payment()
+    {
+        return $this->hasOne(\App\Models\Payment::class, 'draft_id');
+    }
 }

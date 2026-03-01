@@ -34,7 +34,7 @@
     <a href="{{ route('candidate.admit-card') }}" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Back to Admit Cards
     </a>
-    <button onclick="window.print()" class="btn btn-info float-end">
+    <button onclick="window.print()" class="btn btn-danger float-end">
         <i class="bi bi-printer"></i> Print or Save as PDF
     </button>
 </div>

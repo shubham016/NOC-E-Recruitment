@@ -37,7 +37,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-light text-dark">
                     <h4 class="mb-0">Change Password</h4>
                 </div>
                 <div class="card-body">
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-danger">
                                 <i class="bi bi-check-circle"></i> Update Password
                             </button>
                         </div>

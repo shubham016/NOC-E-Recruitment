@@ -101,6 +101,15 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     Route::get('/login', [\App\Http\Controllers\CandidateController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [\App\Http\Controllers\CandidateController::class, 'login'])->name('login.post');
     
+    // Forgot Password
+    Route::get('/forgot-password', [\App\Http\Controllers\CandidateController::class, 'showForgotPasswordForm'])->name('forgot-password');
+    Route::post('/forgot-password', [\App\Http\Controllers\CandidateController::class, 'sendResetLink'])->name('password.email');
+
+    // Reset Password
+    Route::get('/reset-password/{token}', [\App\Http\Controllers\CandidateController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [\App\Http\Controllers\CandidateController::class, 'resetPassword'])->name('password.reset.post');
+   
+    // Logout 
     Route::post('/logout', [\App\Http\Controllers\CandidateController::class, 'logout'])->name('logout');
 
     // Protected routes 
@@ -136,12 +145,20 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
                 Route::get('/esewa/success', [PaymentController::class, 'esewaSuccess'])->name('payment.esewa.success');
                 Route::get('/esewa/failure', [PaymentController::class, 'esewaFailure'])->name('payment.esewa.failure');
 
-                // Khalti (later)
-                Route::get('/khalti/start/{draftId}', [PaymentController::class, 'startKhalti']);
+               
+                // Khalti
+                Route::get('/khalti/start/{draftId}', [PaymentController::class, 'startKhalti'])->name('payment.khalti.start');
+                Route::post('/khalti/verify', [PaymentController::class, 'verifyKhalti'])->name('payment.khalti.verify');
+                Route::get('/khalti/success', [PaymentController::class, 'khaltiSuccess'])->name('payment.khalti.success');
 
-                // ConnectIPS (later)
-                Route::get('/connectips/start/{draftId}', [PaymentController::class, 'startConnectIps']);
 
+
+                // ConnectIPS 
+                Route::get('/connectips/start/{draftId}', [PaymentController::class, 'startConnectIps'])->name('payment.connectips.start');
+                Route::get('/connectips/success', [PaymentController::class, 'connectipsSuccess'])->name('payment.connectips.success');
+                Route::get('/connectips/failure', [PaymentController::class, 'connectipsFailure'])->name('payment.connectips.failure');
+
+                
                 
             });
 

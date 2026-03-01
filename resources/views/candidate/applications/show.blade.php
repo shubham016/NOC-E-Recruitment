@@ -36,8 +36,8 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">View Application Details</h4>
+        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">View Your Application Details</h4>
             <div>
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-arrow-left"></i> Back
@@ -48,7 +48,7 @@
         <div class="card-body">
             {{-- SECTION 1: Personal Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-user"></i> Personal Information
                 </h5>
                 <div class="row">
@@ -140,7 +140,7 @@
 
             {{-- SECTION 2: Citizenship Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-id-card"></i> Citizenship Information
                 </h5>
                 <div class="row">
@@ -167,7 +167,7 @@
 
             {{-- SECTION 3: Family Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-users"></i> Family Information
                 </h5>
                 <div class="row">
@@ -204,7 +204,7 @@
 
             {{-- SECTION 4: General Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-info-circle"></i> General Information
                 </h5>
                 <div class="row">
@@ -268,7 +268,7 @@
 
             {{-- SECTION 5: Permanent Address --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-home"></i> Permanent Address
                 </h5>
                 <div class="row">
@@ -303,7 +303,7 @@
 
             {{-- SECTION 6: Mailing Address --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-envelope"></i> Mailing/Current Address
                 </h5>
                 @if($applicationform->same_as_permanent)
@@ -343,7 +343,7 @@
 
             {{-- SECTION 7: Educational Background --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-graduation-cap"></i> Educational Background
                 </h5>
                 <div class="row">
@@ -370,7 +370,7 @@
 
             {{-- SECTION 8: Work Experience --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-briefcase"></i> Work Experience
                 </h5>
                 <div class="row">
@@ -397,7 +397,7 @@
 
             {{-- SECTION 9: Uploaded Documents --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-file-upload"></i> Uploaded Documents
                 </h5>
                 <div class="row">
@@ -535,9 +535,36 @@
                 </div>
             </div>
 
+             {{-- SECTION -: Payment Status --}}
+            <div class="mb-4">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-cash"></i> Payment Details
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Payment ID</strong>
+                        <p class="mb-0">{{ $applicationform->payment->id ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Gateway</strong>
+                        <p class="mb-0">{{ $applicationform->payment->gateway ?? '-' }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Amount</strong>
+                        <p class="mb-0">{{ $applicationform->payment->amount ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Transcation ID</strong>
+                        <p class="mb-0">{{ $applicationform->payment->transaction_id ?? '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- SECTION 10: System Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-clock"></i> System Information
                 </h5>
                 <div class="row">

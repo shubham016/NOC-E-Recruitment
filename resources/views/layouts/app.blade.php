@@ -18,7 +18,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Make circles smaller */
+        .nav-tabs .nav-link {
+        color: #a07828 !important;
+         }
+            /* Make circles smaller */
         .tab-circle {
             width: 25px !important;
             height: 25px !important;
@@ -71,13 +74,14 @@
             margin-bottom: 0.3rem;
         }
 
-        /* Top Navbar */
+        /* Top Navbar - light warm white with gold bottom border */
         .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             position: sticky;
             top: 0;
             z-index: 1030;
             transition: padding-left 0.3s ease;
+            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%) !important;
         }
 
         /* NOC Logo and Brand Styles */
@@ -96,20 +100,20 @@
             margin: 0;
             font-size: 17px;
             font-weight: 600;
-            color: white;
+            color: #1a2a4a;
             line-height: 1.2;
         }
 
         .noc-info p {
             margin: 0;
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #555;
             line-height: 1.2;
         }
 
         .noc-info small {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.75);
+            color: #c9a84c;
             font-style: italic;
             display: block;
             margin-top: 2px;
@@ -117,9 +121,9 @@
 
         /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.35);
+            color: #a07828;
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
@@ -129,7 +133,7 @@
         }
 
         .sidebar-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(201, 168, 76, 0.2);
         }
 
         /* Layout Container */
@@ -139,22 +143,23 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Sidebar */
+        /* Sidebar - light warm grey */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-            color: white;
+            background: linear-gradient(180deg, #f7f5f0 0%, #f0ede6 100%);
+            color: #2c2c2c;
             position: fixed;
             left: 0;
             top: 70px;
             height: calc(100vh - 56px);
             overflow-y: hidden;
             flex-shrink: 0;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.07);
             display: flex;
             flex-direction: column;
             transition: transform 0.3s ease;
             z-index: 1020;
+            border-right: 1px solid #e8e2d4;
         }
 
         .sidebar.hidden {
@@ -163,8 +168,8 @@
 
         .sidebar-header {
             padding: 1rem 1.25rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(201, 168, 76, 0.1);
+            border-bottom: 1px solid #e0d5b8;
             flex-shrink: 0;
         }
 
@@ -178,12 +183,12 @@
             width: 36px; 
             height: 36px; 
             border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            color: white;
+            color: #fff;
             flex-shrink: 0;
             font-size: 0.9rem;
         }
@@ -192,7 +197,7 @@
             margin: 0;
             font-size: 0.95rem; 
             font-weight: 600;
-            color: white;
+            color: #1a2a4a;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -201,7 +206,7 @@
 
         .user-info small {
             font-size: 0.75rem; 
-            color: rgba(255, 255, 255, 0.6);
+            color: #a07828;
             display: block;
         }
 
@@ -213,7 +218,7 @@
 
         .sidebar-menu-item {
             padding: 0.7rem 1.25rem; 
-            color: rgba(255, 255, 255, 0.7);
+            color: #444;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -224,21 +229,22 @@
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border-left-color: #2563eb;
+            background: rgba(201, 168, 76, 0.1);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
         }
 
         .sidebar-menu-item.active {
-            background: rgba(37, 99, 235, 0.15);
-            color: white;
-            border-left-color: #2563eb;
+            background: rgba(201, 168, 76, 0.15);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
             font-weight: 500;
         }
 
         .sidebar-menu-item i {
             font-size: 1.15rem; 
-            width: 22px; 
+            width: 22px;
+            color: #a07828;
         }
 
         /* Main Content Area */
@@ -255,10 +261,10 @@
             margin-left: 0;
         }
 
-        /* Footer */
+        /* Footer - light warm tone with gold top border */
         footer {
-            background-color: #2563eb;
-            color: white;
+            background: linear-gradient(90deg, #f7f5f0 0%, #f0ede6 100%);
+            color: #555;
             padding: 20px 0;
             margin-left: 260px;
             width: calc(100% - 260px);
@@ -383,16 +389,16 @@
         }
 
         .sidebar-menu::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(201, 168, 76, 0.3);
             border-radius: 3px;
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(201, 168, 76, 0.5);
         }
 
     </style>
@@ -404,7 +410,7 @@
 <body>
 
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="topNavbar">
+    <nav class="navbar navbar-expand-lg navbar-light" id="topNavbar">
         <div class="container-fluid">
             <!-- Sidebar Toggle Button -->
             <button class="sidebar-toggle-btn" id="sidebarToggle">
@@ -413,7 +419,7 @@
 
             <!-- NOC Logo and Brand -->
             <div class="noc-brand-container">
-                <img src="{{ asset('images/noc_logo.jpeg') }}" alt="Nepal Oil Corporation Logo" class="noc-logo">
+                <img src="{{ asset('images/images.png') }}" alt="Nepal Oil Corporation Logo" class="noc-logo">
                 <div class="noc-info">
                     <h5>NEPAL OIL CORPORATION LTD.</h5>
                     <p>Babarmahal, Kathmandu</p>
@@ -429,14 +435,14 @@
                 <ul class="navbar-nav ms-auto">
                     <!-- Candidate Dashboard -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('candidate.dashboard') }}">
+                        <a class="nav-link text-dark" href="{{ route('candidate.dashboard') }}">
                             <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
                     </li>
 
                     <!-- My Applications -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('candidate.applications.index') }}">
+                        <a class="nav-link text-dark" href="{{ route('candidate.applications.index') }}">
                             <i class="bi bi-file-earmark-text"></i> My Applications
                         </a>
                     </li>
@@ -445,7 +451,7 @@
                     <li class="nav-item">
                         <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
                             @csrf
-                            <button class="btn btn-link nav-link" type="submit">
+                            <button class="btn btn-link nav-link text-dark" type="submit">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </button>
                         </form>

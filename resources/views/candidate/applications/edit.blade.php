@@ -29,7 +29,7 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-2">
+        <div class="card-header bg-light text-dark text-center py-2">
             <h3 class="mb-0 fw-bold">NOC | Edit Application Form</h3>
         </div>
         <div class="card-body px-5 pt-3 pb-5">
@@ -90,7 +90,7 @@
 
                {{-- STEP 1: Personal Info --}}
                 <div class="step active" id="step1">
-                    <h5 class="mb-4 text-primary">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -252,13 +252,13 @@
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 2: General Info --}}
                 <div class="step d-none" id="step2">
-                    <h5 class="mb-4 text-primary">Step 2 — General Information</h5>
+                    <h5 class="mb-4 text-dark">Step 2 — General Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
@@ -342,13 +342,13 @@
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 3: Permanent Address --}}
                 <div class="step d-none" id="step3">
-                    <h5 class="mb-4 text-primary">Step 3 — Permanent Address</h5>
+                    <h5 class="mb-4 text-dark">Step 3 — Permanent Address</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="permanent_province" class="form-label">Province <span class="text-danger">*</span></label>
@@ -387,7 +387,7 @@
                         </div>
                     </div>
 
-                    <h5 class="mb-4 text-primary mt-4">Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-dark mt-4">Mailing/Current Address</h5>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent', $applicationform->same_as_permanent) ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
@@ -431,7 +431,7 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
@@ -439,7 +439,7 @@
 
                 {{-- STEP 4: Educational Background --}}
                 <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-primary">Step 4 — Educational Background</h5>
+                    <h5 class="mb-4 text-dark">Step 4 — Educational Background</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="education_level" class="form-label">Highest Education Level <span class="text-danger">*</span></label>
@@ -470,13 +470,13 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 5: Work Experience --}}
                 <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-primary">Step 5 — Work Experience</h5>
+                    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
@@ -503,25 +503,25 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 6: Upload Documents --}}
                 <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
+                    <h5 class="mb-4 text-dark">Step 6 — Upload Documents</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="passport_size_photo" class="form-label">Passport Size Photo</label>
-                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*">
+                            <label for="passport_size_photo" class="form-label">Passport Size Photo<span class="text-danger">*</span></label>
+                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*" required>
                             @if($applicationform->passport_size_photo)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" target="_blank">View File</a></small>
                             @endif
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span></label>
-                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf">
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span><span class="text-danger">*</span></label>
+                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf" required>
                             @if($applicationform->citizenship_id_document)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank">View File</a></small>
                             @endif
@@ -530,8 +530,8 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="transcript" class="form-label">Transcript Certificate</label>
-                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf">
+                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
                             @if($applicationform->transcript)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->transcript) }}" target="_blank">View File</a></small>
                             @endif
@@ -539,9 +539,9 @@
                         </div>
 
                        <div class="col-md-6">
-                            <label for="character" class="form-label">Character Certificate</label>
+                            <label for="character" class="form-label">Character Certificate<span class="text-danger">*</span></label>
                             {{-- FIXED: Added closing > tag --}}
-                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf"> 
+                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf" required> 
                             @if($applicationform->character)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank">View File</a></small>
                             @endif
@@ -573,9 +573,9 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="signature" class="form-label">Signature</label>
+                            <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
                             {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*">
+                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*" required>
                             @if($applicationform->signature)
                                 <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank">View File</a></small>
                             @endif
@@ -585,13 +585,13 @@
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>       
                 
                 <!-- STEP 7: Review Application Before Payment -->
                 <div class="step d-none" id="step7">
-                    <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
+                    <h5 class="mb-4 text-dark">Step 7 — Preview Application Before Payment</h5>
 
                     <div class="alert alert-info">
                         Please review all your details carefully before proceeding to payment.
@@ -679,7 +679,7 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="button" class="btn btn-light next-btn">Next</button>
                         </div>
                     </div>
                 </div>
@@ -687,7 +687,7 @@
 
             <!-- STEP 8: Payment Method -->
                 <div class="step d-none" id="step8">
-                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+                    <h5 class="mb-4 text-dark">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
                         @if(isset($payment) && $payment->status == 'paid')
@@ -729,7 +729,7 @@
 
                             <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <a href="{{ route('candidate.applications.index') }}" class="btn btn-primary">
+                            <a href="{{ route('candidate.applications.index') }}" class="btn btn-danger">
                                 Save Your Application
                             </a>
                             </div>
@@ -788,22 +788,22 @@
     /* Active / Completed State */
     .tab-item.active .tab-circle,
     .tab-item.completed .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item.active .tab-label,
     .tab-item.completed .tab-label {
-        color: #0d6efd;
+        color: #000000;
         font-weight: 600;
     }
 
     /* Hover */
     .tab-item:hover .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item:hover .tab-label {
-        color: #0d6efd;
+        color: #000000;
     }
 
     /* Progress Line */
@@ -812,8 +812,8 @@
         bottom: -1px;
         left: 0;
         height: 4px;
-        background: #0d6efd;
-        width: 14.28%; /* Will be updated via JS */
+        background: #000000;
+        width: 14.28%; 
         transition: width 0.4s ease;
         z-index: 1;
     }
@@ -872,7 +872,91 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // ==================== CONDITIONAL FILE UPLOAD REQUIREMENTS ====================
     
+    // NOC Employee - NOC ID Card
+    const nocEmployee = document.getElementById('noc_employee');
+    const nocIdCard = document.getElementById('noc_id_card');
+    const nocIdCardLabel = nocIdCard ? nocIdCard.closest('.col-md-6').querySelector('label') : null;
+    
+    function toggleNocIdCardRequirement() {
+        if (!nocEmployee || !nocIdCard) return;
+        
+        if (nocEmployee.value === 'yes') {
+            nocIdCard.setAttribute('required', 'required');
+            if (nocIdCardLabel && !nocIdCardLabel.querySelector('.text-danger')) {
+                nocIdCardLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            nocIdCard.removeAttribute('required');
+            nocIdCard.value = ''; // Clear file input
+            const requiredSpan = nocIdCardLabel ? nocIdCardLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
+        }
+    }
+    
+    if (nocEmployee) {
+        toggleNocIdCardRequirement(); // Initial check
+        nocEmployee.addEventListener('change', toggleNocIdCardRequirement);
+    }
+    
+    // Physical Disability - Disability Certificate
+    const physicalDisability = document.getElementById('physical_disability');
+    const disabilityCertificate = document.getElementById('disability_certificate');
+    const disabilityCertificateLabel = disabilityCertificate ? disabilityCertificate.closest('.col-md-4').querySelector('label') : null;
+    
+    function toggleDisabilityCertificateRequirement() {
+        if (!physicalDisability || !disabilityCertificate) return;
+        
+        if (physicalDisability.value === 'yes') {
+            disabilityCertificate.setAttribute('required', 'required');
+            if (disabilityCertificateLabel && !disabilityCertificateLabel.querySelector('.text-danger')) {
+                disabilityCertificateLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            disabilityCertificate.removeAttribute('required');
+            disabilityCertificate.value = ''; // Clear file input
+            const requiredSpan = disabilityCertificateLabel ? disabilityCertificateLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
+        }
+    }
+    
+    if (physicalDisability) {
+        toggleDisabilityCertificateRequirement(); // Initial check
+        physicalDisability.addEventListener('change', toggleDisabilityCertificateRequirement);
+    }
+    
+    // Ethnic Group - Ethnic Certificate
+    const ethnicGroup = document.getElementById('ethnic_group');
+    const ethnicCertificate = document.getElementById('ethnic_certificate');
+    const ethnicCertificateLabel = ethnicCertificate ? ethnicCertificate.closest('.col-md-6').querySelector('label') : null;
+    
+    function toggleEthnicCertificateRequirement() {
+        if (!ethnicGroup || !ethnicCertificate) return;
+        
+        if (ethnicGroup.value === 'Dalit' || ethnicGroup.value === 'Janajati'|| ethnicGroup.value === 'Madhesi') {
+            ethnicCertificate.setAttribute('required', 'required');
+            if (ethnicCertificateLabel && !ethnicCertificateLabel.querySelector('.text-danger')) {
+                ethnicCertificateLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            ethnicCertificate.removeAttribute('required');
+            ethnicCertificate.value = ''; // Clear file input
+            const requiredSpan = ethnicCertificateLabel ? ethnicCertificateLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
+        }
+    }
+    
+    if (ethnicGroup) {
+        toggleEthnicCertificateRequirement(); // Initial check
+        ethnicGroup.addEventListener('change', toggleEthnicCertificateRequirement);
+    }
     let currentStep = 1;
     const totalSteps = 8; // Changed from 8 to 7 since no payment step
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
