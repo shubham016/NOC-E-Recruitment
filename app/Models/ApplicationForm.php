@@ -16,6 +16,8 @@ class ApplicationForm extends Model
         'job_posting_id',
         'reviewer_id',
         'status',
+        'manual_priority',
+        'priority_note',
 
         // General Information
         'religion',
@@ -222,9 +224,10 @@ class ApplicationForm extends Model
         return match ($this->status) {
             'draft' => 'secondary',
             'pending' => 'warning',
-            'approved' => 'info',
-            'shortlisted' => 'success',
-            'selected' => 'primary',
+            'assigned' => 'info',
+            'approved' => 'success',
+            'shortlisted' => 'primary',
+            'selected' => 'success',
             'rejected' => 'danger',
             default => 'secondary'
         };

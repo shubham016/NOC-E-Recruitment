@@ -114,11 +114,17 @@
                 <h1 class="gov-page-title">Applications Management</h1>
                 <p class="gov-page-subtitle">Nepal Oil Corporation - E-Recruitment System</p>
             </div>
-            <div class="d-flex gap-3">
-                <button type="button" class="gov-btn gov-btn-secondary" onclick="exportData()">
+            <div class="d-flex gap-3" style="position: relative; z-index: 1001;">
+                <button type="button" class="gov-btn gov-btn-secondary"
+                        id="exportDataButton"
+                        style="cursor: pointer !important; pointer-events: auto !important; position: relative; z-index: 1002;"
+                        onclick="exportData(); return false;">
                     <i class="bi bi-download"></i> Export Data
                 </button>
-                <button type="button" class="gov-btn gov-btn-primary" data-bs-toggle="modal" data-bs-target="#bulkActionModal">
+                <button type="button" class="gov-btn gov-btn-primary"
+                        id="bulkActionButton"
+                        style="cursor: pointer !important; pointer-events: auto !important; position: relative; z-index: 1002;"
+                        onclick="openBulkActionModal(); return false;">
                     <i class="bi bi-check2-square"></i> Bulk Actions
                 </button>
             </div>
@@ -270,6 +276,7 @@
                                 <th class="text-center text-uppercase">Contact Details</th>
                                 <th class="text-center text-uppercase">Application Date</th>
                                 <th class="text-center text-uppercase">Assigned Reviewer</th>
+                                <th class="text-center text-uppercase">Priority</th>
                                 <th class="text-center text-uppercase">Status</th>
                                 <th class="text-center text-uppercase">Actions</th>
                             </tr>
@@ -326,10 +333,10 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="gov-font-semibold gov-text-sm" style="color: #1f2937;">
-                                            {{ $application->created_at->format('M d, Y') }}
+                                            {{ adToBS($application->submitted_at ?? $application->created_at) }} BS
                                         </div>
                                         <small class="gov-text-sm" style="color: #6b7280;">
-                                            {{ $application->created_at->format('h:i A') }}
+                                            {{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}
                                         </small>
                                     </td>
                                     <td>
@@ -342,6 +349,29 @@
                                             </small>
                                         @else
                                             <span class="gov-badge gov-badge-secondary">Not Assigned</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if($application->manual_priority)
+                                            <span class="gov-badge
+                                                @if($application->manual_priority == 'critical') gov-badge-dark
+                                                @elseif($application->manual_priority == 'high') gov-badge-danger
+                                                @elseif($application->manual_priority == 'medium') gov-badge-warning
+                                                @elseif($application->manual_priority == 'low') gov-badge-success
+                                                @else gov-badge-secondary
+                                                @endif">
+                                                <i class="bi bi-star-fill"></i> {{ ucfirst($application->manual_priority) }}
+                                            </span>
+                                            @if($application->priority_note)
+                                                <br>
+                                                <small class="text-muted" title="{{ $application->priority_note }}">
+                                                    <i class="bi bi-info-circle"></i> Note
+                                                </small>
+                                            @endif
+                                        @else
+                                            <span class="gov-badge gov-badge-secondary">
+                                                <i class="bi bi-clock"></i> Auto
+                                            </span>
                                         @endif
                                     </td>
                                     <td class="text-center">
@@ -522,12 +552,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
+                    @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Validation Error:</strong>
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
                     <div class="mb-3">
                         <label class="gov-form-label">Select Action Type</label>
                         <select name="action" id="bulkAction" class="form-select gov-form-select" required style="height: 50px;">
                             <option value="">-- Choose Action --</option>
                             <option value="update_status">Update Status</option>
-                            <option value="assign_reviewer">Assign Reviewer</option>
+                            <option value="assign_reviewer">Assign Reviewer (+ Optional Priority)</option>
+                            <option value="set_priority">Set Priority Only</option>
                             <option value="delete">Delete Applications</option>
                         </select>
                     </div>
@@ -549,6 +592,23 @@
                                 <option value="{{ $reviewer->id }}">{{ $reviewer->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="mb-3 d-none" id="prioritySelection">
+                        <label class="gov-form-label">
+                            <i class="bi bi-star-fill text-warning me-1"></i>Set Priority Level
+                            <span class="text-muted">(Optional for Assign Reviewer)</span>
+                        </label>
+                        <select name="manual_priority" class="form-select gov-form-select mb-2">
+                            <option value="">-- Select Priority (Optional) --</option>
+                            <option value="critical">⚫ Critical - Requires Immediate Attention</option>
+                            <option value="high">🔴 High - Very Important</option>
+                            <option value="medium">🟡 Medium - Moderate Priority</option>
+                            <option value="low">🟢 Low - Less Urgent</option>
+                            <option value="normal">⚪ Normal - Standard Priority</option>
+                        </select>
+                        <textarea name="priority_note" class="form-control gov-form-control" rows="2"
+                                  placeholder="Priority note (optional, max 500 characters)"></textarea>
                     </div>
 
                     <div class="gov-alert gov-alert-info mb-0">
@@ -579,6 +639,160 @@
 
 @section('scripts')
 <script>
+    // Function to open bulk action modal
+    function openBulkActionModal() {
+        console.log('openBulkActionModal() called');
+        const modalElement = document.getElementById('bulkActionModal');
+        if (modalElement) {
+            try {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                console.log('✓ Modal opened via openBulkActionModal()');
+                return true;
+            } catch (error) {
+                console.error('✗ Error opening modal:', error);
+                return false;
+            }
+        } else {
+            console.error('✗ Modal element not found!');
+            return false;
+        }
+    }
+
+    // Debug: Check if Bootstrap is loaded
+    console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+    console.log('Modal element exists:', document.getElementById('bulkActionModal') !== null);
+
+    // Test modal opening on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('bulkActionModal');
+
+        // IMPORTANT: Force close any open modals on page load to prevent blocking
+        if (modalElement) {
+            // Remove show class and hide modal if it's open
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            modalElement.setAttribute('aria-hidden', 'true');
+            modalElement.removeAttribute('aria-modal');
+
+            // Remove modal backdrop if exists
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+
+            // Remove modal-open class from body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            console.log('✓ Bulk Action Modal found and ensured closed');
+        }
+
+        if (modalElement) {
+            console.log('✓ Bulk Action Modal ready');
+        } else {
+            console.error('✗ Bulk Action Modal NOT found');
+        }
+
+        // Add click listener to bulk action button for debugging
+        const bulkBtn = document.getElementById('bulkActionButton');
+        if (bulkBtn) {
+            console.log('✓ Bulk Action Button found via ID');
+            console.log('Button element:', bulkBtn);
+            console.log('Button computed style pointer-events:', window.getComputedStyle(bulkBtn).pointerEvents);
+            console.log('Button computed style z-index:', window.getComputedStyle(bulkBtn).zIndex);
+
+            // Mouse hover test
+            bulkBtn.addEventListener('mouseenter', function() {
+                console.log('✓ Mouse hovering over bulk button');
+            });
+
+            // Additional click event listener as backup
+            bulkBtn.addEventListener('click', function(e) {
+                console.log('✓✓ Event listener fired - button clicked!');
+                console.log('Event details:', e);
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Try to open modal
+                if (modalElement) {
+                    try {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                        console.log('✓ Modal opened via event listener');
+                    } catch (error) {
+                        console.error('✗ Error opening modal:', error);
+                    }
+                }
+            }, true); // Use capture phase
+        } else {
+            console.error('✗ Bulk Action Button NOT found');
+        }
+
+        // Check for overlapping elements
+        setTimeout(() => {
+            const btn = document.getElementById('bulkActionButton');
+            if (btn) {
+                const rect = btn.getBoundingClientRect();
+                const elementAtPoint = document.elementFromPoint(rect.left + rect.width/2, rect.top + rect.height/2);
+                console.log('Element at button center:', elementAtPoint);
+                console.log('Is it the button?', elementAtPoint === btn || btn.contains(elementAtPoint));
+
+                if (elementAtPoint !== btn && !btn.contains(elementAtPoint)) {
+                    console.warn('⚠️ WARNING: Another element is covering the button!');
+                    console.warn('Covering element:', elementAtPoint);
+                }
+            }
+        }, 500);
+    });
+
+    // Console test functions for debugging (user can call these in browser console)
+    window.testBulkModal = function() {
+        console.log('=== Manual Modal Test ===');
+        const modalElement = document.getElementById('bulkActionModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            console.log('✓ Modal opened manually via testBulkModal()');
+            return true;
+        } else {
+            console.error('✗ Modal element not found');
+            return false;
+        }
+    };
+
+    window.checkButton = function() {
+        console.log('=== Button Diagnostic ===');
+        const btn = document.getElementById('bulkActionButton');
+        if (!btn) {
+            console.error('✗ Button not found');
+            return;
+        }
+
+        console.log('✓ Button found');
+        console.log('Button HTML:', btn.outerHTML);
+        const style = window.getComputedStyle(btn);
+        console.log('Computed styles:', {
+            display: style.display,
+            visibility: style.visibility,
+            pointerEvents: style.pointerEvents,
+            cursor: style.cursor,
+            zIndex: style.zIndex,
+            position: style.position
+        });
+
+        const rect = btn.getBoundingClientRect();
+        console.log('Button position:', rect);
+        console.log('Is in viewport:', rect.top >= 0 && rect.bottom <= window.innerHeight);
+
+        const elementAtCenter = document.elementFromPoint(rect.left + rect.width/2, rect.top + rect.height/2);
+        console.log('Element at button center:', elementAtCenter);
+        console.log('Is clickable:', elementAtCenter === btn || btn.contains(elementAtCenter));
+    };
+
+    console.log('ℹ️ Test functions available: testBulkModal(), checkButton()');
+
     // Select All Checkbox
     document.getElementById('selectAll')?.addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.application-checkbox');
@@ -613,14 +827,26 @@
         bulkActionSelect.addEventListener('change', function() {
             const statusDiv = document.getElementById('statusSelection');
             const reviewerDiv = document.getElementById('reviewerSelection');
+            const priorityDiv = document.getElementById('prioritySelection');
 
+            // Hide all sections first
             if (statusDiv) statusDiv.classList.add('d-none');
             if (reviewerDiv) reviewerDiv.classList.add('d-none');
+            if (priorityDiv) priorityDiv.classList.add('d-none');
 
+            // Show relevant sections based on action
             if (this.value === 'update_status' && statusDiv) {
                 statusDiv.classList.remove('d-none');
-            } else if (this.value === 'assign_reviewer' && reviewerDiv) {
-                reviewerDiv.classList.remove('d-none');
+            } else if (this.value === 'assign_reviewer') {
+                if (reviewerDiv) reviewerDiv.classList.remove('d-none');
+                if (priorityDiv) priorityDiv.classList.remove('d-none');
+            } else if (this.value === 'set_priority' && priorityDiv) {
+                priorityDiv.classList.remove('d-none');
+                // Make priority required for set_priority action
+                const prioritySelect = document.querySelector('select[name="manual_priority"]');
+                if (prioritySelect) {
+                    prioritySelect.required = true;
+                }
             }
         });
     }
@@ -663,9 +889,48 @@
         }
     }
 
-    // Export
+    // Export Data with current filters
     function exportData() {
-        alert('Export functionality will be implemented soon. This will allow you to download applications data in Excel/CSV format.');
+        console.log('Exporting data with current filters...');
+
+        // Get current filter values from the form
+        const search = document.querySelector('input[name="search"]')?.value || '';
+        const status = document.querySelector('select[name="status"]')?.value || '';
+        const jobId = document.querySelector('select[name="job_id"]')?.value || '';
+        const reviewerId = document.querySelector('select[name="reviewer_id"]')?.value || '';
+        const dateFrom = document.querySelector('input[name="date_from"]')?.value || '';
+        const dateTo = document.querySelector('input[name="date_to"]')?.value || '';
+        const sortBy = '{{ request("sort_by", "created_at") }}';
+        const sortOrder = '{{ request("sort_order", "desc") }}';
+
+        // Build export URL with filters
+        const exportUrl = new URL('{{ route("admin.applications.export") }}', window.location.origin);
+
+        if (search) exportUrl.searchParams.append('search', search);
+        if (status) exportUrl.searchParams.append('status', status);
+        if (jobId) exportUrl.searchParams.append('job_id', jobId);
+        if (reviewerId) exportUrl.searchParams.append('reviewer_id', reviewerId);
+        if (dateFrom) exportUrl.searchParams.append('date_from', dateFrom);
+        if (dateTo) exportUrl.searchParams.append('date_to', dateTo);
+        exportUrl.searchParams.append('sort_by', sortBy);
+        exportUrl.searchParams.append('sort_order', sortOrder);
+
+        console.log('Export URL:', exportUrl.toString());
+
+        // Show loading indicator
+        const btn = document.getElementById('exportDataButton');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Exporting...';
+        btn.disabled = true;
+
+        // Redirect to export URL (will download file)
+        window.location.href = exportUrl.toString();
+
+        // Reset button after delay
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }, 3000);
     }
 
     // Auto-dismiss alerts
@@ -676,5 +941,23 @@
             if (bsAlert) bsAlert.close();
         });
     }, 5000);
+
+    // Reopen bulk action modal if there are validation errors (only after modal cleanup)
+    @if($errors->any())
+        setTimeout(() => {
+            const modalEl = document.getElementById('bulkActionModal');
+            if (modalEl) {
+                const bulkModal = new bootstrap.Modal(modalEl);
+                bulkModal.show();
+                console.log('ℹ️ Modal reopened due to validation errors');
+            }
+        }, 600); // Wait for cleanup to complete
+    @endif
+
+    // Debug: Log form submission
+    document.getElementById('bulkActionForm')?.addEventListener('submit', function(e) {
+        console.log('Form submitting with action:', document.getElementById('bulkAction')?.value);
+        console.log('Selected applications:', document.querySelectorAll('.application-checkbox:checked').length);
+    });
 </script>
 @endsection

@@ -87,9 +87,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         */
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [AdminApplicationController::class, 'index'])->name('index');
+            Route::get('/export', [AdminApplicationController::class, 'export'])->name('export');
             Route::get('/{application}', [AdminApplicationController::class, 'show'])->name('show');
             Route::post('/{application}/update-status', [AdminApplicationController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{application}/assign-reviewer', [AdminApplicationController::class, 'assignReviewer'])->name('assignReviewer');
+            Route::post('/{application}/set-priority', [AdminApplicationController::class, 'setPriority'])->name('setPriority');
             Route::delete('/{application}', [AdminApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [AdminApplicationController::class, 'bulkAction'])->name('bulkAction');
             Route::delete('/{application}/reset-payment', [AdminApplicationController::class, 'resetPayment'])->name('resetPayment');
@@ -201,6 +203,7 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
             Route::get('/{application}', [HRApplicationController::class, 'show'])->name('show');
             Route::post('/{application}/update-status', [HRApplicationController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{application}/assign-reviewer', [HRApplicationController::class, 'assignReviewer'])->name('assignReviewer');
+            Route::post('/{application}/set-priority', [HRApplicationController::class, 'setPriority'])->name('setPriority');
             Route::delete('/{application}', [HRApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [HRApplicationController::class, 'bulkAction'])->name('bulkAction');
         });
@@ -265,6 +268,8 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
         */
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [ApplicationReviewController::class, 'index'])->name('index');
+            Route::get('/export-csv', [ApplicationReviewController::class, 'exportCsv'])->name('exportCsv');
+            Route::get('/export-pdf', [ApplicationReviewController::class, 'exportPdf'])->name('exportPdf');
             Route::get('/{id}', [ApplicationReviewController::class, 'show'])->name('show');
             Route::get('/{id}/details', [ApplicationReviewController::class, 'getDetails'])->name('details');
             Route::post('/{id}/status', [ApplicationReviewController::class, 'updateStatus'])->name('updateStatus');

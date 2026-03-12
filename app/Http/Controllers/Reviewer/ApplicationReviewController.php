@@ -8,6 +8,7 @@ use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApplicationReviewController extends Controller
 {
@@ -42,8 +43,8 @@ class ApplicationReviewController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
-            // Default to pending and approved (under review)
-            $query->whereIn('status', ['pending', 'approved']);
+            // Default to pending and assigned (under review)
+            $query->whereIn('status', ['pending', 'assigned']);
         }
 
         // Priority filter (based on deadline)
@@ -107,6 +108,12 @@ class ApplicationReviewController extends Controller
             'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'pending')
                 ->count(),
+            'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'assigned')
+                ->count(),
+            'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'reviewed')
+                ->count(),
             'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'approved')
                 ->count(),
@@ -130,7 +137,26 @@ class ApplicationReviewController extends Controller
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
-        return view('reviewer.applications.show', compact('application'));
+        // Get statistics for sidebar
+        $stats = [
+            'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'pending')
+                ->count(),
+            'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'assigned')
+                ->count(),
+            'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'reviewed')
+                ->count(),
+            'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'approved')
+                ->count(),
+            'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'rejected')
+                ->count(),
+        ];
+
+        return view('reviewer.applications.show', compact('application', 'stats'));
     }
 
     /**
@@ -176,8 +202,8 @@ class ApplicationReviewController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-            'reviewer_notes' => 'nullable|string|max:1000',
+            'status' => 'required|in:reviewed,rejected',
+            'reviewer_notes' => 'required|string|max:1000',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
@@ -193,9 +219,21 @@ class ApplicationReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        // Prepare response message based on status
+        if ($request->status === 'reviewed') {
+            $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
+        } else {
+            $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
+        }
+
+        // TODO: When Sparrow SMS is integrated, send SMS notification to candidate for rejected applications
+        // if ($request->status === 'rejected') {
+        //     $this->sendRejectionSMS($application);
+        // }
+
         return response()->json([
             'success' => true,
-            'message' => 'Application status updated successfully!',
+            'message' => $message,
             'application' => $application
         ]);
     }
@@ -208,7 +246,7 @@ class ApplicationReviewController extends Controller
         $request->validate([
             'application_ids' => 'required|array',
             'application_ids.*' => 'exists:application_form,id',
-            'status' => 'required|in:pending,approved,rejected',
+            'status' => 'required|in:reviewed,rejected',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
@@ -222,9 +260,178 @@ class ApplicationReviewController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+        // Prepare response message
+        $count = count($request->application_ids);
+        if ($request->status === 'reviewed') {
+            $message = $count . ' applications marked as reviewed and sent to Approver Portal!';
+        } else {
+            $message = $count . ' applications rejected! Candidates will be notified via SMS when integrated.';
+        }
+
         return response()->json([
             'success' => true,
-            'message' => count($request->application_ids) . ' applications updated successfully!',
+            'message' => $message,
         ]);
+    }
+
+    /**
+     * Export applications to CSV
+     */
+    public function exportCsv(Request $request)
+    {
+        $reviewer = Auth::guard('reviewer')->user();
+
+        // Build query - only for this reviewer's applications
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+            ->where('reviewer_id', $reviewer->id)
+            ->where('status', '!=', 'draft');
+
+        // If specific IDs are provided (bulk export), use only those
+        if ($request->filled('ids')) {
+            $ids = $request->input('ids', []);
+            $query->whereIn('id', $ids);
+        } else {
+            // Otherwise apply filters
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name_english', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhereHas('jobPosting', function($q) use ($search) {
+                          $q->where('title', 'like', "%{$search}%");
+                      });
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('job_id')) {
+                $query->where('job_posting_id', $request->job_id);
+            }
+        }
+
+        $applications = $query->orderBy('created_at', 'desc')->get();
+
+        // Generate CSV
+        $filename = 'applications_export_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($applications) {
+            $file = fopen('php://output', 'w');
+
+            // Add BOM for Excel UTF-8 support
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Add headers
+            fputcsv($file, [
+                'ID',
+                'Candidate Name',
+                'Email',
+                'Phone',
+                'Position',
+                'Department',
+                'Status',
+                'Priority',
+                'Applied Date',
+                'Deadline',
+                'Days Remaining',
+                'Reviewed At',
+                'Reviewer Notes'
+            ]);
+
+            // Add data
+            foreach ($applications as $application) {
+                $daysRemaining = $application->jobPosting
+                    ? (int) now()->diffInDays($application->jobPosting->deadline, false)
+                    : 0;
+
+                $priority = $application->manual_priority
+                    ? ucfirst($application->manual_priority)
+                    : ($daysRemaining <= 2 ? 'High' : ($daysRemaining <= 5 ? 'Medium' : ($daysRemaining <= 10 ? 'Low' : 'Normal')));
+
+                fputcsv($file, [
+                    $application->id,
+                    $application->name_english ?? 'N/A',
+                    $application->email ?? 'N/A',
+                    $application->phone ?? 'N/A',
+                    $application->jobPosting->title ?? 'N/A',
+                    $application->jobPosting->department ?? 'N/A',
+                    ucfirst($application->status),
+                    $priority,
+                    $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i') : 'N/A',
+                    $application->jobPosting && $application->jobPosting->deadline ? $application->jobPosting->deadline->format('Y-m-d') : 'N/A',
+                    $daysRemaining . ' days',
+                    $application->reviewed_at ? $application->reviewed_at->format('Y-m-d H:i') : 'Not Reviewed',
+                    $application->reviewer_notes ?? ''
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export applications to PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $reviewer = Auth::guard('reviewer')->user();
+
+        // Build query - only for this reviewer's applications
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+            ->where('reviewer_id', $reviewer->id)
+            ->where('status', '!=', 'draft');
+
+        // If specific IDs are provided (bulk export), use only those
+        if ($request->filled('ids')) {
+            $ids = $request->input('ids', []);
+            $query->whereIn('id', $ids);
+        } else {
+            // Otherwise apply filters
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name_english', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhereHas('jobPosting', function($q) use ($search) {
+                          $q->where('title', 'like', "%{$search}%");
+                      });
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('job_id')) {
+                $query->where('job_posting_id', $request->job_id);
+            }
+        }
+
+        $applications = $query->orderBy('created_at', 'desc')->get();
+
+        // Generate stats
+        $stats = [
+            'total' => $applications->count(),
+            'pending' => $applications->where('status', 'pending')->count(),
+            'assigned' => $applications->where('status', 'assigned')->count(),
+            'reviewed' => $applications->where('status', 'reviewed')->count(),
+            'approved' => $applications->where('status', 'approved')->count(),
+            'rejected' => $applications->where('status', 'rejected')->count(),
+        ];
+
+        $pdf = Pdf::loadView('reviewer.applications.pdf', compact('applications', 'stats', 'reviewer'));
+
+        $filename = 'applications_export_' . now()->format('Y-m-d_His') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }
