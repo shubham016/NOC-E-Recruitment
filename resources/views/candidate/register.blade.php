@@ -518,6 +518,25 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- Phone -->
+                        <div class="noc-field">
+                            <label for="phone">Phone Number <span class="req">*</span></label>
+                            <div class="noc-input-group">
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    value="{{ old('phone') }}"
+                                    placeholder="Enter your Mobile Number"
+                                    class="{{ $errors->has('phone') ? 'is-invalid' : '' }}"
+                                    required
+                                >
+                                <span class="noc-input-icon"><i class="bi bi-telephone"></i></span>
+                                @error('phone')
+                                    <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         {{-- Gender & DOB --}}
                         <div class="noc-row">

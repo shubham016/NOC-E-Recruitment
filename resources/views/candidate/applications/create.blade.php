@@ -98,7 +98,7 @@
 
 <!-- STEP 1: Personal Info -->                  
                 <div class="step" id="step1">
-                    <h5 class="mb-4 text-light">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -127,8 +127,9 @@
                                 value="{{ old('email', $draftApplication->email ?? $candidate->email) }}" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
-                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $draftApplication->phone ?? '') }}" required>
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" id="phone" class="form-control"
+                                value="{{ old('phone', $draftApplication->phone ?? $candidate->phone) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -1223,11 +1224,16 @@ setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function validateStep(step) {
+        function validateStep(step) {
         const stepEl = document.getElementById('step' + step);
-        if (!stepEl) return true; // If step doesn't exist, consider it valid
+        if (!stepEl) return true;
 
-        // Clear previous validation errors
+        const wasHidden = stepEl.classList.contains('d-none');
+        if (wasHidden) {
+            stepEl.classList.remove('d-none');
+            stepEl.style.visibility = 'hidden';
+        }
+
         stepEl.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
             el.classList.remove('is-invalid');
             if (el.classList.contains('invalid-feedback')) el.remove();
@@ -1236,69 +1242,61 @@ setTimeout(() => {
         let isValid = true;
         let firstInvalid = null;
 
-        // Validate all required fields in this step
         stepEl.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-            // Skip if field is hidden
-            if (field.closest('.d-none')) return;
-            
+            const hiddenParent = field.parentElement?.closest('.conditionally-hidden');
+            if (hiddenParent) return;
 
-             // Handle checkbox validation
             if (field.type === 'checkbox') {
                 if (!field.checked) {
                     isValid = false;
                     field.classList.add('is-invalid');
-
                     const err = document.createElement('div');
                     err.className = 'invalid-feedback';
                     err.textContent = 'You must agree before continuing';
                     field.parentNode.appendChild(err);
-
                     if (!firstInvalid) firstInvalid = field;
                 }
                 return;
             }
-            // For file inputs, check if they have files (only if required)
+
             if (field.type === 'file') {
                 if (field.hasAttribute('required') && field.files.length === 0) {
                     isValid = false;
                     field.classList.add('is-invalid');
-                    
-                    // Create error message
                     const err = document.createElement('div');
                     err.className = 'invalid-feedback';
                     err.textContent = 'This file is required';
                     field.parentNode.appendChild(err);
-                    
                     if (!firstInvalid) firstInvalid = field;
                 }
                 return;
             }
-            
-            // Check if field is empty
+
             const value = field.value.trim();
-            if (!value || value === '') {
+            if (!value) {
                 isValid = false;
                 field.classList.add('is-invalid');
-                
-                // Create error message
                 const err = document.createElement('div');
                 err.className = 'invalid-feedback';
                 err.textContent = 'This field is required';
                 field.parentNode.appendChild(err);
-                
                 if (!firstInvalid) firstInvalid = field;
             }
         });
 
-        // If validation failed, scroll to first invalid field and show alert
-        if (!isValid && firstInvalid) {
+        if (wasHidden) {
+            stepEl.classList.add('d-none');
+            stepEl.style.visibility = '';
+        }
+
+        if (!isValid && firstInvalid && !wasHidden) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             firstInvalid.focus();
-            
-            // Show alert
-            showAutoSaveStatus('⚠ Please fill all required fields', 'warning');
+            if (typeof showAutoSaveStatus === 'function') {
+                showAutoSaveStatus('⚠ Please fill all required fields', 'warning');
+            }
         }
-        
+
         return isValid;
     }
 

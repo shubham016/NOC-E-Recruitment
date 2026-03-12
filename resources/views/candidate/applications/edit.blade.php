@@ -240,16 +240,35 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="noc_id_card" class="form-label">NOC ID Card (If Yes)</label>
-                            <input type="file" name="noc_id_card" id="noc_id_card" class="form-control" accept="image/*,application/pdf">
-                            @if($applicationform->noc_id_card)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                   <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="noc_id_card" class="form-label">NOC ID Card (If Yes)</label>
+                        
+                        @if($applicationform->noc_id_card)
+                            {{-- Show current file as a styled input-like box --}}
+                            <div class="input-group">
+                                <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}" 
+                                target="_blank" 
+                                class="form-control text-primary text-decoration-none bg-white">
+                                    📄 View Current File
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" 
+                                        onclick="document.getElementById('noc_id_card_wrapper').classList.remove('d-none'); this.closest('.input-group').classList.add('d-none')">
+                                    Change
+                                </button>
+                            </div>
+                            <div id="noc_id_card_wrapper" class="d-none mt-1">
+                                <input type="file" name="noc_id_card" id="noc_id_card" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            </div>
+                        @else
+                            <input type="file" name="noc_id_card" id="noc_id_card" 
+                                class="form-control" accept="image/*,application/pdf">
+                        @endif
+                        
+                        <small class="text-muted d-block">Max size: 2MB</small>
                     </div>
+                </div>
 
                     <div class="d-flex justify-content-end">
                         <button type="button" class="btn btn-light next-btn">Next</button>
@@ -299,14 +318,32 @@
                     </div>
 
                     <div class="row mb-3">
-                       <div class="col-md-6">
-                            <label for="ethnic_certificate" class="form-label">Ethnic Certificate</label>
-                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" class="form-control" accept="image/*,application/pdf">
-                            @if($applicationform->ethnic_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                      <div class="col-md-6">
+                        <label for="ethnic_certificate" class="form-label">Ethnic Certificate</label>
+                        
+                        @if($applicationform->ethnic_certificate)
+                            <div class="input-group" id="ethnic_certificate_current">
+                                <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}" 
+                                target="_blank" 
+                                class="form-control text-primary text-decoration-none bg-white">
+                                    📄 View Current File
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" 
+                                        onclick="document.getElementById('ethnic_certificate_wrapper').classList.remove('d-none'); document.getElementById('ethnic_certificate_current').classList.add('d-none')">
+                                    Change
+                                </button>
+                            </div>
+                            <div id="ethnic_certificate_wrapper" class="d-none mt-1">
+                                <input type="file" name="ethnic_certificate" id="ethnic_certificate" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            </div>
+                        @else
+                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" 
+                                class="form-control" accept="image/*,application/pdf">
+                        @endif
+                        
+                        <small class="text-muted d-block">Max size: 2MB</small>
+                    </div>
                         <div class="col-md-6">
                             <label for="mother_tongue" class="form-label">Mother Tongue <span class="text-danger">*</span> <small>(मातृभाषा)</small></label>
                             <input type="text" name="mother_tongue" id="mother_tongue" class="form-control" value="{{ old('mother_tongue', $applicationform->mother_tongue) }}" required>
@@ -331,13 +368,31 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
-                            <input type="file" name="disability_certificate" id="disability_certificate" class="form-control" accept="image/*,application/pdf">
-                            @if($applicationform->disability_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
+                    <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
+                    
+                    @if($applicationform->disability_certificate)
+                        <div class="input-group" id="disability_certificate_current">
+                            <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" 
+                            target="_blank" 
+                            class="form-control text-primary text-decoration-none bg-white">
+                                📄 View Current File
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary" 
+                                    onclick="document.getElementById('disability_certificate_wrapper').classList.remove('d-none'); document.getElementById('disability_certificate_current').classList.add('d-none')">
+                                Change
+                            </button>
                         </div>
+                        <div id="disability_certificate_wrapper" class="d-none mt-1">
+                            <input type="file" name="disability_certificate" id="disability_certificate" 
+                                class="form-control" accept="image/*,application/pdf">
+                        </div>
+                    @else
+                        <input type="file" name="disability_certificate" id="disability_certificate" 
+                            class="form-control" accept="image/*,application/pdf">
+                    @endif
+                    
+                    <small class="text-muted d-block">Max size: 2MB</small>
+                </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
@@ -513,38 +568,111 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="passport_size_photo" class="form-label">Passport Size Photo<span class="text-danger">*</span></label>
-                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*" required>
+                            
                             @if($applicationform->passport_size_photo)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" target="_blank">View File</a></small>
+                                <div class="input-group" id="passport_size_photo_current">
+                                    <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('passport_size_photo_wrapper').classList.remove('d-none'); document.getElementById('passport_size_photo_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="passport_size_photo_wrapper" class="d-none mt-1">
+                                    <input type="file" name="passport_size_photo" id="passport_size_photo" 
+                                        class="form-control" accept="image/*">
+                                </div>
+                            @else
+                                <input type="file" name="passport_size_photo" id="passport_size_photo" 
+                                    class="form-control" accept="image/*" required>
                             @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span><span class="text-danger">*</span></label>
-                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf" required>
-                            @if($applicationform->citizenship_id_document)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
-                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
-                            @if($applicationform->transcript)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->transcript) }}" target="_blank">View File</a></small>
-                            @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
-                       <div class="col-md-6">
-                            <label for="character" class="form-label">Character Certificate<span class="text-danger">*</span></label>
-                            {{-- FIXED: Added closing > tag --}}
-                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf" required> 
-                            @if($applicationform->character)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank">View File</a></small>
+                        <div class="col-md-6">
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span><span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->citizenship_id_document)
+                                <div class="input-group" id="citizenship_id_document_current">
+                                    <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('citizenship_id_document_wrapper').classList.remove('d-none'); document.getElementById('citizenship_id_document_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="citizenship_id_document_wrapper" class="d-none mt-1">
+                                    <input type="file" name="citizenship_id_document" id="citizenship_id_document" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="citizenship_id_document" id="citizenship_id_document" 
+                                    class="form-control" accept="image/*,application/pdf" required>
                             @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->transcript)
+                                <div class="input-group" id="transcript_current">
+                                    <a href="{{ asset('storage/' . $applicationform->transcript) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('transcript_wrapper').classList.remove('d-none'); document.getElementById('transcript_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="transcript_wrapper" class="d-none mt-1">
+                                    <input type="file" name="transcript" id="transcript" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="transcript" id="transcript" 
+                                    class="form-control" accept="image/*,application/pdf" required>
+                            @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="character" class="form-label">Character Certificate<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->character)
+                                <div class="input-group" id="character_current">
+                                    <a href="{{ asset('storage/' . $applicationform->character) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('character_wrapper').classList.remove('d-none'); document.getElementById('character_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="character_wrapper" class="d-none mt-1">
+                                    <input type="file" name="character" id="character" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="character" id="character" 
+                                    class="form-control" accept="image/*,application/pdf" required>
+                            @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
@@ -552,21 +680,55 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
+                            
                             @if($applicationform->equivalent)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank">View File</a></small>
+                                <div class="input-group" id="equivalent_current">
+                                    <a href="{{ asset('storage/' . $applicationform->equivalent) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('equivalent_wrapper').classList.remove('d-none'); document.getElementById('equivalent_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="equivalent_wrapper" class="d-none mt-1">
+                                    <input type="file" name="equivalent" id="equivalent" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="equivalent" id="equivalent" 
+                                    class="form-control" accept="image/*,application/pdf">
                             @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
                         <div class="col-md-6">
                             <label for="work_experience" class="form-label">Work Experience Document</label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
+                            
                             @if($applicationform->work_experience)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->work_experience) }}" target="_blank">View File</a></small>
+                                <div class="input-group" id="work_experience_current">
+                                    <a href="{{ asset('storage/' . $applicationform->work_experience) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('work_experience_wrapper').classList.remove('d-none'); document.getElementById('work_experience_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="work_experience_wrapper" class="d-none mt-1">
+                                    <input type="file" name="work_experience" id="work_experience" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="work_experience" id="work_experience" 
+                                    class="form-control" accept="image/*,application/pdf">
                             @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
@@ -574,11 +736,28 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*" required>
+                            
                             @if($applicationform->signature)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank">View File</a></small>
+                                <div class="input-group" id="signature_current">
+                                    <a href="{{ asset('storage/' . $applicationform->signature) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('signature_wrapper').classList.remove('d-none'); document.getElementById('signature_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="signature_wrapper" class="d-none mt-1">
+                                    <input type="file" name="signature" id="signature" 
+                                        class="form-control" accept="image/*">
+                                </div>
+                            @else
+                                <input type="file" name="signature" id="signature" 
+                                    class="form-control" accept="image/*" required>
                             @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
@@ -587,7 +766,7 @@
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
-                </div>       
+                </div>
                 
                 <!-- STEP 7: Review Application Before Payment -->
                 <div class="step d-none" id="step7">
@@ -607,12 +786,45 @@
                             <tr><th>Birth Date (AD)</th><td id="p_birth_date_ad"></td></tr>
                             <tr><th>Birth Date (BS)</th><td id="p_birth_date_bs"></td></tr>
                             <tr><th>Phone</th><td id="p_phone"></td></tr>
+                            <tr><th>Advertisement Number</th><td id="p_advertisement_no"></td></tr>
+                            <tr><th>Applying Position</th><td id="p_applying_position"></td></tr>
+                            <tr><th>Department</th><td id="p_department"></td></tr>
+                            <tr><th>Age</th><td id="p_age"></td></tr>
+                            <tr><th>Alternate Phone Number</th><td id="p_alternate_phone_number"></td></tr>
                             <tr><th>Gender</th><td id="p_gender"></td></tr>
                             <tr><th>Marital Status</th><td id="p_marital_status"></td></tr>
-                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Spouse Name (If Married)</th><td id="spouse_name_english"></td></tr>
+                            <tr><th>Spouse Nationality (If Married)</th><td id="p_spouse_nationality"></td></tr>
+                            <tr><th>Citizenship Number</th><td id="p_citizenship_number"></td></tr>
+                            <tr><th>Citizenship Issue Date (B.S)</th><td id="p_citizenship_issue_date_bs"></td></tr>
+                            <tr><th>Citizenship Issue District</th><td id="p_citizenship_issue_district"></td></tr>
+                            <tr><th>Father Name (बुबाको नाम)</th><td id="p_father_name_english"></td></tr>
+                            <tr><th>Mother Name (आमाको नाम)</th><td id="p_mother_name_english"></td></tr>
+                            <tr><th>Grandfather Name (हजुरबुबाको नाम)</th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father's Qualification (बुबाको योग्यता)</th><td id="p_father_qualification"></td></tr>
+                            <tr><th>Mother's Qualification (आमाको योग्यता)</th><td id="p_mother_qualification"></td></tr>
+                            <tr><th>Parent's Occupation</th><td id="p_parent_occupation"></td></tr>
                             <tr><th>Blood Group</th><td id="p_blood_group"></td></tr>
+                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Are you NOC Employee?</th><td id="p_noc_employee"></td></tr>
+                            <tr><th>NOC ID Card</th><td id="p_noc_id_card"></td></tr>
                         </table>
 
+                        <!-- General Information -->
+                            <h6 class="text-secondary mt-3">General Information</h6>
+                            <table class="table table-bordered">
+
+                                <tr><th width="30%">Religion</th><td id="p_religion"></td></tr>
+                                <tr><th>Community</th><td id="p_community"></td></tr>
+                                <tr><th>Ethnic Group</th><td id="p_ethnic_group"></td></tr>
+                                <tr><th>Mother Tongue</th><td id="p_mother_tongue"></td></tr>
+                                <tr><th>Employment Status</th><td id="p_employment_status"></td></tr>
+                                <tr><th>Physical Disability</th><td id="p_physical_disability"></td></tr>
+                                <tr><th>Ethnic Certificate</th><td id="p_ethnic_certificate"></td></tr>
+                                <tr><th>Disability Certificate</th><td id="p_disability_certificate"></td></tr>
+
+                            </table>
+                            <!-- Address Information -->
                         <h6 class="text-secondary mt-4">Address Information</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Permanent Address</th>
@@ -621,7 +833,7 @@
                             <tr><th>Mailing Address</th>
                                 <td id="p_mailing_address"></td></tr>
                         </table>
-
+                            <!-- Education -->
                         <h6 class="text-secondary mt-4">Education</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Education Level</th><td id="p_education_level"></td></tr>
@@ -629,7 +841,7 @@
                             <tr><th>Institution</th><td id="p_institution_name"></td></tr>
                             <tr><th>Graduation Year</th><td id="p_graduation_year"></td></tr>
                         </table>
-
+                            <!-- Work Experience -->
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
@@ -637,39 +849,17 @@
                             <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
                             <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
                         </table>
-
+                            <!-- Uploaded Documents -->
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
-                            <tr>
-                                <th width="30%">Passport Size Photo</th>
-                                <td id="p_photo"></td>
-                            </tr>
-                            <tr>
-                                <th>Citizenship / ID Document</th>
-                                <td id="p_citizenship"></td>
-                            </tr>
-                            <tr>
-                                <th>Transcript</th>
-                                <td id="p_transcript"></td>
-                            </tr>
-                            <tr>
-                                <th>Character</th>
-                                <td id="p_character"></td>
-                            </tr>
-                            <tr>
-                                <th>Equivalent</th>
-                                <td id="p_equivalent"></td>
-                            </tr>
-                            <tr>
-                                <th>Signature</th>
-                                <td id="p_signature"></td>
-                            </tr>
-                            <tr>
-                                <th>Work Experience</th>
-                                <td id="p_work_experience"></td>
-                            </tr>
+                            <tr><th width="30%">Passport Size Photo</th><td id="p_photo"></td></tr>
+                            <tr><th>Citizenship / ID Document</th><td id="p_citizenship"></td></tr>
+                            <tr><th>Transcript</th><td id="p_transcript"></td></tr>
+                            <tr><th>Character</th><td id="p_character"></td></tr>
+                            <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
+                            <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
                         </table>
-
                         <div class="form-check mb-4">
                                 <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
                                 <label class="form-check-label" for="terms_agree">
@@ -730,7 +920,7 @@
                             <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
                             <a href="{{ route('candidate.applications.index') }}" class="btn btn-danger">
-                                Save Your Application
+                                Redirect to Your Applications
                             </a>
                             </div>
 
@@ -1013,6 +1203,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         stepEl.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
             if (field.closest('.d-none')) return;
+
+            // Handle checkbox validation
+            if (field.type === 'checkbox') {
+                if (!field.checked) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+
+                    const err = document.createElement('div');
+                    err.className = 'invalid-feedback';
+                    err.textContent = 'You must agree before continuing';
+                    field.parentNode.appendChild(err);
+
+                    if (!firstInvalid) firstInvalid = field;
+                }
+                return;
+            }
+
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('is-invalid');
@@ -1125,17 +1332,43 @@ document.addEventListener('DOMContentLoaded', function () {
             if (el) el.textContent = value;
         }
 
-        // Personal Info
+       // Personal Info
         set('p_name_english', val('name_english'));
         set('p_name_nepali', val('name_nepali'));
         set('p_email', val('email'));
         set('p_birth_date_ad', val('birth_date_ad'));
         set('p_birth_date_bs', val('birth_date_bs'));
         set('p_phone', val('phone'));
+        set('p_advertisement_no', val('advertisement_no'));
+        set('p_applying_position', val('applying_position'));
+        set('p_department', val('department'));
+        set('p_age', val('age'));
+        set('p_alternate_phone_number', val('alternate_phone_number'));
         set('p_gender', val('gender'));
         set('p_marital_status', val('marital_status'));
-        set('p_nationality', val('nationality'));
+        set('spouse_name_english', val('spouse_name_english'));
+        set('p_spouse_nationality', val('spouse_nationality'));
+        set('p_citizenship_number', val('citizenship_number'));
+        set('p_citizenship_issue_date_bs', val('citizenship_issue_date_bs'));
+        set('p_citizenship_issue_district', val('citizenship_issue_district'));
+        set('p_father_name_english', val('father_name_english'));
+        set('p_mother_name_english', val('mother_name_english'));
+        set('p_grandfather_name_english', val('grandfather_name_english'));
+        set('p_father_qualification', val('father_qualification'));
+        set('p_mother_qualification', val('mother_qualification'));
+        set('p_parent_occupation', val('parent_occupation'));
         set('p_blood_group', val('blood_group'));
+        set('p_nationality', val('nationality'));
+        set('p_noc_employee', val('noc_employee'));
+        
+
+        // General Information
+        set('p_religion', val('religion'));
+        set('p_community', val('community'));
+        set('p_ethnic_group', val('ethnic_group'));
+        set('p_mother_tongue', val('mother_tongue'));
+        set('p_employment_status', val('employment_status'));
+        set('p_physical_disability', val('physical_disability'));
 
         // Address Info
         const permanentAddress =
@@ -1244,7 +1477,28 @@ document.addEventListener('DOMContentLoaded', function () {
         @else
             previewFile('p_work_experience', 'work_experience');
         @endif
-    }
+
+        @if($applicationform->noc_id_card)
+            document.getElementById('p_noc_id_card').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->	noc_id_card) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_noc_id_card', '	noc_id_card');
+        @endif
+
+        @if($applicationform->ethnic_certificate)
+            document.getElementById('p_ethnic_certificate').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->ethnic_certificate) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_ethnic_certificate', 'ethnic_certificate');
+        @endif
+
+        @if($applicationform->disability_certificate)
+            document.getElementById('p_disability_certificate').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->disability_certificate) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_disability_certificate', 'disability_certificate');
+        @endif
+    }   
 
     // PAYMENT GATEWAYS
     window.startPayment = function(gateway) {

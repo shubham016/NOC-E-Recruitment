@@ -52,6 +52,7 @@ class CandidateController extends Controller
         DB::table('candidate_registration')->insert([
             'name'                      => $request->name,
             'email'                     => $request->email,
+            'phone'                     => $request->phone,
             'gender'                    => $request->gender,
             'date_of_birth_bs'          => $request->date_of_birth_bs,
             'citizenship_number'        => $request->citizenship_number,
