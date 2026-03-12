@@ -129,10 +129,25 @@ class HRApplicationController extends Controller
 
         $application->update([
             'reviewer_id' => $request->reviewer_id,
-            'status' => 'approved'
+            'status' => 'assigned'
         ]);
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully!');
+    }
+
+    public function setPriority(Request $request, ApplicationForm $application)
+    {
+        $request->validate([
+            'manual_priority' => 'required|in:critical,high,medium,low,normal',
+            'priority_note' => 'nullable|string|max:500'
+        ]);
+
+        $application->update([
+            'manual_priority' => $request->manual_priority,
+            'priority_note' => $request->priority_note
+        ]);
+
+        return redirect()->back()->with('success', 'Priority set successfully!');
     }
 
     public function destroy(ApplicationForm $application)
@@ -146,11 +161,18 @@ class HRApplicationController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:delete,update_status,assign_reviewer',
-            'application_ids' => 'required|array',
+            'action' => 'required|in:delete,update_status,assign_reviewer,set_priority',
+            'application_ids' => 'required|array|min:1',
             'application_ids.*' => 'exists:application_form,id',
             'status' => 'required_if:action,update_status|in:pending,approved,rejected',
-            'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id'
+            'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id',
+            'manual_priority' => 'required_if:action,set_priority|nullable|in:critical,high,medium,low,normal',
+            'priority_note' => 'nullable|string|max:500'
+        ], [
+            'application_ids.required' => 'Please select at least one application.',
+            'application_ids.min' => 'Please select at least one application.',
+            'reviewer_id.required_if' => 'Please select a reviewer.',
+            'manual_priority.required_if' => 'Please select a priority level.',
         ]);
 
         $applicationIds = $request->application_ids;
@@ -170,11 +192,31 @@ class HRApplicationController extends Controller
                 break;
 
             case 'assign_reviewer':
-                ApplicationForm::whereIn('id', $applicationIds)->update([
+                $updateData = [
                     'reviewer_id' => $request->reviewer_id,
-                    'status' => 'approved'
-                ]);
+                    'status' => 'assigned'
+                ];
+
+                // Optionally set priority during assignment
+                if ($request->filled('manual_priority')) {
+                    $updateData['manual_priority'] = $request->manual_priority;
+                    $updateData['priority_note'] = $request->priority_note;
+                }
+
+                ApplicationForm::whereIn('id', $applicationIds)->update($updateData);
+
                 $message = 'Reviewer assigned to selected applications!';
+                if ($request->filled('manual_priority')) {
+                    $message .= ' Priority set to ' . ucfirst($request->manual_priority) . '.';
+                }
+                break;
+
+            case 'set_priority':
+                ApplicationForm::whereIn('id', $applicationIds)->update([
+                    'manual_priority' => $request->manual_priority,
+                    'priority_note' => $request->priority_note
+                ]);
+                $message = 'Priority set for selected applications!';
                 break;
 
             default:

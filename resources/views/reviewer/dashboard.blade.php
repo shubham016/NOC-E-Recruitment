@@ -15,20 +15,25 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item">
         <i class="bi bi-hourglass-split"></i>
-        <span>Pending Reviews</span>
-        <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending'] }}</span>
+        <span>Assigned to Me</span>
+        <span class="badge bg-info ms-auto">{{ $status['assigned'] }}</span>
+    </a>
+    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
+        <i class="bi bi-clipboard-check"></i>
+        <span>Reviewed</span>
+        <span class="badge bg-primary ms-auto">{{ $status['reviewed'] }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="sidebar-menu-item">
         <i class="bi bi-check-circle"></i>
         <span>Approved</span>
-        <span class="badge bg-success ms-auto">{{ $stats['approved'] }}</span>
+        <span class="badge bg-success ms-auto">{{ $status['approved'] }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="sidebar-menu-item">
         <i class="bi bi-x-circle"></i>
         <span>Rejected</span>
-        <span class="badge bg-danger ms-auto">{{ $stats['rejected'] }}</span>
+        <span class="badge bg-danger ms-auto">{{ $status['rejected'] }}</span>
     </a>
 @endsection
 
@@ -146,8 +151,8 @@
             </div>
             <div class="col-md-4 text-md-end">
                 <div class="d-inline-block bg-white bg-opacity-10 rounded-3 px-4 py-3">
-                    <div class="fw-bold fs-4">{{ $stats['pending'] }}</div>
-                    <small class="opacity-90">Pending Reviews</small>
+                    <div class="fw-bold fs-4">{{ $status['assigned'] }}</div>
+                    <small class="opacity-90">Assigned to Me</small>
                 </div>
             </div>
         </div>
@@ -155,40 +160,31 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-warning bg-opacity-10">
-                    <i class="bi bi-hourglass-split text-warning"></i>
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['pending'] }}</h3>
-                <p class="text-muted mb-0 small">Pending Reviews</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-primary bg-opacity-10">
-                    <i class="bi bi-check-circle text-primary"></i>
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['total_reviewed'] }}</h3>
-                <p class="text-muted mb-0 small">Total Reviewed</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-success bg-opacity-10">
-                    <i class="bi bi-star-fill text-success"></i>
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['shortlisted'] }}</h3>
-                <p class="text-muted mb-0 small">Shortlisted</p>
-            </div>
-        </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="stat-card">
                 <div class="stat-icon bg-info bg-opacity-10">
-                    <i class="bi bi-graph-up text-info"></i>
+                    <i class="bi bi-inbox text-info"></i>
                 </div>
-                <h3 class="fw-bold mb-0">{{ $stats['approval_rate'] }}%</h3>
-                <p class="text-muted mb-0 small">Approval Rate</p>
+                <h3 class="fw-bold mb-0">{{ $status['assigned'] }}</h3>
+                <p class="text-muted mb-0 small">Assigned to Me</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-success bg-opacity-10">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                </div>
+                <h3 class="fw-bold mb-0">{{ $status['reviewed'] }}</h3>
+                <p class="text-muted mb-0 small">Reviewed Applications</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary bg-opacity-10">
+                    <i class="bi bi-graph-up text-primary"></i>
+                </div>
+                <h3 class="fw-bold mb-0">{{ $status['completion_rate'] }}%</h3>
+                <p class="text-muted mb-0 small">Completion Rate</p>
             </div>
         </div>
     </div>
@@ -202,33 +198,27 @@
                     <h5 class="mb-0 fw-bold">
                         <i class="bi bi-calendar-check text-primary me-2"></i>Today's Progress
                     </h5>
-                    <span class="badge bg-primary">{{ $todayStats['reviewed_today'] }} / {{ $todayStats['daily_target'] }}</span>
+                    <span class="badge bg-primary">{{ $todaystatus['reviewed_today'] }} / {{ $todaystatus['daily_target'] }}</span>
                 </div>
 
                 <div class="progress mb-3" style="height: 25px;">
-                    <div class="progress-bar bg-primary" role="progressbar"
+                    <div class="progress-bar bg-success" role="progressbar"
                          style="width: {{ min($progressPercentage, 100) }}%">
                         {{ $progressPercentage }}%
                     </div>
                 </div>
 
                 <div class="row g-3 text-center">
-                    <div class="col-4">
+                    <div class="col-6">
                         <div class="p-3 bg-success bg-opacity-10 rounded">
-                            <div class="fw-bold text-success fs-5">{{ $todayStats['approved_today'] }}</div>
-                            <small class="text-muted">Approved</small>
+                            <div class="fw-bold text-success fs-5">{{ $todaystatus['reviewed_today'] }}</div>
+                            <small class="text-muted">Reviewed Today</small>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="p-3 bg-danger bg-opacity-10 rounded">
-                            <div class="fw-bold text-danger fs-5">{{ $todayStats['rejected_today'] }}</div>
-                            <small class="text-muted">Rejected</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
+                    <div class="col-6">
                         <div class="p-3 bg-warning bg-opacity-10 rounded">
-                            <div class="fw-bold text-warning fs-5">{{ $todayStats['on_hold_today'] }}</div>
-                            <small class="text-muted">On Hold</small>
+                            <div class="fw-bold text-warning fs-5">{{ $todaystatus['pending_review'] }}</div>
+                            <small class="text-muted">Pending Review</small>
                         </div>
                     </div>
                 </div>
@@ -241,22 +231,38 @@
                 @forelse($pendingApplications as $application)
                     @php
                         $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
-                        $priorityClass = '';
-                        $priorityBadge = 'bg-secondary';
-                        $priorityText = 'Normal';
 
-                        if ($daysRemaining <= 2) {
-                            $priorityClass = 'priority-high';
-                            $priorityBadge = 'bg-danger';
-                            $priorityText = 'High';
-                        } elseif ($daysRemaining <= 5) {
-                            $priorityClass = 'priority-medium';
-                            $priorityBadge = 'bg-warning';
-                            $priorityText = 'Medium';
-                        } elseif ($daysRemaining <= 10) {
-                            $priorityClass = 'priority-low';
-                            $priorityBadge = 'bg-success';
-                            $priorityText = 'Low';
+                        // Check if admin set manual priority
+                        if ($application->manual_priority) {
+                            $priorityClass = 'priority-' . $application->manual_priority;
+                            $priorityText = ucfirst($application->manual_priority);
+                            $priorityBadge = match($application->manual_priority) {
+                                'critical' => 'bg-dark',
+                                'high' => 'bg-danger',
+                                'medium' => 'bg-warning',
+                                'low' => 'bg-success',
+                                'normal' => 'bg-secondary',
+                                default => 'bg-secondary'
+                            };
+                        } else {
+                            // Auto priority based on deadline
+                            $priorityClass = '';
+                            $priorityBadge = 'bg-secondary';
+                            $priorityText = 'Normal';
+
+                            if ($daysRemaining <= 2) {
+                                $priorityClass = 'priority-high';
+                                $priorityBadge = 'bg-danger';
+                                $priorityText = 'High';
+                            } elseif ($daysRemaining <= 5) {
+                                $priorityClass = 'priority-medium';
+                                $priorityBadge = 'bg-warning';
+                                $priorityText = 'Medium';
+                            } elseif ($daysRemaining <= 10) {
+                                $priorityClass = 'priority-low';
+                                $priorityBadge = 'bg-success';
+                                $priorityText = 'Low';
+                            }
                         }
                     @endphp
 
@@ -277,10 +283,25 @@
                                         <i class="bi bi-briefcase text-muted me-1"></i>
                                         <strong>{{ $application->jobPosting->title ?? 'N/A' }}</strong>
                                     </p>
+                                    @if($application->jobPosting)
+                                        <p class="mb-1 small text-muted">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            Deadline: {{ $application->jobPosting->deadline->format('M d, Y') }}
+                                            @if($application->jobPosting->deadline_bs)
+                                                ({{ $application->jobPosting->deadline_bs }})
+                                            @endif
+                                        </p>
+                                    @endif
                                     <div class="d-flex gap-2">
-                                        <span class="badge {{ $priorityBadge }}">{{ $priorityText }} Priority</span>
+                                        <span class="badge {{ $priorityBadge }}">
+                                            @if($application->manual_priority)
+                                                <i class="bi bi-star-fill"></i> {{ $priorityText }} Priority
+                                            @else
+                                                {{ $priorityText }} Priority
+                                            @endif
+                                        </span>
                                         @if($application->jobPosting)
-                                            <span class="badge bg-light text-dark">{{ $daysRemaining }} days left</span>
+                                            <span class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-light text-dark' }}">{{ $daysRemaining }} days left</span>
                                         @endif
                                     </div>
                                 </div>
@@ -316,23 +337,13 @@
                 <h5><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
 
                 @forelse($recentActivity as $activity)
-                    @php
-                        $statusColors = [
-                            'approved' => 'bg-info',
-                            'shortlisted' => 'bg-success',
-                            'rejected' => 'bg-danger',
-                            'selected' => 'bg-primary',
-                        ];
-                        $statusColor = $statusColors[$activity->status] ?? 'bg-secondary';
-                    @endphp
-
                     <div class="activity-item">
                         <div class="d-flex align-items-start gap-2">
-                            <div class="{{ $statusColor }} bg-opacity-10 rounded-circle p-2">
-                                <i class="bi bi-check-circle {{ str_replace('bg-', 'text-', $statusColor) }}"></i>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-2">
+                                <i class="bi bi-check-circle text-success"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <p class="mb-1 fw-semibold small">{{ ucfirst($activity->status) }}</p>
+                                <p class="mb-1 fw-semibold small">Reviewed</p>
                                 <p class="mb-1 text-muted small">{{ $activity->name_english ?? 'N/A' }}</p>
                                 <p class="mb-0 text-muted small">{{ $activity->jobPosting->title ?? 'N/A' }}</p>
                                 <small class="text-muted">{{ $activity->reviewed_at->diffForHumans() }}</small>
@@ -355,12 +366,18 @@
                     <a href="{{ route('reviewer.applications.index') }}" class="btn btn-primary">
                         <i class="bi bi-eye me-2"></i>View All Applications
                     </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'pending']) }}" class="btn btn-outline-warning">
-                        <i class="bi bi-hourglass-split me-2"></i>Pending Reviews
+                    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="btn btn-outline-info">
+                        <i class="bi bi-inbox me-2"></i>Assigned to Me
                     </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'shortlisted']) }}" class="btn btn-outline-success">
-                        <i class="bi bi-star me-2"></i>Shortlisted
+                    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-clipboard-check me-2"></i>Reviewed
                     </a>
+                    <!-- <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle me-2"></i>Approved
+                    </a>
+                    <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle me-2"></i>Rejected
+                    </a> -->
                 </div>
             </div>
 
@@ -370,25 +387,25 @@
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-1">
-                        <small class="text-muted">Approval Rate</small>
-                        <small class="fw-bold">{{ $stats['approval_rate'] }}%</small>
+                        <small class="text-muted">Review Completion Rate</small>
+                        <small class="fw-bold">{{ $status['completion_rate'] }}%</small>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: {{ $stats['approval_rate'] }}%"></div>
+                        <div class="progress-bar bg-success" style="width: {{ $status['completion_rate'] }}%"></div>
                     </div>
                 </div>
 
                 <div class="row g-2 text-center mt-3">
                     <div class="col-6">
                         <div class="p-2 bg-light rounded">
-                            <div class="fw-bold text-primary">{{ $stats['total_reviewed'] }}</div>
-                            <small class="text-muted">Reviewed</small>
+                            <div class="fw-bold text-info">{{ $status['assigned'] }}</div>
+                            <small class="text-muted">Assigned</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="p-2 bg-light rounded">
-                            <div class="fw-bold text-success">{{ $stats['shortlisted'] }}</div>
-                            <small class="text-muted">Shortlisted</small>
+                            <div class="fw-bold text-success">{{ $status['reviewed'] }}</div>
+                            <small class="text-muted">Reviewed</small>
                         </div>
                     </div>
                 </div>
