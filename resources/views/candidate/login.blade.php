@@ -62,7 +62,7 @@
     /* ─── Card ──────────────────────────────────────── */
     .noc-card {
         width: 100%;
-        max-width: 820px;
+        max-width: 500px;
         display: flex;
         border-radius: 4px;
         overflow: hidden;
@@ -73,55 +73,6 @@
     @keyframes cardIn {
         from { opacity: 0; transform: translateY(20px); }
         to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── Left Panel (Logo) ─────────────────────────── */
-    .noc-left {
-        width: 300px;
-        flex-shrink: 0;
-        background: linear-gradient(160deg, #ffffff 0%, #ffffff 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem 2rem;
-        position: relative;
-    }
-
-    .noc-left::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #1a2a4a 0%, #c9a84c 50%, #1a7a6a 100%);
-    }
-
-    .noc-logo-circle {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        border: 6px solid #1a2a4a;
-        outline: 3px solid #c9a84c;
-        outline-offset: 4px;
-        overflow: hidden;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    }
-
-    .noc-logo-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* fallback icon if image fails */
-    .noc-logo-circle .logo-fallback {
-        font-size: 5rem;
-        color: #1a2a4a;
     }
 
     /* ─── Right Panel (Form) ────────────────────────── */
@@ -222,7 +173,7 @@
     }
 
     .noc-input-group input {
-        width: 100%;
+        width: 100%;  
         height: 46px;
         border: 1px solid #d0d0d0;
         border-radius: 2px;
@@ -426,25 +377,17 @@
     {{-- Brand name at top --}}
     <div class="noc-brand">
         <div class="noc-brand-text">
+             <img
+                    src="{{ asset('images/images.png') }}"
+                    alt="NOC Logo"
+                    style="width: 80px; height: auto;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
             <span class="brand-noc">NOC</span><span class="brand-dot">•</span><span class="brand-hris">E-Recruitment</span>
         </div>
     </div>
 
     <div class="noc-card">
-
-        {{-- ── Left: Logo ── --}}
-        <div class="noc-left">
-            <div class="noc-logo-circle">
-                <img
-                    src="{{ asset('images/images.png') }}"
-                    alt="NOC Logo"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                >
-                <span class="logo-fallback" style="display:none;">
-                    <i class="bi bi-building"></i>
-                </span>
-            </div>
-        </div>
         {{-- ── Right: Form ── --}}
         <div class="noc-right">
 

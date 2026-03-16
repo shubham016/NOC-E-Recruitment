@@ -51,7 +51,7 @@
     /* ─── Card ──────────────────────────────────────── */
     .noc-card {
         width: 100%;
-        max-width: 820px;
+        max-width: 500px;
         display: flex;
         border-radius: 4px;
         overflow: hidden;
@@ -418,30 +418,17 @@
     {{-- Brand --}}
     <div class="noc-brand">
         <div class="noc-brand-text">
+            <img
+                    src="{{ asset('images/images.png') }}"
+                    alt="NOC Logo"
+                    style="width: 80px; height: auto;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
             <span class="brand-noc">NOC</span><span class="brand-dot">•</span><span class="brand-hris">E-Recruitment</span>
         </div>
     </div>
 
     <div class="noc-card">
-
-        {{-- ── Left: Logo ── --}}
-        <div class="noc-left">
-            <div class="noc-logo-circle">
-                <img
-                    src="{{ asset('images/images.png') }}"
-                    alt="NOC Logo"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                >
-                <span class="logo-fallback" style="display:none;">
-                    <i class="bi bi-building"></i>
-                </span>
-            </div>
-            <div class="noc-left-info">
-                <i class="bi bi-lock-fill lock-icon"></i>
-                <p>Choose a strong password with at least 8 characters. Your account security is important to us.</p>
-            </div>
-        </div>
-
         {{-- ── Right: Form ── --}}
         <div class="noc-right">
 

@@ -3,88 +3,107 @@
 namespace App\Http\Controllers\Reviewer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use App\Models\ApplicationForm;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ReviewerDashboardController extends Controller
 {
     public function index()
     {
         $reviewer = Auth::guard('reviewer')->user();
-        
-        // Get pending applications with relationships
-        $pendingApplications = Application::with(['candidate', 'job'])
-            ->where('status', 'pending')
-            ->orWhere('status', 'under_review')
+
+        // Get pending applications assigned to this reviewer
+        $pendingApplications = ApplicationForm::with(['candidate', 'jobPosting'])
+            ->where('reviewer_id', $reviewer->id)
+            ->where('status', '!=', 'draft')
+            ->whereIn('status', ['pending', 'assigned'])
             ->latest()
             ->take(4)
             ->get();
 
-        // Calculate statistics
-        $stats = [
-            'pending' => Application::whereIn('status', ['pending', 'under_review'])->count(),
-            'total_reviewed' => Application::where('reviewed_by', $reviewer->id)->count(),
-            'shortlisted' => Application::where('reviewed_by', $reviewer->id)
-                ->where('status', 'shortlisted')
+        // Calculate statistics for this reviewer's assigned applications
+        $status = [
+            'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'pending')
                 ->count(),
-            'approval_rate' => $this->calculateApprovalRate($reviewer->id),
+
+            'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'assigned')
+                ->count(),
+
+            'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'reviewed')
+                ->count(),
+
+            'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'approved')
+                ->count(),
+
+            'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'rejected')
+                ->count(),
+
+            'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edit')
+                ->count(),
+
+            'total_reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
+                ->count(),
+
+            'completion_rate' => $this->calculateCompletionRate($reviewer->id),
         ];
 
         // Get today's progress
-        $todayStats = [
-            'reviewed_today' => Application::where('reviewed_by', $reviewer->id)
-                ->whereDate('reviewed_at', today())
+        $todaystatus = [
+            'reviewed_today' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->whereDate('updated_at', today())
+                ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
                 ->count(),
+
             'daily_target' => 15,
-            'approved_today' => Application::where('reviewed_by', $reviewer->id)
-                ->whereDate('reviewed_at', today())
-                ->where('status', 'shortlisted')
-                ->count(),
-            'rejected_today' => Application::where('reviewed_by', $reviewer->id)
-                ->whereDate('reviewed_at', today())
-                ->where('status', 'rejected')
-                ->count(),
-            'on_hold_today' => Application::where('reviewed_by', $reviewer->id)
-                ->whereDate('reviewed_at', today())
-                ->where('status', 'under_review')
+
+            'pending_review' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->whereIn('status', ['pending', 'assigned'])
                 ->count(),
         ];
 
         // Get recent activity
-        $recentActivity = Application::with(['candidate', 'job', 'reviewer'])
-            ->where('reviewed_by', $reviewer->id)
+        $recentActivity = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+            ->where('reviewer_id', $reviewer->id)
             ->whereNotNull('reviewed_at')
             ->latest('reviewed_at')
             ->take(3)
             ->get();
 
         // Calculate progress percentage
-        $progressPercentage = $todayStats['daily_target'] > 0 
-            ? round(($todayStats['reviewed_today'] / $todayStats['daily_target']) * 100) 
+        $progressPercentage = $todaystatus['daily_target'] > 0
+            ? round(($todaystatus['reviewed_today'] / $todaystatus['daily_target']) * 100)
             : 0;
 
         return view('reviewer.dashboard', compact(
             'pendingApplications',
-            'stats',
-            'todayStats',
+            'status',
+            'todaystatus',
             'recentActivity',
             'progressPercentage'
         ));
     }
 
-    private function calculateApprovalRate($reviewerId)
+    private function calculateCompletionRate($reviewerId)
     {
-        $totalReviewed = Application::where('reviewed_by', $reviewerId)->count();
-        
-        if ($totalReviewed == 0) {
+        $totalAssigned = ApplicationForm::where('reviewer_id', $reviewerId)
+            ->where('status', '!=', 'draft')
+            ->count();
+
+        if ($totalAssigned == 0) {
             return 0;
         }
 
-        $approved = Application::where('reviewed_by', $reviewerId)
-            ->whereIn('status', ['shortlisted', 'accepted'])
+        $reviewed = ApplicationForm::where('reviewer_id', $reviewerId)
+            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
             ->count();
 
-        return round(($approved / $totalReviewed) * 100);
+        return round(($reviewed / $totalAssigned) * 100);
     }
 }

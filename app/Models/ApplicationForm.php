@@ -16,6 +16,8 @@ class ApplicationForm extends Model
     // Allow mass assignment for all these fields
     protected $fillable = [
         'advertisement_no',
+        'reviewer_id',
+        'reviewed_at',
         'job_posting_id',
         // Personal Info
         'name_english',
@@ -122,6 +124,7 @@ class ApplicationForm extends Model
             'citizenship_issue_date_ad' => 'date',
             'created_at'                => 'datetime',
             'updated_at'                => 'datetime',
+            'reviewed_at'               => 'datetime',
 
             // Booleans
             'same_as_permanent'         => 'boolean',
@@ -175,5 +178,9 @@ class ApplicationForm extends Model
     public function payment()
     {
         return $this->hasOne(\App\Models\Payment::class, 'draft_id');
+    }
+    public function reviewer()
+    {
+    return $this->belongsTo(\App\Models\Reviewer::class, 'reviewer_id');
     }
 }

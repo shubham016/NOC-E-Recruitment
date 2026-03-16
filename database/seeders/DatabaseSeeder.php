@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,    
             JobPostingSeeder::class,
             ResultSeeder::class,
+            ReviewerSeeder::class,
         ]);
     }
 }

@@ -84,7 +84,7 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header mb-4">
-        <h1 class="page-title">Welcome back, {{ session('candidate_name') }}.</h1>
+        <h1 class="page-title">Welcome back, {{ session('candidate_name') }}!</h1>
         <!-- <p class="page-subtitle">Track your applications and discover new opportunities that match your skills.</p> -->
     </div>
 

@@ -417,6 +417,12 @@
     {{-- Brand --}}
     <div class="noc-brand">
         <div class="noc-brand-text">
+            <img
+                    src="{{ asset('images/images.png') }}"
+                    alt="NOC Logo"
+                    style="width: 80px; height: auto;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
             <span class="brand-noc">NOC</span><span class="brand-dot">•</span><span class="brand-hris">E-Recruitment</span>
         </div>
     </div>

@@ -53,6 +53,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 */
 Route::prefix('reviewer')->name('reviewer.')->group(function () {
 
+    Route::get('/applications', [ApplicationReviewController::class, 'index'])
+        ->name('applications.index');
+
+    Route::get('/applications/export-csv', [ApplicationReviewController::class, 'exportCsv'])
+        ->name('applications.exportCsv');
+
+    Route::get('/applications/export-pdf', [ApplicationReviewController::class, 'exportPdf'])
+        ->name('applications.exportPdf');
+
     Route::get('/login', [ReviewerAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ReviewerAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [ReviewerAuthController::class, 'logout'])->name('logout');
