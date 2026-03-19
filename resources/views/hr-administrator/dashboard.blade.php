@@ -19,11 +19,11 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('hr-administrator.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Vacancies</span>
     </a>
-    <a href="{{ route('hr-administrator.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('hr-administrator.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-plus-circle"></i>
         <span>Post Vacancy</span>
     </a>
@@ -147,7 +147,7 @@
                     <p class="mb-0 opacity-90">Manage recruitment activities and track application progress</p>
                 </div>
                 <div class="col-lg-4 text-end">
-                    <a href="{{ route('hr-administrator.jobs.create') }}" class="btn btn-light btn-lg">
+                    <a href="{{ route('hr-administrator.vacancies.create') }}" class="btn btn-light btn-lg">
                         <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
                     </a>
                 </div>
@@ -163,7 +163,7 @@
                             <i class="bi bi-briefcase-fill"></i>
                         </div>
                         <div>
-                            <div class="stat-value">{{ $stats['total_jobs'] ?? 0 }}</div>
+                            <div class="stat-value">{{ $stats['total_vacancies'] ?? 0 }}</div>
                             <div class="stat-label">Total Vacancies</div>
                         </div>
                     </div>
@@ -176,7 +176,7 @@
                             <i class="bi bi-check-circle-fill"></i>
                         </div>
                         <div>
-                            <div class="stat-value">{{ $stats['active_jobs'] ?? 0 }}</div>
+                            <div class="stat-value">{{ $stats['active_vacancies'] ?? 0 }}</div>
                             <div class="stat-label">Active Vacancies</div>
                         </div>
                     </div>
@@ -214,12 +214,12 @@
         <h5 class="fw-bold mb-3" style="color: #1e3a8a;">Quick Actions</h5>
         <div class="row g-4 mb-4">
             <div class="col-lg-3 col-md-6">
-                <a href="{{ route('hr-administrator.jobs.create') }}" class="quick-action-card">
+                <a href="{{ route('hr-administrator.vacancies.create') }}" class="quick-action-card">
                     <div class="quick-action-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
                         <i class="bi bi-plus-lg"></i>
                     </div>
                     <h6 class="fw-bold mb-1" style="color: #1e3a8a;">Post Vacancy</h6>
-                    <small class="text-muted">Create a new job posting</small>
+                    <small class="text-muted">Create a new vacancy</small>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -252,14 +252,14 @@
         </div>
 
         <div class="row g-4">
-            <!-- Recent Jobs -->
+            <!-- Recent Vacancies -->
             <div class="col-lg-6">
                 <div class="table-card">
                     <div class="table-card-header d-flex justify-content-between align-items-center">
                         <h6 class="mb-0 fw-bold" style="color: #1e3a8a;">
                             <i class="bi bi-briefcase me-2"></i>Recent Vacancies
                         </h6>
-                        <a href="{{ route('hr-administrator.jobs.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        <a href="{{ route('hr-administrator.vacancies.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -271,10 +271,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($recentJobs ?? [] as $job)
+                                @forelse($recentVacancies ?? [] as $job)
                                     <tr>
                                         <td>
-                                            <a href="{{ route('hr-administrator.jobs.show', $job->id) }}" class="text-decoration-none fw-semibold" style="color: #1e3a8a;">
+                                            <a href="{{ route('hr-administrator.vacancies.show', $job->id) }}" class="text-decoration-none fw-semibold" style="color: #1e3a8a;">
                                                 {{ Str::limit($job->title, 30) }}
                                             </a>
                                         </td>
@@ -326,7 +326,7 @@
                                             <div class="fw-semibold" style="color: #1e3a8a;">
                                                 {{ $application->candidate->name ?? 'Unknown' }}
                                             </div>
-                                            <small class="text-muted">{{ Str::limit($application->jobPosting->title ?? '', 25) }}</small>
+                                            <small class="text-muted">{{ Str::limit($application->vacancy->title ?? '', 25) }}</small>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge

@@ -79,7 +79,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h3 class="fw-bold mb-1">
-                    <i class="bi bi-file-earmark-text me-2"></i>Application #{{ $application->id }}
+                    <i class="bi bi-file-earmark-text me-2"></i>Application ID - {{ $application->id }}
                 </h3>
                 <p class="mb-0 opacity-90 small">Review application details</p>
             </div>
@@ -130,16 +130,16 @@
                     <i class="bi bi-briefcase text-success me-2"></i>Job Information
                 </h5>
                 <div class="info-row">
-                    <span class="text-muted">Job Title:</span>
-                    <span class="fw-semibold">{{ $application->jobPosting->title ?? 'N/A' }}</span>
+                    <span class="text-muted">Vacancy Title:</span>
+                    <span class="fw-semibold">{{ $application->vacancy->title ?? 'N/A' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="text-muted">Department:</span>
-                    <span class="fw-semibold">{{ $application->jobPosting->department ?? 'N/A' }}</span>
+                    <span class="fw-semibold">{{ $application->vacancy->department ?? 'N/A' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="text-muted">Position:</span>
-                    <span class="fw-semibold">{{ $application->jobPosting->position ?? 'N/A' }}</span>
+                    <span class="fw-semibold">{{ $application->vacancy->position ?? 'N/A' }}</span>
                 </div>
             </div>
 
@@ -150,11 +150,14 @@
                 </h5>
                 <div class="info-row">
                     <span class="text-muted">Application ID:</span>
-                    <span class="fw-semibold">#{{ $application->id }}</span>
+                    <span class="fw-semibold">{{ $application->id }}</span>
                 </div>
                 <div class="info-row">
                     <span class="text-muted">Applied Date:</span>
-                    <span class="fw-semibold">{{ $application->created_at->format('M d, Y h:i A') }}</span>
+                    <span class="fw-semibold">
+                        {{ $application->created_at->format('M d, Y h:i A') }}
+                        <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
+                    </span>
                 </div>
                 <div class="info-row">
                     <span class="text-muted">Status:</span>
@@ -223,12 +226,18 @@
                 <div class="timeline">
                     <div class="mb-3">
                         <div class="small text-muted">Applied</div>
-                        <div class="fw-semibold">{{ $application->created_at->format('M d, Y') }}</div>
+                        <div class="fw-semibold">
+                            {{ $application->created_at->format('M d, Y') }}
+                            <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
+                        </div>
                     </div>
                     @if($application->approved_at)
                     <div class="mb-3">
                         <div class="small text-muted">Approved</div>
-                        <div class="fw-semibold">{{ $application->approved_at->format('M d, Y') }}</div>
+                        <div class="fw-semibold">
+                            {{ $application->approved_at->format('M d, Y') }}
+                            <small class="text-muted d-block">{{ adToBS($application->approved_at) }} (BS)</small>
+                        </div>
                     </div>
                     @endif
                 </div>

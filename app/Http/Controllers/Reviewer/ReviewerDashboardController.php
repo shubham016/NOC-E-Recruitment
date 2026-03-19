@@ -13,7 +13,7 @@ class ReviewerDashboardController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Get pending applications assigned to this reviewer
-        $pendingApplications = ApplicationForm::with(['candidate', 'jobPosting'])
+        $pendingApplications = ApplicationForm::with(['candidate', 'vacancy'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft')
             ->whereIn('status', ['pending', 'assigned'])
@@ -69,7 +69,7 @@ class ReviewerDashboardController extends Controller
         ];
 
         // Get recent activity
-        $recentActivity = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+        $recentActivity = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
             ->where('reviewer_id', $reviewer->id)
             ->whereNotNull('reviewed_at')
             ->latest('reviewed_at')

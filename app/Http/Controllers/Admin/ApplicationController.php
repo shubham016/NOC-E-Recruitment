@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +28,7 @@ class ApplicationController extends Controller
                     $q2->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 })
-                    ->orWhereHas('jobPosting', function ($q2) use ($search) {
+                    ->orWhereHas('vacancy', function ($q2) use ($search) {
                         $q2->where('advertisement_no', 'like', "%{$search}%")
                             ->orWhere('position_level', 'like', "%{$search}%");
                     });
@@ -41,8 +41,8 @@ class ApplicationController extends Controller
         }
 
         // Job posting filter
-        if ($request->filled('job_posting_id')) {
-            $query->where('job_posting_id', $request->job_posting_id);
+        if ($request->filled('vacancy_id')) {
+            $query->where('vacancy_id', $request->vacancy_id);
         }
 
         // Reviewer filter
@@ -75,7 +75,7 @@ class ApplicationController extends Controller
         ];
 
         // Get job postings for filter dropdown
-        $jobPostings = JobPosting::select('id', 'advertisement_no', 'position_level')
+        $jobPostings = Vacancy::select('id', 'advertisement_no', 'position_level')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -233,7 +233,7 @@ class ApplicationController extends Controller
 
         $applications = Application::with(['jobPosting', 'candidate.user'])
             ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->job_posting_id, fn($q) => $q->where('job_posting_id', $request->job_posting_id))
+            ->when($request->vacancy_id, fn($q) => $q->where('vacancy_id', $request->vacancy_id))
             ->get();
 
         $filename = 'applications_' . now()->format('Y-m-d_His') . '.csv';
@@ -249,7 +249,7 @@ class ApplicationController extends Controller
             // Header row
             fputcsv($file, [
                 'Application ID',
-                'Job Advertisement No.',
+                'Vacancy Advertisement No.',
                 'Position',
                 'Candidate Name',
                 'Email',
@@ -264,8 +264,8 @@ class ApplicationController extends Controller
             foreach ($applications as $app) {
                 fputcsv($file, [
                     $app->id,
-                    $app->jobPosting->advertisement_no,
-                    $app->jobPosting->position_level,
+                    $app->vacancy->advertisement_no,
+                    $app->vacancy->position_level,
                     $app->candidate->user->name ?? 'N/A',
                     $app->candidate->user->email ?? 'N/A',
                     $app->candidate->phone ?? 'N/A',

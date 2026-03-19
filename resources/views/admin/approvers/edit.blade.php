@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Vacancy List</span>
     </a>
@@ -112,24 +112,6 @@
                         @error('designation')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                    </div>
-
-                    <!-- Assigned Job Posting -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Assigned Job Posting</label>
-                        <select name="job_posting_id" class="form-select @error('job_posting_id') is-invalid @enderror">
-                            <option value="">All Jobs (No Specific Assignment)</option>
-                            @foreach($jobs as $job)
-                                <option value="{{ $job->id }}"
-                                    {{ old('job_posting_id', $approver->job_posting_id) == $job->id ? 'selected' : '' }}>
-                                    {{ $job->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('job_posting_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="text-muted">Leave blank to allow approving applications for all jobs</small>
                     </div>
 
                     <!-- Status -->

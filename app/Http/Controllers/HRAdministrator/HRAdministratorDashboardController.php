@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\HRAdministrator;
 
 use App\Http\Controllers\Controller;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\ApplicationForm;
 use App\Models\Candidate;
 use App\Models\Reviewer;
@@ -26,10 +26,10 @@ class HRAdministratorDashboardController extends Controller
 
         $stats = [
             // Show ALL jobs statistics
-            'total_jobs' => JobPosting::count(),
-            'active_jobs' => JobPosting::where('status', 'active')->count(),
-            'closed_jobs' => JobPosting::where('status', 'closed')->count(),
-            'draft_jobs' => JobPosting::where('status', 'draft')->count(),
+            'total_vacancies' => Vacancy::count(),
+            'active_vacancies' => Vacancy::where('status', 'active')->count(),
+            'closed_vacancies' => Vacancy::where('status', 'closed')->count(),
+            'draft_vacancies' => Vacancy::where('status', 'draft')->count(),
 
             // Show ALL applications statistics
             'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
@@ -42,7 +42,7 @@ class HRAdministratorDashboardController extends Controller
         ];
 
         // For backward compatibility with the view
-        $stats['total_jobs_posted'] = $stats['total_jobs'];
+        $stats['total_vacancies_posted'] = $stats['total_vacancies'];
 
         // Growth statistics (this month vs last month)
         $thisMonthStart = now()->startOfMonth();
@@ -50,13 +50,13 @@ class HRAdministratorDashboardController extends Controller
         $lastMonthEnd = now()->subMonth()->endOfMonth();
 
         $thisMonth = [
-            'jobs_posted' => JobPosting::whereBetween('created_at', [$thisMonthStart, now()])->count(),
+            'jobs_posted' => Vacancy::whereBetween('created_at', [$thisMonthStart, now()])->count(),
             'applications' => ApplicationForm::whereBetween('created_at', [$thisMonthStart, now()])->count(),
             'candidates' => Candidate::whereBetween('created_at', [$thisMonthStart, now()])->count(),
         ];
 
         $lastMonth = [
-            'jobs_posted' => JobPosting::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
+            'jobs_posted' => Vacancy::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
             'applications' => ApplicationForm::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
             'candidates' => Candidate::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count(),
         ];
@@ -69,18 +69,18 @@ class HRAdministratorDashboardController extends Controller
         ];
 
         // Recent applications - show ALL recent applications
-        $recentApplications = ApplicationForm::with(['candidate', 'jobPosting'])
+        $recentApplications = ApplicationForm::with(['candidate', 'vacancy'])
             ->latest()
             ->take(5)
             ->get();
 
         // Recent jobs - show ALL recent jobs
-        $recentJobs = JobPosting::latest()
+        $recentVacancies = Vacancy::latest()
             ->take(5)
             ->get();
 
         // Top jobs by application count - show ALL jobs
-        $topJobs = JobPosting::withCount('applicationForms')
+        $topJobs = Vacancy::withCount('applicationForms')
             ->orderBy('application_forms_count', 'desc')
             ->take(5)
             ->get();

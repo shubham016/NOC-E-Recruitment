@@ -29,7 +29,7 @@ class ProfileController extends Controller
         // Get recent applications
         $recentApplications = $candidate->applicationForms()
             ->where('status', '!=', 'draft')
-            ->with('jobPosting')
+            ->with('vacancy')
             ->latest()
             ->take(5)
             ->get();

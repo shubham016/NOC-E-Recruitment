@@ -1,25 +1,25 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Post New Vacancy')
+@section('title'$vacancy, 'Edit Vacancy')
 
-@section('portal-name', 'HR Administrator Portal')
-@section('brand-icon', 'bi bi-person-badge')
-@section('dashboard-route', route('hr-administrator.dashboard'))
-@section('user-name', Auth::guard('hr_administrator')->user()?->name ?? 'Guest')
-@section('user-role', 'HR Administrator')
-@section('user-initial', Auth::guard('hr_administrator')->user() ? strtoupper(substr(Auth::guard('hr_administrator')->user()->name, 0, 1)) : 'H')
-@section('logout-route', route('hr-administrator.logout'))
+@section('portal-name'$vacancy, 'HR Administrator Portal')
+@section('brand-icon'$vacancy, 'bi bi-person-badge')
+@section('dashboard-route'$vacancy, route('hr-administrator.dashboard'))
+@section('user-name'$vacancy, Auth::guard('hr_administrator')->user()?->name ?? 'Guest')
+@section('user-role'$vacancy, 'HR Administrator')
+@section('user-initial'$vacancy, Auth::guard('hr_administrator')->user() ? strtoupper(substr(Auth::guard('hr_administrator')->user()->name$vacancy, 0$vacancy, 1)) : 'H')
+@section('logout-route'$vacancy, route('hr-administrator.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('hr-administrator.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('hr-administrator.vacancies.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
         <span>Vacancies</span>
     </a>
-    <a href="{{ route('hr-administrator.jobs.create') }}" class="sidebar-menu-item active">
+    <a href="{{ route('hr-administrator.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-plus-circle"></i>
         <span>Post Vacancy</span>
     </a>
@@ -48,62 +48,37 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            background: linear-gradient(135deg$vacancy, #dc2626 0%$vacancy, #991b1b 100%);
+            border-radius: 12px; padding: 2rem; color: white;
+            margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(220$vacancy,38$vacancy,38$vacancy,0.3);
         }
         .govt-badge {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+            background: rgba(255$vacancy,255$vacancy,255$vacancy,0.2); border: 2px solid rgba(255$vacancy,255$vacancy,255$vacancy,0.3);
+            padding: 0.5rem 1rem; border-radius: 8px;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-weight: 600; margin-bottom: 1rem;
         }
         .form-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #e5e7eb;
-            padding: 2rem;
+            background: white; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0$vacancy,0$vacancy,0$vacancy,0.05);
+            border: 1px solid #e5e7eb; padding: 2rem;
         }
         .form-label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-weight: 600; color: #374151;
+            margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;
         }
         .form-label .required { color: #dc2626; }
         .form-label .nepali-text { color: #6b7280; font-size: 0.875rem; font-weight: 500; margin-left: auto; }
-        .form-control:focus, .form-select:focus {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220,38,38,0.15);
-            outline: none;
-        }
+        .form-control:focus$vacancy, .form-select:focus { border-color: #dc2626; box-shadow: 0 0 0 0.2rem rgba(220$vacancy,38$vacancy,38$vacancy,0.15); outline: none; }
         .btn-action { padding: 0.75rem 2rem; font-weight: 600; border-radius: 8px; transition: all 0.3s ease; }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0$vacancy,0$vacancy,0$vacancy,0.15); }
         .info-alert {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
+            background: linear-gradient(135deg$vacancy, #dbeafe 0%$vacancy, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem;
         }
         .preview-card {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 1.5rem;
-            position: sticky;
-            top: 20px;
+            background: #f9fafb; border: 2px solid #e5e7eb;
+            border-radius: 10px; padding: 1.5rem; position: sticky; top: 20px;
         }
         .preview-table { width: 100%; font-size: 0.875rem; border-collapse: separate; border-spacing: 0; }
         .preview-table tr { border-bottom: 1px solid #e5e7eb; }
@@ -117,14 +92,14 @@
         .form-check-input:checked { background-color: #dc2626; border-color: #dc2626; }
         .form-check-inline { cursor: pointer; transition: all 0.3s ease; }
         .form-check-inline:hover { background-color: #fef2f2 !important; border-color: #dc2626 !important; }
-        .form-check-input:focus { border-color: #dc2626; box-shadow: 0 0 0 0.2rem rgba(220,38,38,0.15); }
-        .inclusive-subcategory { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin 0.3s ease, opacity 0.3s ease; opacity: 0; }
+        .form-check-input:focus { border-color: #dc2626; box-shadow: 0 0 0 0.2rem rgba(220$vacancy,38$vacancy,38$vacancy,0.15); }
+        .inclusive-subcategory { max-height: 0; overflow: hidden; transition: max-height 0.3s ease$vacancy, margin 0.3s ease$vacancy, opacity 0.3s ease; opacity: 0; }
         .inclusive-subcategory.show { max-height: 200px; margin-top: 1rem; opacity: 1; }
+        .status-badge { padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; }
     </style>
 @endsection
 
 @section('content')
-    <!-- Page Header -->
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-start">
             <div>
@@ -133,34 +108,31 @@
                     <span>नेपाल सरकार | Government of Nepal</span>
                 </div>
                 <h3 class="fw-bold mb-2">
-                    <i class="bi bi-file-earmark-post-fill me-2"></i>Post New Vacancy
+                    <i class="bi bi-pencil-square me-2"></i>Edit Vacancy
                 </h3>
-                <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
+                <p class="mb-0 opacity-90">विज्ञापन सम्पादन गर्नुहोस्</p>
             </div>
-            <a href="{{ route('hr-administrator.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ route('hr-administrator.vacancies.index') }}" class="btn btn-light btn-lg">
                 <i class="bi bi-arrow-left me-2"></i>Back
             </a>
         </div>
     </div>
 
-    <!-- Information Alert -->
     <div class="info-alert">
         <div class="d-flex align-items-start gap-3">
-            <i class="bi bi-info-circle-fill text-warning fs-4"></i>
+            <i class="bi bi-info-circle-fill text-primary fs-4"></i>
             <div>
-                <strong>Important Notice:</strong> All fields marked with <span class="text-danger fw-bold">*</span> are mandatory.
-                Please ensure all information is accurate before publishing.
-                <br><small class="text-muted">सबै तारे चिन्ह (*) भएका फिल्डहरू अनिवार्य छन्।</small>
+                <strong>Editing Vacancy:</strong> Advertisement No. <span class="fw-bold text-primary">{{ $vacancy->advertisement_no }}</span>
+                <br><small class="text-muted">Make necessary changes and update the vacancy. Fields marked with <span class="text-danger fw-bold">*</span> are mandatory.</small>
             </div>
         </div>
     </div>
 
-    <!-- Form -->
-    <form method="POST" action="{{ route('hr-administrator.jobs.store') }}" id="vacancyForm">
+    <form method="POST" action="{{ route('hr-administrator.vacancies.update'$vacancy, $vacancy->id) }}" id="vacancyForm">
         @csrf
+        @method('PUT')
 
         <div class="row g-4">
-            <!-- Main Form Column -->
             <div class="col-lg-8">
                 <div class="form-card">
                     <h5 class="fw-bold mb-4 text-danger">
@@ -175,12 +147,12 @@
                         </label>
                         <input type="text"
                             class="form-control form-control-lg @error('advertisement_no') is-invalid @enderror"
-                            id="advertisement_no" name="advertisement_no" value="{{ old('advertisement_no') }}"
-                            placeholder="e.g., 01/2081-82" required>
+                            id="advertisement_no" name="advertisement_no"
+                            value="{{ old('advertisement_no'$vacancy, $vacancy->advertisement_no) }}"
+                            placeholder="e.g.$vacancy, 01/2081-82" required>
                         @error('advertisement_no')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text"><i class="bi bi-lightbulb me-1"></i>Format: Number/Fiscal Year (e.g., 01/2081-82)</small>
                     </div>
 
                     <div class="section-divider"></div>
@@ -188,24 +160,24 @@
                     <!-- Position/Level -->
                     <div class="mb-4">
                         <label for="position_level" class="form-label">
-                            <span>Position <span class="required">*</span></span>
+                            <span>Position / Level <span class="required">*</span></span>
                             <span class="nepali-text">पद / तह</span>
                         </label>
                         <select class="form-select form-select-lg @error('position_level') is-invalid @enderror"
                             id="position_level" name="position_level" required>
                             <option value="">-- Select Position/Level --</option>
                             <optgroup label="Officer Level (अधिकृत तह)">
-                                <option value="Officer Level - 10th (अधिकृत तह - १०)" {{ old('position_level') == 'Officer Level - 10th (अधिकृत तह - १०)' ? 'selected' : '' }}>Officer Level - 10th (अधिकृत तह - १०)</option>
-                                <option value="Officer Level - 8th (अधिकृत तह - ८)"  {{ old('position_level') == 'Officer Level - 8th (अधिकृत तह - ८)'  ? 'selected' : '' }}>Officer Level - 8th (अधिकृत तह - ८)</option>
-                                <option value="Officer Level - 7th (अधिकृत तह - ७)"  {{ old('position_level') == 'Officer Level - 7th (अधिकृत तह - ७)'  ? 'selected' : '' }}>Officer Level - 7th (अधिकृत तह - ७)</option>
-                                <option value="Officer Level - 6th (अधिकृत तह - ६)"  {{ old('position_level') == 'Officer Level - 6th (अधिकृत तह - ६)'  ? 'selected' : '' }}>Officer Level - 6th (अधिकृत तह - ६)</option>
+                                <option value="Officer Level - 10th (अधिकृत तह - १०)" {{ old('position_level'$vacancy, $vacancy->position_level) == 'Officer Level - 10th (अधिकृत तह - १०)' ? 'selected' : '' }}>Officer Level - 10th (अधिकृत तह - १०)</option>
+                                <option value="Officer Level - 8th (अधिकृत तह - ८)"  {{ old('position_level'$vacancy, $vacancy->position_level) == 'Officer Level - 8th (अधिकृत तह - ८)'  ? 'selected' : '' }}>Officer Level - 8th (अधिकृत तह - ८)</option>
+                                <option value="Officer Level - 7th (अधिकृत तह - ७)"  {{ old('position_level'$vacancy, $vacancy->position_level) == 'Officer Level - 7th (अधिकृत तह - ७)'  ? 'selected' : '' }}>Officer Level - 7th (अधिकृत तह - ७)</option>
+                                <option value="Officer Level - 6th (अधिकृत तह - ६)"  {{ old('position_level'$vacancy, $vacancy->position_level) == 'Officer Level - 6th (अधिकृत तह - ६)'  ? 'selected' : '' }}>Officer Level - 6th (अधिकृत तह - ६)</option>
                             </optgroup>
                             <optgroup label="Assistant Level (सहायक तह)">
-                                <option value="Officer Level - 5th (अधिकृत तह - ५)"  {{ old('position_level') == 'Officer Level - 5th (अधिकृत तह - ५)'  ? 'selected' : '' }}>Officer Level - 5th (बरिष्ठ सहायक तह - ५)</option>
-                                <option value="Assistant Level - 4th (सहायक तह - ४)" {{ old('position_level') == 'Assistant Level - 4th (सहायक तह - ४)' ? 'selected' : '' }}>Assistant Level - 4th (सहायक तह - ४)</option>
+                                <option value="Officer Level - 5th (अधिकृत तह - ५)"  {{ old('position_level'$vacancy, $vacancy->position_level) == 'Officer Level - 5th (अधिकृत तह - ५)'  ? 'selected' : '' }}>Officer Level - 5th (बरिष्ठ सहायक तह - ५)</option>
+                                <option value="Assistant Level - 4th (सहायक तह - ४)" {{ old('position_level'$vacancy, $vacancy->position_level) == 'Assistant Level - 4th (सहायक तह - ४)' ? 'selected' : '' }}>Assistant Level - 4th (सहायक तह - ४)</option>
                             </optgroup>
                             <optgroup label="Technician Level (सहयोगी)">
-                                <option value="Technician Level (सहयोगी)" {{ old('position_level') == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>Technician (टेक्निशियन)</option>
+                                <option value="Technician Level (सहयोगी)" {{ old('position_level'$vacancy, $vacancy->position_level) == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>Technician (टेक्निशियन)</option>
                             </optgroup>
                         </select>
                         @error('position_level')
@@ -222,13 +194,13 @@
                         <select class="form-select form-select-lg @error('department') is-invalid @enderror"
                             id="department" name="department" required>
                             <option value="">-- Select Department --</option>
-                            <option value="Administration" {{ old('department') == 'Administration' ? 'selected' : '' }}>Non-Technical / Administration (प्रशासन)</option>
-                            <option value="Accounting"    {{ old('department') == 'Accounting'    ? 'selected' : '' }}>Non-Technical / Accounting (लेखा)</option>
-                            <option value="Engineering"   {{ old('department') == 'Engineering'   ? 'selected' : '' }}>Technical / Engineering (ईन्जिनियरिङ्ग)</option>
-                            <option value="Computer"      {{ old('department') == 'Computer'      ? 'selected' : '' }}>Technical / (Computer / IT) (प्राविधिक / विविध / आइ.टी)</option>
-                            <option value="Lab"           {{ old('department') == 'Lab'           ? 'selected' : '' }}>Technical / Lab (प्राविधिक / ल्याव)</option>
-                            <option value="TahaBinaako"   {{ old('department') == 'TahaBinaako'   ? 'selected' : '' }}>Technical / Taha Binaako (प्राविधिक / तहविहिन)</option>
-                            <option value="Operator"      {{ old('department') == 'Operator'      ? 'selected' : '' }}>Browser Operator / Taha Binaako (बाउजर अपरेटर / तहविहिन)</option>
+                            <option value="Administration" {{ old('department'$vacancy, $vacancy->department) == 'Administration' ? 'selected' : '' }}>Non-Technical / Administration (प्रशासन)</option>
+                            <option value="Accounting"    {{ old('department'$vacancy, $vacancy->department) == 'Accounting'    ? 'selected' : '' }}>Non-Technical / Accounting (लेखा)</option>
+                            <option value="Engineering"   {{ old('department'$vacancy, $vacancy->department) == 'Engineering'   ? 'selected' : '' }}>Technical / Engineering (ईन्जिनियरिङ्ग)</option>
+                            <option value="Computer"      {{ old('department'$vacancy, $vacancy->department) == 'Computer'      ? 'selected' : '' }}>Technical / (Computer / IT) (प्राविधिक / विविध / आइ.टी)</option>
+                            <option value="Lab"           {{ old('department'$vacancy, $vacancy->department) == 'Lab'           ? 'selected' : '' }}>Technical / Lab (प्राविधिक / ल्याव)</option>
+                            <option value="TahaBinaako"   {{ old('department'$vacancy, $vacancy->department) == 'TahaBinaako'   ? 'selected' : '' }}>Technical / Taha Binaako (प्राविधिक / तहविहिन)</option>
+                            <option value="Operator"      {{ old('department'$vacancy, $vacancy->department) == 'Operator'      ? 'selected' : '' }}>Browser Operator / Taha Binaako (बाउजर अपरेटर / तहविहिन)</option>
                         </select>
                         @error('department')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -247,7 +219,7 @@
                             <div class="col-md-6">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_open"
-                                        value="open" {{ old('category', 'open') == 'open' ? 'checked' : '' }} required>
+                                        value="open" {{ old('category'$vacancy, $vacancy->category) == 'open' ? 'checked' : '' }} required>
                                     <label class="form-check-label w-100" for="category_open">
                                         <strong>Open (खुल्ला)</strong>
                                         <br><small class="text-muted">For all eligible candidates</small>
@@ -257,7 +229,7 @@
                             <div class="col-md-6">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_inclusive"
-                                        value="inclusive" {{ old('category') == 'inclusive' ? 'checked' : '' }}>
+                                        value="inclusive" {{ old('category'$vacancy, $vacancy->category) == 'inclusive' ? 'checked' : '' }}>
                                     <label class="form-check-label w-100" for="category_inclusive">
                                         <strong>Inclusive (समावेशी)</strong>
                                         <br><small class="text-muted">Reserved category</small>
@@ -269,7 +241,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
 
-                        <div class="inclusive-subcategory" id="inclusiveSubCategory">
+                        <div class="inclusive-subcategory {{ old('category'$vacancy, $vacancy->category) == 'inclusive' ? 'show' : '' }}" id="inclusiveSubCategory">
                             <label for="inclusive_type" class="form-label">
                                 <span>Inclusive Type <span class="required">*</span></span>
                                 <span class="nepali-text">समावेशी प्रकार</span>
@@ -277,13 +249,13 @@
                             <select class="form-select form-select-lg @error('inclusive_type') is-invalid @enderror"
                                 id="inclusive_type" name="inclusive_type">
                                 <option value="">-- Select Inclusive Type --</option>
-                                <option value="Women"             {{ old('inclusive_type') == 'Women'             ? 'selected' : '' }}>Women (महिला)</option>
-                                <option value="A.J"               {{ old('inclusive_type') == 'A.J'               ? 'selected' : '' }}>A.J (आ.ज / आदिवासी जनजाति)</option>
-                                <option value="Madhesi"           {{ old('inclusive_type') == 'Madhesi'           ? 'selected' : '' }}>Madhesi (मधेसी)</option>
-                                <option value="Janajati"          {{ old('inclusive_type') == 'Janajati'          ? 'selected' : '' }}>Janajati (जनजाति)</option>
-                                <option value="Apanga"            {{ old('inclusive_type') == 'Apanga'            ? 'selected' : '' }}>Apanga (अपाङ्ग)</option>
-                                <option value="Dalit"             {{ old('inclusive_type') == 'Dalit'             ? 'selected' : '' }}>Dalit (दलित)</option>
-                                <option value="Pichadiyeko Chetra" {{ old('inclusive_type') == 'Pichadiyeko Chetra' ? 'selected' : '' }}>Pichadiyeko Chetra (पिचडिएको क्षेत्र)</option>
+                                <option value="Women"              {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Women'              ? 'selected' : '' }}>Women (महिला)</option>
+                                <option value="A.J"                {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'A.J'                ? 'selected' : '' }}>A.J (आ.ज / आदिवासी जनजाति)</option>
+                                <option value="Madhesi"            {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Madhesi'            ? 'selected' : '' }}>Madhesi (मधेसी)</option>
+                                <option value="Janajati"           {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Janajati'           ? 'selected' : '' }}>Janajati (जनजाति)</option>
+                                <option value="Apanga"             {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Apanga'             ? 'selected' : '' }}>Apanga (अपाङ्ग)</option>
+                                <option value="Dalit"              {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Dalit'              ? 'selected' : '' }}>Dalit (दलित)</option>
+                                <option value="Pichadiyeko Chetra" {{ old('inclusive_type'$vacancy, $vacancy->inclusive_type) == 'Pichadiyeko Chetra' ? 'selected' : '' }}>Pichadiyeko Chetra (पिचडिएको क्षेत्र)</option>
                             </select>
                             @error('inclusive_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -299,8 +271,8 @@
                         </label>
                         <input type="number"
                             class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
-                            id="number_of_posts" name="number_of_posts" value="{{ old('number_of_posts', 1) }}"
-                            min="1" max="1000" required>
+                            id="number_of_posts" name="number_of_posts"
+                            value="{{ old('number_of_posts'$vacancy, $vacancy->number_of_posts) }}" min="1" max="1000" required>
                         @error('number_of_posts')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -316,8 +288,7 @@
                         </label>
                         <textarea class="form-control @error('minimum_qualification') is-invalid @enderror"
                             id="minimum_qualification" name="minimum_qualification" rows="5"
-                            placeholder="Example:&#10;• Bachelor's degree in relevant field from recognized university&#10;• मान्यता प्राप्त विश्वविद्यालयबाट सम्बन्धित विषयमा स्नातक उत्तीर्ण"
-                            required>{{ old('minimum_qualification') }}</textarea>
+                            required>{{ old('minimum_qualification'$vacancy, $vacancy->minimum_qualification) }}</textarea>
                         @error('minimum_qualification')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -338,7 +309,6 @@
                                 </label>
                                 <input type="text" class="form-control form-control-lg" id="deadline_bs"
                                     placeholder="YYYY-MM-DD" autocomplete="off">
-                                <small class="form-text text-primary"><i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar</small>
                             </div>
                             <div class="col-md-6">
                                 <label for="deadline_ad" class="form-label small fw-bold">
@@ -347,8 +317,7 @@
                                 <input type="text"
                                     class="form-control form-control-lg @error('deadline') is-invalid @enderror"
                                     id="deadline_ad" name="deadline"
-                                    placeholder="YYYY-MM-DD"
-                                    value="{{ old('deadline', now()->addDays(30)->format('Y-m-d')) }}"
+                                    value="{{ old('deadline'$vacancy, $vacancy->deadline->format('Y-m-d')) }}"
                                     required readonly>
                                 @error('deadline')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -357,18 +326,18 @@
                         </div>
                         <div class="alert alert-info mt-3 mb-0">
                             <i class="bi bi-arrows-angle-expand me-2"></i>
-                            <strong>Official Nepali Date Picker:</strong> Pick Nepali date and English date auto-syncs!
+                            <strong>Nepali Date Picker:</strong> Pick Nepali date and English date auto-syncs!
                         </div>
                     </div>
 
-                    <!-- Hidden required fields -->
-                    <input type="hidden" name="title"       id="hidden_title"        value="">
-                    <input type="hidden" name="department"  value="Government Department">
-                    <input type="hidden" name="location"    value="Nepal">
-                    <input type="hidden" name="job_type"    value="permanent">
-                    <input type="hidden" name="description" id="hidden_description"  value="">
-                    <input type="hidden" name="requirements" id="hidden_requirements" value="">
-                    <input type="hidden" name="status"      value="active">
+                    <!-- Hidden fields -->
+                    <input type="hidden" name="title"        id="hidden_title"        value="{{ $vacancy->title }}">
+                    <input type="hidden" name="department"   value="Government Department">
+                    <input type="hidden" name="location"     value="Nepal">
+                    <input type="hidden" name="job_type"     value="permanent">
+                    <input type="hidden" name="description"  id="hidden_description"  value="{{ $vacancy->description }}">
+                    <input type="hidden" name="requirements" id="hidden_requirements" value="{{ $vacancy->requirements }}">
+                    <input type="hidden" name="status"       value="{{ $vacancy->status }}">
                 </div>
             </div>
 
@@ -382,19 +351,35 @@
                     </h6>
                     <table class="preview-table">
                         <tbody>
-                            <tr><th>Advertisement No.</th><td id="preview-adv-no" class="fw-semibold">-</td></tr>
-                            <tr><th>Position/Level</th><td id="preview-position" class="fw-semibold">-</td></tr>
-                            <tr><th>Service/Group</th><td id="preview-service" class="fw-semibold">-</td></tr>
-                            <tr><th>Open/Inclusive</th><td id="preview-category" class="fw-semibold">-</td></tr>
-                            <tr id="preview-inclusive-row" style="display: none;"><th>Inclusive Type</th><td id="preview-inclusive-type" class="fw-semibold">-</td></tr>
-                            <tr><th>Demand Post</th><td id="preview-posts" class="fw-semibold">-</td></tr>
-                            <tr><th>Deadline (BS)</th><td id="preview-deadline-bs" class="fw-semibold text-danger">-</td></tr>
-                            <tr><th>Deadline (AD)</th><td id="preview-deadline-ad" class="fw-semibold text-danger">-</td></tr>
+                            <tr><th>Advertisement No.</th><td id="preview-adv-no" class="fw-semibold">{{ $vacancy->advertisement_no }}</td></tr>
+                            <tr><th>Position/Level</th><td id="preview-position" class="fw-semibold">{{ $vacancy->position_level }}</td></tr>
+                            <tr><th>Department</th><td id="preview-service" class="fw-semibold">{{ $vacancy->department }}</td></tr>
+                            <tr><th>Open/Inclusive</th>
+                                <td id="preview-category" class="fw-semibold">
+                                    @if($vacancy->category == 'open')
+                                        <span class="badge bg-success">खुल्ला (Open)</span>
+                                    @else
+                                        <span class="badge bg-info">समावेशी (Inclusive)</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr id="preview-inclusive-row" style="display: {{ $vacancy->inclusive_type ? '' : 'none' }};"><th>Inclusive Type</th><td id="preview-inclusive-type" class="fw-semibold">{{ $vacancy->inclusive_type ?? '-' }}</td></tr>
+                            <tr><th>Demand Post</th><td id="preview-posts" class="fw-semibold">{{ $vacancy->number_of_posts }}</td></tr>
+                            <tr><th>Deadline (BS)</th><td id="preview-deadline-bs" class="fw-semibold text-primary">-</td></tr>
+                            <tr><th>Deadline (AD)</th><td id="preview-deadline-ad" class="fw-semibold text-secondary">{{ $vacancy->deadline->format('M d$vacancy, Y') }}</td></tr>
                         </tbody>
                     </table>
                     <div class="mt-4 p-3 bg-white rounded border">
                         <h6 class="small fw-bold text-muted mb-2"><i class="bi bi-mortarboard-fill me-1"></i>Min. Qualification</h6>
-                        <p id="preview-qualification" class="small mb-0 text-muted"><em>Not yet entered...</em></p>
+                        <p id="preview-qualification" class="small mb-0 text-muted">{{ Str::limit($vacancy->minimum_qualification$vacancy, 100) }}</p>
+                    </div>
+                    <div class="mt-4 p-3 rounded"
+                        style="background: {{ $vacancy->status == 'active' ? '#d1fae5' : ($vacancy->status == 'draft' ? '#fef3c7' : '#fee2e2') }};">
+                        <h6 class="small fw-bold mb-2"><i class="bi bi-info-circle-fill me-1"></i>Current Status</h6>
+                        <span class="status-badge {{ $vacancy->status == 'active' ? 'bg-success text-white' : ($vacancy->status == 'draft' ? 'bg-warning text-dark' : 'bg-danger text-white') }}">
+                            {{ ucfirst($vacancy->status) }}
+                        </span>
+                        <small class="text-muted d-block mt-2">Posted: {{ $vacancy->created_at->format('M d$vacancy, Y') }}</small>
                     </div>
                 </div>
             </div>
@@ -406,12 +391,12 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body py-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="{{ route('hr-administrator.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
+                            <a href="{{ route('hr-administrator.vacancies.index') }}" class="btn btn-outline-secondary btn-lg">
                                 <i class="bi bi-x-circle me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-danger btn-lg btn-action px-5"
-                                onclick="return confirmPublish()">
-                                <i class="bi bi-megaphone-fill me-2"></i>Publish Vacancy
+                                onclick="return confirmUpdate()">
+                                <i class="bi bi-check-circle me-2"></i>Update Vacancy
                             </button>
                         </div>
                     </div>
@@ -428,23 +413,23 @@
 
     function nepaliToEnglish(str) {
         if (!str) return str;
-        const map = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
-        return str.replace(/[०-९]/g, d => map[d]);
+        const map = {'०':'0'$vacancy,'१':'1'$vacancy,'२':'2'$vacancy,'३':'3'$vacancy,'४':'4'$vacancy,'५':'5'$vacancy,'६':'6'$vacancy,'७':'7'$vacancy,'८':'8'$vacancy,'९':'9'};
+        return str.replace(/[०-९]/g$vacancy, d => map[d]);
     }
 
     function englishToNepali(str) {
         if (!str) return str;
-        const map = {'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'७','8':'८','9':'९'};
-        return str.replace(/[0-9]/g, d => map[d]);
+        const map = {'0':'०'$vacancy,'1':'१'$vacancy,'2':'२'$vacancy,'3':'३'$vacancy,'4':'४'$vacancy,'5':'५'$vacancy,'6':'६'$vacancy,'7':'७'$vacancy,'8':'८'$vacancy,'9':'९'};
+        return str.replace(/[0-9]/g$vacancy, d => map[d]);
     }
 
     function waitForConverter() {
         if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
-            setTimeout(waitForConverter, 100);
+            setTimeout(waitForConverter$vacancy, 100);
             return;
         }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeForm);
+            document.addEventListener('DOMContentLoaded'$vacancy, initializeForm);
         } else {
             initializeForm();
         }
@@ -459,43 +444,43 @@
         if (!deadlineBS || !deadlineAD) return;
 
         $('#deadline_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
+            dateFormat: 'YYYY-MM-DD'$vacancy,
+            closeOnDateSelect: true$vacancy,
+            unicodeDate: true$vacancy,
+            ndpYear: true$vacancy,
+            ndpMonth: true$vacancy,
             ndpYearCount: 10
         });
 
         let lastBSValue = '';
         setInterval(function() {
-            const currentBSValue = $('#deadline_bs').val();
-            if (currentBSValue && currentBSValue !== lastBSValue && currentBSValue !== 'YYYY-MM-DD' && currentBSValue.length >= 10) {
-                lastBSValue = currentBSValue;
-                const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                const adValue = window.bsToAD(bsValueEnglish);
-                if (adValue) {
-                    deadlineAD.value = adValue;
-                    if (previewDeadlineBS) previewDeadlineBS.textContent = englishToNepali(bsValueEnglish) + ' बि.सं.';
-                    if (previewDeadlineAD) previewDeadlineAD.textContent = adValue;
+            const v = $('#deadline_bs').val();
+            if (v && v !== lastBSValue && v !== 'YYYY-MM-DD' && v.length >= 10) {
+                lastBSValue = v;
+                const bsEn = nepaliToEnglish(v);
+                const adVal = window.bsToAD(bsEn);
+                if (adVal) {
+                    deadlineAD.value = adVal;
+                    if (previewDeadlineBS) previewDeadlineBS.textContent = englishToNepali(bsEn) + ' बि.सं.';
+                    if (previewDeadlineAD) {
+                        const d = new Date(adVal);
+                        if (!isNaN(d.getTime())) previewDeadlineAD.textContent = d.toLocaleDateString('en-US'$vacancy, {year:'numeric'$vacancy,month:'short'$vacancy,day:'numeric'});
+                    }
                 }
             }
-        }, 200);
+        }$vacancy, 200);
 
         setTimeout(function() {
-            if (deadlineAD.value && !$('#deadline_bs').val()) {
-                const bsValue = window.adToBS(deadlineAD.value);
-                if (bsValue) {
-                    const bsNepali = englishToNepali(bsValue);
-                    $('#deadline_bs').val(bsNepali);
-                    lastBSValue = bsNepali;
-                    if (previewDeadlineBS) previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
-                    if (previewDeadlineAD) previewDeadlineAD.textContent = deadlineAD.value;
+            if (deadlineAD.value) {
+                const bsVal = window.adToBS(deadlineAD.value);
+                if (bsVal) {
+                    $('#deadline_bs').val(bsVal);
+                    lastBSValue = bsVal;
+                    if (previewDeadlineBS) previewDeadlineBS.textContent = englishToNepali(bsVal) + ' बि.सं.';
                 }
             }
-        }, 500);
+        }$vacancy, 500);
 
-        // Category toggle
         const categoryRadios = document.querySelectorAll('input[name="category"]');
         const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
         const inclusiveTypeSelect = document.getElementById('inclusive_type');
@@ -503,10 +488,10 @@
         const previewInclusiveType = document.getElementById('preview-inclusive-type');
 
         function toggleInclusiveSubCategory() {
-            const selected = document.querySelector('input[name="category"]:checked');
-            if (selected && selected.value === 'inclusive') {
+            const sel = document.querySelector('input[name="category"]:checked');
+            if (sel && sel.value === 'inclusive') {
                 inclusiveSubCategory.classList.add('show');
-                inclusiveTypeSelect.setAttribute('required', 'required');
+                inclusiveTypeSelect.setAttribute('required'$vacancy, 'required');
                 if (previewInclusiveRow) previewInclusiveRow.style.display = '';
             } else {
                 inclusiveSubCategory.classList.remove('show');
@@ -516,58 +501,48 @@
                 if (previewInclusiveType) previewInclusiveType.textContent = '-';
             }
         }
-        categoryRadios.forEach(r => r.addEventListener('change', toggleInclusiveSubCategory));
+        categoryRadios.forEach(r => r.addEventListener('change'$vacancy, toggleInclusiveSubCategory));
         toggleInclusiveSubCategory();
-
         if (inclusiveTypeSelect) {
-            inclusiveTypeSelect.addEventListener('change', function() {
+            inclusiveTypeSelect.addEventListener('change'$vacancy, function() {
                 if (previewInclusiveType) previewInclusiveType.textContent = this.value || '-';
             });
         }
 
-        // Live preview mappings
-        const previewMappings = {
-            'advertisement_no':     { preview: 'preview-adv-no',        default: '-' },
-            'position_level':       { preview: 'preview-position',       default: '-' },
-            'department':        { preview: 'preview-service',        default: '-' },
-            'number_of_posts':      { preview: 'preview-posts',          default: '-' },
-            'minimum_qualification':{ preview: 'preview-qualification',  default: 'Not yet entered...' }
+        const mappings = {
+            'advertisement_no':     'preview-adv-no'$vacancy,
+            'position_level':       'preview-position'$vacancy,
+            'department':        'preview-service'$vacancy,
+            'number_of_posts':      'preview-posts'$vacancy,
+            'minimum_qualification':'preview-qualification'
         };
-        Object.keys(previewMappings).forEach(function(fieldId) {
-            const input = document.getElementById(fieldId);
-            const preview = document.getElementById(previewMappings[fieldId].preview);
-            if (input && preview) {
-                const ev = input.tagName === 'SELECT' ? 'change' : 'input';
-                input.addEventListener(ev, function() {
+        Object.keys(mappings).forEach(function(id) {
+            const el = document.getElementById(id);
+            const pr = document.getElementById(mappings[id]);
+            if (el && pr) {
+                const ev = el.tagName === 'SELECT' ? 'change' : 'input';
+                el.addEventListener(ev$vacancy, function() {
                     const v = this.value.trim();
-                    if (fieldId === 'minimum_qualification') {
-                        preview.innerHTML = v ? v.replace(/\n/g, '<br>') : '<em>' + previewMappings[fieldId].default + '</em>';
-                    } else {
-                        preview.textContent = v || previewMappings[fieldId].default;
-                    }
+                    pr.textContent = v.substring(0$vacancy, 100) + (v.length > 100 ? '...' : '') || '-';
                 });
-                input.dispatchEvent(new Event(input.tagName === 'SELECT' ? 'change' : 'input'));
             }
         });
 
-        const categoryPreview = document.getElementById('preview-category');
-        if (categoryPreview) {
-            categoryRadios.forEach(r => r.addEventListener('change', function() {
-                categoryPreview.innerHTML = this.value === 'open'
+        const catPreview = document.getElementById('preview-category');
+        if (catPreview) {
+            categoryRadios.forEach(r => r.addEventListener('change'$vacancy, function() {
+                catPreview.innerHTML = this.value === 'open'
                     ? '<span class="badge bg-success">खुल्ला (Open)</span>'
                     : '<span class="badge bg-info">समावेशी (Inclusive)</span>';
             }));
-            const checked = document.querySelector('input[name="category"]:checked');
-            if (checked) checked.dispatchEvent(new Event('change'));
         }
 
-        // Form submit: populate hidden fields
         const form = document.getElementById('vacancyForm');
         if (form) {
-            form.addEventListener('submit', function() {
-                const positionLevel = document.getElementById('position_level').value;
-                document.getElementById('hidden_title').value = positionLevel;
-                let desc = 'Position: ' + positionLevel + '\nDepartment: ' + document.getElementById('department').value;
+            form.addEventListener('submit'$vacancy, function() {
+                const pos = document.getElementById('position_level').value;
+                document.getElementById('hidden_title').value = pos;
+                let desc = 'Position: ' + pos + '\nDepartment: ' + document.getElementById('department').value;
                 const cat = document.querySelector('input[name="category"]:checked');
                 if (cat) {
                     desc += '\nCategory: ' + cat.value.toUpperCase();
@@ -584,8 +559,8 @@
     waitForConverter();
 })();
 
-function confirmPublish() {
-    return confirm('⚠️ Are you sure you want to publish this vacancy?\n\nयो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\nOnce published, it will be visible to all candidates.');
+function confirmUpdate() {
+    return confirm('⚠️ Are you sure you want to update this vacancy?\n\nयो रिक्त पद अपडेट गर्न निश्चित हुनुहुन्छ?');
 }
 </script>
 @endsection

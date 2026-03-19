@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Approver;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +17,7 @@ class ApproverController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Approver::with('jobPosting');
+        $query = Approver::with('vacancy');
 
         // Search functionality
         if ($request->filled('search')) {
@@ -58,7 +58,10 @@ class ApproverController extends Controller
         // Get unique departments for filter
         $departments = Approver::distinct()->pluck('department')->filter();
 
-        return view('admin.approvers.index', compact('approvers', 'stats', 'departments'));
+        // Get active vacancies for assignment dropdown
+        $vacancies = Vacancy::where('status', 'active')->get();
+
+        return view('admin.approvers.index', compact('approvers', 'stats', 'departments', 'vacancies'));
     }
 
     /**
@@ -66,8 +69,7 @@ class ApproverController extends Controller
      */
     public function create()
     {
-        $jobs = JobPosting::where('status', 'active')->get();
-        return view('admin.approvers.create', compact('jobs'));
+        return view('admin.approvers.create');
     }
 
     /**
@@ -82,7 +84,6 @@ class ApproverController extends Controller
             'phone_number' => ['nullable', 'string', 'max:20'],
             'department' => ['required', 'string', 'max:255'],
             'designation' => ['nullable', 'string', 'max:255'],
-            'job_posting_id' => ['nullable', 'exists:job_postings,id'],
             'password' => ['required', Password::min(8)],
             'photo' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
@@ -93,9 +94,7 @@ class ApproverController extends Controller
             $validated['photo'] = $request->file('photo')->store('approvers/photos', 'public');
         }
 
-        // Hash password
-        $validated['password'] = Hash::make($validated['password']);
-
+        // Password will be automatically hashed by the model cast
         Approver::create($validated);
 
         return redirect()->route('admin.approvers.index')
@@ -107,7 +106,7 @@ class ApproverController extends Controller
      */
     public function show($id)
     {
-        $approver = Approver::with('jobPosting')->findOrFail($id);
+        $approver = Approver::with('vacancy')->findOrFail($id);
         return view('admin.approvers.show', compact('approver'));
     }
 
@@ -117,8 +116,8 @@ class ApproverController extends Controller
     public function edit($id)
     {
         $approver = Approver::findOrFail($id);
-        $jobs = JobPosting::where('status', 'active')->get();
-        return view('admin.approvers.edit', compact('approver', 'jobs'));
+        $vacancies = Vacancy::where('status', 'active')->get();
+        return view('admin.approvers.edit', compact('approver', 'vacancies'));
     }
 
     /**
@@ -135,7 +134,6 @@ class ApproverController extends Controller
             'phone_number' => ['nullable', 'string', 'max:20'],
             'department' => ['required', 'string', 'max:255'],
             'designation' => ['nullable', 'string', 'max:255'],
-            'job_posting_id' => ['nullable', 'exists:job_postings,id'],
             'photo' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
         ]);
@@ -184,7 +182,7 @@ class ApproverController extends Controller
 
         $approver = Approver::findOrFail($id);
         $approver->update([
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'], // Will be automatically hashed by model cast
         ]);
 
         return redirect()->back()
@@ -203,5 +201,27 @@ class ApproverController extends Controller
 
         return redirect()->back()
             ->with('success', 'Approver status updated successfully.');
+    }
+
+    /**
+     * Assign vacancy to Approver
+     */
+    public function assignVacancy(Request $request, $id)
+    {
+        $approver = Approver::findOrFail($id);
+
+        $validated = $request->validate([
+            'vacancy_id' => ['nullable', 'exists:vacancies,id'],
+        ]);
+
+        $approver->update([
+            'vacancy_id' => $request->vacancy_id ?: null,
+        ]);
+
+        $message = $request->vacancy_id
+            ? 'Vacancy assigned successfully.'
+            : 'Vacancy assignment removed successfully.';
+
+        return redirect()->back()->with('success', $message);
     }
 }

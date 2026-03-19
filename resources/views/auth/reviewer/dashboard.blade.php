@@ -484,7 +484,7 @@
                                     </h6>
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-12">
-                                            <label class="small text-muted">Job Title</label>
+                                            <label class="small text-muted">Vacancy Title</label>
                                             <p class="fw-semibold mb-0" id="jobTitle">-</p>
                                         </div>
                                         <div class="col-md-4">

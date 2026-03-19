@@ -480,11 +480,15 @@
             {{-- Footer: Portal links --}}
             <div class="noc-form-footer">
                 <a href="{{ route('admin.login') }}">
-                    <i class="bi bi-shield-lock"></i> Admin Portal
+                    <i class="bi bi-shield-lock"></i> Admin
                 </a>
                 <span style="margin: 0 0.5rem;">|</span>
                 <a href="{{ route('candidate.login') }}">
-                    <i class="bi bi-person"></i> Candidate Portal
+                    <i class="bi bi-person"></i> Candidate
+                </a>
+                <span style="margin: 0 0.5rem;">|</span>
+                <a href="{{ route('approver.login') }}">
+                    <i class="bi bi-person"></i> Approver
                 </a>
             </div>
 

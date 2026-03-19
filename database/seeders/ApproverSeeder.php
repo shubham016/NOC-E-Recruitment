@@ -24,7 +24,7 @@ class ApproverSeeder extends Seeder
             'job_posting_id' => null, // Can approve applications for all jobs
             'photo' => null,
             'status' => 'active',
-            'password' => Hash::make('password123'),
+            'password' => 'password123', // Will be automatically hashed by model
         ]);
 
         Approver::create([
@@ -37,7 +37,7 @@ class ApproverSeeder extends Seeder
             'job_posting_id' => 1, // Assigned to specific job posting
             'photo' => null,
             'status' => 'active',
-            'password' => Hash::make('password123'),
+            'password' => 'password123', // Will be automatically hashed by model
         ]);
     }
 }

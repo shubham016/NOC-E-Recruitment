@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
-@section('title', $job->title)
+@section('title'$vacancy, $vacancy->title)
 
-@section('portal-name', 'Candidate Portal')
-@section('brand-icon', 'bi bi-briefcase')
-@section('dashboard-route', route('candidate.dashboard'))
-@section('user-name', Auth::guard('candidate')->user()?->name ?? 'Guest')
-@section('user-role', 'Job Seeker')
-@section('user-initial', strtoupper(substr(Auth::guard('candidate')->user()?->name ?? 'G', 0, 1)))
-@section('logout-route', route('candidate.logout'))
+@section('portal-name'$vacancy, 'Candidate Portal')
+@section('brand-icon'$vacancy, 'bi bi-briefcase')
+@section('dashboard-route'$vacancy, route('candidate.dashboard'))
+@section('user-name'$vacancy, Auth::guard('candidate')->user()?->name ?? 'Guest')
+@section('user-role'$vacancy, 'Job Seeker')
+@section('user-initial'$vacancy, strtoupper(substr(Auth::guard('candidate')->user()?->name ?? 'G'$vacancy, 0$vacancy, 1)))
+@section('logout-route'$vacancy, route('candidate.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item active">
+    <a href="{{ route('candidate.vacancies.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -46,7 +46,7 @@
     <div class="container-fluid my-0">
         <!-- Back Button -->
         <div class="mb-3">
-            <a href="{{ route('candidate.jobs.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('candidate.vacancies.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Vacancies
             </a>
         </div>
@@ -85,14 +85,14 @@
             <div class="card-header bg-light text-dark">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h3 class="mb-2">{{ $job->title }}</h3>
+                        <h3 class="mb-2">{{ $vacancy->title }}</h3>
                         <p class="mb-0">
-                            <i class="fas fa-building"></i> {{ $job->department }} |
-                            <i class="fas fa-map-marker-alt"></i> {{ $job->location }}
+                            <i class="fas fa-building"></i> {{ $vacancy->department }} |
+                            <i class="fas fa-map-marker-alt"></i> {{ $vacancy->location }}
                         </p>
                     </div>
                     <span class="badge bg-light text-dark fs-6">
-                        {{ ucfirst($job->status) }}
+                        {{ ucfirst($vacancy->status) }}
                     </span>
                 </div>
             </div>
@@ -100,46 +100,46 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-2">
-                            <strong>Employment Type:</strong> {{ ucfirst($job->category) }}
+                            <strong>Employment Type:</strong> {{ ucfirst($vacancy->category) }}
                         </p>
                         <p class="mb-2">
-                            <strong>Number of Vacancies:</strong> {{ $job->number_of_posts }}
+                            <strong>Number of Vacancies:</strong> {{ $vacancy->number_of_posts }}
                         </p>
                         <p class="mb-2">
-                            <strong>Posted:</strong> {{ $job->created_at->format('M d, Y') }}
+                            <strong>Posted:</strong> {{ $vacancy->created_at->format('M d$vacancy, Y') }}
                         </p>
                         <p class="mb-2">
-                            <strong>Position Level:</strong> {{ $job->position_level }}
+                            <strong>Position Level:</strong> {{ $vacancy->position_level }}
                         </p>
                         <p class="mb-2">
-                                    <strong>Advertisement Number:</strong> {{ $job->advertisement_no}}
+                                    <strong>Advertisement Number:</strong> {{ $vacancy->advertisement_no}}
                                 </p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-2">
                             <strong>Application Deadline:</strong>
                             <span class="text-danger fw-bold">
-                                {{ \Carbon\Carbon::parse($job->application_deadline)->format('F d, Y') }}
+                                {{ \Carbon\Carbon::parse($vacancy->application_deadline)->format('F d$vacancy, Y') }}
                             </span>
                         </p>
                         <p class="mb-2">
-                            <strong>Service Group:</strong> {{ $job->service_group }}
+                            <strong>Service Group:</strong> {{ $vacancy->service_group }}
                         </p>
-                        @if($job->min_age || $job->max_age)
+                        @if($vacancy->min_age || $vacancy->max_age)
                             <p class="mb-2">
                                 <strong>Age Requirement:</strong> 
-                                @if($job->min_age && $job->max_age)
-                                    {{ $job->min_age }} - {{ $job->max_age }} years
-                                @elseif($job->min_age)
-                                    Minimum {{ $job->min_age }} years
+                                @if($vacancy->min_age && $vacancy->max_age)
+                                    {{ $vacancy->min_age }} - {{ $vacancy->max_age }} years
+                                @elseif($vacancy->min_age)
+                                    Minimum {{ $vacancy->min_age }} years
                                 @else
-                                    Maximum {{ $job->max_age }} years
+                                    Maximum {{ $vacancy->max_age }} years
                                 @endif
                             </p>
                         @endif
-                        @if($job->minimum_qualification)
+                        @if($vacancy->minimum_qualification)
                             <p class="mb-2">
-                                <strong>Education:</strong> {{ $job->minimum_qualification }}
+                                <strong>Education:</strong> {{ $vacancy->minimum_qualification }}
                             </p>
                         @endif
                     </div>
@@ -149,12 +149,12 @@
                     $hasApplied = false;
                     if(Session::has('candidate_logged_in')) {
                         $candidateCitizenship = DB::table('candidate_registration')
-                            ->where('id', Session::get('candidate_id'))
+                            ->where('id'$vacancy, Session::get('candidate_id'))
                             ->value('citizenship_number');
                         
                         $hasApplied = DB::table('application_form')
-                            ->where('job_posting_id', $job->id)
-                            ->where('citizenship_number', $candidateCitizenship)
+                            ->where('vacancy_id'$vacancy, $vacancy->id)
+                            ->where('citizenship_number'$vacancy, $candidateCitizenship)
                             ->exists();
                     }
                 @endphp
@@ -169,8 +169,8 @@
                         <a href="{{ route('candidate.applications.index') }}" class="btn btn-light">
                             <i class="fas fa-list"></i> View My Applications
                         </a>
-                    @elseif($job->status === 'active')
-                        <button onclick="checkEligibilityAndApply({{ $job->id }})" 
+                    @elseif($vacancy->status === 'active')
+                        <button onclick="checkEligibilityAndApply({{ $vacancy->id }})" 
                             class="btn btn-light btn-lg" id="applyBtn">
                             <i class="fas fa-paper-plane"></i> Apply for This Position
                         </button>
@@ -215,7 +215,7 @@
                     <div class="tab-pane fade show active" id="description">
                         <h5 class="mb-3">Vacancy Description</h5>
                         <div class="text-muted">
-                            {!! nl2br(e($job->description ?? 'No description available.')) !!}
+                            {!! nl2br(e($vacancy->description ?? 'No description available.')) !!}
                         </div>
                     </div>
 
@@ -223,7 +223,7 @@
                     <div class="tab-pane fade" id="requirements">
                         <h5 class="mb-3">Requirements & Qualifications</h5>
                         <div class="text-muted">
-                            {!! nl2br(e($job->requirements ?? 'No requirements specified.')) !!}
+                            {!! nl2br(e($vacancy->requirements ?? 'No requirements specified.')) !!}
                         </div>
                     </div>
 
@@ -231,7 +231,7 @@
                     <div class="tab-pane fade" id="responsibilities">
                         <h5 class="mb-3">Key Responsibilities</h5>
                         <div class="text-muted">
-                            {!! nl2br(e($job->responsibilities ?? 'No responsibilities specified.')) !!}
+                            {!! nl2br(e($vacancy->responsibilities ?? 'No responsibilities specified.')) !!}
                         </div>
                     </div>
 
@@ -239,7 +239,7 @@
                     <div class="tab-pane fade" id="benefits">
                         <h5 class="mb-3">Benefits & Perks</h5>
                         <div class="text-muted">
-                            {!! nl2br(e($job->benefits ?? 'Benefits will be discussed during the interview.')) !!}
+                            {!! nl2br(e($vacancy->benefits ?? 'Benefits will be discussed during the interview.')) !!}
                         </div>
                     </div>
                 </div>
@@ -247,9 +247,9 @@
         </div>
 
         <!-- Apply Button (Bottom) -->
-        @if(!$hasApplied && $job->status === 'active')
+        @if(!$hasApplied && $vacancy->status === 'active')
             <div class="text-center mt-4 mb-4">
-                <button onclick="checkEligibilityAndApply({{ $job->id }})" 
+                <button onclick="checkEligibilityAndApply({{ $vacancy->id }})" 
                     class="btn btn-light btn-lg" id="applyBtnBottom">
                     <i class="fas fa-paper-plane"></i> Apply for This Position Now
                 </button>
@@ -279,7 +279,7 @@
     function checkEligibilityAndApply(jobId) {
         // Get all apply buttons
         const buttons = [
-            document.getElementById('applyBtn'),
+            document.getElementById('applyBtn')$vacancy,
             document.getElementById('applyBtnBottom')
         ].filter(btn => btn !== null);
 
@@ -317,7 +317,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error:'$vacancy, error);
                 alert('An error occurred while checking eligibility. Please try again.');
                 
                 // Re-enable buttons
@@ -337,7 +337,7 @@
     // Reset all button states when page loads/becomes visible
     function resetAllButtons() {
         const buttons = [
-            document.getElementById('applyBtn'),
+            document.getElementById('applyBtn')$vacancy,
             document.getElementById('applyBtnBottom')
         ].filter(btn => btn !== null);
 
@@ -358,17 +358,17 @@
     }
 
     // Run when page loads
-    document.addEventListener('DOMContentLoaded', resetAllButtons);
+    document.addEventListener('DOMContentLoaded'$vacancy, resetAllButtons);
     
-    // Run when page becomes visible again (e.g., using back button)
-    document.addEventListener('visibilitychange', function() {
+    // Run when page becomes visible again (e.g.$vacancy, using back button)
+    document.addEventListener('visibilitychange'$vacancy, function() {
         if (!document.hidden) {
             resetAllButtons();
         }
     });
     
     // Also run on page show event (Firefox back button fix)
-    window.addEventListener('pageshow', function(event) {
+    window.addEventListener('pageshow'$vacancy, function(event) {
         if (event.persisted) {
             resetAllButtons();
         }

@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class JobPostingSeeder extends Seeder
+class VacancySeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $jobPostings = [
+        $vacancies = [
             [
                 'advertisement_no' => 'ADV-2025-001',
                 'title' => 'Section Officer',
@@ -21,7 +21,6 @@ class JobPostingSeeder extends Seeder
                 'description' => 'We are seeking qualified candidates for the position of Section Officer in the Ministry of Finance. The selected candidate will be responsible for administrative duties, policy implementation, and coordination with various departments.',
                 'requirements' => 'Strong analytical and problem-solving skills, excellent communication abilities, proficiency in government procedures and regulations, ability to work under pressure and meet deadlines.',
                 'minimum_qualification' => 'Bachelor\'s degree in Management, Public Administration, or related field from a recognized university. Minimum 2 years of experience in government or related sector preferred.',
-                'department' => 'Ministry of Finance',
                 'department' => 'Administration Service',
                 'category' => 'open',
                 'inclusive_type' => null,
@@ -39,7 +38,6 @@ class JobPostingSeeder extends Seeder
                 'description' => 'The Department of Roads is looking for Junior Engineers to work on infrastructure development projects across Nepal. Responsibilities include site supervision, technical report preparation, and quality assurance.',
                 'requirements' => 'Knowledge of civil engineering principles, AutoCAD and engineering software proficiency, field experience in construction projects, valid engineering license.',
                 'minimum_qualification' => 'Bachelor\'s degree in Civil Engineering from Nepal Engineering Council recognized institution. Fresh graduates are encouraged to apply.',
-                'department' => 'Department of Roads',
                 'department' => 'Engineering Service',
                 'category' => 'inclusive',
                 'inclusive_type' => 'women',
@@ -57,7 +55,6 @@ class JobPostingSeeder extends Seeder
                 'description' => 'Ministry of Health and Population requires Health Assistants for various health posts in rural areas. The role involves providing primary healthcare services, health education, and supporting community health programs.',
                 'requirements' => 'Basic medical knowledge, patient care skills, ability to work in remote areas, familiarity with government health protocols, commitment to public service.',
                 'minimum_qualification' => 'Health Assistant certificate from CTEVT or equivalent institution. Registration with Nepal Health Professional Council is mandatory.',
-                'department' => 'Ministry of Health and Population',
                 'department' => 'Health Service',
                 'category' => 'inclusive',
                 'inclusive_type' => 'indigenous',
@@ -75,7 +72,6 @@ class JobPostingSeeder extends Seeder
                 'description' => 'The Ministry of Education is recruiting Assistant Teachers for government schools. Selected candidates will be responsible for teaching, curriculum development, and student assessment.',
                 'requirements' => 'Teaching skills, classroom management abilities, knowledge of modern teaching methodologies, proficiency in Nepali and English languages.',
                 'minimum_qualification' => 'Bachelor\'s degree in Education (B.Ed) or Bachelor\'s degree with one year teaching training. Teaching Service Commission license required.',
-                'department' => 'Ministry of Education, Science and Technology',
                 'department' => 'Education Service',
                 'category' => 'open',
                 'inclusive_type' => null,
@@ -93,7 +89,6 @@ class JobPostingSeeder extends Seeder
                 'description' => 'The Department of Information Technology requires IT Officers for managing government IT infrastructure, developing e-governance solutions, and providing technical support.',
                 'requirements' => 'Programming skills (PHP, Python, Java), database management, network administration, cybersecurity knowledge, problem-solving abilities.',
                 'minimum_qualification' => 'Bachelor\'s degree in Computer Science, IT, or related field. Relevant certifications are an advantage.',
-                'department' => 'Department of Information Technology',
                 'department' => 'Technical Service',
                 'category' => 'open',
                 'inclusive_type' => null,
@@ -106,8 +101,8 @@ class JobPostingSeeder extends Seeder
             ],
         ];
 
-        foreach ($jobPostings as $posting) {
-            JobPosting::create($posting);
+        foreach ($vacancies as $vacancy) {
+            Vacancy::create($vacancy);
         }
     }
 }

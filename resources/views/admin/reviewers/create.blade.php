@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>

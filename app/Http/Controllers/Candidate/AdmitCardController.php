@@ -19,7 +19,7 @@ class AdmitCardController extends Controller
         $applications = ApplicationForm::where('candidate_id', $candidate->id)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('jobPosting')
+            ->with('vacancy')
             ->latest()
             ->get();
 
@@ -37,7 +37,7 @@ class AdmitCardController extends Controller
             ->where('candidate_id', $candidate->id)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('jobPosting')
+            ->with('vacancy')
             ->firstOrFail();
 
         return view('candidate.admit-card-view', compact('application', 'candidate'));
@@ -54,7 +54,7 @@ class AdmitCardController extends Controller
             ->where('candidate_id', $candidate->id)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('jobPosting')
+            ->with('vacancy')
             ->firstOrFail();
 
         $pdf = Pdf::loadView('candidate.admit-card-pdf', compact('application', 'candidate'));

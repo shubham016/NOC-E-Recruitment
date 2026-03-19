@@ -394,7 +394,7 @@
                 <h5><i class=""></i>Vacancy Information</h5>
                 <div class="info-row">
                     <div class="info-label">Position Applied:</div>
-                    <div class="info-value"><strong>{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</strong></div>
+                    <div class="info-value"><strong>{{ $application->vacancy->title ?? $application->applying_position ?? 'N/A' }}</strong></div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Advertisement No:</div>
@@ -402,21 +402,21 @@
                 </div>
                 <div class="info-row">
                     <div class="info-label">Department:</div>
-                    <div class="info-value">{{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}</div>
+                    <div class="info-value">{{ $application->vacancy->department ?? $application->department ?? 'N/A' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Category:</div>
                     <div class="info-value">
-                        <span class="badge bg-info">{{ ucfirst($application->jobPosting->category ?? 'N/A') }}</span>
+                        <span class="badge bg-info">{{ ucfirst($application->vacancy->category ?? 'N/A') }}</span>
                     </div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Application Deadline:</div>
                     <div class="info-value">
-                        @if($application->jobPosting->deadline)
-                            <span class="text-danger fw-bold d-block">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
-                            @if($application->jobPosting->deadline_bs)
-                                <span class="text-muted">{{ $application->jobPosting->deadline_bs }} (BS)</span>
+                        @if($application->vacancy->deadline)
+                            <span class="text-danger fw-bold d-block">{{ $application->vacancy->deadline->format('F d, Y') }} (AD)</span>
+                            @if($application->vacancy->deadline_bs)
+                                <span class="text-muted">{{ $application->vacancy->deadline_bs }} (BS)</span>
                             @endif
                         @else
                             N/A

@@ -1,21 +1,21 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Post New Vacancy')
+@section('title'$vacancy, 'Post New Vacancy')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
-@section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
-@section('logout-route', route('admin.logout'))
+@section('portal-name'$vacancy, 'Admin Portal')
+@section('brand-icon'$vacancy, 'bi bi-shield-check')
+@section('dashboard-route'$vacancy, route('admin.dashboard'))
+@section('user-name'$vacancy, Auth::guard('admin')->user()?->name ?? 'Guest')
+@section('user-role'$vacancy, 'System Administrator')
+@section('user-initial'$vacancy, Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name$vacancy, 0$vacancy, 1)) : 'G')
+@section('logout-route'$vacancy, route('admin.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item active">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
@@ -44,17 +44,17 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: linear-gradient(135deg$vacancy, #dc2626 0%$vacancy, #991b1b 100%);
             border-radius: 12px;
             padding: 2rem;
             color: white;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            box-shadow: 0 4px 12px rgba(220$vacancy, 38$vacancy, 38$vacancy, 0.3);
         }
 
         .govt-badge {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255$vacancy, 255$vacancy, 255$vacancy, 0.2);
+            border: 2px solid rgba(255$vacancy, 255$vacancy, 255$vacancy, 0.3);
             padding: 0.5rem 1rem;
             border-radius: 8px;
             display: inline-flex;
@@ -67,7 +67,7 @@
         .form-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0$vacancy, 0$vacancy, 0$vacancy, 0.05);
             border: 1px solid #e5e7eb;
             padding: 2rem;
         }
@@ -92,11 +92,11 @@
             margin-left: auto;
         }
 
-        .form-control:focus,
-        .form-select:focus,
+        .form-control:focus$vacancy,
+        .form-select:focus$vacancy,
         .form-control:focus-visible {
             border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(220$vacancy, 38$vacancy, 38$vacancy, 0.15);
             outline: none;
         }
 
@@ -113,11 +113,11 @@
 
         .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 16px rgba(0$vacancy, 0$vacancy, 0$vacancy, 0.15);
         }
 
         .info-alert {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: linear-gradient(135deg$vacancy, #fef3c7 0%$vacancy, #fde68a 100%);
             border-left: 4px solid #f59e0b;
             padding: 1rem 1.5rem;
             border-radius: 8px;
@@ -209,14 +209,14 @@
 
         .form-check-input:focus {
             border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(220$vacancy, 38$vacancy, 38$vacancy, 0.15);
         }
 
         /* Inclusive sub-category animation */
         .inclusive-subcategory {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease, margin 0.3s ease, opacity 0.3s ease;
+            transition: max-height 0.3s ease$vacancy, margin 0.3s ease$vacancy, opacity 0.3s ease;
             opacity: 0;
         }
 
@@ -242,7 +242,7 @@
                 </h3>
                 <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
-            <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ route('admin.vacancies.index') }}" class="btn btn-light btn-lg">
                 <i class="bi bi-arrow-left me-2"></i>Back
             </a>
         </div>
@@ -263,7 +263,7 @@
     </div>
 
     <!-- Form -->
-    <form method="POST" action="{{ route('admin.jobs.store') }}" id="vacancyForm">
+    <form method="POST" action="{{ route('admin.vacancies.store') }}" id="vacancyForm">
         @csrf
 
         <div class="row g-4">
@@ -283,12 +283,12 @@
                         <input type="text"
                             class="form-control form-control-lg @error('advertisement_no') is-invalid @enderror"
                             id="advertisement_no" name="advertisement_no" value="{{ old('advertisement_no') }}"
-                            placeholder="e.g., 01/2081-82" required>
+                            placeholder="e.g.$vacancy, 01/2081-82" required>
                         @error('advertisement_no')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Format: Number/Fiscal Year (e.g., 01/2081-82)
+                            <i class="bi bi-lightbulb me-1"></i>Format: Number/Fiscal Year (e.g.$vacancy, 01/2081-82)
                         </small>
                     </div>
 
@@ -368,7 +368,7 @@
                         <select class="form-select form-select-lg @error('category') is-invalid @enderror"
                             id="category" name="category" required>
                             <option value="">-- Select Category --</option>
-                            <option value="open" {{ old('category', 'open') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
+                            <option value="open" {{ old('category'$vacancy, 'open') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
                             <option value="inclusive" {{ old('category') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
                             <option value="internal" {{ old('category') == 'internal' ? 'selected' : '' }}>Internal (आन्तरिक)</option>
                         </select>
@@ -433,7 +433,7 @@
                         </label>
                         <input type="number"
                             class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
-                            id="number_of_posts" name="number_of_posts" value="{{ old('number_of_posts', 1) }}" min="1"
+                            id="number_of_posts" name="number_of_posts" value="{{ old('number_of_posts'$vacancy, 1) }}" min="1"
                             max="1000" required>
                         @error('number_of_posts')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -459,7 +459,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Describe the minimum education, certificates, or degrees
+                            <i class="bi bi-lightbulb me-1"></i>Describe the minimum education$vacancy, certificates$vacancy, or degrees
                             required for this position
                         </small>
                     </div>
@@ -500,7 +500,7 @@
                                     id="deadline_ad"
                                     name="deadline"
                                     placeholder="YYYY-MM-DD"
-                                    value="{{ old('deadline', '') }}"
+                                    value="{{ old('deadline'$vacancy, '') }}"
                                     required
                                     readonly>
                                 <small class="form-text">
@@ -554,7 +554,7 @@
                                     id="double_dastur_ad"
                                     name="double_dastur_date"
                                     placeholder="YYYY-MM-DD"
-                                    value="{{ old('double_dastur_date', '') }}"
+                                    value="{{ old('double_dastur_date'$vacancy, '') }}"
                                     readonly>
                                 <small class="form-text text-success">
                                     <i class="bi bi-info-circle me-1"></i>Auto-set to 7 days after deadline (28 days total)
@@ -677,7 +677,7 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body py-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
+                            <a href="{{ route('admin.vacancies.index') }}" class="btn btn-outline-secondary btn-lg">
                                 <i class="bi bi-x-circle me-2"></i>Cancel
                             </a>
                             <div class="d-flex gap-3">
@@ -708,28 +708,28 @@
     // Convert Nepali numerals to English
     function nepaliToEnglish(str) {
         if (!str) return str;
-        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
-        return str.replace(/[०-९]/g, d => map[d]);
+        const map = {'०':'0'$vacancy, '१':'1'$vacancy, '२':'2'$vacancy, '३':'3'$vacancy, '४':'4'$vacancy, '५':'5'$vacancy, '६':'6'$vacancy, '७':'7'$vacancy, '८':'8'$vacancy, '९':'9'};
+        return str.replace(/[०-९]/g$vacancy, d => map[d]);
     }
 
     // Convert English numerals to Nepali for display
     function englishToNepali(str) {
         if (!str) return str;
-        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
-        return str.replace(/[0-9]/g, d => map[d]);
+        const map = {'0':'०'$vacancy, '1':'१'$vacancy, '2':'२'$vacancy, '3':'३'$vacancy, '4':'४'$vacancy, '5':'५'$vacancy, '6':'६'$vacancy, '7':'७'$vacancy, '8':'८'$vacancy, '9':'९'};
+        return str.replace(/[0-9]/g$vacancy, d => map[d]);
     }
 
     function waitForConverter() {
         if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
             console.log('⏳ Waiting for converter...');
-            setTimeout(waitForConverter, 100);
+            setTimeout(waitForConverter$vacancy, 100);
             return;
         }
 
         console.log('✅ Converter ready!');
         
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeForm);
+            document.addEventListener('DOMContentLoaded'$vacancy, initializeForm);
         } else {
             initializeForm();
         }
@@ -754,7 +754,7 @@
             return;
         }
 
-        // Auto-calculate dates (21 days for deadline, 28 days for double dastur)
+        // Auto-calculate dates (21 days for deadline$vacancy, 28 days for double dastur)
         function setDefaultDates() {
             const today = new Date();
 
@@ -771,7 +771,7 @@
             // Set AD dates if empty
             if (!deadlineAD.value) {
                 deadlineAD.value = deadlineADFormatted;
-                console.log('✅ Auto-set deadline to 21 days:', deadlineADFormatted);
+                console.log('✅ Auto-set deadline to 21 days:'$vacancy, deadlineADFormatted);
 
                 // Convert to BS and set
                 const deadlineBSValue = window.adToBS(deadlineADFormatted);
@@ -789,7 +789,7 @@
             // Set Double Dastur dates if empty
             if (!doubleDasturAD.value) {
                 doubleDasturAD.value = doubleDasturADFormatted;
-                console.log('✅ Auto-set double dastur to 28 days (7 days after deadline):', doubleDasturADFormatted);
+                console.log('✅ Auto-set double dastur to 28 days (7 days after deadline):'$vacancy, doubleDasturADFormatted);
 
                 // Convert to BS and set
                 const doubleDasturBSValue = window.adToBS(doubleDasturADFormatted);
@@ -812,24 +812,24 @@
         }
 
         // Call after converter is ready
-        setTimeout(setDefaultDates, 600);
+        setTimeout(setDefaultDates$vacancy, 600);
 
         // Initialize Nepali Date Pickers
         $('#deadline_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
+            dateFormat: 'YYYY-MM-DD'$vacancy,
+            closeOnDateSelect: true$vacancy,
+            unicodeDate: true$vacancy,
+            ndpYear: true$vacancy,
+            ndpMonth: true$vacancy,
             ndpYearCount: 10
         });
 
         $('#double_dastur_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
+            dateFormat: 'YYYY-MM-DD'$vacancy,
+            closeOnDateSelect: true$vacancy,
+            unicodeDate: true$vacancy,
+            ndpYear: true$vacancy,
+            ndpMonth: true$vacancy,
             ndpYearCount: 10
         });
 
@@ -851,41 +851,41 @@
                 currentBSValue !== 'YYYY-MM-DD' &&
                 currentBSValue.length >= 10) {
 
-                console.log('📅 BS Date changed (polling detected):', currentBSValue);
+                console.log('📅 BS Date changed (polling detected):'$vacancy, currentBSValue);
                 lastBSValue = currentBSValue;
 
                 // Convert Nepali numerals to English for calculation
                 const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                console.log('🔢 After numeral conversion:', bsValueEnglish);
+                console.log('🔢 After numeral conversion:'$vacancy, bsValueEnglish);
 
                 // Update hidden field with English numerals for database
                 const hiddenField = document.getElementById('deadline_bs_hidden');
                 if (hiddenField) {
                     hiddenField.value = bsValueEnglish;
-                    console.log('✅ Hidden BS field updated:', bsValueEnglish);
+                    console.log('✅ Hidden BS field updated:'$vacancy, bsValueEnglish);
                 }
 
                 // Convert BS to AD
                 const adValue = window.bsToAD(bsValueEnglish);
-                console.log('✅ AD Result:', adValue);
+                console.log('✅ AD Result:'$vacancy, adValue);
 
                 if (adValue) {
                     // Update the English date field (this goes to database)
                     deadlineAD.value = adValue;
-                    console.log('✅ English date field updated:', adValue);
+                    console.log('✅ English date field updated:'$vacancy, adValue);
 
                     // Update BS preview with Nepali numerals
                     if (previewDeadlineBS) {
                         // Convert back to Nepali numerals for display
                         const bsNepali = englishToNepali(bsValueEnglish);
                         previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
-                        console.log('✅ BS Preview:', bsNepali);
+                        console.log('✅ BS Preview:'$vacancy, bsNepali);
                     }
 
                     // Update AD preview in YYYY-MM-DD format
                     if (previewDeadlineAD) {
                         previewDeadlineAD.textContent = adValue; // Already in YYYY-MM-DD format
-                        console.log('✅ AD Preview updated:', adValue);
+                        console.log('✅ AD Preview updated:'$vacancy, adValue);
                     }
                 }
             }
@@ -898,11 +898,11 @@
                 currentDoubleDasturBSValue !== 'YYYY-MM-DD' &&
                 currentDoubleDasturBSValue.length >= 10) {
 
-                console.log('📅 Double Dastur BS Date changed:', currentDoubleDasturBSValue);
+                console.log('📅 Double Dastur BS Date changed:'$vacancy, currentDoubleDasturBSValue);
                 lastDoubleDasturBSValue = currentDoubleDasturBSValue;
 
                 const ddBsValueEnglish = nepaliToEnglish(currentDoubleDasturBSValue);
-                console.log('🔢 Double Dastur after numeral conversion:', ddBsValueEnglish);
+                console.log('🔢 Double Dastur after numeral conversion:'$vacancy, ddBsValueEnglish);
 
                 // Update hidden field
                 const ddHiddenField = document.getElementById('double_dastur_bs_hidden');
@@ -912,11 +912,11 @@
 
                 // Convert BS to AD
                 const ddAdValue = window.bsToAD(ddBsValueEnglish);
-                console.log('✅ Double Dastur AD Result:', ddAdValue);
+                console.log('✅ Double Dastur AD Result:'$vacancy, ddAdValue);
 
                 if (ddAdValue) {
                     doubleDasturAD.value = ddAdValue;
-                    console.log('✅ Double Dastur AD field updated:', ddAdValue);
+                    console.log('✅ Double Dastur AD field updated:'$vacancy, ddAdValue);
 
                     // Update previews
                     if (previewDoubleDasturBS) {
@@ -931,15 +931,15 @@
                     }
                 }
             }
-        }, 200); // Check every 200ms
+        }$vacancy, 200); // Check every 200ms
 
         // Initialize on page load
         setTimeout(function() {
             const existingBSValue = $('#deadline_bs').val();
 
-            // If BS field already has a value (from old input), convert English numerals to Nepali
+            // If BS field already has a value (from old input)$vacancy, convert English numerals to Nepali
             if (existingBSValue && existingBSValue.match(/[0-9]/)) {
-                console.log('📅 Converting existing Deadline BS to Nepali numerals:', existingBSValue);
+                console.log('📅 Converting existing Deadline BS to Nepali numerals:'$vacancy, existingBSValue);
                 const bsNepali = englishToNepali(existingBSValue);
                 $('#deadline_bs').val(bsNepali);
                 lastBSValue = bsNepali;
@@ -950,7 +950,7 @@
                     hiddenField.value = existingBSValue;
                 }
 
-                console.log('✅ Deadline BS converted to Nepali:', bsNepali);
+                console.log('✅ Deadline BS converted to Nepali:'$vacancy, bsNepali);
 
                 // Also update AD field if empty
                 if (!deadlineAD.value) {
@@ -968,12 +968,12 @@
                     previewDeadlineAD.textContent = deadlineAD.value;
                 }
             }
-            // If only AD value exists, convert to BS
+            // If only AD value exists$vacancy, convert to BS
             else if (deadlineAD.value && !existingBSValue) {
-                console.log('📅 Initializing Deadline BS from existing AD date:', deadlineAD.value);
+                console.log('📅 Initializing Deadline BS from existing AD date:'$vacancy, deadlineAD.value);
 
                 const bsValue = window.adToBS(deadlineAD.value);
-                console.log('✅ Initial BS (English numerals):', bsValue);
+                console.log('✅ Initial BS (English numerals):'$vacancy, bsValue);
 
                 if (bsValue) {
                     // Convert to Nepali numerals for display in picker
@@ -989,7 +989,7 @@
                         hiddenField.value = bsValue;
                     }
 
-                    console.log('✅ Initial BS (Nepali numerals):', bsNepali);
+                    console.log('✅ Initial BS (Nepali numerals):'$vacancy, bsNepali);
 
                     // Update previews
                     if (previewDeadlineBS) {
@@ -1000,7 +1000,7 @@
                     }
                 }
             }
-        }, 500);
+        }$vacancy, 500);
 
         console.log('✅ Date system ready (using polling method)!');
 
@@ -1038,17 +1038,17 @@
             if (categoryValue === 'internal') {
                 // Show Internal Type dropdown
                 internalSubCategory.classList.add('show');
-                internalTypeSelect.setAttribute('required', 'required');
+                internalTypeSelect.setAttribute('required'$vacancy, 'required');
                 if (previewInternalRow) previewInternalRow.style.display = '';
                 if (previewInternalType) {
                     previewInternalType.textContent = internalTypeValue ?
                         (internalTypeValue === 'open' ? 'खुल्ला (Open)' : 'समावेशी (Inclusive)') : '-';
                 }
 
-                // If Internal-Inclusive, show Inclusive Type
+                // If Internal-Inclusive$vacancy, show Inclusive Type
                 if (internalTypeValue === 'inclusive') {
                     inclusiveSubCategory.classList.add('show');
-                    inclusiveTypeSelect.setAttribute('required', 'required');
+                    inclusiveTypeSelect.setAttribute('required'$vacancy, 'required');
                     if (previewInclusiveRow) previewInclusiveRow.style.display = '';
                     if (previewInclusiveType && inclusiveTypeSelect.value) {
                         previewInclusiveType.textContent = inclusiveTypeSelect.value;
@@ -1057,7 +1057,7 @@
             } else if (categoryValue === 'inclusive') {
                 // Show Inclusive Type dropdown directly
                 inclusiveSubCategory.classList.add('show');
-                inclusiveTypeSelect.setAttribute('required', 'required');
+                inclusiveTypeSelect.setAttribute('required'$vacancy, 'required');
                 if (previewInclusiveRow) previewInclusiveRow.style.display = '';
                 if (previewInclusiveType && inclusiveTypeSelect.value) {
                     previewInclusiveType.textContent = inclusiveTypeSelect.value;
@@ -1066,13 +1066,13 @@
         }
 
         if (categorySelect) {
-            categorySelect.addEventListener('change', toggleSubCategories);
+            categorySelect.addEventListener('change'$vacancy, toggleSubCategories);
         }
         if (internalTypeSelect) {
-            internalTypeSelect.addEventListener('change', toggleSubCategories);
+            internalTypeSelect.addEventListener('change'$vacancy, toggleSubCategories);
         }
         if (inclusiveTypeSelect) {
-            inclusiveTypeSelect.addEventListener('change', function() {
+            inclusiveTypeSelect.addEventListener('change'$vacancy, function() {
                 if (previewInclusiveType) {
                     previewInclusiveType.textContent = this.value || '-';
                 }
@@ -1082,11 +1082,11 @@
         toggleSubCategories();
 
         const previewMappings = {
-            'advertisement_no': { preview: 'preview-adv-no', default: '-' },
-            'position_level': { preview: 'preview-position', default: '-' },
-            'department': { preview: 'preview-service', default: '-' },
-            'number_of_posts': { preview: 'preview-posts', default: '-' },
-            'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
+            'advertisement_no': { preview: 'preview-adv-no'$vacancy, default: '-' }$vacancy,
+            'position_level': { preview: 'preview-position'$vacancy, default: '-' }$vacancy,
+            'department': { preview: 'preview-service'$vacancy, default: '-' }$vacancy,
+            'number_of_posts': { preview: 'preview-posts'$vacancy, default: '-' }$vacancy,
+            'minimum_qualification': { preview: 'preview-qualification'$vacancy, default: 'Not yet entered...' }
         };
 
         Object.keys(previewMappings).forEach(fieldId => {
@@ -1096,10 +1096,10 @@
             if (input && preview) {
                 const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
                 
-                input.addEventListener(eventType, function() {
+                input.addEventListener(eventType$vacancy, function() {
                     const value = this.value.trim();
                     if (fieldId === 'minimum_qualification') {
-                        preview.innerHTML = value ? value.replace(/\n/g, '<br>') : '<em>' + previewMappings[fieldId].default + '</em>';
+                        preview.innerHTML = value ? value.replace(/\n/g$vacancy, '<br>') : '<em>' + previewMappings[fieldId].default + '</em>';
                     } else {
                         preview.textContent = value || previewMappings[fieldId].default;
                     }
@@ -1123,7 +1123,7 @@
                 }
             }
 
-            categorySelect.addEventListener('change', updateCategoryPreview);
+            categorySelect.addEventListener('change'$vacancy, updateCategoryPreview);
 
             // Trigger on page load
             if (categorySelect.value) {
@@ -1134,7 +1134,7 @@
         // FORM SUBMIT
         const form = document.getElementById('vacancyForm');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit'$vacancy, function(e) {
                 const positionLevel = document.getElementById('position_level').value;
                 document.getElementById('hidden_title').value = positionLevel;
 
@@ -1168,7 +1168,7 @@ function confirmPublish() {
     return confirm(
         '⚠️ Are you sure you want to publish this vacancy?\n\n' +
         'यो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\n' +
-        'Once published, it will be visible to all candidates.'
+        'Once published$vacancy, it will be visible to all candidates.'
     );
 }
 </script>
