@@ -95,6 +95,7 @@
     }
 
     .quick-action-btn {
+        display: block;
         background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
         color: white;
         border: none;
@@ -104,12 +105,15 @@
         margin-bottom: 1rem;
         transition: all 0.3s ease;
         font-weight: 600;
+        text-decoration: none;
+        text-align: center;
     }
 
     .quick-action-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
         color: white;
+        text-decoration: none;
     }
 </style>
 @endsection
@@ -199,23 +203,23 @@
                     <span class="text-muted">Email:</span>
                     <span class="fw-semibold">{{ $approver->email }}</span>
                 </div>
-                @if($approver->job_posting_id)
+                @if($approver->vacancy_id)
                 <div class="info-row">
                     <span class="text-muted">Assigned Job:</span>
-                    <span class="fw-semibold">{{ $approver->jobPosting->title ?? 'N/A' }}</span>
+                    <span class="fw-semibold">{{ $approver->vacancy->title ?? 'N/A' }}</span>
                 </div>
                 @endif
             </div>
 
             <!-- Welcome Message -->
-            <div class="info-card">
+            <!-- <div class="info-card">
                 <h5>
                     <i class="bi bi-chat-left-quote text-success me-2"></i>Welcome Message
                 </h5>
                 <p class="mb-0 text-muted">
                     Welcome to the NOC E-Recruitment Approver Portal. As an approver, you have the responsibility to review and approve/reject applications assigned to you. Please ensure timely processing of all applications to maintain an efficient recruitment process.
                 </p>
-            </div>
+            </div> -->
         </div>
 
         <!-- Right Column -->
@@ -226,7 +230,7 @@
                     <i class="bi bi-lightning text-warning me-2"></i>Quick Actions
                 </h5>
                 <a href="{{ route('approver.assignedtome') }}" class="quick-action-btn">
-                    <i class="bi bi-inbox me-2"></i>View Assigned Applications
+                    <i class="bi bi-inbox me-2"></i>Assigned Applications
                 </a>
                 <a href="{{ route('approver.assignedtome', ['status' => 'pending']) }}" class="quick-action-btn">
                     <i class="bi bi-clock-history me-2"></i>Pending Reviews

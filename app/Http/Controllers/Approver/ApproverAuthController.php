@@ -13,7 +13,7 @@ class ApproverAuthController extends Controller
      */
     public function showLoginForm()
     {
-        return view('approver.login');
+        return view('auth.approver.login');
     }
 
     /**
@@ -26,17 +26,45 @@ class ApproverAuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
+        // Debug: Check if approver exists
+        $approver = \App\Models\Approver::where('employee_id', $request->employee_id)->first();
+
+        if (!$approver) {
+            \Log::info('Approver not found: ' . $request->employee_id);
+            return back()->withErrors([
+                'employee_id' => 'Approver not found with this Employee ID.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        if ($approver->status !== 'active') {
+            \Log::info('Approver inactive: ' . $request->employee_id);
+            return back()->withErrors([
+                'employee_id' => 'Your account is inactive. Please contact administrator.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        // Verify password manually first
+        if (!\Hash::check($request->password, $approver->password)) {
+            \Log::info('Password mismatch for: ' . $request->employee_id);
+            return back()->withErrors([
+                'employee_id' => 'Invalid password.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        // If all checks pass, authenticate
         if (Auth::guard('approver')->attempt([
             'employee_id' => $request->employee_id,
             'password' => $request->password,
             'status' => 'active'
-        ], $request->remember)) {
+        ], $request->filled('remember'))) {
             $request->session()->regenerate();
+            \Log::info('Approver logged in successfully: ' . $request->employee_id);
             return redirect()->intended(route('approver.dashboard'));
         }
 
+        \Log::error('Auth attempt failed for: ' . $request->employee_id);
         return back()->withErrors([
-            'employee_id' => 'Invalid credentials or account is inactive.',
+            'employee_id' => 'Authentication failed. Please try again.',
         ])->withInput($request->only('employee_id'));
     }
 

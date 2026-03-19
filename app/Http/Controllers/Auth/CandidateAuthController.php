@@ -23,7 +23,7 @@ class CandidateAuthController extends Controller
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
         }
-        return view('candidate.login');
+        return view('auth.candidate.login');
     }
 
     /**
@@ -94,7 +94,7 @@ class CandidateAuthController extends Controller
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
         }
-        return view('candidate.register');
+        return view('auth.candidate.register');
     }
 
     /**
@@ -189,7 +189,7 @@ class CandidateAuthController extends Controller
         $email = Session::get('candidate_registration_email');
 
         if (!$email) {
-            return redirect()->route('candidate.register')
+            return redirect()->route('auth.candidate.register')
                 ->with('error', 'Session expired. Please register again.');
         }
 

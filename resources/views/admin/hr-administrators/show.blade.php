@@ -31,7 +31,7 @@
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+        <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
             <i class="bi bi-briefcase"></i>
             <span>Post Vacancy</span>
         </a>
@@ -65,7 +65,7 @@
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('hr-administrator.jobs.create') }}" class="sidebar-menu-item">
+        <a href="{{ route('hr-administrator.vacancies.create') }}" class="sidebar-menu-item">
             <i class="bi bi-briefcase"></i>
             <span>Post Vacancy</span>
         </a>
@@ -512,7 +512,7 @@
                         style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
                         <i class="bi bi-briefcase-fill"></i>
                     </div>
-                    <div class="stat-value" style="color: #1e3a8a;">{{ $stats['total_jobs_posted'] }}</div>
+                    <div class="stat-value" style="color: #1e3a8a;">{{ $stats['total_vacancies_posted'] }}</div>
                     <div class="stat-label">Total Vacancies Posted</div>
                 </div>
             </div>
@@ -522,7 +522,7 @@
                         style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div class="stat-value" style="color: #059669;">{{ $stats['active_jobs'] }}</div>
+                    <div class="stat-value" style="color: #059669;">{{ $stats['active_vacancies'] }}</div>
                     <div class="stat-label">Active Vacancies</div>
                 </div>
             </div>
@@ -532,7 +532,7 @@
                         style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
                         <i class="bi bi-x-circle-fill"></i>
                     </div>
-                    <div class="stat-value" style="color: #dc2626;">{{ $stats['closed_jobs'] }}</div>
+                    <div class="stat-value" style="color: #dc2626;">{{ $stats['closed_vacancies'] }}</div>
                     <div class="stat-label">Closed Vacancies</div>
                 </div>
             </div>
@@ -557,10 +557,10 @@
                             <h5 class="mb-0 fw-bold" style="color: #1e3a8a;">
                                 <i class="bi bi-briefcase me-2"></i>Recent Vacancies
                             </h5>
-                            <span class="badge bg-primary">{{ $recentJobs->count() }} Vacancies</span>
+                            <span class="badge bg-primary">{{ $recentVacancies->count() }} Vacancies</span>
                         </div>
                     </div>
-                    @if($recentJobs->count() > 0)
+                    @if($recentVacancies->count() > 0)
                         <table class="jobs-table">
                             <thead>
                                 <tr>
@@ -572,7 +572,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recentJobs as $job)
+                                @foreach($recentVacancies as $job)
                                     <tr>
                                         <td>
                                             <div class="fw-semibold" style="color: #1e3a8a;">{{ $job->title }}</div>
@@ -588,7 +588,7 @@
                                             <small>{{ $job->created_at->format('Y-m-d') }}</small>
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ $isAdmin ? route('admin.jobs.show', $job->id) : route('hr-administrator.jobs.show', $job->id) }}"
+                                            <a href="{{ $isAdmin ? route('admin.vacancies.show', $job->id) : route('hr-administrator.vacancies.show', $job->id) }}"
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>

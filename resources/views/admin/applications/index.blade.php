@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
@@ -219,9 +219,9 @@
                         <label class="gov-form-label d-block mb-2">Vacancy Position</label>
                         <select name="job_id" class="form-select" style="height: 45px;">
                             <option value="">All Positions</option>
-                            @foreach($jobs as $job)
-                                <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
-                                    {{ $job->title }}
+                            @foreach($vacancies as $vacancy)
+                                <option value="{{ $vacancy->id }}" {{ request('job_id') == $vacancy->id ? 'selected' : '' }}>
+                                    {{ $vacancy->title }}
                                 </option>
                             @endforeach
                         </select>
@@ -315,10 +315,10 @@
                                     </td>
                                     <td>
                                         <div class="gov-font-semibold gov-text-md" style="color: #1f2937;">
-                                            {{ $application->jobPosting->title }}
+                                            {{ $application->vacancy->title }}
                                         </div>
                                         <small class="gov-text-sm" style="color: #6b7280;">
-                                            {{ $application->jobPosting->advertisement_no }}
+                                            {{ $application->vacancy->advertisement_no }}
                                         </small>
                                     </td>
                                     <td>

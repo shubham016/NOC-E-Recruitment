@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +19,7 @@ class ApplicationController extends Controller
         $candidate = Auth::guard('candidate')->user();
 
         $applications = Application::where('candidate_id', $candidate->id)
-            ->with('jobPosting')
+            ->with('vacancy')
             ->latest()
             ->paginate(15);
 
@@ -29,48 +29,48 @@ class ApplicationController extends Controller
     /**
      * Show application form
      */
-    public function create($jobId)
+    public function create($vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $job = JobPosting::findOrFail($jobId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied
         $existingApplication = Application::where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->first();
 
         if ($existingApplication) {
             return redirect()
-                ->route('candidate.jobs.show', $jobId)
+                ->route('candidate.vacancies.show', $vacancyId)
                 ->with('error', 'You have already applied for this position.');
         }
 
         // Check if job is still active
-        if ($job->status !== 'active') {
+        if ($vacancy->status !== 'active') {
             return redirect()
-                ->route('candidate.jobs.index')
+                ->route('candidate.vacancies.index')
                 ->with('error', 'This job posting is no longer accepting applications.');
         }
 
-        return view('candidate.applications.create', compact('job'));
+        return view('candidate.applications.create', compact('vacancy'));
     }
 
     /**
      * Store application
      */
-    public function store(Request $request, $jobId)
+    public function store(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $job = JobPosting::findOrFail($jobId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied
         $existingApplication = Application::where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->first();
 
         if ($existingApplication) {
             return redirect()
-                ->route('candidate.jobs.show', $jobId)
+                ->route('candidate.vacancies.show', $vacancyId)
                 ->with('error', 'You have already applied for this position.');
         }
 
@@ -179,10 +179,15 @@ class ApplicationController extends Controller
         $validated['same_as_permanent'] = $request->has('same_as_permanent') ? 1 : 0;
 
         // Create application
+        $adDate = now();
+        $bsYear = $adDate->year + 56;
+        $submittedAtBs = sprintf('%04d-%02d-%02d', $bsYear, $adDate->month, $adDate->day);
+
         $application = Application::create([
             'candidate_id' => $candidate->id,
-            'job_posting_id' => $jobId,
-            'submitted_at' => now(),
+            'vacancy_id' => $vacancyId,
+            'submitted_at' => $adDate,
+            'submitted_at_bs' => $submittedAtBs,
             'status' => 'pending',
             ...$validated
         ]);
@@ -201,7 +206,7 @@ class ApplicationController extends Controller
 
         $application = Application::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->with(['jobPosting', 'reviewer'])
+            ->with(['vacancy', 'reviewer'])
             ->firstOrFail();
 
         return view('candidate.applications.show', compact('application'));
@@ -210,14 +215,14 @@ class ApplicationController extends Controller
     /**
      * Show edit form
      */
-    public function edit($jobId, $id)
+    public function edit($vacancyId, $id)
     {
         $candidate = Auth::guard('candidate')->user();
 
         $application = Application::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
-            ->with('jobPosting')
+            ->where('vacancy_id', $vacancyId)
+            ->with('vacancy')
             ->firstOrFail();
 
         // Check if can edit
@@ -233,13 +238,13 @@ class ApplicationController extends Controller
     /**
      * Update application
      */
-    public function update(Request $request, $jobId, $id)
+    public function update(Request $request, $vacancyId, $id)
     {
         $candidate = Auth::guard('candidate')->user();
 
         $application = Application::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->firstOrFail();
 
         // Check if can edit

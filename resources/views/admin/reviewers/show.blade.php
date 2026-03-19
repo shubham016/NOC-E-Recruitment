@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
@@ -520,8 +520,8 @@
                                         <small class="text-muted">{{ $application->candidate->email }}</small>
                                     </td>
                                     <td class="text-center">
-                                        <div class="fw-semibold">{{ $application->jobPosting->title }}</div>
-                                        <small class="text-muted">{{ $application->jobPosting->advertisement_no }}</small>
+                                        <div class="fw-semibold">{{ $application->vacancy->title }}</div>
+                                        <small class="text-muted">{{ $application->vacancy->advertisement_no }}</small>
                                     </td>
                                     <td class="text-center" style="white-space: nowrap;">
                                         <span class="badge

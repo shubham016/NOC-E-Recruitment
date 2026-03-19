@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
@@ -141,27 +141,27 @@
                         <tbody>
                             <tr>
                                 <td>Vacancy Title</td>
-                                <td>{{ $application->jobPosting->title }}</td>
+                                <td>{{ $application->vacancy->title }}</td>
                             </tr>
                             <tr>
                                 <td>Advertisement No.</td>
-                                <td>{{ $application->jobPosting->advertisement_no }}</td>
+                                <td>{{ $application->vacancy->advertisement_no }}</td>
                             </tr>
                             <tr>
                                 <td>Department</td>
-                                <td>{{ $application->jobPosting->department }}</td>
+                                <td>{{ $application->vacancy->department }}</td>
                             </tr>
                             <tr>
                                 <td>Location</td>
-                                <td>{{ $application->jobPosting->location }}</td>
+                                <td>{{ $application->vacancy->location }}</td>
                             </tr>
                             <tr>
                                 <td>Position Level</td>
-                                <td>{{ $application->jobPosting->position_level }}</td>
+                                <td>{{ $application->vacancy->position_level }}</td>
                             </tr>
                             <tr>
                                 <td>Application Deadline</td>
-                                <td>{{ \Carbon\Carbon::parse($application->jobPosting->application_deadline)->format('F d, Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($application->vacancy->application_deadline)->format('F d, Y') }}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -15,9 +15,9 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
-        <span>Job Postings</span>
+        <span>Vacancys</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
@@ -918,11 +918,11 @@
                                 class="timeline-item {{ $application->status === 'shortlisted' ? 'success' : ($application->status === 'rejected' ? 'rejected' : 'pending') }}">
                                 <div class="timeline-header">
                                     <div>
-                                        <div class="timeline-title">{{ $application->jobPosting->title }}</div>
+                                        <div class="timeline-title">{{ $application->vacancy->title }}</div>
                                         <div class="timeline-meta">
-                                            <i class="bi bi-building"></i> {{ $application->jobPosting->department }}
+                                            <i class="bi bi-building"></i> {{ $application->vacancy->department }}
                                             &nbsp;&nbsp;
-                                            <i class="bi bi-geo-alt"></i> {{ $application->jobPosting->location }}
+                                            <i class="bi bi-geo-alt"></i> {{ $application->vacancy->location }}
                                         </div>
                                     </div>
                                     @php

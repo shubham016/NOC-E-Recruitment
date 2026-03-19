@@ -11,7 +11,7 @@ class Application extends Model
 
     protected $fillable = [
         'candidate_id',
-        'job_posting_id',
+        'vacancy_id',
         'reviewer_id',
 
         // General Information
@@ -124,11 +124,20 @@ class Application extends Model
     }
 
     /**
-     * Get the job posting for this application
+     * Get the vacancy for this application
+     */
+    public function vacancy()
+    {
+        return $this->belongsTo(Vacancy::class);
+    }
+
+    /**
+     * Backward compatibility alias
+     * @deprecated Use vacancy() instead
      */
     public function jobPosting()
     {
-        return $this->belongsTo(JobPosting::class);
+        return $this->vacancy();
     }
 
     /**

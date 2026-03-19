@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('candidate.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Browse Vacancy</span>
     </a>
@@ -601,7 +601,7 @@
             <div class="recent-apps">
                 @foreach($recentApplications as $application)
                 <div class="app-item">
-                    <div class="app-title">{{ $application->jobPosting->title }}</div>
+                    <div class="app-title">{{ $application->vacancy->title }}</div>
                     <div class="app-meta">
                         Applied: {{ $application->created_at->format('M d, Y') }} •
                         Status: <strong>{{ ucfirst(str_replace('_', ' ', $application->status)) }}</strong>

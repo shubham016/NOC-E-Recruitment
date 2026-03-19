@@ -15,14 +15,14 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Vacancy List</span>
-        <span class="badge bg-primary ms-auto">{{ $stats['active_jobs'] }}</span>
+        <span class="badge bg-primary ms-auto">{{ $stats['active_vacancies'] }}</span>
     </a>
     <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
@@ -692,7 +692,7 @@
             <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                 <i class="bi bi-briefcase-fill"></i>
             </div>
-            <div class="stat-value">{{ $stats['active_jobs'] }}</div>
+            <div class="stat-value">{{ $stats['active_vacancies'] }}</div>
             <div class="stat-label">Active Vacancies</div>
             <!-- <div class="stat-meta">
                 @if($growth['jobs_posted'] != 0)
@@ -789,7 +789,7 @@
                             <div class="item-content">
                                 <h4 class="item-name">{{ $application->candidate->name ?? 'Unknown' }}</h4>
                                 <p class="item-text">Applied for
-                                    <strong>{{ $application->jobPosting->title ?? 'Position' }}</strong>
+                                    <strong>{{ $application->vacancy->title ?? 'Position' }}</strong>
                                 </p>
                                 <p class="item-meta">
                                     <i class="bi bi-clock"></i>
@@ -865,7 +865,7 @@
                     </h3>
                 </div>
                 <div class="widget-body">
-                    <a href="{{ route('admin.jobs.create') }}" class="btn-action btn-primary">
+                    <a href="{{ route('admin.vacancies.create') }}" class="btn-action btn-primary">
                         <i class="bi bi-plus-circle"></i>
                         Post New Vacancy
                     </a>

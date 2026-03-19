@@ -15,11 +15,11 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Vacancy List</span>
     </a>
@@ -165,7 +165,7 @@
                             <th>Email</th>
                             <th>Department</th>
                             <th>Designation</th>
-                            <th>Assigned Job</th>
+                            <th style="min-width: 200px;">Assign Vacancy</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -179,11 +179,17 @@
                                 <td>{{ $approver->department }}</td>
                                 <td>{{ $approver->designation ?? 'N/A' }}</td>
                                 <td>
-                                    @if($approver->jobPosting)
-                                        <span class="badge bg-info">{{ $approver->jobPosting->title }}</span>
-                                    @else
-                                        <span class="badge bg-secondary">All Jobs</span>
-                                    @endif
+                                    <form action="{{ route('admin.approvers.assign-vacancy', $approver->id) }}" method="POST" class="d-flex gap-1">
+                                        @csrf
+                                        <select name="vacancy_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="">All Vacancies</option>
+                                            @foreach($vacancies as $vacancy)
+                                                <option value="{{ $vacancy->id }}" {{ $approver->vacancy_id == $vacancy->id ? 'selected' : '' }}>
+                                                    {{ Str::limit($vacancy->title, 30) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
                                 </td>
                                 <td>
                                     @if($approver->status === 'active')

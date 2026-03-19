@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class ApplicationFormController extends Controller
         $candidate = Auth::guard('candidate')->user();
 
         $forms = ApplicationForm::where('candidate_id', $candidate->id)
-            ->with('jobPosting')
+            ->with('vacancy')
             ->latest()
             ->paginate(15);
 
@@ -28,75 +28,75 @@ class ApplicationFormController extends Controller
     }
 
     /**
-     * Show application form for a specific job
+     * Show application form for a specific vacancy
      */
-    public function create($jobId)
+    public function create($vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $job = JobPosting::findOrFail($jobId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied (non-draft)
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->first();
 
         if ($existingApplication && !$existingApplication->isDraft()) {
             return redirect()
-                ->route('candidate.jobs.show', $jobId)
+                ->route('candidate.vacancies.show', $vacancyId)
                 ->with('error', 'You have already applied for this position.');
         }
 
         // If there's a draft, redirect to edit
         if ($existingApplication && $existingApplication->isDraft()) {
             return redirect()
-                ->route('candidate.applications.edit', ['jobId' => $jobId, 'id' => $existingApplication->id])
+                ->route('candidate.applications.edit', ['vacancyId' => $vacancyId, 'id' => $existingApplication->id])
                 ->with('info', 'You have a draft application for this position. Continue editing.');
         }
 
-        // Check if job is still active
-        if ($job->status !== 'active') {
+        // Check if vacancy is still active
+        if ($vacancy->status !== 'active') {
             return redirect()
-                ->route('candidate.jobs.index')
-                ->with('error', 'This job posting is no longer accepting applications.');
+                ->route('candidate.vacancies.index')
+                ->with('error', 'This vacancy is no longer accepting applications.');
         }
 
         // Check if deadline has passed
-        if ($job->deadline && $job->deadline < now()) {
+        if ($vacancy->deadline && $vacancy->deadline < now()) {
             return redirect()
-                ->route('candidate.jobs.index')
+                ->route('candidate.vacancies.index')
                 ->with('error', 'The application deadline for this position has passed.');
         }
 
         // Check eligibility
-        $eligibilityError = $this->checkEligibility($candidate, $job);
+        $eligibilityError = $this->checkEligibility($candidate, $vacancy);
         if ($eligibilityError) {
             return redirect()
-                ->route('candidate.jobs.show', $jobId)
+                ->route('candidate.vacancies.show', $vacancyId)
                 ->with('error', $eligibilityError);
         }
 
         $draftApplication = new ApplicationForm();
-        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
+        return view('candidate.applications.create', compact('vacancy', 'candidate', 'draftApplication'));
     }
 
     /**
      * Store application (submit or save as draft)
      */
-    public function store(Request $request, $jobId)
+    public function store(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $job = JobPosting::findOrFail($jobId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         $isDraft = $request->has('save_draft');
 
         // Check for existing application
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->first();
 
         if ($existingApplication && !$existingApplication->isDraft()) {
             return redirect()
-                ->route('candidate.jobs.show', $jobId)
+                ->route('candidate.vacancies.show', $vacancyId)
                 ->with('error', 'You have already applied for this position.');
         }
 
@@ -116,12 +116,18 @@ class ApplicationFormController extends Controller
         // Prepare data
         $data = array_merge($validated, [
             'candidate_id' => $candidate->id,
-            'job_posting_id' => $jobId,
+            'vacancy_id' => $vacancyId,
             'status' => $isDraft ? 'draft' : 'pending',
         ]);
 
         if (!$isDraft) {
             $data['submitted_at'] = now();
+            // Approximate BS date conversion (BS year ≈ AD year + 56-57)
+            $adDate = now();
+            $bsYear = $adDate->year + 56;
+            $bsMonth = $adDate->month;
+            $bsDay = $adDate->day;
+            $data['submitted_at_bs'] = sprintf('%04d-%02d-%02d', $bsYear, $bsMonth, $bsDay);
         }
 
         if ($existingApplication) {
@@ -153,7 +159,7 @@ class ApplicationFormController extends Controller
 
         $applicationform = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->with(['jobPosting', 'reviewer', 'payment'])
+            ->with(['vacancy', 'reviewer', 'payment'])
             ->firstOrFail();
 
         return view('candidate.applications.show', compact('applicationform'));
@@ -162,14 +168,14 @@ class ApplicationFormController extends Controller
     /**
      * Show edit form
      */
-    public function edit($jobId, $id)
+    public function edit($vacancyId, $id)
     {
         $candidate = Auth::guard('candidate')->user();
 
         $applicationform = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
-            ->with('jobPosting')
+            ->where('vacancy_id', $vacancyId)
+            ->with('vacancy')
             ->firstOrFail();
 
         if (!$applicationform->canEdit()) {
@@ -178,21 +184,21 @@ class ApplicationFormController extends Controller
                 ->with('error', 'This application cannot be edited.');
         }
 
-        $job = $applicationform->jobPosting;
+        $vacancy = $applicationform->vacancy;
 
-        return view('candidate.applications.edit', compact('applicationform', 'job', 'candidate'));
+        return view('candidate.applications.edit', compact('applicationform', 'vacancy', 'candidate'));
     }
 
     /**
      * Update application
      */
-    public function update(Request $request, $jobId, $id)
+    public function update(Request $request, $vacancyId, $id)
     {
         $candidate = Auth::guard('candidate')->user();
 
         $application = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
-            ->where('job_posting_id', $jobId)
+            ->where('vacancy_id', $vacancyId)
             ->firstOrFail();
 
         if (!$application->canEdit()) {
@@ -222,12 +228,20 @@ class ApplicationFormController extends Controller
         if (!$isDraft && $application->isDraft()) {
             $validated['status'] = 'pending';
             $validated['submitted_at'] = now();
+            // Add BS date
+            $adDate = now();
+            $bsYear = $adDate->year + 56;
+            $validated['submitted_at_bs'] = sprintf('%04d-%02d-%02d', $bsYear, $adDate->month, $adDate->day);
         }
 
         // If resubmitting after correction, change status from 'edit' to 'pending'
         if (!$isDraft && $wasInEditStatus) {
             $validated['status'] = 'pending';
             $validated['submitted_at'] = now();
+            // Add BS date
+            $adDate = now();
+            $bsYear = $adDate->year + 56;
+            $validated['submitted_at_bs'] = sprintf('%04d-%02d-%02d', $bsYear, $adDate->month, $adDate->day);
         }
 
         $application->update($validated);
@@ -239,7 +253,7 @@ class ApplicationFormController extends Controller
                 'user_type' => 'reviewer',
                 'type' => 'application_resubmitted',
                 'title' => 'Application Resubmitted',
-                'message' => 'The candidate has resubmitted the application for "' . $application->jobPosting->title . '" after making corrections.',
+                'message' => 'The candidate has resubmitted the application for "' . $application->vacancy->title . '" after making corrections.',
                 'related_id' => $application->id,
                 'related_type' => 'application',
             ]);
@@ -286,19 +300,19 @@ class ApplicationFormController extends Controller
     }
 
     /**
-     * Store application - flat route (job_posting_id from form body, not URL)
+     * Store application - flat route (vacancy_id from form body, not URL)
      */
     public function storeFlat(Request $request)
     {
-        $jobId = $request->input('job_posting_id');
-        if (!$jobId) {
-            return redirect()->back()->withErrors(['error' => 'Job posting ID is required.']);
+        $vacancyId = $request->input('vacancy_id');
+        if (!$vacancyId) {
+            return redirect()->back()->withErrors(['error' => 'Vacancy ID is required.']);
         }
-        return $this->store($request, $jobId);
+        return $this->store($request, $vacancyId);
     }
 
     /**
-     * Show edit form - flat route (just application ID, no jobId in URL)
+     * Show edit form - flat route (just application ID, no vacancyId in URL)
      */
     public function editFlat($id)
     {
@@ -306,7 +320,7 @@ class ApplicationFormController extends Controller
         $application = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
             ->firstOrFail();
-        return $this->edit($application->job_posting_id, $id);
+        return $this->edit($application->vacancy_id, $id);
     }
 
     /**
@@ -318,7 +332,7 @@ class ApplicationFormController extends Controller
         $application = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
             ->firstOrFail();
-        return $this->update($request, $application->job_posting_id, $id);
+        return $this->update($request, $application->vacancy_id, $id);
     }
 
     /**
@@ -329,14 +343,14 @@ class ApplicationFormController extends Controller
         try {
             $candidate = Auth::guard('candidate')->user();
 
-            $jobPostingId = $request->input('job_posting_id');
-            if (!$jobPostingId) {
-                return response()->json(['success' => false, 'message' => 'Job posting ID is required.'], 422);
+            $vacancyId = $request->input('vacancy_id');
+            if (!$vacancyId) {
+                return response()->json(['success' => false, 'message' => 'Vacancy ID is required.'], 422);
             }
 
-            $job = JobPosting::find($jobPostingId);
-            if (!$job) {
-                return response()->json(['success' => false, 'message' => 'Job posting not found.'], 404);
+            $vacancy = Vacancy::find($vacancyId);
+            if (!$vacancy) {
+                return response()->json(['success' => false, 'message' => 'Vacancy not found.'], 404);
             }
 
             $validated = $request->validate($this->draftValidationRules());
@@ -351,14 +365,14 @@ class ApplicationFormController extends Controller
                     ->first();
             } else {
                 $application = ApplicationForm::where('candidate_id', $candidate->id)
-                    ->where('job_posting_id', $jobPostingId)
+                    ->where('vacancy_id', $vacancyId)
                     ->where('status', 'draft')
                     ->first();
             }
 
             $data = array_merge($validated, [
                 'candidate_id' => $candidate->id,
-                'job_posting_id' => $jobPostingId,
+                'vacancy_id' => $vacancyId,
                 'status' => 'draft',
             ]);
 
@@ -383,14 +397,14 @@ class ApplicationFormController extends Controller
     }
 
     /**
-     * Check eligibility for a job posting
+     * Check eligibility for a vacancy
      */
-    public function checkEligibilityAjax(Request $request, $jobId)
+    public function checkEligibilityAjax(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $job = JobPosting::findOrFail($jobId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
-        $error = $this->checkEligibility($candidate, $job);
+        $error = $this->checkEligibility($candidate, $vacancy);
 
         if ($error) {
             return response()->json(['eligible' => false, 'message' => $error]);
@@ -402,10 +416,10 @@ class ApplicationFormController extends Controller
     /**
      * Check eligibility based on age and other criteria
      */
-    private function checkEligibility($candidate, $job)
+    private function checkEligibility($candidate, $vacancy)
     {
         // Check age eligibility if candidate has DOB
-        if ($candidate->date_of_birth_bs && ($job->min_age || $job->max_age)) {
+        if ($candidate->date_of_birth_bs && ($vacancy->min_age || $vacancy->max_age)) {
             // Simple age calculation based on BS date (approximate)
             // In production, use a proper BS-to-AD date converter
             $age = null;
@@ -419,11 +433,11 @@ class ApplicationFormController extends Controller
             }
 
             if ($age !== null) {
-                if ($job->min_age && $age < $job->min_age) {
-                    return "You must be at least {$job->min_age} years old to apply for this position. Your age: {$age}";
+                if ($vacancy->min_age && $age < $vacancy->min_age) {
+                    return "You must be at least {$vacancy->min_age} years old to apply for this position. Your age: {$age}";
                 }
-                if ($job->max_age && $age > $job->max_age) {
-                    return "You must be at most {$job->max_age} years old to apply for this position. Your age: {$age}";
+                if ($vacancy->max_age && $age > $vacancy->max_age) {
+                    return "You must be at most {$vacancy->max_age} years old to apply for this position. Your age: {$age}";
                 }
             }
         }

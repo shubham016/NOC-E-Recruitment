@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Approver;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\ApplicationForm;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,21 +18,28 @@ class AssignedToMeController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
-        // Get job postings for filter
-        $jobs = JobPosting::select('id', 'title')->where('status', 'active')->get();
-
-        // Build query
-        $query = ApplicationForm::with(['candidate', 'jobPosting'])
-            ->where('status', '!=', 'draft');
-
-        // If approver is assigned to specific job posting
-        if ($approver->job_posting_id) {
-            $query->where('job_posting_id', $approver->job_posting_id);
+        // If approver is not assigned to any vacancy, show empty results
+        if (!$approver->vacancy_id) {
+            $vacancies = collect();
+            $applications = ApplicationForm::where('id', null)->paginate(10); // Empty collection
+            return view('approver.assignedtome', compact('vacancies', 'applications'));
         }
 
+        // Get vacancies for filter (only the assigned vacancy)
+        $vacancies = Vacancy::select('id', 'title')
+            ->where('id', $approver->vacancy_id)
+            ->where('status', 'active')
+            ->get();
+
+        // Build query - Only show applications for assigned vacancy
+        // and only those that are ready for approval (reviewed/shortlisted)
+        $query = ApplicationForm::with(['candidate', 'vacancy'])
+            ->where('vacancy_id', $approver->vacancy_id)
+            ->whereIn('status', ['shortlisted', 'pending', 'approved', 'rejected']);
+
         // Apply filters
-        if ($request->filled('job_posting_id')) {
-            $query->where('job_posting_id', $request->job_posting_id);
+        if ($request->filled('vacancy_id')) {
+            $query->where('vacancy_id', $request->vacancy_id);
         }
 
         if ($request->filled('status')) {
@@ -47,10 +54,10 @@ class AssignedToMeController extends Controller
             });
         }
 
-        // Paginate results
-        $applications = $query->latest()->paginate(10);
+        // Paginate results (oldest first - ascending order)
+        $applications = $query->oldest()->paginate(10);
 
-        return view('approver.assignedtome', compact('jobs', 'applications'));
+        return view('approver.assignedtome', compact('vacancies', 'applications'));
     }
 
     /**
@@ -61,12 +68,12 @@ class AssignedToMeController extends Controller
         $approver = Auth::guard('approver')->user();
         $ids = $request->ids ?? [];
 
-        $query = ApplicationForm::with(['candidate', 'jobPosting']);
+        $query = ApplicationForm::with(['candidate', 'vacancy']);
 
         if (!empty($ids)) {
             $query->whereIn('id', $ids);
-        } elseif ($approver->job_posting_id) {
-            $query->where('job_posting_id', $approver->job_posting_id);
+        } elseif ($approver->vacancy_id) {
+            $query->where('vacancy_id', $approver->vacancy_id);
         }
 
         $applications = $query->get();
@@ -87,7 +94,7 @@ class AssignedToMeController extends Controller
                 'Candidate Name',
                 'Email',
                 'Phone',
-                'Job Title',
+                'Vacancy Title',
                 'Status',
                 'Applied Date'
             ]);
@@ -99,7 +106,7 @@ class AssignedToMeController extends Controller
                     $application->candidate->name ?? 'N/A',
                     $application->candidate->email ?? 'N/A',
                     $application->candidate->phone ?? 'N/A',
-                    $application->jobPosting->title ?? 'N/A',
+                    $application->vacancy->title ?? 'N/A',
                     $application->status,
                     $application->created_at->format('Y-m-d'),
                 ]);
@@ -119,12 +126,12 @@ class AssignedToMeController extends Controller
         $approver = Auth::guard('approver')->user();
         $ids = $request->ids ?? [];
 
-        $query = ApplicationForm::with(['candidate', 'jobPosting']);
+        $query = ApplicationForm::with(['candidate', 'vacancy']);
 
         if (!empty($ids)) {
             $query->whereIn('id', $ids);
-        } elseif ($approver->job_posting_id) {
-            $query->where('job_posting_id', $approver->job_posting_id);
+        } elseif ($approver->vacancy_id) {
+            $query->where('vacancy_id', $approver->vacancy_id);
         }
 
         $applications = $query->get();
@@ -141,11 +148,11 @@ class AssignedToMeController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
-        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+        $application = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
             ->findOrFail($id);
 
         // Check if approver has access to this application
-        if ($approver->job_posting_id && $application->job_posting_id != $approver->job_posting_id) {
+        if ($approver->vacancy_id && $application->vacancy_id != $approver->vacancy_id) {
             abort(403, 'Unauthorized access to this application.');
         }
 
@@ -167,7 +174,7 @@ class AssignedToMeController extends Controller
         $application = ApplicationForm::findOrFail($id);
 
         // Check if approver has access to this application
-        if ($approver->job_posting_id && $application->job_posting_id != $approver->job_posting_id) {
+        if ($approver->vacancy_id && $application->vacancy_id != $approver->vacancy_id) {
             abort(403, 'Unauthorized access to this application.');
         }
 

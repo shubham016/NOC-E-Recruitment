@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Forgot Password')
+@section('title', 'Approver Login')
 
 @section('custom-styles')
 <style>
@@ -44,9 +44,20 @@
         line-height: 1;
     }
 
-    .noc-brand-text .brand-noc  { color: #1a2a4a; }
-    .noc-brand-text .brand-dot  { color: #c0392b; font-size: 2rem; }
-    .noc-brand-text .brand-hris { color: #1a2a4a; font-size: 1.6rem; font-weight: 500; }
+    .noc-brand-text .brand-noc {
+        color: #1a2a4a;
+    }
+
+    .noc-brand-text .brand-dot {
+        color: #c0392b;
+        font-size: 2rem;
+    }
+
+    .noc-brand-text .brand-hris {
+        color: #1a2a4a;
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
 
     /* ─── Card ──────────────────────────────────────── */
     .noc-card {
@@ -64,68 +75,7 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── Left Panel ────────────────────────────────── */
-    .noc-left {
-        width: 300px;
-        flex-shrink: 0;
-        background: #ffffff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem 2rem;
-        position: relative;
-        gap: 1.5rem;
-    }
-
-    .noc-left::after {
-        content: '';
-        position: absolute;
-        right: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #1a2a4a 0%, #c9a84c 50%, #1a7a6a 100%);
-    }
-
-    .noc-logo-circle {
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        border: 6px solid #1a2a4a;
-        outline: 3px solid #c9a84c;
-        outline-offset: 4px;
-        overflow: hidden;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    }
-
-    .noc-logo-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .noc-left-info {
-        text-align: center;
-    }
-
-    .noc-left-info p {
-        font-size: 0.78rem;
-        color: #888;
-        line-height: 1.6;
-        letter-spacing: 0.3px;
-    }
-
-    .noc-left-info .lock-icon {
-        font-size: 2rem;
-        color: #c9a84c;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    /* ─── Right Panel ───────────────────────────────── */
+    /* ─── Right Panel (Form) ────────────────────────── */
     .noc-right {
         flex: 1;
         display: flex;
@@ -182,18 +132,6 @@
         background: #e0e0e0;
     }
 
-    /* Description text */
-    .noc-description {
-        font-size: 0.855rem;
-        color: #666;
-        line-height: 1.65;
-        margin-bottom: 1.75rem;
-        padding: 0.85rem 1rem;
-        background: #f7f9fc;
-        border-left: 3px solid #1a2a4a;
-        border-radius: 0 2px 2px 0;
-    }
-
     /* Alert */
     .noc-alert {
         background: #fff5f5;
@@ -209,24 +147,18 @@
         animation: slideIn 0.3s ease;
     }
 
-    /* Session / success message */
+    /* Session message (logged out etc.) */
     .noc-session-msg {
-        background: #f0faf4;
-        border-left: 4px solid #27ae60;
+        background: #fff8e1;
+        border-left: 4px solid #c9a84c;
         border-radius: 2px;
-        padding: 0.85rem 1rem;
+        padding: 0.65rem 1rem;
         margin-bottom: 1.5rem;
-        font-size: 0.875rem;
-        color: #1e8449;
+        font-size: 0.85rem;
+        color: #856404;
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 0.5rem;
-        animation: slideIn 0.3s ease;
-    }
-
-    .noc-session-msg i {
-        margin-top: 2px;
-        flex-shrink: 0;
     }
 
     @keyframes slideIn {
@@ -293,16 +225,36 @@
         gap: 0.3rem;
     }
 
-    /* Actions row */
+    /* Remember me */
+    .noc-remember {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .noc-remember input[type="checkbox"] {
+        accent-color: #1a2a4a;
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+    }
+
+    .noc-remember label {
+        font-size: 0.82rem;
+        color: #666;
+        cursor: pointer;
+    }
+
+    /* Bottom row: Manual link + Login button */
     .noc-form-actions {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-top: 0.5rem;
     }
 
-    .noc-back-link {
+    .noc-manual-link {
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -313,7 +265,7 @@
         transition: color 0.2s;
     }
 
-    .noc-back-link:hover {
+    .noc-manual-link:hover {
         color: #1a2a4a;
         text-decoration: underline;
     }
@@ -395,8 +347,8 @@
         }
 
         .noc-logo-circle {
-            width: 110px;
-            height: 110px;
+            width: 130px;
+            height: 130px;
         }
 
         .noc-form-body {
@@ -414,7 +366,6 @@
 
         .noc-login-btn {
             width: 100%;
-            text-align: center;
         }
     }
 </style>
@@ -423,10 +374,10 @@
 @section('content')
 <div class="noc-login-page">
 
-    {{-- Brand --}}
+    {{-- Brand name at top --}}
     <div class="noc-brand">
         <div class="noc-brand-text">
-           <img
+             <img
                     src="{{ asset('images/images.png') }}"
                     alt="NOC Logo"
                     style="width: 80px; height: auto;"
@@ -437,28 +388,23 @@
     </div>
 
     <div class="noc-card">
-
         {{-- ── Right: Form ── --}}
         <div class="noc-right">
 
             {{-- Header bar --}}
             <div class="noc-form-header">
-                <i class="bi bi-key header-icon"></i>
-                <h2>Forgot Password</h2>
+                <i class="bi bi-person-check header-icon"></i>
+                <h2>Approver Login</h2>
             </div>
 
             {{-- Form body --}}
             <div class="noc-form-body">
 
-                <div class="noc-subtitle">Account Recovery</div>
-
-                {{-- Success message --}}
+                {{-- Session / status message --}}
                 @if (session('status'))
                     <div class="noc-session-msg">
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span>{{ session('status') }}<br>
-                            <small style="opacity:0.85;">Please check your inbox and click the reset link. The link will expire in <strong>60 minutes</strong>.</small>
-                        </span>
+                        <i class="bi bi-info-circle-fill"></i>
+                        {{ session('status') }}
                     </div>
                 @endif
 
@@ -470,63 +416,78 @@
                     </div>
                 @endif
 
-                {{-- Only show form if no success yet --}}
-                @if (!session('status'))
-                    <div class="noc-description">
-                        <i class="bi bi-info-circle" style="color:#1a2a4a; margin-right:0.3rem;"></i>
-                        Enter the email address associated with your candidate account. A password reset link will be sent to your inbox.
+                {{-- Login form --}}
+                <form method="POST" action="{{ route('approver.login.post') }}" novalidate>
+                    @csrf
+
+                    {{-- Employee ID --}}
+                    <div class="noc-input-group">
+                        <input
+                            type="text"
+                            id="employee_id"
+                            name="employee_id"
+                            value="{{ old('employee_id') }}"
+                            placeholder="Employee ID"
+                            class="{{ $errors->has('employee_id') ? 'is-invalid' : '' }}"
+                            required
+                            autofocus
+                            autocomplete="username"
+                        >
+                        <span class="noc-input-icon"><i class="bi bi-person-vcard"></i></span>
+                        @error('employee_id')
+                            <div class="noc-invalid-feedback">
+                                <i class="bi bi-x-circle"></i> {{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
-                    <form method="POST" action="{{ route('candidate.password.email') }}" novalidate>
-                        @csrf
-
-                        {{-- Email --}}
-                        <div class="noc-input-group">
-                            <input
-                                type="email"
-                                name="email"
-                                value="{{ old('email') }}"
-                                placeholder="Registered Email Address"
-                                class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                required
-                                autofocus
-                                autocomplete="email"
-                            >
-                            <span class="noc-input-icon"><i class="bi bi-envelope"></i></span>
-                            @error('email')
-                                <div class="noc-invalid-feedback">
-                                    <i class="bi bi-x-circle"></i> {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        {{-- Actions --}}
-                        <div class="noc-form-actions">
-                            <a href="{{ route('candidate.login') }}" class="noc-back-link">
-                                <i class="bi bi-arrow-left"></i> Back to Login
-                            </a>
-                            <button type="submit" class="noc-login-btn">
-                                SEND LINK
-                            </button>
-                        </div>
-
-                    </form>
-                @else
-                    {{-- After success: just show back to login button --}}
-                    <div class="noc-form-actions" style="justify-content:center; margin-top:1rem;">
-                        <a href="{{ route('candidate.login') }}" class="noc-login-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;">
-                            <i class="bi bi-arrow-left"></i> BACK TO LOGIN
-                        </a>
+                    {{-- Password --}}
+                    <div class="noc-input-group">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <span class="noc-input-icon"><i class="bi bi-lock"></i></span>
+                        @error('password')
+                            <div class="noc-invalid-feedback">
+                                <i class="bi bi-x-circle"></i> {{ $message }}
+                            </div>
+                        @enderror
                     </div>
-                @endif
 
+                    {{-- Remember me --}}
+                    <div class="noc-remember">
+                        <input type="checkbox" id="remember" name="remember" value="1">
+                        <label for="remember">Keep me signed in</label>
+                    </div>
+
+                    {{-- Actions row --}}
+                    <div class="noc-form-actions">
+                        <button type="submit" class="noc-login-btn">
+                            LOGIN
+                        </button>
+                    </div>
+
+                </form>
             </div>
 
-            {{-- Footer --}}
+            {{-- Footer: Portal links --}}
             <div class="noc-form-footer">
-                <span>Remembered your password?</span>
+                <a href="{{ route('admin.login') }}">
+                    <i class="bi bi-shield-lock"></i> Admin
+                </a>
+                <span style="margin: 0 0.5rem;">|</span>
                 <a href="{{ route('candidate.login') }}">
-                    <i class="bi bi-box-arrow-in-right"></i> Login here
+                    <i class="bi bi-person"></i> Candidate
+                </a>
+                <span style="margin: 0 0.5rem;">|</span>
+                <a href="{{ route('reviewer.login') }}">
+                    <i class="bi bi-person"></i> Reviewer
                 </a>
             </div>
 

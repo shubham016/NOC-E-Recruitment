@@ -9,7 +9,7 @@
             margin: 20px;
         }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: 'DejaVu Sans'$vacancy, sans-serif;
             font-size: 10px;
             line-height: 1.4;
             color: #333;
@@ -83,7 +83,7 @@
     <div class="header">
         <h1>Government of Nepal</h1>
         <h2>Vacancy Advertisement List</h2>
-        <p>Generated on: {{ $generatedDate }} | Total Vacancies: {{ $jobs->count() }}</p>
+        <p>Generated on: {{ $generatedDate }} | Total Vacancies: {{ $vacancies->count() }}</p>
     </div>
 
     <table>
@@ -101,35 +101,35 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($jobs as $index => $job)
+            @forelse($vacancies as $index => $job)
                 <tr>
                     <td class="sn-col">{{ $index + 1 }}</td>
-                    <td class="adv-col"><strong>{{ $job->advertisement_no }}</strong></td>
-                    <td class="position-col">{{ $job->position_level }}</td>
-                    <td class="dept-col">{{ $job->department }}</td>
+                    <td class="adv-col"><strong>{{ $vacancy->advertisement_no }}</strong></td>
+                    <td class="position-col">{{ $vacancy->position_level }}</td>
+                    <td class="dept-col">{{ $vacancy->department }}</td>
                     <td class="cat-col">
-                        {{ ucfirst($job->category) }}
-                        @if($job->category === 'internal' && $job->internal_type)
-                            <br><small>({{ ucfirst($job->internal_type) }})</small>
+                        {{ ucfirst($vacancy->category) }}
+                        @if($vacancy->category === 'internal' && $vacancy->internal_type)
+                            <br><small>({{ ucfirst($vacancy->internal_type) }})</small>
                         @endif
-                        @if($job->inclusive_type)
-                            <br><small>({{ $job->inclusive_type }})</small>
+                        @if($vacancy->inclusive_type)
+                            <br><small>({{ $vacancy->inclusive_type }})</small>
                         @endif
                     </td>
-                    <td class="posts-col">{{ $job->number_of_posts }}</td>
+                    <td class="posts-col">{{ $vacancy->number_of_posts }}</td>
                     <td class="deadline-col">
-                        {{ $job->deadline->format('Y-m-d') }}
-                        @if($job->deadline_bs)
-                            <br><small>{{ $job->deadline_bs }}</small>
+                        {{ $vacancy->deadline->format('Y-m-d') }}
+                        @if($vacancy->deadline_bs)
+                            <br><small>{{ $vacancy->deadline_bs }}</small>
                         @endif
-                        @if($job->double_dastur_date)
-                            <br><small style="color: green;">DD: {{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}</small>
+                        @if($vacancy->double_dastur_date)
+                            <br><small style="color: green;">DD: {{ \Carbon\Carbon::parse($vacancy->double_dastur_date)->format('Y-m-d') }}</small>
                         @endif
                     </td>
                     <td class="status-col">
-                        <span class="status-{{ $job->status }}">{{ ucfirst($job->status) }}</span>
+                        <span class="status-{{ $vacancy->status }}">{{ ucfirst($vacancy->status) }}</span>
                     </td>
-                    <td class="date-col">{{ $job->created_at->format('Y-m-d') }}</td>
+                    <td class="date-col">{{ $vacancy->created_at->format('Y-m-d') }}</td>
                 </tr>
             @empty
                 <tr>

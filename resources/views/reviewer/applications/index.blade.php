@@ -220,9 +220,9 @@
                     <div class="col-md-3">
                         <select name="job_id" class="form-select">
                             <option value="">All Vacancies</option>
-                            @foreach($jobs as $job)
-                                <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
-                                    {{ $job->title }}
+                            @foreach($vacancies as $vacancy)
+                                <option value="{{ $vacancy->id }}" {{ request('job_id') == $vacancy->id ? 'selected' : '' }}>
+                                    {{ $vacancy->title }}
                                 </option>
                             @endforeach
                         </select>
@@ -294,7 +294,7 @@
                     <tbody>
                         @forelse($applications as $index => $application)
                             @php
-                                $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
+                                $daysRemaining = $application->vacancy ? (int) now()->diffInDays($application->vacancy->deadline, false) : 0;
 
                                 // Check if admin set manual priority
                                 if ($application->manual_priority) {
@@ -349,17 +349,17 @@
                                     <strong class="d-block">{{ $application->name_english ?? 'N/A' }}</strong>
                                     <small class="text-muted">{{ $application->email ?? 'N/A' }}</small>
                                 </td>
-                                <td class="text-col">{{ $application->jobPosting->title ?? 'N/A' }}</td>
-                                <td class="text-col">{{ $application->jobPosting->department ?? 'N/A' }}</td>
+                                <td class="text-col">{{ $application->vacancy->title ?? 'N/A' }}</td>
+                                <td class="text-col">{{ $application->vacancy->department ?? 'N/A' }}</td>
                                 <td class="nowrap">
                                     <strong class="text-success d-block">{{ adToBS($application->submitted_at ?? $application->created_at) }}</strong>
                                     <small class="text-muted">{{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}</small>
                                 </td>
                                 <td class="nowrap">
-                                    @if($application->jobPosting)
-                                        <strong class="text-danger d-block">{{ $application->jobPosting->deadline->format('M d, Y') }}</strong>
-                                        @if($application->jobPosting->deadline_bs)
-                                            <small class="text-muted d-block">{{ $application->jobPosting->deadline_bs }} (BS)</small>
+                                    @if($application->vacancy)
+                                        <strong class="text-danger d-block">{{ $application->vacancy->deadline->format('M d, Y') }}</strong>
+                                        @if($application->vacancy->deadline_bs)
+                                            <small class="text-muted d-block">{{ $application->vacancy->deadline_bs }} (BS)</small>
                                         @endif
                                         <small class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-secondary' }}">
                                             {{ $daysRemaining }} days left

@@ -9,7 +9,7 @@
             margin: 20px;
         }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: 'DejaVu Sans'$vacancy, sans-serif;
             font-size: 11px;
             line-height: 1.6;
             color: #333;
@@ -83,7 +83,7 @@
     <div class="header">
         <h1>नेपाल सरकार</h1>
         <h2>रिक्त पद विज्ञापन सूची</h2>
-        <p>उत्पन्न मिति: {{ $generatedDate }} | कुल रिक्त पदहरू: {{ $jobs->count() }}</p>
+        <p>उत्पन्न मिति: {{ $generatedDate }} | कुल रिक्त पदहरू: {{ $vacancies->count() }}</p>
     </div>
 
     <table>
@@ -101,60 +101,60 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($jobs as $index => $job)
+            @forelse($vacancies as $index => $job)
                 <tr>
                     <td class="sn-col">{{ $index + 1 }}</td>
-                    <td class="adv-col"><strong>{{ $job->advertisement_no }}</strong></td>
-                    <td class="position-col">{{ $job->position_level }}</td>
-                    <td class="dept-col">{{ $job->department }}</td>
+                    <td class="adv-col"><strong>{{ $vacancy->advertisement_no }}</strong></td>
+                    <td class="position-col">{{ $vacancy->position_level }}</td>
+                    <td class="dept-col">{{ $vacancy->department }}</td>
                     <td class="cat-col">
-                        @if($job->category === 'open')
+                        @if($vacancy->category === 'open')
                             खुल्ला
-                        @elseif($job->category === 'inclusive')
+                        @elseif($vacancy->category === 'inclusive')
                             समावेशी
-                        @elseif($job->category === 'internal')
+                        @elseif($vacancy->category === 'internal')
                             आन्तरिक
                         @endif
 
-                        @if($job->category === 'internal' && $job->internal_type)
+                        @if($vacancy->category === 'internal' && $vacancy->internal_type)
                             <br><small>
-                                @if($job->internal_type === 'open')
+                                @if($vacancy->internal_type === 'open')
                                     (खुल्ला)
-                                @elseif($job->internal_type === 'inclusive')
+                                @elseif($vacancy->internal_type === 'inclusive')
                                     (समावेशी)
                                 @endif
                             </small>
                         @endif
 
-                        @if($job->inclusive_type)
-                            <br><small>({{ $job->inclusive_type }})</small>
+                        @if($vacancy->inclusive_type)
+                            <br><small>({{ $vacancy->inclusive_type }})</small>
                         @endif
                     </td>
-                    <td class="posts-col">{{ $job->number_of_posts }}</td>
+                    <td class="posts-col">{{ $vacancy->number_of_posts }}</td>
                     <td class="deadline-col">
-                        @if($job->deadline_bs)
-                            {{ $job->deadline_bs }} बि.सं.
+                        @if($vacancy->deadline_bs)
+                            {{ $vacancy->deadline_bs }} बि.सं.
                         @else
-                            {{ $job->deadline->format('Y-m-d') }}
+                            {{ $vacancy->deadline->format('Y-m-d') }}
                         @endif
-                        @if($job->double_dastur_bs)
-                            <br><small style="color: green;">दोहोरो दस्तुर: {{ $job->double_dastur_bs }}</small>
-                        @elseif($job->double_dastur_date)
-                            <br><small style="color: green;">दोहोरो दस्तुर: {{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}</small>
+                        @if($vacancy->double_dastur_bs)
+                            <br><small style="color: green;">दोहोरो दस्तुर: {{ $vacancy->double_dastur_bs }}</small>
+                        @elseif($vacancy->double_dastur_date)
+                            <br><small style="color: green;">दोहोरो दस्तुर: {{ \Carbon\Carbon::parse($vacancy->double_dastur_date)->format('Y-m-d') }}</small>
                         @endif
                     </td>
                     <td class="status-col">
-                        <span class="status-{{ $job->status }}">
-                            @if($job->status === 'active')
+                        <span class="status-{{ $vacancy->status }}">
+                            @if($vacancy->status === 'active')
                                 सक्रिय
-                            @elseif($job->status === 'closed')
+                            @elseif($vacancy->status === 'closed')
                                 बन्द
-                            @elseif($job->status === 'draft')
+                            @elseif($vacancy->status === 'draft')
                                 मस्यौदा
                             @endif
                         </span>
                     </td>
-                    <td class="date-col">{{ $job->created_at->format('Y-m-d') }}</td>
+                    <td class="date-col">{{ $vacancy->created_at->format('Y-m-d') }}</td>
                 </tr>
             @empty
                 <tr>

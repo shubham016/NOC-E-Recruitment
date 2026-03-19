@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobPosting extends Model
+class Vacancy extends Model
 {
     use HasFactory;
 
-    protected $table = 'job_postings';
+    protected $table = 'vacancies';
 
     protected $fillable = [
         'advertisement_no',
@@ -49,19 +49,19 @@ class JobPosting extends Model
     ];
 
     /**
-     * Get all applications for this job posting (LEGACY - old Application model)
+     * Get all applications for this vacancy (LEGACY - old Application model)
      */
     public function applications()
     {
-        return $this->hasMany(Application::class, 'job_posting_id');
+        return $this->hasMany(Application::class, 'vacancy_id');
     }
 
     /**
-     * Get all application forms for this job posting (NEW - ApplicationForm model)
+     * Get all application forms for this vacancy (NEW - ApplicationForm model)
      */
     public function applicationForms()
     {
-        return $this->hasMany(ApplicationForm::class, 'job_posting_id');
+        return $this->hasMany(ApplicationForm::class, 'vacancy_id');
     }
 
     /**
@@ -89,7 +89,7 @@ class JobPosting extends Model
     }
 
     /**
-     * Check if job was posted by admin
+     * Check if vacancy was posted by admin
      */
     public function isPostedByAdmin()
     {
@@ -97,7 +97,7 @@ class JobPosting extends Model
     }
 
     /**
-     * Check if job was posted by HR administrator
+     * Check if vacancy was posted by HR administrator
      */
     public function isPostedByHRAdmin()
     {
@@ -134,7 +134,7 @@ class JobPosting extends Model
     }
 
     /**
-     * Check if a candidate is eligible for this job based on age
+     * Check if a candidate is eligible for this vacancy based on age
      */
     public function isEligible($candidateAge)
     {

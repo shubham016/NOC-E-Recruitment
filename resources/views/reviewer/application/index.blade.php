@@ -243,10 +243,10 @@
                 <div class="col-md-3">
                     <label class="form-label small text-muted mb-1">Job Position</label>
                     <select class="form-select" name="job_id">
-                        <option value="">All Jobs</option>
-                        @foreach($jobs as $job)
-                            <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
-                                {{ $job->title }}
+                        <option value="">All Vacancies</option>
+                        @foreach($vacancies as $vacancy)
+                            <option value="{{ $vacancy->id }}" {{ request('job_id') == $vacancy->id ? 'selected' : '' }}>
+                                {{ $vacancy->title }}
                             </option>
                         @endforeach
                     </select>
@@ -293,7 +293,7 @@
                 @if(request('job_id'))
                     <span class="filter-badge">
                         <i class="bi bi-briefcase"></i>
-                        Job: {{ $jobs->find(request('job_id'))->title ?? 'Unknown' }}
+                        Job: {{ $vacancies->find(request('job_id'))->title ?? 'Unknown' }}
                         <a href="{{ request()->fullUrlWithout('job_id') }}" class="remove-filter">
                             <i class="bi bi-x-lg"></i>
                         </a>
@@ -521,7 +521,7 @@
                                 </h6>
                                 <div class="row g-3 mb-4">
                                     <div class="col-12">
-                                        <label class="small text-muted mb-1">Job Title</label>
+                                        <label class="small text-muted mb-1">Vacancy Title</label>
                                         <p class="fw-semibold mb-0" id="jobTitle">-</p>
                                     </div>
                                     <div class="col-md-4">

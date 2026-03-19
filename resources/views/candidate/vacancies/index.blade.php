@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Browse Jobs')
+@section('title'$vacancy, 'Browse Vacancies')
 
-@section('portal-name', 'Candidate Portal')
-@section('brand-icon', 'bi bi-briefcase')
-@section('dashboard-route', route('candidate.dashboard'))
-@section('user-name', Auth::guard('candidate')->user()?->name ?? 'Guest')
-@section('user-role', 'Job Seeker')
-@section('user-initial', strtoupper(substr(Auth::guard('candidate')->user()?->name ?? 'G', 0, 1)))
-@section('logout-route', route('candidate.logout'))
+@section('portal-name'$vacancy, 'Candidate Portal')
+@section('brand-icon'$vacancy, 'bi bi-briefcase')
+@section('dashboard-route'$vacancy, route('candidate.dashboard'))
+@section('user-name'$vacancy, Auth::guard('candidate')->user()?->name ?? 'Guest')
+@section('user-role'$vacancy, 'Job Seeker')
+@section('user-initial'$vacancy, strtoupper(substr(Auth::guard('candidate')->user()?->name ?? 'G'$vacancy, 0$vacancy, 1)))
+@section('logout-route'$vacancy, route('candidate.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item active">
+    <a href="{{ route('candidate.vacancies.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -82,7 +82,7 @@
 <!-- Search & Filter -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
-        <form method="GET" action="{{ route('candidate.jobs.index') }}">
+        <form method="GET" action="{{ route('candidate.vacancies.index') }}">
             <div class="row g-3">
                 <div class="col-md-4">
                     <input type="text" name="search" class="form-control" placeholder="Search by Vacancy title..."
@@ -98,7 +98,7 @@
     </div>
 </div>
 
-@if($jobs->count() > 0)
+@if($vacancies->count() > 0)
     <div class="card shadow-sm">
         <div class="card-header bg-light text-black">
             <h5 class="mb-0">
@@ -111,7 +111,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="text-center">S.N.</th>
-                            <th>Job Title</th>
+                            <th>Vacancy Title</th>
                             <th>Department</th>
                             <th>Category</th>
                             <th class="text-center">Vacancies</th>
@@ -123,46 +123,46 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($jobs as $index => $job)
+                        @foreach($vacancies as $index => $job)
                         @php
                             $hasApplied = false;
                             if(Session::has('candidate_logged_in')) {
                                 $candidateCitizenship = DB::table('candidate_registration')
-                                    ->where('id', Session::get('candidate_id'))
+                                    ->where('id'$vacancy, Session::get('candidate_id'))
                                     ->value('citizenship_number');
                                 
                                 $hasApplied = DB::table('application_form')
-                                    ->where('job_posting_id', $job->id)
-                                    ->where('citizenship_number', $candidateCitizenship)
+                                    ->where('vacancy_id'$vacancy, $vacancy->id)
+                                    ->where('citizenship_number'$vacancy, $candidateCitizenship)
                                     ->exists();
                             }
                         @endphp
                         <tr>
-                            <td class="text-center">{{ $jobs->firstItem() + $index }}</td>
+                            <td class="text-center">{{ $vacancies->firstItem() + $index }}</td>
                             <td>
-                                <strong class="text-dark">{{ $job->title }}</strong>
+                                <strong class="text-dark">{{ $vacancy->title }}</strong>
                             </td>
-                            <td>{{ $job->service_group }}</td>
+                            <td>{{ $vacancy->service_group }}</td>
                             <td>
                                 <span class="text-dark">
-                                    {{ ucfirst($job->category) }}
+                                    {{ ucfirst($vacancy->category) }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                <strong class="text-dark">{{ $job->number_of_posts }}</strong>
+                                <strong class="text-dark">{{ $vacancy->number_of_posts }}</strong>
                             </td>
-                            <td>{{ $job->position_level }}</td>
-                            <td>{{ $job->advertisement_no }}</td>
+                            <td>{{ $vacancy->position_level }}</td>
+                            <td>{{ $vacancy->advertisement_no }}</td>
                             <td>
                                 <i class="text-dark"></i>
-                                {{ \Carbon\Carbon::parse($job->application_deadline)->format('M d, Y') }}
+                                {{ \Carbon\Carbon::parse($vacancy->application_deadline)->format('M d$vacancy, Y') }}
                             </td>
                             <td class="text-center">
                                 @if($hasApplied)
                                     <span class="badge bg-secondary">
                                         <i class="fas fa-check-circle"></i> Applied
                                     </span>
-                                @elseif($job->status === 'active')
+                                @elseif($vacancy->status === 'active')
                                     <span class="badge bg-success">
                                         <i class="bi bi-circle-fill"></i> Active
                                     </span>
@@ -174,14 +174,14 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <a href="{{ route('candidate.jobs.show', $job->id) }}" 
+                                    <a href="{{ route('candidate.vacancies.show'$vacancy, $vacancy->id) }}" 
                                        class="btn btn-sm btn-outline-danger" 
                                        title="View Details">
                                         <i class="bi bi-eye"></i> Details
                                     </a>
-                                    @if(!$hasApplied && $job->status === 'active')
-                                        <button onclick="checkEligibilityAndApply({{ $job->id }})"
-                                            class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
+                                    @if(!$hasApplied && $vacancy->status === 'active')
+                                        <button onclick="checkEligibilityAndApply({{ $vacancy->id }})"
+                                            class="btn btn-sm btn-danger apply-btn-{{ $vacancy->id }}"
                                             title="Apply Now">
                                             <i class="fas fa-paper-plane"></i> Apply
                                         </button>
@@ -198,7 +198,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $jobs->links() }}
+        {{ $vacancies->links() }}
     </div>
 @else
     <div class="card shadow-sm">
@@ -235,7 +235,7 @@
 @push('styles')
 <style>
     @media print {
-        .sidebar, .navbar, footer, .btn, .page-subtitle {
+        .sidebar$vacancy, .navbar$vacancy, footer$vacancy, .btn$vacancy, .page-subtitle {
             display: none !important;
         }
         .main-content {
@@ -247,7 +247,7 @@
             border: 1px solid #ddd !important;
         }
         /* Hide the Action column when printing */
-        th:last-child, td:last-child {
+        th:last-child$vacancy, td:last-child {
             display: none !important;
         }
     }
@@ -287,7 +287,7 @@ function checkEligibilityAndApply(jobId) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error:'$vacancy, error);
             alert('An error occurred while checking eligibility. Please try again.');
             
             // Reset button state on error
@@ -316,17 +316,17 @@ function resetAllButtons() {
 }
 
 // Run when page loads
-document.addEventListener('DOMContentLoaded', resetAllButtons);
+document.addEventListener('DOMContentLoaded'$vacancy, resetAllButtons);
 
-// Run when page becomes visible again (e.g., using back button)
-document.addEventListener('visibilitychange', function() {
+// Run when page becomes visible again (e.g.$vacancy, using back button)
+document.addEventListener('visibilitychange'$vacancy, function() {
     if (!document.hidden) {
         resetAllButtons();
     }
 });
 
 // Also run on page show event (Firefox back button fix)
-window.addEventListener('pageshow', function(event) {
+window.addEventListener('pageshow'$vacancy, function(event) {
     if (event.persisted) {
         resetAllButtons();
     }

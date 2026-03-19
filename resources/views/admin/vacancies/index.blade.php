@@ -1,21 +1,21 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Post New Vacancy')
+@section('title'$vacancy, 'Post New Vacancy')
 
-@section('portal-name', 'Admin Portal')
-@section('brand-icon', 'bi bi-shield-check')
-@section('dashboard-route', route('admin.dashboard'))
-@section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
-@section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
-@section('logout-route', route('admin.logout'))
+@section('portal-name'$vacancy, 'Admin Portal')
+@section('brand-icon'$vacancy, 'bi bi-shield-check')
+@section('dashboard-route'$vacancy, route('admin.dashboard'))
+@section('user-name'$vacancy, Auth::guard('admin')->user()?->name ?? 'Guest')
+@section('user-role'$vacancy, 'System Administrator')
+@section('user-initial'$vacancy, Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name$vacancy, 0$vacancy, 1)) : 'G')
+@section('logout-route'$vacancy, route('admin.logout'))
 
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item active">
+    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item active">
         <i class="bi bi-briefcase"></i>
         <span>Post Vacancy</span>
         <span class="badge bg-primary ms-auto">{{ $stats['total'] }}</span>
@@ -45,12 +45,12 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            background: linear-gradient(135deg$vacancy, #6366f1 0%$vacancy, #4f46e5 100%);
             border-radius: 12px;
             padding: 1.5rem;
             color: white;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 12px rgba(99$vacancy, 102$vacancy, 241$vacancy, 0.2);
         }
 
         .stat-card {
@@ -64,7 +64,7 @@
 
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0$vacancy, 0$vacancy, 0$vacancy, 0.08);
         }
 
         .job-row {
@@ -80,17 +80,17 @@
 
         .job-row.draft {
             border-left-color: #9ca3af;
-            background: linear-gradient(to right, rgba(156, 163, 175, 0.02) 0%, white 100%);
+            background: linear-gradient(to right$vacancy, rgba(156$vacancy, 163$vacancy, 175$vacancy, 0.02) 0%$vacancy, white 100%);
         }
 
         .job-row.active {
             border-left-color: #10b981;
-            background: linear-gradient(to right, rgba(16, 185, 129, 0.02) 0%, white 100%);
+            background: linear-gradient(to right$vacancy, rgba(16$vacancy, 185$vacancy, 129$vacancy, 0.02) 0%$vacancy, white 100%);
         }
 
         .job-row.closed {
             border-left-color: #ef4444;
-            background: linear-gradient(to right, rgba(239, 68, 68, 0.02) 0%, white 100%);
+            background: linear-gradient(to right$vacancy, rgba(239$vacancy, 68$vacancy, 68$vacancy, 0.02) 0%$vacancy, white 100%);
         }
 
         /* Modern Table */
@@ -112,7 +112,7 @@
             letter-spacing: 0.5px;
             border: 1px solid #000;
             white-space: nowrap;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: linear-gradient(135deg$vacancy, #f9fafb 0%$vacancy, #f3f4f6 100%);
             text-align: center;
         }
 
@@ -160,36 +160,36 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><h6 class="dropdown-header">Preview & Download PDF</h6></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}" target="_blank">
+                            <a class="dropdown-item" href="{{ route('admin.vacancies.preview'$vacancy, ['lang' => 'en']) }}" target="_blank">
                                 <i class="bi bi-eye text-primary me-2"></i>Preview PDF (English)
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'ne']) }}" target="_blank">
+                            <a class="dropdown-item" href="{{ route('admin.vacancies.preview'$vacancy, ['lang' => 'ne']) }}" target="_blank">
                                 <i class="bi bi-eye text-primary me-2"></i>Preview PDF (Nepali)
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'en']) }}">
+                            <a class="dropdown-item" href="{{ route('admin.vacancies.download'$vacancy, ['lang' => 'en']) }}">
                                 <i class="bi bi-download text-danger me-2"></i>Download PDF (English)
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'ne']) }}">
+                            <a class="dropdown-item" href="{{ route('admin.vacancies.download'$vacancy, ['lang' => 'ne']) }}">
                                 <i class="bi bi-download text-danger me-2"></i>Download PDF (Nepali)
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download-excel') }}">
+                            <a class="dropdown-item" href="{{ route('admin.vacancies.download-excel') }}">
                                 <i class="bi bi-file-earmark-excel text-success me-2"></i>Download Excel
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
+                <a href="{{ route('admin.vacancies.create') }}" class="btn btn-light">
                     <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
                 </a>
             </div>
@@ -270,7 +270,7 @@
     <!-- Search and Filter -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.jobs.index') }}">
+            <form method="GET" action="{{ route('admin.vacancies.index') }}">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <input type="text" class="form-control" name="search" placeholder="Search Vacancies..."
@@ -290,8 +290,8 @@
                             <button type="submit" class="btn btn-primary flex-grow-1">
                                 <i class="bi bi-search me-2"></i>Search
                             </button>
-                            @if(request()->hasAny(['search', 'status', 'job_type']))
-                                <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
+                            @if(request()->hasAny(['search'$vacancy, 'status'$vacancy, 'job_type']))
+                                <a href="{{ route('admin.vacancies.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-x-lg"></i>
                                 </a>
                             @endif
@@ -309,7 +309,7 @@
                 <h6 class="mb-0 fw-bold">
                     <i class="bi bi-list-ul text-primary me-2"></i>Vacancy List
                 </h6>
-                <span class="badge bg-primary ms-2"> Total {{ $jobs->total() }}</span>
+                <span class="badge bg-primary ms-2"> Total {{ $vacancies->total() }}</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -332,61 +332,61 @@
                     </thead>
 
                     <tbody class="text-center align-middle">
-                        @forelse($jobs as $job)
+                        @forelse($vacancies as $vacancy)
                             @php
-                                $statusBadge = match ($job->status) {
-                                    'active' => 'bg-success',
-                                    'closed' => 'bg-danger',
-                                    'draft' => 'bg-secondary',
+                                $statusBadge = match ($vacancy->status) {
+                                    'active' => 'bg-success'$vacancy,
+                                    'closed' => 'bg-danger'$vacancy,
+                                    'draft' => 'bg-secondary'$vacancy,
                                     default => 'bg-secondary'
                                 };
 
-                                $daysRemaining = now()->diffInDays($job->deadline, false);
+                                $daysRemaining = now()->diffInDays($vacancy->deadline$vacancy, false);
                                 $deadlineColor = $daysRemaining <= 7 ? 'text-danger' : ($daysRemaining <= 14 ? 'text-warning' : 'text-success');
                             @endphp
-                            <tr class="job-row {{ $job->status }}">
-                                <td>{{ $jobs->firstItem() + $loop->index }}</td>
-                                <td>{{ $job->advertisement_no }}</td>
-                                <td>{{ $job->position_level }}</td>
-                                <td>{{ $job->department }}</td>
+                            <tr class="job-row {{ $vacancy->status }}">
+                                <td>{{ $vacancies->firstItem() + $loop->index }}</td>
+                                <td>{{ $vacancy->advertisement_no }}</td>
+                                <td>{{ $vacancy->position_level }}</td>
+                                <td>{{ $vacancy->department }}</td>
 
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ ucfirst($job->category) }}</span>
+                                    <span class="badge bg-light text-dark">{{ ucfirst($vacancy->category) }}</span>
                                 </td>
 
-                                <td>{{ $job->number_of_posts }}</td>
+                                <td>{{ $vacancy->number_of_posts }}</td>
 
                                 <td>
                                     <div>
                                         {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
                                         <small class="text-danger d-block fw-semibold nepali-date-bs"
-                                            data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
+                                            data-ad-date="{{ $vacancy->deadline->format('Y-m-d') }}">
                                             <i class="bi bi-hourglass-split"></i> Converting...
                                         </small>
                                         {{-- English Date (AD) --}}
-                                        <small class="text-danger">{{ $job->deadline->format('Y-m-d') }}</small>
+                                        <small class="text-danger">{{ $vacancy->deadline->format('Y-m-d') }}</small>
                                     </div>
                                 </td>
 
-                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
+                                <td>{{ Str::limit($vacancy->minimum_qualification$vacancy, 50) }}</td>
 
                                 <td>
-                                    <span class="badge bg-primary">{{ $job->application_forms_count ?? 0 }}</span>
+                                    <span class="badge bg-primary">{{ $vacancy->application_forms_count ?? 0 }}</span>
                                 </td>
                                 <td>
                                     <span class="badge {{ $statusBadge }}">
-                                        {{ ucfirst($job->status) }}
+                                        {{ ucfirst($vacancy->status) }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary" title="View">
+                                        <a href="{{ route('admin.vacancies.show'$vacancy, $vacancy->id) }}" class="btn btn-outline-primary" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary" title="Edit">
+                                        <a href="{{ route('admin.vacancies.edit'$vacancy, $vacancy->id) }}" class="btn btn-outline-secondary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $job->id }})" title="Delete">
+                                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ $vacancy->id }})" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -398,7 +398,7 @@
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Vacancy Found</h5>
                                     <p class="text-muted">Start by posting your first Vacancy!</p>
-                                    <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary mt-2">
+                                    <a href="{{ route('admin.vacancies.create') }}" class="btn btn-primary mt-2">
                                         <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
                                     </a>
                                 </td>
@@ -409,14 +409,14 @@
             </div>
         </div>
 
-        @if($jobs->hasPages())
+        @if($vacancies->hasPages())
             <div class="card-footer bg-white py-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="text-muted small">
-                        Showing {{ $jobs->firstItem() }} to {{ $jobs->lastItem() }} of {{ $jobs->total() }}
+                        Showing {{ $vacancies->firstItem() }} to {{ $vacancies->lastItem() }} of {{ $vacancies->total() }}
                     </div>
                     <div>
-                        {{ $jobs->links() }}
+                        {{ $vacancies->links() }}
                     </div>
                 </div>
             </div>
@@ -433,10 +433,10 @@
 @section('scripts')
     <script>
         function changeSorting(value) {
-            const [sortBy, sortOrder] = value.split('-');
+            const [sortBy$vacancy, sortOrder] = value.split('-');
             const url = new URL(window.location.href);
-            url.searchParams.set('sort_by', sortBy);
-            url.searchParams.set('sort_order', sortOrder);
+            url.searchParams.set('sort_by'$vacancy, sortBy);
+            url.searchParams.set('sort_order'$vacancy, sortOrder);
             window.location.href = url.toString();
         }
 
@@ -455,21 +455,21 @@
         // Convert English numerals to Nepali numerals
         function englishToNepali(str) {
             if (!str) return str;
-            const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
-            return str.replace(/[0-9]/g, d => map[d]);
+            const map = { '0': '०'$vacancy, '1': '१'$vacancy, '2': '२'$vacancy, '3': '३'$vacancy, '4': '४'$vacancy, '5': '५'$vacancy, '6': '६'$vacancy, '7': '७'$vacancy, '8': '८'$vacancy, '9': '९' };
+            return str.replace(/[0-9]/g$vacancy, d => map[d]);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded'$vacancy, function () {
             console.log('🔧 Initializing Nepali date conversion for table...');
 
             // Wait for converter to be ready
             function waitForConverter() {
                 if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
-                    setTimeout(waitForConverter, 100);
+                    setTimeout(waitForConverter$vacancy, 100);
                     return;
                 }
 
-                console.log('✅ Converter ready, converting all dates...');
+                console.log('✅ Converter ready$vacancy, converting all dates...');
                 convertAllDates();
             }
 
@@ -479,7 +479,7 @@
 
                 console.log(`📅 Found ${dateElements.length} dates to convert`);
 
-                dateElements.forEach((element, index) => {
+                dateElements.forEach((element$vacancy, index) => {
                     const adDate = element.getAttribute('data-ad-date');
 
                     if (adDate) {
@@ -500,7 +500,7 @@
                                 element.classList.add('text-danger');
                             }
                         } catch (error) {
-                            console.error(`❌ Error converting date ${adDate}:`, error);
+                            console.error(`❌ Error converting date ${adDate}:`$vacancy, error);
                             element.innerHTML = '<i class="bi bi-x-circle"></i> Error';
                             element.classList.add('text-danger');
                         }

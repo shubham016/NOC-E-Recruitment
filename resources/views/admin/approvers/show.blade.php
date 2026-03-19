@@ -15,7 +15,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
         <span>Vacancy List</span>
     </a>
@@ -97,15 +97,15 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-12">
-                            <label class="text-muted small">Assigned Job Posting</label>
-                            @if($approver->jobPosting)
+                            <label class="text-muted small">Assigned Vacancy</label>
+                            @if($approver->vacancy)
                                 <p class="fw-semibold mb-0">
-                                    <span class="badge bg-info">{{ $approver->jobPosting->title }}</span>
+                                    <span class="badge bg-info">{{ $approver->vacancy->title }}</span>
                                 </p>
                                 <small class="text-muted">Can only approve applications for this specific job</small>
                             @else
                                 <p class="fw-semibold mb-0">
-                                    <span class="badge bg-secondary">All Jobs</span>
+                                    <span class="badge bg-secondary">All Vacancies</span>
                                 </p>
                                 <small class="text-muted">Can approve applications for all job postings</small>
                             @endif

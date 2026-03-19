@@ -126,12 +126,12 @@
     <div class="filter-card">
         <form method="GET" action="{{ route('approver.assignedtome') }}" class="row g-3">
             <div class="col-md-4">
-                <label class="form-label fw-semibold small">Job Posting</label>
-                <select name="job_posting_id" class="form-select">
-                    <option value="">All Jobs</option>
-                    @foreach($jobs as $job)
-                        <option value="{{ $job->id }}" {{ request('job_posting_id') == $job->id ? 'selected' : '' }}>
-                            {{ $job->title }}
+                <label class="form-label fw-semibold small">Vacancy</label>
+                <select name="vacancy_id" class="form-select">
+                    <option value="">All Vacancies</option>
+                    @foreach($vacancies as $vacancy)
+                        <option value="{{ $vacancy->id }}" {{ request('vacancy_id') == $vacancy->id ? 'selected' : '' }}>
+                            {{ $vacancy->title }}
                         </option>
                     @endforeach
                 </select>
@@ -194,10 +194,10 @@
                             <th style="width: 50px;">
                                 <input type="checkbox" class="form-check-input" id="selectAll">
                             </th>
-                            <th>ID</th>
+                            <th style="width: 60px;">S.N</th>
                             <th>Candidate Name</th>
                             <th>Email</th>
-                            <th>Job Title</th>
+                            <th>Vacancy Title</th>
                             <th>Applied Date</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -209,11 +209,14 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input application-checkbox" value="{{ $application->id }}">
                                 </td>
-                                <td class="fw-semibold">#{{ $application->id }}</td>
+                                <td class="fw-semibold">{{ ($applications->currentPage() - 1) * $applications->perPage() + $loop->iteration }}</td>
                                 <td>{{ $application->candidate->name ?? 'N/A' }}</td>
                                 <td>{{ $application->candidate->email ?? 'N/A' }}</td>
-                                <td>{{ $application->jobPosting->title ?? 'N/A' }}</td>
-                                <td>{{ $application->created_at->format('M d, Y') }}</td>
+                                <td>{{ $application->vacancy->title ?? 'N/A' }}</td>
+                                <td>
+                                    {{ $application->created_at->format('M d, Y') }}
+                                    <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
+                                </td>
                                 <td>
                                     @if($application->status === 'approved')
                                         <span class="badge bg-success">Approved</span>
@@ -233,7 +236,12 @@
                             <tr>
                                 <td colspan="8" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                    No applications found
+                                    @if(!Auth::guard('approver')->user()->vacancy_id)
+                                        <strong class="d-block mb-2">No Vacancy Assigned</strong>
+                                        <p class="small">You have not been assigned to any vacancy yet. Please contact the administrator.</p>
+                                    @else
+                                        No applications found for your assigned vacancy
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse

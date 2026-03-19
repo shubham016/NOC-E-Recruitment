@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRAdministrator;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\Reviewer;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +15,7 @@ class HRApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query - show all submitted applications
-        $query = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+        $query = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
             ->where('status', '!=', 'draft');
 
         // Search filter
@@ -26,7 +26,7 @@ class HRApplicationController extends Controller
                     $q2->where('first_name', 'like', "%{$search}%")
                         ->orWhere('last_name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('jobPosting', function ($q2) use ($search) {
+                })->orWhereHas('vacancy', function ($q2) use ($search) {
                     $q2->where('title', 'like', "%{$search}%")
                         ->orWhere('advertisement_no', 'like', "%{$search}%");
                 });
@@ -38,9 +38,9 @@ class HRApplicationController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Job filter
+        // Vacancy filter
         if ($request->filled('job_id')) {
-            $query->where('job_posting_id', $request->job_id);
+            $query->where('vacancy_id', $request->job_id);
         }
 
         // Reviewer filter
@@ -64,8 +64,8 @@ class HRApplicationController extends Controller
         // Paginate results
         $applications = $query->paginate(20)->withQueryString();
 
-        // Get all jobs for filter dropdown
-        $jobs = JobPosting::select('id', 'title', 'advertisement_no')->get();
+        // Get all vacancies for filter dropdown
+        $vacancies = Vacancy::select('id', 'title', 'advertisement_no')->get();
 
         // Get all active reviewers for filter dropdown
         $reviewers = Reviewer::select('id', 'name', 'email')
@@ -94,7 +94,7 @@ class HRApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['candidate', 'jobPosting', 'reviewer']);
+        $application->load(['candidate', 'vacancy', 'reviewer']);
 
         $reviewers = Reviewer::where('status', 'active')->get();
         $statuses = ['pending', 'approved', 'rejected'];
@@ -123,12 +123,12 @@ class HRApplicationController extends Controller
         $notificationMessages = [
             'approved' => [
                 'title' => 'Application Approved',
-                'message' => 'Congratulations! Your application for "' . $application->jobPosting->title . '" has been approved by HR.',
+                'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by HR.',
                 'type' => 'application_approved'
             ],
             'rejected' => [
                 'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->jobPosting->title . '" has been rejected. Please check the HR notes for more details.',
+                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected. Please check the HR notes for more details.',
                 'type' => 'application_rejected'
             ],
         ];
@@ -167,7 +167,7 @@ class HRApplicationController extends Controller
             'user_type' => 'candidate',
             'type' => 'reviewer_assigned',
             'title' => 'Reviewer Assigned',
-            'message' => 'Your application for "' . $application->jobPosting->title . '" has been assigned to a reviewer for evaluation.',
+            'message' => 'Your application for "' . $application->vacancy->title . '" has been assigned to a reviewer for evaluation.',
             'related_id' => $application->id,
             'related_type' => 'application',
         ]);
@@ -178,7 +178,7 @@ class HRApplicationController extends Controller
             'user_type' => 'reviewer',
             'type' => 'application_assigned',
             'title' => 'New Application Assigned',
-            'message' => 'A new application for "' . $application->jobPosting->title . '" has been assigned to you for review.',
+            'message' => 'A new application for "' . $application->vacancy->title . '" has been assigned to you for review.',
             'related_id' => $application->id,
             'related_type' => 'application',
         ]);

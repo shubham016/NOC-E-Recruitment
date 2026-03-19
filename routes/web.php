@@ -10,20 +10,20 @@ use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Reviewer\NotificationController as ReviewerNotificationController;
 use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\JobManagementController;
+use App\Http\Controllers\Admin\VacancyManagementController;
 use App\Http\Controllers\Admin\CandidateManagementController;
 use App\Http\Controllers\Admin\HRAdministratorController;
 use App\Http\Controllers\Admin\ApproverController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\HRAdministrator\ProfileController;
 use App\Http\Controllers\HRAdministrator\HRAdministratorDashboardController;
-use App\Http\Controllers\HRAdministrator\HRJobController;
+use App\Http\Controllers\HRAdministrator\HRVacancyController;
 use App\Http\Controllers\HRAdministrator\HRApplicationController;
 use App\Http\Controllers\HRAdministrator\HRCandidateController;
 use App\Http\Controllers\HRAdministrator\HRReviewerController;
 use App\Http\Controllers\HRAdministrator\NotificationController as HRNotificationController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
-use App\Http\Controllers\Candidate\JobBrowsingController;
+use App\Http\Controllers\Candidate\VacancyBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationFormController as CandidateApplicationController;
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\Candidate\AdmitCardController;
@@ -76,21 +76,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         /*
-        | Job Management Routes
+        | Vacancy Management Routes
         */
-        Route::prefix('jobs')->name('jobs.')->group(function () {
-            Route::get('/', [JobManagementController::class, 'index'])->name('index');
-            Route::get('/create', [JobManagementController::class, 'create'])->name('create');
-            Route::get('/download', [JobManagementController::class, 'downloadPDF'])->name('download');
-            Route::get('/preview', [JobManagementController::class, 'previewPDF'])->name('preview');
-            Route::get('/download-excel', [JobManagementController::class, 'downloadExcel'])->name('download-excel');
-            Route::post('/', [JobManagementController::class, 'store'])->name('store');
-            Route::get('/{id}', [JobManagementController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [JobManagementController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [JobManagementController::class, 'update'])->name('update');
-            Route::delete('/{id}', [JobManagementController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/duplicate', [JobManagementController::class, 'duplicate'])->name('duplicate');
-            Route::post('/{id}/status', [JobManagementController::class, 'changeStatus'])->name('changeStatus');
+        Route::prefix('vacancies')->name('vacancies.')->group(function () {
+            Route::get('/', [VacancyManagementController::class, 'index'])->name('index');
+            Route::get('/create', [VacancyManagementController::class, 'create'])->name('create');
+            Route::get('/download', [VacancyManagementController::class, 'downloadPDF'])->name('download');
+            Route::get('/preview', [VacancyManagementController::class, 'previewPDF'])->name('preview');
+            Route::get('/download-excel', [VacancyManagementController::class, 'downloadExcel'])->name('download-excel');
+            Route::post('/', [VacancyManagementController::class, 'store'])->name('store');
+            Route::get('/{id}', [VacancyManagementController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [VacancyManagementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [VacancyManagementController::class, 'update'])->name('update');
+            Route::delete('/{id}', [VacancyManagementController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/duplicate', [VacancyManagementController::class, 'duplicate'])->name('duplicate');
+            Route::post('/{id}/status', [VacancyManagementController::class, 'changeStatus'])->name('changeStatus');
         });
 
         /*
@@ -163,6 +163,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{id}', [ApproverController::class, 'destroy'])->name('destroy');
             Route::post('/{id}/toggle-status', [ApproverController::class, 'toggleStatus'])->name('toggle-status');
             Route::post('/{id}/reset-password', [ApproverController::class, 'resetPassword'])->name('reset-password');
+            Route::post('/{id}/assign-vacancy', [ApproverController::class, 'assignVacancy'])->name('assign-vacancy');
         });
 
         /*
@@ -217,18 +218,18 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
         });
 
         /*
-        | Job Management Routes - Using HRJobController (NOT Admin's JobManagementController)
+        | Vacancy Management Routes - Using HRVacancyController (NOT Admin's VacancyManagementController)
         */
-        Route::prefix('jobs')->name('jobs.')->group(function () {
-            Route::get('/', [HRJobController::class, 'index'])->name('index');
-            Route::get('/create', [HRJobController::class, 'create'])->name('create');
-            Route::post('/', [HRJobController::class, 'store'])->name('store');
-            Route::get('/{id}', [HRJobController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [HRJobController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HRJobController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HRJobController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/duplicate', [HRJobController::class, 'duplicate'])->name('duplicate');
-            Route::post('/{id}/status', [HRJobController::class, 'changeStatus'])->name('changeStatus');
+        Route::prefix('vacancies')->name('vacancies.')->group(function () {
+            Route::get('/', [HRVacancyController::class, 'index'])->name('index');
+            Route::get('/create', [HRVacancyController::class, 'create'])->name('create');
+            Route::post('/', [HRVacancyController::class, 'store'])->name('store');
+            Route::get('/{id}', [HRVacancyController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [HRVacancyController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [HRVacancyController::class, 'update'])->name('update');
+            Route::delete('/{id}', [HRVacancyController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/duplicate', [HRVacancyController::class, 'duplicate'])->name('duplicate');
+            Route::post('/{id}/status', [HRVacancyController::class, 'changeStatus'])->name('changeStatus');
         });
 
         /*
@@ -426,13 +427,13 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
 
-        // Jobs Browsing
-        Route::prefix('jobs')->name('jobs.')->group(function () {
-            Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
-            Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
+        // Vacancies Browsing
+        Route::prefix('vacancies')->name('vacancies.')->group(function () {
+            Route::get('/', [VacancyBrowsingController::class, 'index'])->name('index');
+            Route::get('/{id}', [VacancyBrowsingController::class, 'show'])->name('show');
 
-            // Application Routes (nested under jobs for create/store/edit/update)
-            Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
+            // Application Routes (nested under vacancies for create/store/edit/update)
+            Route::prefix('{vacancyId}/applications')->name('applications.')->group(function () {
                 Route::get('/create', [CandidateApplicationController::class, 'create'])->name('create');
                 Route::post('/', [CandidateApplicationController::class, 'store'])->name('store');
                 Route::get('/{id}/edit', [CandidateApplicationController::class, 'edit'])->name('edit');
@@ -440,7 +441,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             });
 
             // Eligibility check (AJAX)
-            Route::get('/{jobId}/check-eligibility', [CandidateApplicationController::class, 'checkEligibilityAjax'])->name('checkEligibility');
+            Route::get('/{vacancyId}/check-eligibility', [CandidateApplicationController::class, 'checkEligibilityAjax'])->name('checkEligibility');
         });
 
         // My Applications Routes (Direct access for list/show/delete)

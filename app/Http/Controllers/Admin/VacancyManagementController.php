@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\Candidate;
 use App\Models\Reviewer;
 use App\Models\Admin;
@@ -12,14 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class JobManagementController extends Controller
+class VacancyManagementController extends Controller
 {
     /**
-     * Display a listing of jobs
+     * Display a listing of vacancies
      */
     public function index(Request $request)
     {
-        $query = JobPosting::query()->with('postedBy')->withCount('applicationForms');
+        $query = Vacancy::query()->with('postedBy')->withCount('applicationForms');
 
         // Search
         if ($request->filled('search')) {
@@ -49,34 +49,34 @@ class JobManagementController extends Controller
         $query->orderBy($sortBy, $sortOrder);
 
         // Paginate
-        $jobs = $query->paginate(10)->withQueryString();
+        $vacancies = $query->paginate(10)->withQueryString();
 
         // Statistics
         $stats = [
-            'total' => JobPosting::count(),
-            'active' => JobPosting::where('status', 'active')->count(),
-            'closed' => JobPosting::where('status', 'closed')->count(),
-            'draft' => JobPosting::where('status', 'draft')->count(),
+            'total' => Vacancy::count(),
+            'active' => Vacancy::where('status', 'active')->count(),
+            'closed' => Vacancy::where('status', 'closed')->count(),
+            'draft' => Vacancy::where('status', 'draft')->count(),
         ];
 
-        return view('admin.jobs.index', compact('jobs', 'stats'));
+        return view('admin.vacancies.index', compact('vacancies', 'stats'));
     }
 
     /**
-     * Show the form for creating a new job
+     * Show the form for creating a new vacancy
      */
     public function create()
     {
-        return view('admin.jobs.create');
+        return view('admin.vacancies.create');
     }
 
     /**
-     * Store a newly created job
+     * Store a newly created vacancy
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
+            'advertisement_no' => 'required|string|max:50|unique:vacancies,advertisement_no',
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'department' => 'required|string|max:100',
@@ -103,53 +103,53 @@ class JobManagementController extends Controller
             $validated['posted_by'] = Auth::guard('admin')->id();
         }
 
-        $job = JobPosting::create($validated);
+        $vacancy = Vacancy::create($validated);
 
         return redirect()
-            ->route('admin.jobs.index')
+            ->route('admin.vacancies.index')
             ->with('success', 'Vacancy posted successfully!');
     }
 
     /**
-     * Display the specified job
+     * Display the specified vacancy
      */
     public function show($id)
     {
-        $job = JobPosting::with(['applicationForms.candidate', 'applicationForms.reviewer', 'postedBy'])
+        $vacancy = Vacancy::with(['applicationForms.candidate', 'applicationForms.reviewer', 'postedBy'])
             ->withCount('applicationForms')
             ->findOrFail($id);
 
         // Application statistics
         $applicationStats = [
-            'total' => $job->applicationForms->count(),
-            'pending' => $job->applicationForms->where('status', 'pending')->count(),
-            'approved' => $job->applicationForms->where('status', 'approved')->count(),
-            'shortlisted' => $job->applicationForms->where('status', 'shortlisted')->count(),
-            'rejected' => $job->applicationForms->where('status', 'rejected')->count(),
-            'selected' => $job->applicationForms->where('status', 'selected')->count(),
+            'total' => $vacancy->applicationForms->count(),
+            'pending' => $vacancy->applicationForms->where('status', 'pending')->count(),
+            'approved' => $vacancy->applicationForms->where('status', 'approved')->count(),
+            'shortlisted' => $vacancy->applicationForms->where('status', 'shortlisted')->count(),
+            'rejected' => $vacancy->applicationForms->where('status', 'rejected')->count(),
+            'selected' => $vacancy->applicationForms->where('status', 'selected')->count(),
         ];
 
-        return view('admin.jobs.show', compact('job', 'applicationStats'));
+        return view('admin.vacancies.show', compact('vacancy', 'applicationStats'));
     }
 
     /**
-     * Show the form for editing the specified job
+     * Show the form for editing the specified vacancy
      */
     public function edit($id)
     {
-        $job = JobPosting::findOrFail($id);
-        return view('admin.jobs.edit', compact('job'));
+        $vacancy = Vacancy::findOrFail($id);
+        return view('admin.vacancies.edit', compact('vacancy'));
     }
 
     /**
-     * Update the specified job
+     * Update the specified vacancy
      */
     public function update(Request $request, $id)
     {
-        $job = JobPosting::findOrFail($id);
+        $vacancy = Vacancy::findOrFail($id);
 
         $validated = $request->validate([
-            'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
+            'advertisement_no' => 'required|string|max:50|unique:vacancies,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'department' => 'required|string|max:100',
@@ -167,73 +167,73 @@ class JobManagementController extends Controller
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        $job->update($validated);
+        $vacancy->update($validated);
 
         return redirect()
-            ->route('admin.jobs.index')
+            ->route('admin.vacancies.index')
             ->with('success', 'Vacancy updated successfully!');
     }
 
     /**
-     * Remove the specified job
+     * Remove the specified vacancy
      */
     public function destroy($id)
     {
-        $job = JobPosting::findOrFail($id);
+        $vacancy = Vacancy::findOrFail($id);
 
-        // Check if job has applications
-        if ($job->applicationForms()->count() > 0) {
+        // Check if vacancy has applications
+        if ($vacancy->applicationForms()->count() > 0) {
             return redirect()
-                ->route('admin.jobs.index')
+                ->route('admin.vacancies.index')
                 ->with('error', 'Cannot delete vacancy with existing applications. Please close it instead.');
         }
 
-        $job->delete();
+        $vacancy->delete();
 
         return redirect()
-            ->route('admin.jobs.index')
+            ->route('admin.vacancies.index')
             ->with('success', 'Vacancy deleted successfully!');
     }
 
     /**
-     * Duplicate a job
+     * Duplicate a vacancy
      */
     public function duplicate($id)
     {
-        $job = JobPosting::findOrFail($id);
+        $vacancy = Vacancy::findOrFail($id);
 
-        $newJob = $job->replicate();
-        $newJob->title = $job->title . ' (Copy)';
-        $newJob->advertisement_no = $job->advertisement_no . '-COPY';
-        $newJob->status = 'draft';
+        $newVacancy = $vacancy->replicate();
+        $newVacancy->title = $vacancy->title . ' (Copy)';
+        $newVacancy->advertisement_no = $vacancy->advertisement_no . '-COPY';
+        $newVacancy->status = 'draft';
 
-        // Set posted_by for duplicated job
+        // Set posted_by for duplicated vacancy
         if (Auth::guard('admin')->check()) {
-            $newJob->posted_by = Auth::guard('admin')->id();
+            $newVacancy->posted_by = Auth::guard('admin')->id();
         } elseif (Auth::guard('hr_administrator')->check()) {
-            $newJob->posted_by = Auth::guard('hr_administrator')->id();
+            $newVacancy->posted_by = Auth::guard('hr_administrator')->id();
         }
 
-        $newJob->deadline = now()->addDays(30);
-        $newJob->save();
+        $newVacancy->deadline = now()->addDays(30);
+        $newVacancy->save();
 
         return redirect()
-            ->route('admin.jobs.edit', $newJob->id)
+            ->route('admin.vacancies.edit', $newVacancy->id)
             ->with('success', 'Vacancy duplicated successfully! Please review and update.');
     }
 
     /**
-     * Change job status
+     * Change vacancy status
      */
     public function changeStatus(Request $request, $id)
     {
-        $job = JobPosting::findOrFail($id);
+        $vacancy = Vacancy::findOrFail($id);
 
         $validated = $request->validate([
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        $job->update(['status' => $validated['status']]);
+        $vacancy->update(['status' => $validated['status']]);
 
         return redirect()
             ->back()
@@ -247,13 +247,13 @@ class JobManagementController extends Controller
     {
         $lang = $request->get('lang', 'en');
 
-        // Get all active jobs
-        $jobs = JobPosting::where('status', 'active')
+        // Get all active vacancies
+        $vacancies = Vacancy::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pdf = \PDF::loadView('admin.jobs.pdf.' . $lang, [
-            'jobs' => $jobs,
+        $pdf = \PDF::loadView('admin.vacancies.pdf.' . $lang, [
+            'vacancies' => $vacancies,
             'generatedDate' => now()->format('Y-m-d H:i:s')
         ]);
 
@@ -265,19 +265,19 @@ class JobManagementController extends Controller
     }
 
     /**
-     * Download all jobs as PDF (English or Nepali)
+     * Download all vacancies as PDF (English or Nepali)
      */
     public function downloadPDF(Request $request)
     {
         $lang = $request->get('lang', 'en'); // default to English
 
-        // Get all active jobs
-        $jobs = JobPosting::where('status', 'active')
+        // Get all active vacancies
+        $vacancies = Vacancy::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pdf = \PDF::loadView('admin.jobs.pdf.' . $lang, [
-            'jobs' => $jobs,
+        $pdf = \PDF::loadView('admin.vacancies.pdf.' . $lang, [
+            'vacancies' => $vacancies,
             'generatedDate' => now()->format('Y-m-d H:i:s')
         ]);
 
@@ -293,11 +293,11 @@ class JobManagementController extends Controller
     }
 
     /**
-     * Download all jobs as Excel
+     * Download all vacancies as Excel
      */
     public function downloadExcel()
     {
-        $jobs = JobPosting::where('status', 'active')
+        $vacancies = Vacancy::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -308,7 +308,7 @@ class JobManagementController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $callback = function() use ($jobs) {
+        $callback = function() use ($vacancies) {
             $file = fopen('php://output', 'w');
 
             // CSV Headers
@@ -325,17 +325,17 @@ class JobManagementController extends Controller
             ]);
 
             // Data rows
-            foreach ($jobs as $index => $job) {
+            foreach ($vacancies as $index => $vacancy) {
                 fputcsv($file, [
                     $index + 1,
-                    $job->advertisement_no,
-                    $job->position_level,
-                    $job->department,
-                    ucfirst($job->category) . ($job->inclusive_type ? " ({$job->inclusive_type})" : ''),
-                    $job->number_of_posts,
-                    $job->deadline->format('Y-m-d'),
-                    ucfirst($job->status),
-                    $job->created_at->format('Y-m-d'),
+                    $vacancy->advertisement_no,
+                    $vacancy->position_level,
+                    $vacancy->department,
+                    ucfirst($vacancy->category) . ($vacancy->inclusive_type ? " ({$vacancy->inclusive_type})" : ''),
+                    $vacancy->number_of_posts,
+                    $vacancy->deadline->format('Y-m-d'),
+                    ucfirst($vacancy->status),
+                    $vacancy->created_at->format('Y-m-d'),
                 ]);
             }
 

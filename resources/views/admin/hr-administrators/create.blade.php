@@ -31,7 +31,7 @@
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item">
+        <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
             <i class="bi bi-briefcase"></i>
             <span>Vacancies</span>
         </a>
@@ -65,7 +65,7 @@
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('hr-administrator.jobs.index') }}" class="sidebar-menu-item">
+        <a href="{{ route('hr-administrator.vacancies.index') }}" class="sidebar-menu-item">
             <i class="bi bi-briefcase"></i>
             <span>Vacancies</span>
         </a>

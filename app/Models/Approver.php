@@ -18,7 +18,7 @@ class Approver extends Authenticatable
         'email',
         'designation',
         'department',
-        'job_posting_id',
+        'vacancy_id',
         'photo',
         'status',
         'password'
@@ -26,19 +26,46 @@ class Approver extends Authenticatable
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     /**
-     * Relationship with job posting
+     * Get the name of the unique identifier for the user.
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'employee_id';
+    }
+
+    /**
+     * Get the column name for the "remember me" token.
+     */
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
+    }
+
+    /**
+     * Relationship with vacancy
+     */
+    public function vacancy()
+    {
+        return $this->belongsTo(Vacancy::class, 'vacancy_id');
+    }
+
+    /**
+     * Backward compatibility alias
+     * @deprecated Use vacancy() instead
      */
     public function jobPosting()
     {
-        return $this->belongsTo(JobPosting::class, 'job_posting_id');
+        return $this->vacancy();
     }
 
     /**
