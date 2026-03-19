@@ -562,8 +562,8 @@
                                                 <i class="bi bi-x-circle me-2"></i>Reject
                                             </button>
                                             <button type="button" class="btn btn-info btn-action"
-                                                data-status="approved">
-                                                <i class="bi bi-arrow-repeat me-2"></i>Approved
+                                                data-status="under_review">
+                                                <i class="bi bi-arrow-repeat me-2"></i>Under Review
                                             </button>
                                         </div>
                                     </form>

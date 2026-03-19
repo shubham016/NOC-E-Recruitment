@@ -20,15 +20,15 @@
 
     <style>
         :root {
-            --primary-blue: #2563eb;
-            --secondary-slate: #64748b;
-            --accent-emerald: #10b981;
+            --primary-gold: #c9a84c;
+            --secondary-gold: #a07828;
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 80px;
         }
 
         body {
-            background-color: #f8fafc;
+            background-color: #f8f9fa;
+            min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
@@ -39,21 +39,24 @@
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            background: linear-gradient(180deg, #fffbf4 0%, #faf7f0 100%);
+            border-right: 1px solid #e8e2d4;
             padding: 0;
             z-index: 1000;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 8px rgba(201, 168, 76, 0.08);
             overflow-y: auto;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
 
         .company-logo-header {
-            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             padding: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid rgba(201, 168, 76, 0.3);
             transition: all 0.3s ease;
         }
 
@@ -114,9 +117,10 @@
         }
 
         .sidebar-header {
-            padding: 1.5rem 1.25rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.25rem;
+            background: rgba(201, 168, 76, 0.1);
+            border-bottom: 1px solid #e0d5b8;
+            flex-shrink: 0;
         }
 
         .brand-container {
@@ -128,8 +132,8 @@
         .hamburger-toggle {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.3);
             border-radius: 8px;
             color: white;
             font-size: 20px;
@@ -142,17 +146,18 @@
         }
 
         .hamburger-toggle:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(201, 168, 76, 0.2);
             transform: scale(1.05);
         }
 
         .hamburger-toggle i {
+            color: #a07828;
             transition: transform 0.3s ease;
         }
 
         .sidebar-brand {
-            color: white;
-            font-size: 1.25rem;
+            color: #1a2a4a;
+            font-size: 1.1rem;
             font-weight: 700;
             text-decoration: none;
             display: flex;
@@ -163,8 +168,9 @@
         }
 
         .sidebar-brand i {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             flex-shrink: 0;
+            color: #c9a84c;
         }
 
         .brand-text {
@@ -207,31 +213,34 @@
         }
 
         .sidebar-menu-item {
-            padding: 0.75rem 1.25rem;
-            color: rgba(255, 255, 255, 0.7);
+            padding: 0.7rem 1.25rem;
+            color: #444;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.3s ease;
             border-left: 3px solid transparent;
+            font-size: 0.9rem;
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border-left-color: var(--primary-blue);
+            background: rgba(201, 168, 76, 0.1);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
         }
 
         .sidebar-menu-item.active {
-            background: rgba(37, 99, 235, 0.1);
-            color: white;
-            border-left-color: var(--primary-blue);
+            background: rgba(201, 168, 76, 0.15);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
+            font-weight: 500;
         }
 
         .sidebar-menu-item i {
-            font-size: 1.25rem;
-            width: 24px;
+            font-size: 1.15rem;
+            width: 22px;
+            color: #a07828;
         }
 
         .main-content {
@@ -241,55 +250,102 @@
         }
 
         .top-navbar {
-            background: #eee;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 0;
+            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            padding: 0.75rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 999;
             display: flex;
-            align-items: stretch;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .navbar-company-header {
-            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
-            padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            border-right: 1px solid #e5e7eb;
-            min-width: 300px;
+            gap: 12px;
         }
 
         .navbar-company-logo {
-            width: 50px;
             height: 50px;
-            background: white;
-            border-radius: 8px;
-            padding: 2px;
+            width: auto;
         }
 
         .navbar-company-info h2 {
-            color: white;
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin: 0 0 2px 0;
+            color: #1a2a4a;
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
             line-height: 1.2;
-            letter-spacing: 0.3px;
         }
 
         .navbar-company-info p {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 0.75rem;
+            color: #555;
+            font-size: 13px;
             margin: 0;
+            line-height: 1.2;
+        }
+
+        .navbar-company-info small {
+            font-size: 11px;
+            color: #c9a84c;
+            font-style: italic;
+            display: block;
+            margin-top: 2px;
         }
 
         .navbar-right-section {
-            flex: 1;
             display: flex;
-            justify-content: flex-end;
             align-items: center;
-            padding: 0.75rem 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .navbar-right-section .nav-link {
+            color: #1a2a4a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            transition: color 0.2s;
+        }
+
+        .navbar-right-section .nav-link:hover {
+            color: #c9a84c;
+        }
+
+        .navbar-right-section .nav-link i {
+            font-size: 1rem;
+        }
+
+        /* Notification icon styling */
+        .notification-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            position: relative;
+        }
+
+        .notification-link .bi-bell {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: -2px;
+            font-size: 0.6rem;
+            padding: 0.15em 0.35em;
+            min-width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
 
         .user-menu {
@@ -481,48 +537,68 @@
         <!-- Top Navbar -->
         <nav class="top-navbar">
             <div class="navbar-company-header">
-                <img src="{{ asset('images/noc_logo.png') }}" alt="Nepal Oil Corporation" class="navbar-company-logo">
+                <img src="/images/images.png" alt="Nepal Oil Corporation" class="navbar-company-logo">
                 <div class="navbar-company-info">
                     <h2>NEPAL OIL CORPORATION LTD.</h2>
                     <p>Babarmahal, Kathmandu</p>
+                    <small>Online Recruitment Management System</small>
                 </div>
             </div>
 
             <div class="navbar-right-section">
-                <button class="btn btn-link d-md-none text-dark me-3" id="mobileToggle">
-                    <i class="bi bi-list fs-4"></i>
-                </button>
+                <!-- Notifications -->
+                @if(request()->is('admin/*'))
+                    <a class="nav-link notification-link" href="{{ route('admin.notifications.index') }}" title="Notifications">
+                        <i class="bi bi-bell"></i>
+                        @php
+                            try {
+                                if (Auth::guard('admin')->check()) {
+                                    $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('admin')->id())
+                                        ->where('user_type', 'admin')
+                                        ->where('is_read', false)
+                                        ->count();
+                                    if ($unreadCount > 0) {
+                                        echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                // Silently fail if there's an error
+                            }
+                        @endphp
+                    </a>
+                @elseif(request()->is('hr-administrator/*'))
+                    <a class="nav-link notification-link" href="{{ route('hr-administrator.notifications.index') }}" title="Notifications">
+                        <i class="bi bi-bell"></i>
+                        @php
+                            try {
+                                if (Auth::guard('hr_administrator')->check()) {
+                                    $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('hr_administrator')->id())
+                                        ->where('user_type', 'hr_administrator')
+                                        ->where('is_read', false)
+                                        ->count();
+                                    if ($unreadCount > 0) {
+                                        echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                // Silently fail if there's an error
+                            }
+                        @endphp
+                    </a>
+                @endif
 
-                <div class="user-menu">
-                    <div class="text-end d-none d-md-block">
-                        <div class="fw-semibold">@yield('user-name')</div>
-                        <small class="text-muted">@yield('user-role')</small>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn p-0 border-0" type="button" data-bs-toggle="dropdown">
-                            <div class="user-avatar">
-                                @yield('user-initial')
-                            </div>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i
-                                        class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i
-                                        class="bi bi-gear me-2"></i>Settings</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="@yield('logout-route')">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <!-- Dashboard Link -->
+                <a class="nav-link" href="@yield('dashboard-route')">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+
+                <!-- Logout -->
+                <form method="POST" action="@yield('logout-route')" class="d-inline">
+                    @csrf
+                    <button class="btn btn-link nav-link text-dark" type="submit" style="text-decoration: none; border: none; background: none; padding: 0.5rem 0;">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </form>
             </div>
         </nav>
 

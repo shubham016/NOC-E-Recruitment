@@ -20,6 +20,11 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
+    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
+    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -31,58 +36,35 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">View Application Details</h4>
+        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">View Your Application Details</h4>
             <div>
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                @if($application->canEdit())
-                    <a href="{{ route('candidate.applications.edit', $application->id) }}" class="btn btn-warning btn-sm ms-1">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                @endif
-                @if($application->status === 'pending' && (!$application->payment || !$application->payment->isCompleted()))
-                    <a href="{{ route('candidate.payment.esewa', $application->id) }}" class="btn btn-success btn-sm ms-1">
-                        <i class="fas fa-credit-card"></i> Pay Now
-                    </a>
-                @endif
             </div>
         </div>
 
         <div class="card-body">
-
-            {{-- Status Alert --}}
-            <div class="mb-4">
-                <span class="badge bg-{{ $application->statusColor }} fs-6 px-3 py-2">
-                    {{ $application->statusLabel }}
-                </span>
-                @if($application->payment && $application->payment->isCompleted())
-                    <span class="badge bg-success fs-6 px-3 py-2 ms-2">
-                        <i class="fas fa-check-circle"></i> Payment Verified
-                    </span>
-                @endif
-            </div>
-
             {{-- SECTION 1: Personal Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-user"></i> Personal Information
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Full Name (English):</strong>
-                        <p class="mb-0">{{ $application->name_english ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Full Name (Nepali):</strong>
-                        <p class="mb-0">{{ $application->name_nepali ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->name_nepali ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Birth Date (A.D):</strong>
                         <p class="mb-0">
-                            @if($application->birth_date_ad)
-                                {{ $application->birth_date_ad->format('F d, Y') }}
+                            @if($applicationform->birth_date_ad)
+                                {{ is_string($applicationform->birth_date_ad) ? \Carbon\Carbon::parse($applicationform->birth_date_ad)->format('F d, Y') : $applicationform->birth_date_ad->format('F d, Y') }}
                             @else
                                 -
                             @endif
@@ -90,165 +72,166 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Birth Date (B.S):</strong>
-                        <p class="mb-0">{{ $application->birth_date_bs ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->birth_date_bs ?? '-' }}</p>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <strong>Age:</strong>
-                        <p class="mb-0">{{ $application->age ? $application->age . ' years' : '-' }}</p>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <strong>Gender:</strong>
-                        <p class="mb-0">{{ ucfirst($application->gender ?? '-') }}</p>
-                    </div>
-                </div>
-                <div class="row">
+                    <div class="row">
                     <div class="col-md-3 mb-3">
                         <strong>Advertisement Number:</strong>
-                        <p class="mb-0">{{ $application->advertisement_no ?? ($application->jobPosting->advertisement_no ?? '-') }}</p>
+                        <p class="mb-0">{{ $applicationform->advertisement_no ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Applying Position:</strong>
-                        <p class="mb-0">{{ $application->applying_position ?? ($application->jobPosting->title ?? '-') }}</p>
+                        <p class="mb-0">{{ $applicationform->applying_position ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Department:</strong>
-                        <p class="mb-0">{{ $application->department ?? ($application->jobPosting->department ?? '-') }}</p>
+                        <p class="mb-0">{{ $applicationform->department ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
                         <strong>Phone Number:</strong>
-                        <p class="mb-0">{{ $application->phone ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->phone ?? '-' }}</p>
+                    </div>
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <strong>Age:</strong>
+                        <p class="mb-0">{{ $applicationform->age ?? '-' }} {{ $applicationform->age ? 'years' : '' }}</p>
+                    </div>
                     <div class="col-md-4 mb-3">
                         <strong>Alternate Phone Number:</strong>
-                        <p class="mb-0">{{ $application->alternate_phone_number ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->alternate_phone_number ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Email:</strong>
-                        <p class="mb-0">{{ $application->email ?? ($application->candidate->email ?? '-') }}</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <strong>Marital Status:</strong>
-                        <p class="mb-0">{{ ucfirst($application->marital_status ?? '-') }}</p>
+                        <strong>Gender:</strong>
+                        <p class="mb-0">{{ ucfirst($applicationform->gender ?? '-') }}</p>
                     </div>
                 </div>
-                @if($application->marital_status === 'Married')
                 <div class="row">
                     <div class="col-md-4 mb-3">
+                        <strong>Marital Status:</strong>
+                        <p class="mb-0">{{ ucfirst($applicationform->marital_status ?? '-') }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <strong>Spouse Name:</strong>
-                        <p class="mb-0">{{ $application->spouse_name_english ?? '-' }}</p>
+                        <p class="mb-0">{{ ucfirst($applicationform->spouse_name_english ?? '-') }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Spouse Nationality:</strong>
-                        <p class="mb-0">{{ $application->spouse_nationality ?? '-' }}</p>
+                        <p class="mb-0">{{ ucfirst($applicationform->spouse_nationality ?? '-') }}</p>
                     </div>
+
                 </div>
-                @endif
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Blood Group:</strong>
-                        <p class="mb-0">{{ $application->blood_group ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->blood_group ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Nationality:</strong>
-                        <p class="mb-0">{{ $application->nationality ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->nationality ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>NOC Employee:</strong>
-                        <p class="mb-0">{{ ucfirst($application->noc_employee ?? '-') }}</p>
+                        <strong>Email:</strong>
+                        <p class="mb-0">{{ $applicationform->email ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 2: Citizenship Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-id-card"></i> Citizenship Information
                 </h5>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Citizenship Number:</strong>
-                        <p class="mb-0">{{ $application->citizenship_number ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->citizenship_number ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Citizenship Issue Date (B.S):</strong>
-                        <p class="mb-0">{{ $application->citizenship_issue_date_bs ?? '-' }}</p>
+                        <p class="mb-0">
+                            @if($applicationform->citizenship_issue_date_bs)
+                                {{ is_string($applicationform->citizenship_issue_date_bs) ? \Carbon\Carbon::parse($applicationform->citizenship_issue_date_bs)->format('F d, Y') : $applicationform->citizenship_issue_date_bs->format('F d, Y') }}
+                            @else
+                                -
+                            @endif
+                        </p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Citizenship Issue District:</strong>
-                        <p class="mb-0">{{ $application->citizenship_issue_district ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->citizenship_issue_district ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 3: Family Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-users"></i> Family Information
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Father Name:</strong>
-                        <p class="mb-0">{{ $application->father_name_english ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->father_name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Father's Qualification:</strong>
-                        <p class="mb-0">{{ $application->father_qualification ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->father_qualification ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Mother Name:</strong>
-                        <p class="mb-0">{{ $application->mother_name_english ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mother_name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Mother's Qualification:</strong>
-                        <p class="mb-0">{{ $application->mother_qualification ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mother_qualification ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                   <div class="col-md-6 mb-3">
                         <strong>Parent's Occupation:</strong>
-                        <p class="mb-0">{{ $application->parent_occupation ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->parent_occupation ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Grandfather Name:</strong>
-                        <p class="mb-0">{{ $application->grandfather_name_english ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->grandfather_name_english ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 4: General Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-info-circle"></i> General Information
                 </h5>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Religion:</strong>
                         <p class="mb-0">
-                            {{ $application->religion ?? '-' }}
-                            @if($application->religion === 'Other' && $application->religion_other)
-                                ({{ $application->religion_other }})
+                            {{ $applicationform->religion ?? '-' }}
+                            @if($applicationform->religion === 'Other' && $applicationform->religion_other)
+                                ({{ $applicationform->religion_other }})
                             @endif
                         </p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Community:</strong>
                         <p class="mb-0">
-                            {{ $application->community ?? '-' }}
-                            @if($application->community === 'Other' && $application->community_other)
-                                ({{ $application->community_other }})
+                            {{ $applicationform->community ?? '-' }}
+                            @if($applicationform->community === 'Other' && $applicationform->community_other)
+                                ({{ $applicationform->community_other }})
                             @endif
                         </p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Ethnic Group:</strong>
                         <p class="mb-0">
-                            {{ $application->ethnic_group ?? '-' }}
-                            @if($application->ethnic_group === 'Other' && $application->ethnic_group_other)
-                                ({{ $application->ethnic_group_other }})
+                            {{ $applicationform->ethnic_group ?? '-' }}
+                            @if($applicationform->ethnic_group === 'Other' && $applicationform->ethnic_group_other)
+                                ({{ $applicationform->ethnic_group_other }})
                             @endif
                         </p>
                     </div>
@@ -256,160 +239,173 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Mother Tongue:</strong>
-                        <p class="mb-0">{{ $application->mother_tongue ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mother_tongue ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Employment Status:</strong>
-                        <p class="mb-0">{{ ucfirst($application->employment_status ?? '-') }}</p>
+                        <p class="mb-0">{{ ucfirst($applicationform->employment_status ?? '-') }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
+                        <strong>Other Employment Details:</strong>
+                        <p class="mb-0">{{ $applicationform->employment_other ?? '-' }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
                         <strong>Physical Disability:</strong>
-                        <p class="mb-0">{{ ucfirst($application->physical_disability ?? '-') }}</p>
+                        <p class="mb-0">{{ ucfirst($applicationform->physical_disability ?? '-') }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Disability Details:</strong>
+                        <p class="mb-0">{{ $applicationform->disability_other ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>NOC Employee:</strong>
+                        <p class="mb-0">{{ ucfirst($applicationform->noc_employee ?? '-') }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 5: Permanent Address --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-home"></i> Permanent Address
                 </h5>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Province:</strong>
-                        <p class="mb-0">{{ $application->permanent_province ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_province ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>District:</strong>
-                        <p class="mb-0">{{ $application->permanent_district ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_district ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Municipality:</strong>
-                        <p class="mb-0">{{ $application->permanent_municipality ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_municipality ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Ward No.:</strong>
-                        <p class="mb-0">{{ $application->permanent_ward ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_ward ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Tole:</strong>
-                        <p class="mb-0">{{ $application->permanent_tole ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_tole ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>House Number:</strong>
-                        <p class="mb-0">{{ $application->permanent_house_number ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->permanent_house_number ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 6: Mailing Address --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-envelope"></i> Mailing/Current Address
                 </h5>
-                @if($application->same_as_permanent)
+                @if($applicationform->same_as_permanent)
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i> Same as Permanent Address
                     </div>
-                @else
+                @endif
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Province:</strong>
-                        <p class="mb-0">{{ $application->mailing_province ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_province ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>District:</strong>
-                        <p class="mb-0">{{ $application->mailing_district ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_district ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Municipality:</strong>
-                        <p class="mb-0">{{ $application->mailing_municipality ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_municipality ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <strong>Ward No.:</strong>
-                        <p class="mb-0">{{ $application->mailing_ward ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_ward ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Tole:</strong>
-                        <p class="mb-0">{{ $application->mailing_tole ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_tole ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>House Number:</strong>
-                        <p class="mb-0">{{ $application->mailing_house_number ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->mailing_house_number ?? '-' }}</p>
                     </div>
                 </div>
-                @endif
             </div>
 
             {{-- SECTION 7: Educational Background --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-graduation-cap"></i> Educational Background
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Highest Education Level:</strong>
-                        <p class="mb-0">{{ $application->education_level ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->education_level ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Field of Study:</strong>
-                        <p class="mb-0">{{ $application->field_of_study ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->field_of_study ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Institution Name:</strong>
-                        <p class="mb-0">{{ $application->institution_name ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->institution_name ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Graduation Year:</strong>
-                        <p class="mb-0">{{ $application->graduation_year ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->graduation_year ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 8: Work Experience --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-briefcase"></i> Work Experience
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Has Work Experience:</strong>
-                        <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
+                        <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Years of Experience:</strong>
-                        <p class="mb-0">{{ $application->years_of_experience !== null ? $application->years_of_experience . ' years' : '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->years_of_experience ?? '-' }} {{ $applicationform->years_of_experience ? 'years' : '' }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Previous Organization:</strong>
-                        <p class="mb-0">{{ $application->previous_organization ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->previous_organization ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Previous Position:</strong>
-                        <p class="mb-0">{{ $application->previous_position ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->previous_position ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- SECTION 9: Uploaded Documents --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-file-upload"></i> Uploaded Documents
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Passport Size Photo:</strong>
                         <p class="mb-0">
-                            @if($application->passport_photo)
-                                <a href="{{ asset('storage/' . $application->passport_photo) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->passport_size_photo)
+                                <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-image"></i> View Photo
                                 </a>
                             @else
@@ -418,10 +414,10 @@
                         </p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Citizenship Certificate:</strong>
+                        <strong>Citizenship/ID Document:</strong>
                         <p class="mb-0">
-                            @if($application->citizenship_certificate)
-                                <a href="{{ asset('storage/' . $application->citizenship_certificate) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->citizenship_id_document)
+                                <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file-alt"></i> View Document
                                 </a>
                             @else
@@ -432,10 +428,10 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <strong>Transcript/Educational Certificates:</strong>
+                        <strong>Character Certificate:</strong>
                         <p class="mb-0">
-                            @if($application->educational_certificates)
-                                <a href="{{ asset('storage/' . $application->educational_certificates) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->character)
+                                <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file-alt"></i> View Certificate
                                 </a>
                             @else
@@ -444,10 +440,10 @@
                         </p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Character Certificate:</strong>
+                        <strong>Equivalency Certificate:</strong>
                         <p class="mb-0">
-                            @if($application->character_certificate)
-                                <a href="{{ asset('storage/' . $application->character_certificate) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->equivalent)
+                                <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file-alt"></i> View Certificate
                                 </a>
                             @else
@@ -458,22 +454,10 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <strong>Equivalency Certificate:</strong>
-                        <p class="mb-0">
-                            @if($application->equivalency_certificate)
-                                <a href="{{ asset('storage/' . $application->equivalency_certificate) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <strong>Work Experience Certificate:</strong>
                         <p class="mb-0">
-                            @if($application->experience_certificates)
-                                <a href="{{ asset('storage/' . $application->experience_certificates) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->work_experience)
+                                <a href="{{ asset('storage/' . $applicationform->work_experience) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file-alt"></i> View Certificate
                                 </a>
                             @else
@@ -481,13 +465,28 @@
                             @endif
                         </p>
                     </div>
+                   <div class="col-md-6 mb-3">
+                    <strong>Transcript Certificate:</strong>
+                    <p class="mb-0">
+                        @if(!empty($applicationform->transcript))
+                            <a href="{{ asset('storage/' . $applicationform->transcript) }}"
+                            target="_blank"
+                            class="btn btn-sm bg-light">
+                                <i class="fas fa-file-alt"></i> View Certificate
+                            </a>
+                        @else
+                            <span class="text-muted">Not uploaded</span>
+                        @endif
+                    </p>
+                </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>NOC ID Card:</strong>
                         <p class="mb-0">
-                            @if($application->noc_id_card)
-                                <a href="{{ asset('storage/' . $application->noc_id_card) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->noc_id_card)
+                                <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-id-card"></i> View NOC ID
                                 </a>
                             @else
@@ -498,8 +497,8 @@
                     <div class="col-md-6 mb-3">
                         <strong>Ethnic Certificate:</strong>
                         <p class="mb-0">
-                            @if($application->ethnic_certificate)
-                                <a href="{{ asset('storage/' . $application->ethnic_certificate) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->ethnic_certificate)
+                                <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-certificate"></i> View Certificate
                                 </a>
                             @else
@@ -512,8 +511,8 @@
                     <div class="col-md-6 mb-3">
                         <strong>Disability Certificate:</strong>
                         <p class="mb-0">
-                            @if($application->disability_certificate)
-                                <a href="{{ asset('storage/' . $application->disability_certificate) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->disability_certificate)
+                                <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file"></i> View Certificate
                                 </a>
                             @else
@@ -524,8 +523,8 @@
                     <div class="col-md-6 mb-3">
                         <strong>Signature:</strong>
                         <p class="mb-0">
-                            @if($application->signature)
-                                <a href="{{ asset('storage/' . $application->signature) }}" target="_blank" class="btn btn-sm bg-light">
+                            @if($applicationform->signature)
+                                <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank" class="btn btn-sm bg-light">
                                     <i class="fas fa-file"></i> View Signature
                                 </a>
                             @else
@@ -536,20 +535,55 @@
                 </div>
             </div>
 
+             {{-- SECTION -: Payment Status --}}
+            <div class="mb-4">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-cash"></i> Payment Details
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Payment ID</strong>
+                        <p class="mb-0">{{ $applicationform->payment->id ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Gateway</strong>
+                        <p class="mb-0">{{ $applicationform->payment->gateway ?? '-' }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Amount</strong>
+                        <p class="mb-0">{{ $applicationform->payment->amount ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Transcation ID</strong>
+                        <p class="mb-0">{{ $applicationform->payment->transaction_id ?? '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- SECTION 10: System Information --}}
             <div class="mb-4">
-                <h5 class="text-primary border-bottom pb-2 mb-3">
+                <h5 class="text-dark border-bottom pb-2 mb-3">
                     <i class="fas fa-clock"></i> System Information
                 </h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <strong>Registration ID:</strong>
-                        <p class="mb-0">{{ $application->id ?? '-' }}</p>
+                        <p class="mb-0">{{ $applicationform->id ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Application Status:</strong>
                         <p class="mb-0">
-                            <span class="badge bg-{{ $application->statusColor }}">{{ $application->statusLabel }}</span>
+                            @if($applicationform->status == 'pending')
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            @elseif($applicationform->status == 'approved')
+                                <span class="badge bg-success">Approved</span>
+                            @elseif($applicationform->status == 'rejected')
+                                <span class="badge bg-danger">Rejected</span>
+                            @else
+                                <span class="badge bg-secondary">{{ ucfirst($applicationform->status ?? 'Unknown') }}</span>
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -557,7 +591,7 @@
                     <div class="col-md-6 mb-3">
                         <strong>Terms Agreed:</strong>
                         <p class="mb-0">
-                            @if($application->terms_agree)
+                            @if($applicationform->terms_agree)
                                 <span class="badge bg-success">Yes</span>
                             @else
                                 <span class="badge bg-secondary">No</span>
@@ -567,7 +601,7 @@
                     <div class="col-md-6 mb-3">
                         <strong>Same as Permanent Address:</strong>
                         <p class="mb-0">
-                            @if($application->same_as_permanent)
+                            @if($applicationform->same_as_permanent)
                                 <span class="badge bg-success">Yes</span>
                             @else
                                 <span class="badge bg-secondary">No</span>
@@ -577,15 +611,23 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <strong>Submitted At:</strong>
+                        <strong>Created At:</strong>
                         <p class="mb-0">
-                            {{ $application->submitted_at ? $application->submitted_at->format('F d, Y h:i A') : '-' }}
+                            @if($applicationform->created_at)
+                                {{ is_string($applicationform->created_at) ? \Carbon\Carbon::parse($applicationform->created_at)->format('F d, Y h:i A') : $applicationform->created_at->format('F d, Y h:i A') }}
+                            @else
+                                -
+                            @endif
                         </p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Last Updated:</strong>
                         <p class="mb-0">
-                            {{ $application->updated_at ? $application->updated_at->format('F d, Y h:i A') : '-' }}
+                            @if($applicationform->updated_at)
+                                {{ is_string($applicationform->updated_at) ? \Carbon\Carbon::parse($applicationform->updated_at)->format('F d, Y h:i A') : $applicationform->updated_at->format('F d, Y h:i A') }}
+                            @else
+                                -
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -596,23 +638,6 @@
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
-                <div>
-                    @if($application->canEdit())
-                        <a href="{{ route('candidate.applications.edit', $application->id) }}" class="btn btn-warning me-2">
-                            <i class="fas fa-edit"></i> Edit Application
-                        </a>
-                    @endif
-                    @if($application->status === 'pending' && (!$application->payment || !$application->payment->isCompleted()))
-                        <a href="{{ route('candidate.payment.esewa', $application->id) }}" class="btn btn-success">
-                            <i class="fas fa-credit-card"></i> Proceed to Payment
-                        </a>
-                    @endif
-                    @if($application->canGenerateAdmitCard())
-                        <a href="{{ route('candidate.admit-card.show', $application->id) }}" class="btn btn-primary">
-                            <i class="fas fa-id-card"></i> View Admit Card
-                        </a>
-                    @endif
-                </div>
             </div>
         </div>
     </div>
@@ -629,6 +654,9 @@
         padding: 0.5rem;
         background-color: #f8f9fa;
         border-radius: 0.25rem;
+    }
+    .border-bottom {
+        border-bottom: 2px solid #dee2e6 !important;
     }
 </style>
 @endpush

@@ -15,8 +15,6 @@ class Reviewer extends Authenticatable
         'password',
         'phone',
         'department',
-        'designation',
-        'photo',
         'status',
     ];
 
@@ -31,15 +29,15 @@ class Reviewer extends Authenticatable
     ];
 
     /**
-     * Relationship: Reviewer has many applications
+     * Relationship: Reviewer has reviewed many applications
      */
     public function applications()
     {
-        return $this->hasMany(Application::class, 'reviewer_id');
+        return $this->hasMany(ApplicationForm::class, 'reviewer_id');
     }
 
     /**
-     * Relationship: Reviewer has many application forms
+     * Alias for applications (used in some views)
      */
     public function applicationForms()
     {
@@ -47,13 +45,18 @@ class Reviewer extends Authenticatable
     }
 
     /**
-     * Get the full photo URL
+     * Check if reviewer is active
      */
-    public function getPhotoUrlAttribute()
+    public function isActive()
     {
-        if ($this->photo) {
-            return asset('storage/' . $this->photo);
-        }
-        return null;
+        return $this->status === 'active';
+    }
+
+    /**
+     * Scope: Only active reviewers
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }

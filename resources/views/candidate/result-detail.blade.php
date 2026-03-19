@@ -39,18 +39,18 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="page-title">
-                <i class="bi bi-file-earmark-check text-primary"></i> Result Detail
+                <i class="bi bi-file-earmark-check text-dark"></i> Result Detail
             </h1>
             <p class="page-subtitle">Detailed view of your examination result</p>
         </div>
-        <a href="{{ route('candidate.viewresult') }}" class="btn btn-outline-primary">
+        <a href="{{ route('candidate.viewresult') }}" class="btn btn-outline-danger">
             <i class="bi bi-arrow-left"></i> Back to Results
         </a>
     </div>
 </div>
 
 <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-light text-dark">
         <h5 class="mb-0">
             <i class="bi bi-person-badge"></i> Candidate Information
         </h5>
@@ -60,7 +60,7 @@
             <!-- Personal Information -->
             <div class="col-md-6">
                 <div class="border rounded p-3 h-100">
-                    <h6 class="text-primary mb-3">
+                    <h6 class="text-dark mb-3">
                         <i class="bi bi-person-circle"></i> Personal Details
                     </h6>
                     <table class="table table-sm table-borderless mb-0">
@@ -75,7 +75,7 @@
                         <tr>
                             <td class="text-muted">Roll Number:</td>
                             <td>
-                                <span class="badge bg-info text-dark fs-6">
+                                <span class="badge bg-danger text-dark fs-6">
                                     {{ $result->roll_number ?? 'Not Assigned' }}
                                 </span>
                             </td>
@@ -87,7 +87,7 @@
             <!-- Application Information -->
             <div class="col-md-6">
                 <div class="border rounded p-3 h-100">
-                    <h6 class="text-primary mb-3">
+                    <h6 class="text-dark mb-3">
                         <i class="bi bi-briefcase"></i> Application Details
                     </h6>
                     <table class="table table-sm table-borderless mb-0">
@@ -118,8 +118,8 @@
             <!-- Examination Result -->
             <div class="col-12">
                 <div class="border rounded p-4 bg-light">
-                    <h5 class="text-center text-primary mb-4">
-                        <i class="bi bi-trophy"></i> Examination Result
+                    <h5 class="text-center text-dark mb-4">
+                        <i class="bi"></i> Examination Result
                     </h5>
                     
                     @if($result->marks !== null)
@@ -194,8 +194,8 @@
             <!-- Application Timeline -->
             <div class="col-12">
                 <div class="border rounded p-3">
-                    <h6 class="text-primary mb-3">
-                        <i class="bi bi-clock-history"></i> Timeline
+                    <h6 class="text-dark mb-3">
+                        <i class="bi bi-clock"></i> Timeline
                     </h6>
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
@@ -215,7 +215,7 @@
 
         <!-- Action Buttons -->
         <div class="text-center mt-4">
-            <button class="btn btn-primary me-2" onclick="window.print()">
+            <button class="btn btn-danger me-2" onclick="window.print()">
                 <i class="bi bi-printer"></i> Print Result
             </button>
             <a href="{{ route('candidate.viewresult') }}" class="btn btn-outline-secondary">

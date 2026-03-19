@@ -44,6 +44,11 @@ return [
             'driver' => 'session',
             'provider' => 'candidates',
         ],
+
+        'approver' => [
+            'driver' => 'session',
+            'provider' => 'approvers',
+        ],
     ],
 
     /*
@@ -76,6 +81,11 @@ return [
         'candidates' => [
             'driver' => 'eloquent',
             'model' => App\Models\Candidate::class,
+        ],
+
+        'approvers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Approver::class,
         ],
     ],
 
@@ -116,6 +126,13 @@ return [
 
         'candidates' => [
             'provider' => 'candidates',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'approvers' => [
+            'provider' => 'approvers',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

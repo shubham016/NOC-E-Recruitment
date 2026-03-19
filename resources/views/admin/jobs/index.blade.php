@@ -151,9 +151,48 @@
                 </h4>
                 <p class="mb-0 opacity-90">Create and manage Vacancies</p>
             </div>
-            <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
-                <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
-            </a>
+            <div class="d-flex gap-2">
+                <!-- Bulk Download Dropdown -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-download me-2"></i>Bulk Download
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header">Preview & Download PDF</h6></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}" target="_blank">
+                                <i class="bi bi-eye text-primary me-2"></i>Preview PDF (English)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'ne']) }}" target="_blank">
+                                <i class="bi bi-eye text-primary me-2"></i>Preview PDF (Nepali)
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'en']) }}">
+                                <i class="bi bi-download text-danger me-2"></i>Download PDF (English)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'ne']) }}">
+                                <i class="bi bi-download text-danger me-2"></i>Download PDF (Nepali)
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.jobs.download-excel') }}">
+                                <i class="bi bi-file-earmark-excel text-success me-2"></i>Download Excel
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
+                    <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
+                </a>
+            </div>
         </div>
     </div>
 

@@ -7,6 +7,7 @@ use App\Models\ApplicationForm;
 use App\Models\Reviewer;
 use App\Models\JobPosting;
 use App\Models\Payment;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class AdminApplicationController extends Controller
@@ -225,6 +226,32 @@ class AdminApplicationController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        // Create notification for candidate
+        $notificationMessages = [
+            'approved' => [
+                'title' => 'Application Approved',
+                'message' => 'Congratulations! Your application for "' . $application->jobPosting->title . '" has been approved by the admin.',
+                'type' => 'application_approved'
+            ],
+            'rejected' => [
+                'title' => 'Application Rejected',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been rejected. Please check the admin notes for more details.',
+                'type' => 'application_rejected'
+            ],
+        ];
+
+        if (isset($notificationMessages[$request->status])) {
+            Notification::create([
+                'user_id' => $application->candidate_id,
+                'user_type' => 'candidate',
+                'type' => $notificationMessages[$request->status]['type'],
+                'title' => $notificationMessages[$request->status]['title'],
+                'message' => $notificationMessages[$request->status]['message'],
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Application status updated successfully!');
     }
 
@@ -239,7 +266,41 @@ class AdminApplicationController extends Controller
             'status' => 'assigned'
         ]);
 
-        return redirect()->back()->with('success', 'Reviewer assigned successfully!');
+        $reviewer = Reviewer::find($request->reviewer_id);
+
+        // Create notification for candidate
+        $candidateNotification = Notification::create([
+            'user_id' => $application->candidate_id,
+            'user_type' => 'candidate',
+            'type' => 'reviewer_assigned',
+            'title' => 'Reviewer Assigned',
+            'message' => 'Your application for "' . $application->jobPosting->title . '" has been assigned to a reviewer for evaluation.',
+            'related_id' => $application->id,
+            'related_type' => 'application',
+        ]);
+
+        // Create notification for reviewer
+        $reviewerNotification = Notification::create([
+            'user_id' => $request->reviewer_id,
+            'user_type' => 'reviewer',
+            'type' => 'application_assigned',
+            'title' => 'New Application Assigned',
+            'message' => 'A new application for "' . $application->jobPosting->title . '" has been assigned to you for review.',
+            'related_id' => $application->id,
+            'related_type' => 'application',
+        ]);
+
+        // Log notification creation for debugging
+        \Log::info('Reviewer assigned - Notifications created', [
+            'application_id' => $application->id,
+            'candidate_id' => $application->candidate_id,
+            'reviewer_id' => $request->reviewer_id,
+            'candidate_notification_id' => $candidateNotification->id,
+            'reviewer_notification_id' => $reviewerNotification->id,
+            'admin_id' => auth()->guard('admin')->id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Reviewer assigned successfully! (Candidate Notification ID: ' . $candidateNotification->id . ', Reviewer Notification ID: ' . $reviewerNotification->id . ')');
     }
 
     public function setPriority(Request $request, ApplicationForm $application)

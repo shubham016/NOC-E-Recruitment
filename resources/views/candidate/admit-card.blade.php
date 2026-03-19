@@ -72,7 +72,7 @@
                             Admit cards will be available once your application is shortlisted for examination.<br>
                             Please check back later or contact the administration for more information.
                         </p>
-                        <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary">
+                        <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
                             <i class="bi bi-house-door"></i> Back to Dashboard
                         </a>
                     </div>
@@ -82,7 +82,7 @@
             @foreach($applications as $application)
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-light text-dark">
                         <h5 class="mb-1">
                             <i class="bi bi-briefcase"></i> 
                             {{ $application->post_title ?? 'Position Applied' }}
@@ -104,7 +104,7 @@
                         <div class="mb-3 pb-2 border-bottom">
                             <small class="text-muted d-block">Exam Date</small>
                             <strong>{{ date('d M Y', strtotime($application->exam_date)) }}</strong>
-                            <small class="d-block text-primary">{{ date('l', strtotime($application->exam_date)) }}</small>
+                            <small class="d-block text-dark">{{ date('l', strtotime($application->exam_date)) }}</small>
                         </div>
                         
                         <div class="mb-3 pb-2 border-bottom">
@@ -135,11 +135,11 @@
                     <div class="card-footer bg-light">
                         <div class="d-grid gap-2">
                             <a href="{{ route('candidate.admit-card.view', $application->id) }}" 
-                               class="btn btn-outline-primary btn-sm">
+                               class="btn btn-outline-danger btn-sm">
                                 <i class="bi bi-eye"></i> View Admit Card
                             </a>
                         <!-- <a href="{{ route('candidate.admit-card.download', $application->id) }}" 
-                               class="btn btn-primary btn-sm">
+                               class="btn btn-danger btn-sm">
                                 <i class="bi bi-download"></i> Download PDF
                             </a> -->
                         </div>

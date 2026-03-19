@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -150,12 +151,12 @@ class ApplicationFormController extends Controller
     {
         $candidate = Auth::guard('candidate')->user();
 
-        $application = ApplicationForm::where('id', $id)
+        $applicationform = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
             ->with(['jobPosting', 'reviewer', 'payment'])
             ->firstOrFail();
 
-        return view('candidate.applications.show', compact('application'));
+        return view('candidate.applications.show', compact('applicationform'));
     }
 
     /**
@@ -165,21 +166,21 @@ class ApplicationFormController extends Controller
     {
         $candidate = Auth::guard('candidate')->user();
 
-        $application = ApplicationForm::where('id', $id)
+        $applicationform = ApplicationForm::where('id', $id)
             ->where('candidate_id', $candidate->id)
             ->where('job_posting_id', $jobId)
             ->with('jobPosting')
             ->firstOrFail();
 
-        if (!$application->canEdit()) {
+        if (!$applicationform->canEdit()) {
             return redirect()
                 ->route('candidate.applications.show', $id)
                 ->with('error', 'This application cannot be edited.');
         }
 
-        $job = $application->jobPosting;
+        $job = $applicationform->jobPosting;
 
-        return view('candidate.applications.edit', compact('application', 'job', 'candidate'));
+        return view('candidate.applications.edit', compact('applicationform', 'job', 'candidate'));
     }
 
     /**
@@ -214,12 +215,35 @@ class ApplicationFormController extends Controller
         // Convert same_as_permanent checkbox
         $validated['same_as_permanent'] = $request->has('same_as_permanent') ? 1 : 0;
 
+        // Track if application was in 'edit' status before update
+        $wasInEditStatus = $application->status === 'edit';
+        $reviewerId = $application->reviewer_id;
+
         if (!$isDraft && $application->isDraft()) {
             $validated['status'] = 'pending';
             $validated['submitted_at'] = now();
         }
 
+        // If resubmitting after correction, change status from 'edit' to 'pending'
+        if (!$isDraft && $wasInEditStatus) {
+            $validated['status'] = 'pending';
+            $validated['submitted_at'] = now();
+        }
+
         $application->update($validated);
+
+        // Create notification for reviewer when candidate resubmits after correction
+        if (!$isDraft && $wasInEditStatus && $reviewerId) {
+            Notification::create([
+                'user_id' => $reviewerId,
+                'user_type' => 'reviewer',
+                'type' => 'application_resubmitted',
+                'title' => 'Application Resubmitted',
+                'message' => 'The candidate has resubmitted the application for "' . $application->jobPosting->title . '" after making corrections.',
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
 
         if ($isDraft) {
             return redirect()

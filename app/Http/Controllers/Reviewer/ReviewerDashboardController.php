@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Reviewer;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ReviewerDashboardController extends Controller
 {
@@ -17,10 +16,7 @@ class ReviewerDashboardController extends Controller
         $pendingApplications = ApplicationForm::with(['candidate', 'jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft')
-            ->where(function ($q) {
-                $q->where('status', 'pending')
-                    ->orWhere('status', 'assigned');
-            })
+            ->whereIn('status', ['pending', 'assigned'])
             ->latest()
             ->take(4)
             ->get();
@@ -30,30 +26,43 @@ class ReviewerDashboardController extends Controller
             'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'pending')
                 ->count(),
+
             'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'assigned')
                 ->count(),
+
             'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'reviewed')
                 ->count(),
+
             'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'approved')
                 ->count(),
+
             'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'rejected')
                 ->count(),
-            'total_reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->whereNotNull('reviewed_at')
+
+            'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edit')
                 ->count(),
+
+            'total_reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
+                ->count(),
+
             'completion_rate' => $this->calculateCompletionRate($reviewer->id),
         ];
 
         // Get today's progress
         $todaystatus = [
             'reviewed_today' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->whereDate('reviewed_at', today())
+                ->whereDate('updated_at', today())
+                ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
                 ->count(),
+
             'daily_target' => 15,
+
             'pending_review' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->whereIn('status', ['pending', 'assigned'])
                 ->count(),
@@ -92,7 +101,7 @@ class ReviewerDashboardController extends Controller
         }
 
         $reviewed = ApplicationForm::where('reviewer_id', $reviewerId)
-            ->whereNotNull('reviewed_at')
+            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
             ->count();
 
         return round(($reviewed / $totalAssigned) * 100);

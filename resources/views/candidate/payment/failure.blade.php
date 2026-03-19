@@ -10,7 +10,7 @@
         <h4>Payment Failed!</h4>
         <p>Something went wrong with your payment. Please try again.</p>
     </div>
-    <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">Back to Dashboard</a>
 </div>
 </body>
 </html>

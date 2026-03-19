@@ -84,30 +84,24 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header mb-4">
-        <h1 class="page-title">Welcome back, {{ session('candidate_name') }}! 🎯</h1>
-        <p class="page-subtitle">Track your applications and discover new opportunities that match your skills.</p>
+        <h1 class="page-title">Welcome back, {{ session('candidate_name') }}!</h1>
+        <!-- <p class="page-subtitle">Track your applications and discover new opportunities that match your skills.</p> -->
     </div>
 
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-100 shadow-sm">
-                <div class="stat-icon blue">
-                    <i class="bi bi-file-earmark-text-fill"></i>
-                </div>
+            <div class="card stat-card h-60 shadow-sm">
                 <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">Total Live Advertisements</p>
-                <small class="text-info">
+                <small class="text-danger">
                     <i class="bi bi-info-circle me-1"></i>Currently Active
                 </small>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-100 shadow-sm">
-                <div class="stat-icon orange">
-                    <i class="bi bi-file-earmark-text-fill"></i>
-                </div>
+            <div class="card stat-card h-60 shadow-sm">
                 <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">Total Vacancy</p>
                 <small class="text-warning">
@@ -117,10 +111,7 @@
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-100 shadow-sm">
-                <div class="stat-icon emerald">
-                    <i class="bi bi-star-fill"></i>
-                </div>
+            <div class="card stat-card h-60 shadow-sm">
                 <h3 class="h2 fw-bold mb-1">{{ $applicationsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">My Applications</p>
                 <small class="text-success">

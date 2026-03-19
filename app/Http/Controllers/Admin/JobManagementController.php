@@ -239,4 +239,109 @@ class JobManagementController extends Controller
             ->back()
             ->with('success', 'Vacancy status updated successfully!');
     }
+
+    /**
+     * Preview PDF in browser (English or Nepali)
+     */
+    public function previewPDF(Request $request)
+    {
+        $lang = $request->get('lang', 'en');
+
+        // Get all active jobs
+        $jobs = JobPosting::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = \PDF::loadView('admin.jobs.pdf.' . $lang, [
+            'jobs' => $jobs,
+            'generatedDate' => now()->format('Y-m-d H:i:s')
+        ]);
+
+        // Enable Unicode support for Nepali
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        return $pdf->stream('vacancy-list-preview.pdf');
+    }
+
+    /**
+     * Download all jobs as PDF (English or Nepali)
+     */
+    public function downloadPDF(Request $request)
+    {
+        $lang = $request->get('lang', 'en'); // default to English
+
+        // Get all active jobs
+        $jobs = JobPosting::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = \PDF::loadView('admin.jobs.pdf.' . $lang, [
+            'jobs' => $jobs,
+            'generatedDate' => now()->format('Y-m-d H:i:s')
+        ]);
+
+        // Enable Unicode support for Nepali
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = $lang === 'ne'
+            ? 'vacancy-list-nepali-' . now()->format('Y-m-d') . '.pdf'
+            : 'vacancy-list-english-' . now()->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Download all jobs as Excel
+     */
+    public function downloadExcel()
+    {
+        $jobs = JobPosting::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $filename = 'vacancy-list-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($jobs) {
+            $file = fopen('php://output', 'w');
+
+            // CSV Headers
+            fputcsv($file, [
+                'S.N.',
+                'Advertisement No.',
+                'Position/Level',
+                'Department',
+                'Category',
+                'Posts',
+                'Deadline',
+                'Status',
+                'Posted Date'
+            ]);
+
+            // Data rows
+            foreach ($jobs as $index => $job) {
+                fputcsv($file, [
+                    $index + 1,
+                    $job->advertisement_no,
+                    $job->position_level,
+                    $job->department,
+                    ucfirst($job->category) . ($job->inclusive_type ? " ({$job->inclusive_type})" : ''),
+                    $job->number_of_posts,
+                    $job->deadline->format('Y-m-d'),
+                    ucfirst($job->status),
+                    $job->created_at->format('Y-m-d'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
