@@ -34,7 +34,7 @@
     <a href="{{ route('candidate.admit-card') }}" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Back to Admit Cards
     </a>
-    <button onclick="window.print()" class="btn btn-info float-end">
+    <button onclick="window.print()" class="btn btn-danger float-end">
         <i class="bi bi-printer"></i> Print or Save as PDF
     </button>
 </div>
@@ -53,8 +53,8 @@
                     </div>
                 </div>
                 <div class="header-center">
-                    <h2 class="org-title">{{ $application->organization_name ?? 'नेपाल आयल निगम लिमिटेड' }}</h2>
-                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, टेकु' }}</h4>
+                    <h2 class="org-title">{{ 'नेपाल आयल निगम लिमिटेड' }}</h2>
+                    <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, बबरमहल' }}</h4>
                     <p class="exam-type">{{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}</p>
                     <h3 class="card-title">प्रवेश पत्र</h3>
                 </div>
@@ -67,10 +67,10 @@
                         @endif
                         
                         <!-- NOC Logo Stamp Overlay -->
-                        @if(file_exists(public_path('img/images.jpg')))
-                            <img src="{{ asset('img/images.jpg') }}" alt="NOC Stamp" class="noc-stamp-overlay">
-                        @elseif(file_exists(public_path('images/images.jpg')))
-                            <img src="{{ asset('images/images.jpg') }}" alt="NOC Stamp" class="noc-stamp-overlay">
+                        @if(file_exists(public_path('img/images.png')))
+                            <img src="{{ asset('img/images.png') }}" alt="NOC Stamp" class="noc-stamp-overlay">
+                        @elseif(file_exists(public_path('images/images.png')))
+                            <img src="{{ asset('images/images.png') }}" alt="NOC Stamp" class="noc-stamp-overlay">
                         @endif
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                     <table class="info-table mt-2">
                         <tr>
                             <td class="label">विज्ञापन नं.</td>
-                            <td class="value">: {{ $application->advertisement_number ?? '' }}</td>
+                            <td class="value">: {{ $application->advertisement_no ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">पद / तह</td>
@@ -107,7 +107,7 @@
                         </tr>
                         <tr>
                             <td class="label">सेवा / समूह</td>
-                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->department ?? '' }}</td>
+                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">खुल्ला / समावेशी</td>
@@ -159,21 +159,30 @@
                         @endif
                     </div>
 
-                    <div class="signature-section">
-                        <div class="signature-box">
-                            @if(isset($application->signature) && $application->signature)
-                                <img src="{{ asset('storage/' . $application->signature) }}" alt="Signature" class="candidate-signature">
-                            @endif
-                        </div>
-                        <div class="signature-labels">
-                            <div class="signature-label-left">
-                                <p>उम्मेदवार दस्तखत</p>
-                            </div>
-                            <div class="signature-label-right">
-                                <p>आधिकारिक दस्तखत</p>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="signature-section d-flex justify-content-between">
+
+    <!-- Candidate Signature (from storage) -->
+    <div class="signature-container text-center">
+        <div class="signature-box">
+            @if(isset($application->signature) && $application->signature)
+                <img src="{{ asset('storage/' . $application->signature) }}" 
+                     class="signature-image">
+            @endif
+        </div>
+        <p class="signature-label">उम्मेदवार दस्तखत</p>
+    </div>
+
+    <!-- Official Signature (from public folder) -->
+    <div class="signature-container text-center">
+        <div class="signature-box">
+            <img src="{{ asset('images/official-signature.png') }}" 
+                 class="signature-image">
+        </div>
+        <p class="signature-label">आधिकारिक दस्तखत</p>
+    </div>
+
+</div>
+
                 </div>
             </div>
 
@@ -434,18 +443,29 @@ body {
 }
 
 .signature-section {
-    margin-top: 20px;
+    margin-top: 40px;
+}
+
+.signature-container {
+    width: 45%;
 }
 
 .signature-box {
     width: 100%;
     height: 60px;
     border: 1px solid #000;
-    margin-bottom: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden; /* prevents overflow */
 }
+
+.signature-image {
+    max-height: 100px;
+    max-width: 90%;
+    object-fit: contain;
+}
+
 
 .candidate-signature {
     max-width: 90%;

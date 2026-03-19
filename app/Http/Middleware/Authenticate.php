@@ -28,6 +28,10 @@ class Authenticate extends Middleware
                 return route('reviewer.login');
             }
 
+            if (str_starts_with($path, 'approver/')) {
+                return route('approver.login');
+            }
+
             if (str_starts_with($path, 'candidate/')) {
                 return route('candidate.login');
             }

@@ -20,50 +20,27 @@ class HRAdministratorAuthController extends Controller
     /**
      * Handle HR Administrator login request
      */
- public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
-
-    $remember = $request->boolean('remember');
-
-    //  DEBUG: Log attempt
-    \Log::info('HR Login attempt', ['email' => $credentials['email']]);
-
-    if (Auth::guard('hr_administrator')->attempt($credentials, $remember)) {
-        $request->session()->regenerate();
-
-        $hrAdmin = Auth::guard('hr_administrator')->user();
-
-        //  DEBUG: Log success
-        \Log::info('HR Login SUCCESS', [
-            'user_id' => $hrAdmin->id,
-            'email' => $hrAdmin->email,
-            'authenticated' => Auth::guard('hr_administrator')->check(),
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        if ($hrAdmin->status !== 'active') {
-            Auth::guard('hr_administrator')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+        $credentials = $request->only('email', 'password');
+        $credentials['status'] = 'active'; // Only allow active HR administrators
 
-            throw ValidationException::withMessages([
-                'email' => 'Your account has been deactivated.',
-            ]);
+        $remember = $request->boolean('remember');
+
+        if (Auth::guard('hr_administrator')->attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('hr-administrator.dashboard'));
         }
 
-        return redirect()->intended(route('hr-administrator.dashboard'));
+        throw ValidationException::withMessages([
+            'email' => 'The provided credentials do not match our records or your account has been deactivated.',
+        ]);
     }
-
-    //  DEBUG: Log failure
-    \Log::info('HR Login FAILED', ['email' => $credentials['email']]);
-
-    throw ValidationException::withMessages([
-        'email' => 'The provided credentials do not match our records.',
-    ]);
-}
 
     /**
      * Handle HR Administrator logout request

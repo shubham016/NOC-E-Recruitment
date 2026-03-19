@@ -387,7 +387,7 @@
                         </tr>
                         <tr>
                             <td class="label">सेवा / समूह</td>
-                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->department ?? '' }}</td>
+                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">खुल्ला / समावेशी</td>

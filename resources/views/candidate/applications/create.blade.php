@@ -34,7 +34,7 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-2">
+        <div class="card-header bg-light text-dark text-center py-2">
             <h3 class="mb-0 fw-bold">NOC | New Application Form</h3>
         </div>
         <div class="card-body px-5 pt-3 pb-5">
@@ -98,7 +98,7 @@
 
 <!-- STEP 1: Personal Info -->                  
                 <div class="step" id="step1">
-                    <h5 class="mb-4 text-primary">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -112,37 +112,14 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="birth_date_bs" class="form-label">
-                                Birth Date (B.S) <span class="text-danger">*</span>
-                                <small class="text-primary">(जन्म मिति B.S)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="birth_date_bs"
-                                name="birth_date_bs"
-                                placeholder="YYYY-MM-DD"
-                                autocomplete="off"
-                                value="{{ old('birth_date_bs', $draftApplication->birth_date_bs ?? '') }}">
-                            <small class="form-text text-primary">
-                                <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
-                            </small>
+                            <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
+                            <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control" 
+                                value="{{ old('birth_date_ad', $draftApplication->birth_date_ad ?? '') }}" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="birth_date_ad" class="form-label">
-                                Birth Date (A.D) <span class="text-danger">*</span>
-                                <small>(जन्म मिति A.D)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="birth_date_ad"
-                                name="birth_date_ad"
-                                placeholder="YYYY-MM-DD"
-                                value="{{ old('birth_date_ad', $draftApplication->birth_date_ad ?? '') }}"
-                                required
-                                readonly>
-                            <small class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
-                            </small>
+                            <label for="birth_date_bs" class="form-label">Birth Date (B.S) <span class="text-danger">*</span> <small>(जन्म मिति B.S)</small></label>
+                            <input type="text" name="birth_date_bs" id="birth_date_bs" class="form-control" placeholder="YYYY-MM-DD" 
+                                value="{{ old('birth_date_bs', $draftApplication->birth_date_bs ?? $candidate->date_of_birth_bs) }}" required>
                         </div>
                         <div class="col-md-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -150,23 +127,24 @@
                                 value="{{ old('email', $draftApplication->email ?? $candidate->email) }}" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
-                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $draftApplication->phone ?? '') }}" required>
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" id="phone" class="form-control"
+                                value="{{ old('phone', $draftApplication->phone ?? $candidate->phone) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
-                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? '') }}" required>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? $job->advertisement_no ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
-                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $draftApplication->applying_position ?? '') }}" required>
+                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $draftApplication->applying_position ?? $job->title ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
                             <input type="text" name="department" id="department" class="form-control" 
-                                value="{{ old('department', $draftApplication->department ?? '') }}" required>
+                                value="{{ old('department', $draftApplication->department ?? $job->service_group ?? '') }}" readonly>
                         </div>
                     </div>
 
@@ -217,44 +195,13 @@
                                 value="{{ old('citizenship_number', $draftApplication->citizenship_number ?? $candidate->citizenship_number) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="citizenship_issue_date_bs" class="form-label">
-                                Citizenship Issue Date (B.S) <span class="text-danger">*</span>
-                                <small class="text-primary">(जारी मिति B.S)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="citizenship_issue_date_bs"
-                                name="citizenship_issue_date_bs"
-                                placeholder="YYYY-MM-DD"
-                                autocomplete="off"
-                                value="{{ old('citizenship_issue_date_bs', $draftApplication->citizenship_issue_date_bs ?? '') }}">
-                            <small class="form-text text-primary">
-                                <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
-                            </small>
+                            <label for="citizenship_issue_date_bs" class="form-label">Citizenship Issue Date (B.S)<span class="text-danger">*</span></label>
+                            <input type="text" name="citizenship_issue_date_bs" id="citizenship_issue_date_bs" class="form-control" 
+                                value="{{ old('citizenship_issue_date_bs', $draftApplication->citizenship_issue_date_bs ?? $candidate->citizenship_issue_date_bs) }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label for="citizenship_issue_date_ad" class="form-label">
-                                Citizenship Issue Date (A.D) <span class="text-danger">*</span>
-                                <small>(जारी मिति A.D)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="citizenship_issue_date_ad"
-                                name="citizenship_issue_date_ad"
-                                placeholder="YYYY-MM-DD"
-                                value="{{ old('citizenship_issue_date_ad', $draftApplication->citizenship_issue_date_ad ?? '') }}"
-                                required
-                                readonly>
-                            <small class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="citizenship_issue_district" class="form-label">Citizenship Issue District <span class="text-danger">*</span></label>
-                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_date_district" class="form-control"
+                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_district" class="form-control" 
                                 value="{{ old('citizenship_issue_district', $draftApplication->citizenship_issue_district ?? $candidate->citizenship_issue_distric) }}" required>
                         </div>
                     </div>
@@ -317,14 +264,14 @@
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 
 <!-- STEP 2: General Info -->                
                 <div class="step d-none" id="step2">
-                    <h5 class="mb-4 text-primary">Step 2 — General Information</h5>
+                    <h5 class="mb-4 text-light">Step 2 — General Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
@@ -401,13 +348,13 @@
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- STEP 3: Address -->
                 <div class="step d-none" id="step3">
-                    <h5 class="mb-4 text-primary">Step 3 — Permanent Address</h5>
+                    <h5 class="mb-4 text-light">Step 3 — Permanent Address</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="permanent_province" class="form-label">Province <span class="text-danger">*</span></label>
@@ -446,7 +393,7 @@
                         </div>
                     </div>
                     
-                    <h5 class="mb-4 text-primary mt-4">Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-light mt-4">Mailing/Current Address</h5>
                     <div class="form-check mb-4">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent') ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
@@ -490,14 +437,14 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                
 <!-- step 4: Educational Background -->
                 <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-primary">Step 4 — Educational Background</h5>
+                    <h5 class="mb-4 text-light">Step 4 — Educational Background</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="education_level" class="form-label">Highest Education Level <span class="text-danger">*</span></label>
@@ -528,13 +475,13 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- step 5: Work Experience -->
                 <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-primary">Step 5 — Work Experience</h5>
+                    <h5 class="mb-4 text-light">Step 5 — Work Experience</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
@@ -561,74 +508,74 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- step 6: Upload Documents -->
                 <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
+                    <h5 class="mb-4 text-light">Step 6 — Upload Documents</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="passport_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
-                            <input type="file" name="passport_photo" id="passport_photo" class="form-control" accept=".jpg,.jpeg,.png" required>
-                            <small class="text-muted d-block">Max size: 1MB (JPG/PNG only)</small>
+                            <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
+                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf" required>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
                         <div class="col-md-6">
-                            <label for="citizenship_certificate" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
-                            <input type="file" name="citizenship_certificate" id="citizenship_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
-                            <small class="text-muted d-block">Max size: 2MB (PDF/JPG/PNG)</small>
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
+                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf" required>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                        <label for="educational_certificates" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
-                            <input type="file" name="educational_certificates" id="educational_certificates" class="form-control" accept=".pdf,.zip" required>
-                            <small class="text-muted d-block">Max size: 10MB (PDF or ZIP only)</small>
+                        <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="character_certificate" class="form-label">
+                            <label for="character" class="form-label">
                                 Character Certificate <span class="text-danger">*</span>
                             </label>
                             <input type="file"
-                                name="character_certificate"
-                                id="character_certificate"
+                                name="character"
+                                id="character"
                                 class="form-control"
-                                accept=".pdf,.jpg,.jpeg,.png"
+                                accept="image/*,application/pdf"
                                 required>
-                            <small class="text-muted d-block">Max size: 2MB (PDF/JPG/PNG)</small>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="equivalency_certificate" class="form-label">Equivalency Certificate (If your degree is out of Nepal)</label>
-                            <input type="file" name="equivalency_certificate" id="equivalency_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                            <small class="text-muted d-block">Max size: 2MB (PDF/JPG/PNG)</small>
+                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal)</label>
+                            <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="experience_certificates" class="form-label">Work Experience Document</label>
-                            <input type="file" name="experience_certificates" id="experience_certificates" class="form-control" accept=".pdf,.zip">
-                            <small class="text-muted d-block">Max size: 10MB (PDF/ZIP only)</small>
+                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
-                            <input type="file" name="signature" id="signature" class="form-control" accept=".jpg,.jpeg,.png" required>
-                            <small class="text-muted d-block">Max size: 1MB (JPG/PNG only)</small>
+                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*,application/pdf" required>
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
 <!-- STEP 7: Preview Application Before Payment -->
                 <div class="step d-none" id="step7">
-                    <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
+                    <h5 class="mb-4 text-light">Step 7 — Preview Application Before Payment</h5>
 
                     <div class="alert alert-info">
                         Please review all your details carefully before proceeding to payment.
@@ -644,12 +591,45 @@
                             <tr><th>Birth Date (AD)</th><td id="p_birth_date_ad"></td></tr>
                             <tr><th>Birth Date (BS)</th><td id="p_birth_date_bs"></td></tr>
                             <tr><th>Phone</th><td id="p_phone"></td></tr>
+                            <tr><th>Advertisement Number</th><td id="p_advertisement_no"></td></tr>
+                            <tr><th>Applying Position</th><td id="p_applying_position"></td></tr>
+                            <tr><th>Department</th><td id="p_department"></td></tr>
+                            <tr><th>Age</th><td id="p_age"></td></tr>
+                            <tr><th>Alternate Phone Number</th><td id="p_alternate_phone_number"></td></tr>
                             <tr><th>Gender</th><td id="p_gender"></td></tr>
                             <tr><th>Marital Status</th><td id="p_marital_status"></td></tr>
-                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Spouse Name (If Married)</th><td id="spouse_name_english"></td></tr>
+                            <tr><th>Spouse Nationality (If Married)</th><td id="p_spouse_nationality"></td></tr>
+                            <tr><th>Citizenship Number</th><td id="p_citizenship_number"></td></tr>
+                            <tr><th>Citizenship Issue Date (B.S)</th><td id="p_citizenship_issue_date_bs"></td></tr>
+                            <tr><th>Citizenship Issue District</th><td id="p_citizenship_issue_district"></td></tr>
+                            <tr><th>Father Name (बुबाको नाम)</th><td id="p_father_name_english"></td></tr>
+                            <tr><th>Mother Name (आमाको नाम)</th><td id="p_mother_name_english"></td></tr>
+                            <tr><th>Grandfather Name (हजुरबुबाको नाम)</th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father's Qualification (बुबाको योग्यता)</th><td id="p_father_qualification"></td></tr>
+                            <tr><th>Mother's Qualification (आमाको योग्यता)</th><td id="p_mother_qualification"></td></tr>
+                            <tr><th>Parent's Occupation</th><td id="p_parent_occupation"></td></tr>
                             <tr><th>Blood Group</th><td id="p_blood_group"></td></tr>
+                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Are you NOC Employee?</th><td id="p_noc_employee"></td></tr>
+                            <tr><th>NOC ID Card</th><td id="p_noc_id_card"></td></tr>
                         </table>
 
+                        <!-- General Information -->
+                            <h6 class="text-secondary mt-3">General Information</h6>
+                            <table class="table table-bordered">
+
+                                <tr><th width="30%">Religion</th><td id="p_religion"></td></tr>
+                                <tr><th>Community</th><td id="p_community"></td></tr>
+                                <tr><th>Ethnic Group</th><td id="p_ethnic_group"></td></tr>
+                                <tr><th>Mother Tongue</th><td id="p_mother_tongue"></td></tr>
+                                <tr><th>Employment Status</th><td id="p_employment_status"></td></tr>
+                                <tr><th>Physical Disability</th><td id="p_physical_disability"></td></tr>
+                                <tr><th>Ethnic Certificate</th><td id="p_ethnic_certificate"></td></tr>
+                                <tr><th>Disability Certificate</th><td id="p_disability_certificate"></td></tr>
+
+                            </table>
+                            <!-- Address Information -->
                         <h6 class="text-secondary mt-4">Address Information</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Permanent Address</th>
@@ -658,7 +638,7 @@
                             <tr><th>Mailing Address</th>
                                 <td id="p_mailing_address"></td></tr>
                         </table>
-
+                            <!-- Education -->
                         <h6 class="text-secondary mt-4">Education</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Education Level</th><td id="p_education_level"></td></tr>
@@ -666,7 +646,7 @@
                             <tr><th>Institution</th><td id="p_institution_name"></td></tr>
                             <tr><th>Graduation Year</th><td id="p_graduation_year"></td></tr>
                         </table>
-
+                            <!-- Work Experience -->
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
@@ -674,56 +654,36 @@
                             <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
                             <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
                         </table>
-
+                            <!-- Uploaded Documents -->
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
-                            <tr>
-                                <th width="30%">Passport Size Photo</th>
-                                <td id="p_photo"></td>
-                            </tr>
-                            <tr>
-                                <th>Citizenship / ID Document</th>
-                                <td id="p_citizenship"></td>
-                            </tr>
-                            <tr>
-                                <th>Transcript</th>
-                                <td id="p_transcript"></td>
-                            </tr>
-                            <tr>
-                                <th>Character</th>
-                                <td id="p_character"></td>
-                            </tr>
-                            <tr>
-                                <th>Equivalent</th>
-                                <td id="p_equivalent"></td>
-                            </tr>
-                            <tr>
-                                <th>Signature</th>
-                                <td id="p_signature"></td>
-                            </tr>
-                            <tr>
-                                <th>Work Experience</th>
-                                <td id="p_work_experience"></td>
-                            </tr>
+                            <tr><th width="30%">Passport Size Photo</th><td id="p_photo"></td></tr>
+                            <tr><th>Citizenship / ID Document</th><td id="p_citizenship"></td></tr>
+                            <tr><th>Transcript</th><td id="p_transcript"></td></tr>
+                            <tr><th>Character</th><td id="p_character"></td></tr>
+                            <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
+                            <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
                         </table>
                         <div class="form-check mb-4">
-                                <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" value="1">
+                                <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
                                 <label class="form-check-label" for="terms_agree">
-                                    I hereby declare that all information provided is true and correct. (Check this before payment)
+                                    I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
                                 </label>
                             </div>
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="button" class="btn btn-light next-btn">Next</button>
                         </div>
                     </div>
                 </div>
                     
+          
 
 <!-- STEP 8: Payment Method -->
                 <div class="step d-none" id="step8">
-                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+                    <h5 class="mb-4 text-light">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
                         @if(isset($payment) && $payment->status == 'paid')
@@ -770,7 +730,7 @@
 
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                                <button type="button" id="saveDraftBtn" class="btn btn-success">Save Application and Pay Later</button>
+                                <button type="button" id="saveDraftBtn" class="btn btn-danger">Save Application and Pay Later</button>
                             </div>
 
                         </div>
@@ -847,22 +807,22 @@
     /* Active / Completed State */
     .tab-item.active .tab-circle,
     .tab-item.completed .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item.active .tab-label,
     .tab-item.completed .tab-label {
-        color: #0d6efd;
+        color: #000000;
         font-weight: 600;
     }
 
     /* Hover */
     .tab-item:hover .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item:hover .tab-label {
-        color: #0d6efd;
+        color: #000000;
     }
 
     /* Progress Line */
@@ -871,7 +831,7 @@
         bottom: -1px;
         left: 0;
         height: 4px;
-        background: #0d6efd;
+        background: #ff0000;
         width: 14.28%; 
         transition: width 0.4s ease;
         z-index: 1;
@@ -933,227 +893,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     console.log('=== DEBUG: Checking Save Draft Button ===');
-
-    // ============================================
-    // CRITICAL: Numeral conversion functions for Nepali Date Picker
-    // ============================================
-
-    // Convert Nepali numerals to English
-    function nepaliToEnglish(str) {
-        if (!str) return str;
-        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
-        return str.replace(/[०-९]/g, d => map[d]);
-    }
-
-    // Convert English numerals to Nepali for display
-    function englishToNepali(str) {
-        if (!str) return str;
-        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
-        return str.replace(/[0-9]/g, d => map[d]);
-    }
-
-    // ============================================
-    // Birth Date Nepali Date Picker Initialization
-    // ============================================
-    function initializeBirthDatePicker() {
-        const birthDateBS = document.getElementById('birth_date_bs');
-        const birthDateAD = document.getElementById('birth_date_ad');
-
-        if (!birthDateBS || !birthDateAD) {
-            console.error('❌ Birth date elements not found!');
-            return;
-        }
-
-        // Initialize Nepali Date Picker
-        $('#birth_date_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
-            ndpYearCount: 50
-        });
-
-        console.log('✅ Birth Date Nepali Date Picker initialized');
-
-        // ============================================
-        // WORKING SOLUTION: Use polling to detect changes
-        // ============================================
-        let lastBSValue = $('#birth_date_bs').val() || '';
-
-        const pollInterval = setInterval(function() {
-            const currentBSValue = $('#birth_date_bs').val();
-
-            // Check if value changed and is valid
-            if (currentBSValue &&
-                currentBSValue !== lastBSValue &&
-                currentBSValue !== 'YYYY-MM-DD' &&
-                currentBSValue.length >= 10) {
-
-                console.log('📅 BS Birth Date changed (polling detected):', currentBSValue);
-                lastBSValue = currentBSValue;
-
-                // Convert Nepali numerals to English for calculation
-                const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                console.log('🔢 After numeral conversion:', bsValueEnglish);
-
-                // Convert BS to AD
-                const adValue = window.bsToAD(bsValueEnglish);
-                console.log('✅ AD Result:', adValue);
-
-                if (adValue) {
-                    // Update the English date field (this goes to database)
-                    birthDateAD.value = adValue;
-                    console.log('✅ Birth date AD field updated:', adValue);
-                }
-            }
-        }, 200); // Check every 200ms
-
-        // Initialize on page load
-        setTimeout(function() {
-            const existingBSValue = $('#birth_date_bs').val();
-
-            // If BS field already has a value (from database), convert English numerals to Nepali
-            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
-                console.log('📅 Converting existing Birth Date BS to Nepali numerals:', existingBSValue);
-                const bsNepali = englishToNepali(existingBSValue);
-                $('#birth_date_bs').val(bsNepali);
-                lastBSValue = bsNepali;
-                console.log('✅ Birth Date BS converted to Nepali:', bsNepali);
-
-                // Also update AD field if empty
-                if (!birthDateAD.value) {
-                    const adValue = window.bsToAD(existingBSValue);
-                    if (adValue) {
-                        birthDateAD.value = adValue;
-                    }
-                }
-            }
-            // If only AD value exists, convert to BS
-            else if (birthDateAD.value && !existingBSValue) {
-                console.log('📅 Initializing Birth Date BS from existing AD date:', birthDateAD.value);
-                const bsValue = window.adToBS(birthDateAD.value);
-                console.log('✅ Initial BS (English numerals):', bsValue);
-
-                if (bsValue) {
-                    const bsNepali = englishToNepali(bsValue);
-                    $('#birth_date_bs').val(bsNepali);
-                    lastBSValue = bsNepali;
-                    console.log('✅ Birth Date BS initialized:', bsNepali);
-                }
-            }
-        }, 500);
-    }
-
-    // ============================================
-    // Citizenship Issue Date Nepali Date Picker Initialization
-    // ============================================
-    function initializeCitizenshipIssueDatePicker() {
-        const citizenshipIssueDateBS = document.getElementById('citizenship_issue_date_bs');
-        const citizenshipIssueDateAD = document.getElementById('citizenship_issue_date_ad');
-
-        if (!citizenshipIssueDateBS || !citizenshipIssueDateAD) {
-            console.error('❌ Citizenship issue date elements not found!');
-            return;
-        }
-
-        // Initialize Nepali Date Picker
-        $('#citizenship_issue_date_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
-            ndpYearCount: 50
-        });
-
-        console.log('✅ Citizenship Issue Date Nepali Date Picker initialized');
-
-        // ============================================
-        // WORKING SOLUTION: Use polling to detect changes
-        // ============================================
-        let lastBSValue = $('#citizenship_issue_date_bs').val() || '';
-
-        const pollInterval = setInterval(function() {
-            const currentBSValue = $('#citizenship_issue_date_bs').val();
-
-            // Check if value changed and is valid
-            if (currentBSValue &&
-                currentBSValue !== lastBSValue &&
-                currentBSValue !== 'YYYY-MM-DD' &&
-                currentBSValue.length >= 10) {
-
-                console.log('📅 BS Citizenship Issue Date changed (polling detected):', currentBSValue);
-                lastBSValue = currentBSValue;
-
-                // Convert Nepali numerals to English for calculation
-                const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                console.log('🔢 After numeral conversion:', bsValueEnglish);
-
-                // Convert BS to AD
-                const adValue = window.bsToAD(bsValueEnglish);
-                console.log('✅ AD Result:', adValue);
-
-                if (adValue) {
-                    // Update the English date field (this goes to database)
-                    citizenshipIssueDateAD.value = adValue;
-                    console.log('✅ Citizenship issue date AD field updated:', adValue);
-                }
-            }
-        }, 200); // Check every 200ms
-
-        // Initialize on page load
-        setTimeout(function() {
-            const existingBSValue = $('#citizenship_issue_date_bs').val();
-
-            // If BS field already has a value (from database), convert English numerals to Nepali
-            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
-                console.log('📅 Converting existing Citizenship Issue Date BS to Nepali numerals:', existingBSValue);
-                const bsNepali = englishToNepali(existingBSValue);
-                $('#citizenship_issue_date_bs').val(bsNepali);
-                lastBSValue = bsNepali;
-                console.log('✅ Citizenship Issue Date BS converted to Nepali:', bsNepali);
-
-                // Also update AD field if empty
-                if (!citizenshipIssueDateAD.value) {
-                    const adValue = window.bsToAD(existingBSValue);
-                    if (adValue) {
-                        citizenshipIssueDateAD.value = adValue;
-                    }
-                }
-            }
-            // If only AD value exists, convert to BS
-            else if (citizenshipIssueDateAD.value && !existingBSValue) {
-                console.log('📅 Initializing Citizenship Issue Date BS from existing AD date:', citizenshipIssueDateAD.value);
-                const bsValue = window.adToBS(citizenshipIssueDateAD.value);
-                console.log('✅ Initial BS (English numerals):', bsValue);
-
-                if (bsValue) {
-                    const bsNepali = englishToNepali(bsValue);
-                    $('#citizenship_issue_date_bs').val(bsNepali);
-                    lastBSValue = bsNepali;
-                    console.log('✅ Citizenship Issue Date BS initialized:', bsNepali);
-                }
-            }
-        }, 500);
-    }
-
-    // Wait for converter functions to be ready from dashboard.blade.php
-    function waitForConverter() {
-        if (typeof window.bsToAD !== 'function' || typeof window.adToBS !== 'function') {
-            console.log('⏳ Waiting for date converter...');
-            setTimeout(waitForConverter, 100);
-            return;
-        }
-
-        console.log('✅ Date converter ready!');
-        initializeBirthDatePicker();
-        initializeCitizenshipIssueDatePicker();
-    }
-
-    // Start waiting for converter
-    waitForConverter();
-
+    
     // Save Draft Button Handler - ADD THIS
 setTimeout(() => {
     const saveDraftBtn = document.getElementById('saveDraftBtn');
@@ -1163,38 +903,31 @@ setTimeout(() => {
         saveDraftBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-
+            
             console.log('Save Draft button clicked!');
-
-            // Don't validate for draft - just save what's filled
-
+            
+            // Validate all steps before saving
+            let allValid = true;
+            for (let i = 1; i <= 7; i++) { // Validate steps 1-7 (exclude payment step)
+                if (!validateStep(i)) {
+                    allValid = false;
+                    showStep(i); // Jump to first invalid step
+                    showAutoSaveStatus('⚠ Please complete all required fields before saving', 'danger');
+                    return false;
+                }
+            }
+            
+            if (!allValid) {
+                return;
+            }
+            
             // Show loading state
             saveDraftBtn.disabled = true;
             saveDraftBtn.textContent = 'Saving...';
             showAutoSaveStatus('💾 Saving your application...', 'info');
-
+            
             const formData = new FormData(form);
-
-            // Remove empty file inputs to avoid validation errors
-            for (let pair of Array.from(formData.entries())) {
-                if (pair[1] instanceof File && pair[1].size === 0) {
-                    formData.delete(pair[0]);
-                }
-            }
-
-            // Handle checkboxes properly for Laravel boolean validation
-            const checkboxes = ['terms_agree', 'same_as_permanent'];
-            checkboxes.forEach(name => {
-                const checkbox = form.querySelector(`[name="${name}"]`);
-                if (checkbox && checkbox.type === 'checkbox') {
-                    formData.delete(name); // Remove the default value
-                    if (checkbox.checked) {
-                        formData.set(name, '1'); // Send '1' if checked
-                    }
-                    // If unchecked, don't send it at all (nullable in draft validation)
-                }
-            });
-
+            
             // Add draft_id if exists
             if (draftIdInput && draftIdInput.value) {
                 formData.set('draft_id', draftIdInput.value);
@@ -1365,37 +1098,27 @@ setTimeout(() => {
         console.log('Already saving, skipping...');
         return;
     }
-
+    
     isSaving = true;
     console.log('Starting auto-save...');
     showAutoSaveStatus('💾 Saving draft...', 'info');
 
-    const formData = new FormData();
-
-    // Only include non-file inputs in auto-save
-    const formElements = form.elements;
-    for (let element of formElements) {
-        if (element.name && element.type !== 'file' && !element.disabled) {
-            if (element.type === 'checkbox' || element.type === 'radio') {
-                if (element.checked) {
-                    formData.append(element.name, element.value);
-                }
-            } else {
-                formData.append(element.name, element.value);
-            }
-        }
-    }
-
+    const formData = new FormData(form);
+    
     // Add draft_id if exists
     if (draftIdInput && draftIdInput.value) {
         formData.set('draft_id', draftIdInput.value);
         console.log('Draft ID:', draftIdInput.value);
     }
 
-    // Log what we're sending (excluding files for auto-save)
-    console.log('Auto-save data (no files):');
+    // Log what we're sending
+    console.log('Form data being sent:');
     for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
+        if (pair[1] instanceof File) {
+            console.log(pair[0] + ': [FILE] ' + pair[1].name);
+        } else {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
     }
 
     fetch('{{ route("candidate.applications.saveDraft") }}', {
@@ -1441,13 +1164,28 @@ setTimeout(() => {
     });
 }
 
-    // DISABLED AUTO-SAVE - User must click "Save Draft" button manually
-    // Trigger preview update only
+    // Trigger auto-save on input changes (debounced)
     form.addEventListener('input', function(e) {
+        // Skip file inputs
+        if (e.target.type === 'file') return;
+        
+        console.log('Input changed:', e.target.name);
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(autoSave, 2000); // Save 2 seconds after typing stops
         populatePreview();
     });
 
     form.addEventListener('change', function(e) {
+        // Save on select/radio/checkbox changes
+        if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox' || e.target.type === 'radio') {
+            console.log('Select/checkbox changed:', e.target.name);
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(autoSave, 1000);
+        }
+        // Also update preview when files are selected
+        if (e.target.type === 'file') {
+            populatePreview();
+        }
         populatePreview();
     });
 
@@ -1486,11 +1224,16 @@ setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function validateStep(step) {
+        function validateStep(step) {
         const stepEl = document.getElementById('step' + step);
-        if (!stepEl) return true; // If step doesn't exist, consider it valid
+        if (!stepEl) return true;
 
-        // Clear previous validation errors
+        const wasHidden = stepEl.classList.contains('d-none');
+        if (wasHidden) {
+            stepEl.classList.remove('d-none');
+            stepEl.style.visibility = 'hidden';
+        }
+
         stepEl.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
             el.classList.remove('is-invalid');
             if (el.classList.contains('invalid-feedback')) el.remove();
@@ -1499,53 +1242,61 @@ setTimeout(() => {
         let isValid = true;
         let firstInvalid = null;
 
-        // Validate all required fields in this step
         stepEl.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-            // Skip if field is hidden
-            if (field.closest('.d-none')) return;
-            
-            // For file inputs, check if they have files (only if required)
-            if (field.type === 'file') {
-                if (field.hasAttribute('required') && field.files.length === 0) {
+            const hiddenParent = field.parentElement?.closest('.conditionally-hidden');
+            if (hiddenParent) return;
+
+            if (field.type === 'checkbox') {
+                if (!field.checked) {
                     isValid = false;
                     field.classList.add('is-invalid');
-                    
-                    // Create error message
                     const err = document.createElement('div');
                     err.className = 'invalid-feedback';
-                    err.textContent = 'This file is required';
+                    err.textContent = 'You must agree before continuing';
                     field.parentNode.appendChild(err);
-                    
                     if (!firstInvalid) firstInvalid = field;
                 }
                 return;
             }
-            
-            // Check if field is empty
+
+            if (field.type === 'file') {
+                if (field.hasAttribute('required') && field.files.length === 0) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                    const err = document.createElement('div');
+                    err.className = 'invalid-feedback';
+                    err.textContent = 'This file is required';
+                    field.parentNode.appendChild(err);
+                    if (!firstInvalid) firstInvalid = field;
+                }
+                return;
+            }
+
             const value = field.value.trim();
-            if (!value || value === '') {
+            if (!value) {
                 isValid = false;
                 field.classList.add('is-invalid');
-                
-                // Create error message
                 const err = document.createElement('div');
                 err.className = 'invalid-feedback';
                 err.textContent = 'This field is required';
                 field.parentNode.appendChild(err);
-                
                 if (!firstInvalid) firstInvalid = field;
             }
         });
 
-        // If validation failed, scroll to first invalid field and show alert
-        if (!isValid && firstInvalid) {
+        if (wasHidden) {
+            stepEl.classList.add('d-none');
+            stepEl.style.visibility = '';
+        }
+
+        if (!isValid && firstInvalid && !wasHidden) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             firstInvalid.focus();
-            
-            // Show alert
-            showAutoSaveStatus('⚠ Please fill all required fields', 'warning');
+            if (typeof showAutoSaveStatus === 'function') {
+                showAutoSaveStatus('⚠ Please fill all required fields', 'warning');
+            }
         }
-        
+
         return isValid;
     }
 
@@ -1701,11 +1452,11 @@ setTimeout(() => {
         
         if (allValid) {
             clearTimeout(autoSaveTimeout);
-            showAutoSaveStatus('📤 Submitting...', 'primary');
+            showAutoSaveStatus('📤 Submitting...', 'light');
         }
     });
 
-    // ==================== PREVIEW FOR STEP 7 ====================
+   // ==================== PREVIEW FOR STEP 7 ====================
     function populatePreview() {
 
         function val(id) {
@@ -1724,10 +1475,37 @@ setTimeout(() => {
         set('p_birth_date_ad', val('birth_date_ad'));
         set('p_birth_date_bs', val('birth_date_bs'));
         set('p_phone', val('phone'));
+        set('p_advertisement_no', val('advertisement_no'));
+        set('p_applying_position', val('applying_position'));
+        set('p_department', val('department'));
+        set('p_age', val('age'));
+        set('p_alternate_phone_number', val('alternate_phone_number'));
         set('p_gender', val('gender'));
         set('p_marital_status', val('marital_status'));
-        set('p_nationality', val('nationality'));
+        set('spouse_name_english', val('spouse_name_english'));
+        set('p_spouse_nationality', val('spouse_nationality'));
+        set('p_citizenship_number', val('citizenship_number'));
+        set('p_citizenship_issue_date_bs', val('citizenship_issue_date_bs'));
+        set('p_citizenship_issue_district', val('citizenship_issue_district'));
+        set('p_father_name_english', val('father_name_english'));
+        set('p_mother_name_english', val('mother_name_english'));
+        set('p_grandfather_name_english', val('grandfather_name_english'));
+        set('p_father_qualification', val('father_qualification'));
+        set('p_mother_qualification', val('mother_qualification'));
+        set('p_parent_occupation', val('parent_occupation'));
         set('p_blood_group', val('blood_group'));
+        set('p_nationality', val('nationality'));
+        set('p_noc_employee', val('noc_employee'));
+        
+
+        // General Information
+        set('p_religion', val('religion'));
+        set('p_community', val('community'));
+        set('p_ethnic_group', val('ethnic_group'));
+        set('p_mother_tongue', val('mother_tongue'));
+        set('p_employment_status', val('employment_status'));
+        set('p_physical_disability', val('physical_disability'));
+        
 
         // Address Info
         const permanentAddress =
@@ -1791,14 +1569,19 @@ setTimeout(() => {
         }
 
         // Single file previews
-        previewFile('p_photo', 'passport_photo');
-        previewFile('p_citizenship', 'citizenship_certificate');
+        previewFile('p_photo', 'passport_size_photo');
+        previewFile('p_citizenship', 'citizenship_id_document');
         previewFile('p_transcript', 'transcript');
         previewFile('p_signature', 'signature');
         previewFile('p_equivalent', 'equivalent');
-        previewFile('p_work_experience', 'experience_certificates');
+        previewFile('p_work_experience', 'work_experience');
         previewFile('p_character', 'character');
+        previewFile('p_noc_id_card', 'noc_id_card');
+        previewFile('p_ethnic_certificate', 'ethnic_certificate');
+        previewFile('p_disability_certificate', 'disability_certificate');
+        
     }
+
 
     // PAYMENT GATEWAYS
     window.startPayment = function(gateway) {
@@ -1806,14 +1589,7 @@ setTimeout(() => {
         const draftId = document.getElementById('draft_id')?.value;
 
         if (!draftId) {
-            alert("Please click 'Save Application and Pay Later' button first before proceeding to payment!");
-            // Scroll back to the button
-            document.getElementById('saveDraftBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            document.getElementById('saveDraftBtn').classList.add('btn-warning');
-            setTimeout(() => {
-                document.getElementById('saveDraftBtn').classList.remove('btn-warning');
-                document.getElementById('saveDraftBtn').classList.add('btn-success');
-            }, 2000);
+            alert("Application draft not found. Please complete form properly.");
             return;
         }
 

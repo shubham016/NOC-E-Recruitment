@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'Application Reviews')
 
@@ -15,37 +15,21 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-hourglass-split"></i>
-        <span>Pending Reviews</span>
-        <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item">
+    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
-        <span class="badge bg-info ms-auto">{{ $stats['assigned'] }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
-        <i class="bi bi-clipboard-check"></i>
+        <i class="bi bi-inbox"></i>
         <span>Reviewed</span>
-        <span class="badge bg-primary ms-auto">{{ $stats['reviewed'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="sidebar-menu-item">
-        <i class="bi bi-check-circle"></i>
-        <span>Approved</span>
-        <span class="badge bg-success ms-auto">{{ $stats['approved'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="sidebar-menu-item">
-        <i class="bi bi-x-circle"></i>
-        <span>Rejected</span>
-        <span class="badge bg-danger ms-auto">{{ $stats['rejected'] }}</span>
+        <span class="badge bg-info ms-auto">{{ $stats['reviewed'] }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
         border-radius: 12px;
         padding: 1.5rem;
         color: white;
@@ -137,7 +121,7 @@
 
     #bulkActionsBar {
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border-left: 4px solid #3b82f6;
+        border-left: 4px solid #ff0000;
     }
 
     #bulkActionsBar .card-body {
@@ -146,13 +130,13 @@
     }
 
     .form-check-input:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
+        background-color: #ff0000;
+        border-color: #ff0000;
     }
 
     .application-card.selected {
         background-color: #eff6ff !important;
-        border-left-color: #3b82f6 !important;
+        border-left-color: #ff0000 !important;
     }
 </style>
 @endsection
@@ -164,7 +148,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h3 class="fw-bold mb-1">
-                    <i class="bi bi-clipboard-check me-2"></i>Application Reviews
+                    <i class="bi me-2"></i>Application Reviews
                 </h3>
                 <p class="mb-0 opacity-90">Review and process candidate applications</p>
             </div>
@@ -176,9 +160,6 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-file-earmark-text text-primary fs-4"></i>
-                    </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
                         <small class="text-muted">Total Applications</small>
@@ -189,9 +170,6 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-info bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-inbox text-info fs-4"></i>
-                    </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['assigned'] }}</h3>
                         <small class="text-muted">Assigned to Me</small>
@@ -202,9 +180,6 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-success bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['approved'] }}</h3>
                         <small class="text-muted">Approved</small>
@@ -215,9 +190,6 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-danger bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-x-circle-fill text-danger fs-4"></i>
-                    </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['rejected'] }}</h3>
                         <small class="text-muted">Rejected</small>
@@ -257,7 +229,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-search me-1"></i> Search
+                            <i class="me-1"></i> Search
                         </button>
                     </div>
                 </div>
@@ -270,20 +242,20 @@
         <div class="card-body py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="fw-bold text-primary me-3">
-                        <i class="bi bi-check-square me-2"></i>
+                    <span class="fw-bold text-dark me-3">
+                        <i class="bi me-2"></i>
                         <span id="selectedCount">0</span> application(s) selected
                     </span>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                        <i class="bi bi-x-circle me-1"></i>Clear Selection
+                        <i class="bi me-1"></i>Clear Selection
                     </button>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
-                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export to Excel
+                        <i class="bi me-1"></i>Export to Excel
                     </button>
                     <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>Export to PDF
+                        <i class="bi me-1"></i>Export to PDF
                     </button>
                 </div>
             </div>
@@ -295,7 +267,7 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <i class="bi bi-list-ul text-primary me-2"></i>Applications List
+                    <i class="text-dark me-2"></i>Applications List
                 </h6>
                 <span class="badge bg-primary">{{ $applications->total() }} Total</span>
             </div>
@@ -380,7 +352,7 @@
                                 <td class="text-col">{{ $application->jobPosting->title ?? 'N/A' }}</td>
                                 <td class="text-col">{{ $application->jobPosting->department ?? 'N/A' }}</td>
                                 <td class="nowrap">
-                                    <strong class="text-primary d-block">{{ adToBS($application->submitted_at ?? $application->created_at) }}</strong>
+                                    <strong class="text-success d-block">{{ adToBS($application->submitted_at ?? $application->created_at) }}</strong>
                                     <small class="text-muted">{{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}</small>
                                 </td>
                                 <td class="nowrap">
@@ -399,12 +371,12 @@
                                 <td class="nowrap">
                                     @if($application->manual_priority)
                                         <span class="badge {{ $priorityBadge }}">
-                                            <i class="bi bi-star-fill"></i> {{ $priorityText }}
+                                            {{ $priorityText }}
                                         </span>
                                         @if($application->priority_note)
                                             <br>
                                             <small class="text-muted" title="{{ $application->priority_note }}">
-                                                <i class="bi bi-info-circle"></i>
+                                                
                                             </small>
                                         @endif
                                     @else
@@ -418,14 +390,14 @@
                                 </td>
                                 <td class="nowrap">
                                     <a href="{{ route('reviewer.applications.show', $application->id) }}" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-eye"></i> Review
+                                        <i class="bi"></i> Review
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="10" class="text-center py-5">
-                                    <i class="bi bi-inbox display-1 text-muted"></i>
+                                    <i class="display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Applications Found</h5>
                                     <p class="text-secondary">No applications match your criteria.</p>
                                 </td>
@@ -558,7 +530,7 @@ function showExportMessage(format, count) {
         font-weight: 500;
         animation: slideIn 0.3s ease-out;
     `;
-    toast.innerHTML = `<i class="bi bi-check-circle me-2"></i> Exporting ${count} application(s) to ${format}... Download will start shortly.`;
+    toast.innerHTML = `<i class="me-2"></i> Exporting ${count} application(s) to ${format}... Download will start shortly.`;
 
     document.body.appendChild(toast);
 

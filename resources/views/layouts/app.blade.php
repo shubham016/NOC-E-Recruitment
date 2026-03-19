@@ -22,6 +22,10 @@
         rel="stylesheet" type="text/css" />
 
     <style>
+        .nav-tabs .nav-link {
+            color: #a07828 !important;
+        }
+
         /* Make circles smaller */
         .tab-circle {
             width: 25px !important;
@@ -30,16 +34,43 @@
         }
 
         .tab-label {
-            font-size: 12px !important;  
+            font-size: 12px !important;
+        }
+
+        /* Notification icon styling */
+        .notification-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .notification-link .bi-bell {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: -2px;
+            font-size: 0.6rem;
+            padding: 0.15em 0.35em;
+            min-width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
 
         .tab-item {
             font-size: 14px;
-            margin-right: -20px; 
+            margin-right: -20px;
         }
 
         .tab-item:last-child {
-            margin-right: 0px;  
+            margin-right: 0px;
         }
 
         * {
@@ -47,7 +78,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-    
+
         body {
             background-color: #f8f9fa;
             min-height: 100vh;
@@ -75,13 +106,14 @@
             margin-bottom: 0.3rem;
         }
 
-        /* Top Navbar */
+        /* Top Navbar - light warm white with gold bottom border */
         .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 1030;
             transition: padding-left 0.3s ease;
+            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%) !important;
         }
 
         /* NOC Logo and Brand Styles */
@@ -94,26 +126,28 @@
         .noc-logo {
             height: 50px;
             width: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .noc-info h5 {
             margin: 0;
             font-size: 17px;
             font-weight: 600;
-            color: white;
+            color: #1a2a4a;
             line-height: 1.2;
         }
 
         .noc-info p {
             margin: 0;
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #555;
             line-height: 1.2;
         }
 
         .noc-info small {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.75);
+            color: #c9a84c;
             font-style: italic;
             display: block;
             margin-top: 2px;
@@ -121,9 +155,9 @@
 
         /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.35);
+            color: #a07828;
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
@@ -133,7 +167,7 @@
         }
 
         .sidebar-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(201, 168, 76, 0.2);
         }
 
         /* Layout Container */
@@ -143,22 +177,23 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Sidebar */
+        /* Sidebar - light warm grey */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-            color: white;
+            background: linear-gradient(180deg, #f7f5f0 0%, #f0ede6 100%);
+            color: #2c2c2c;
             position: fixed;
             left: 0;
             top: 70px;
             height: calc(100vh - 56px);
             overflow-y: hidden;
             flex-shrink: 0;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.07);
             display: flex;
             flex-direction: column;
             transition: transform 0.3s ease;
             z-index: 1020;
+            border-right: 1px solid #e8e2d4;
         }
 
         .sidebar.hidden {
@@ -167,8 +202,8 @@
 
         .sidebar-header {
             padding: 1rem 1.25rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(201, 168, 76, 0.1);
+            border-bottom: 1px solid #e0d5b8;
             flex-shrink: 0;
         }
 
@@ -179,24 +214,24 @@
         }
 
         .user-avatar {
-            width: 36px; 
-            height: 36px; 
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            color: white;
+            color: #fff;
             flex-shrink: 0;
             font-size: 0.9rem;
         }
 
         .user-info h6 {
             margin: 0;
-            font-size: 0.95rem; 
+            font-size: 0.95rem;
             font-weight: 600;
-            color: white;
+            color: #1a2a4a;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -204,45 +239,46 @@
         }
 
         .user-info small {
-            font-size: 0.75rem; 
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            color: #a07828;
             display: block;
         }
 
         .sidebar-menu {
-            padding: 0.75rem 0; 
+            padding: 0.75rem 0;
             flex: 1;
-            overflow-y: auto; 
+            overflow-y: auto;
         }
 
         .sidebar-menu-item {
-            padding: 0.7rem 1.25rem; 
-            color: rgba(255, 255, 255, 0.7);
+            padding: 0.7rem 1.25rem;
+            color: #444;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.3s ease;
             border-left: 3px solid transparent;
-            font-size: 0.9rem; 
+            font-size: 0.9rem;
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border-left-color: #2563eb;
+            background: rgba(201, 168, 76, 0.1);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
         }
 
         .sidebar-menu-item.active {
-            background: rgba(37, 99, 235, 0.15);
-            color: white;
-            border-left-color: #2563eb;
+            background: rgba(201, 168, 76, 0.15);
+            color: #1a2a4a;
+            border-left-color: #c9a84c;
             font-weight: 500;
         }
 
         .sidebar-menu-item i {
-            font-size: 1.15rem; 
-            width: 22px; 
+            font-size: 1.15rem;
+            width: 22px;
+            color: #a07828;
         }
 
         /* Main Content Area */
@@ -259,10 +295,10 @@
             margin-left: 0;
         }
 
-        /* Footer */
+        /* Footer - light warm tone with gold top border */
         footer {
-            background-color: #2563eb;
-            color: white;
+            background: linear-gradient(90deg, #f7f5f0 0%, #f0ede6 100%);
+            color: #555;
             padding: 20px 0;
             margin-left: 260px;
             width: calc(100% - 260px);
@@ -387,18 +423,17 @@
         }
 
         .sidebar-menu::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(201, 168, 76, 0.3);
             border-radius: 3px;
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(201, 168, 76, 0.5);
         }
-
     </style>
     @yield('custom-styles')
 
@@ -408,7 +443,7 @@
 <body>
 
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="topNavbar">
+    <nav class="navbar navbar-expand-lg navbar-light" id="topNavbar">
         <div class="container-fluid">
             <!-- Sidebar Toggle Button -->
             <button class="sidebar-toggle-btn" id="sidebarToggle">
@@ -417,7 +452,8 @@
 
             <!-- NOC Logo and Brand -->
             <div class="noc-brand-container">
-                <img src="{{ asset('images/noc_logo.jpeg') }}" alt="Nepal Oil Corporation Logo" class="noc-logo">
+                <img src="/images/images.png" alt="Nepal Oil Corporation Logo" class="noc-logo"
+                    style="height: 50px; width: auto; display: block;">
                 <div class="noc-info">
                     <h5>NEPAL OIL CORPORATION LTD.</h5>
                     <p>Babarmahal, Kathmandu</p>
@@ -431,28 +467,139 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Candidate Dashboard -->
+                    <!-- Notifications -->
+                    @if(request()->is('candidate/*'))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark position-relative notification-link"
+                               href="{{ route('candidate.notifications.index') }}"
+                               title="Notifications">
+                                <i class="bi bi-bell"></i>
+                                @php
+                                    try {
+                                        if (Auth::guard('candidate')->check()) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('candidate')->id())
+                                                ->where('user_type', 'candidate')
+                                                ->where('is_read', false)
+                                                ->count();
+                                            if ($unreadCount > 0) {
+                                                echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
+                                            }
+                                        }
+                                    } catch (\Exception $e) {
+                                        // Silently fail if there's an error
+                                    }
+                                @endphp
+                            </a>
+                        </li>
+                    @elseif(request()->is('reviewer/*'))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark position-relative notification-link"
+                               href="{{ route('reviewer.notifications.index') }}"
+                               title="Notifications">
+                                <i class="bi bi-bell"></i>
+                                @php
+                                    try {
+                                        if (Auth::guard('reviewer')->check()) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                                                ->where('user_type', 'reviewer')
+                                                ->where('is_read', false)
+                                                ->count();
+                                            if ($unreadCount > 0) {
+                                                echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
+                                            }
+                                        }
+                                    } catch (\Exception $e) {
+                                        // Silently fail if there's an error
+                                    }
+                                @endphp
+                            </a>
+                        </li>
+                    @elseif(request()->is('approver/*'))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark position-relative notification-link"
+                               href="{{ route('approver.notifications.index') }}"
+                               title="Notifications">
+                                <i class="bi bi-bell"></i>
+                                @php
+                                    try {
+                                        if (Auth::guard('approver')->check()) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('approver')->id())
+                                                ->where('user_type', 'approver')
+                                                ->where('is_read', false)
+                                                ->count();
+                                            if ($unreadCount > 0) {
+                                                echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
+                                            }
+                                        }
+                                    } catch (\Exception $e) {
+                                        // Silently fail if there's an error
+                                    }
+                                @endphp
+                            </a>
+                        </li>
+                    @endif
+
+                    <!-- Dashboard (Dynamic based on portal) -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('candidate.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
+                        @if(request()->is('candidate/*'))
+                            <a class="nav-link text-dark" href="{{ route('candidate.dashboard') }}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        @elseif(request()->is('reviewer/*'))
+                            <a class="nav-link text-dark" href="{{ route('reviewer.dashboard') }}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        @elseif(request()->is('approver/*'))
+                            <a class="nav-link text-dark" href="{{ route('approver.dashboard') }}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        @elseif(request()->is('admin/*'))
+                            <a class="nav-link text-dark" href="{{ route('admin.dashboard') }}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        @endif
                     </li>
 
-                    <!-- My Applications -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('candidate.applications.index') }}">
-                            <i class="bi bi-file-earmark-text"></i> My Applications
-                        </a>
-                    </li>
+                    <!-- My Applications (Candidate Only) -->
+                    @if(request()->is('candidate/*'))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="{{ route('candidate.applications.index') }}">
+                                <i class="bi bi-file-earmark-text"></i> My Applications
+                            </a>
+                        </li>
+                    @endif
 
-                    <!-- Logout -->
+                    <!-- Logout (Dynamic based on portal) -->
                     <li class="nav-item">
-                        <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
-                            @csrf
-                            <button class="btn btn-link nav-link" type="submit">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </button>
-                        </form>
+                        @if(request()->is('candidate/*'))
+                            <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-link nav-link text-dark" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        @elseif(request()->is('reviewer/*'))
+                            <form method="POST" action="{{ route('reviewer.logout') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-link nav-link text-dark" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        @elseif(request()->is('approver/*'))
+                            <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-link nav-link text-dark" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        @elseif(request()->is('admin/*'))
+                            <form method="POST" action="{{ route('admin.logout') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-link nav-link text-dark" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        @endif
                     </li>
                 </ul>
             </div>
@@ -461,7 +608,7 @@
 
     <!-- Layout Container: Sidebar + Main Content -->
     <div class="layout-container">
-        
+
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -470,10 +617,22 @@
                         $candidateName = 'User';
                         $candidateInitial = 'U';
 
-                        $authCandidate = \Auth::guard('candidate')->user();
-                        if ($authCandidate) {
-                            $candidateName = $authCandidate->name ?: $authCandidate->email;
-                            $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                        // Get candidate from session
+                        if (session()->has('candidate_id')) {
+                            $candidateId = session('candidate_id');
+
+                            // Fetch candidate from database
+                            $candidate = \DB::table('candidate_registration')
+                                ->where('id', $candidateId)
+                                ->first();
+
+                            if ($candidate && !empty($candidate->name)) {
+                                $candidateName = $candidate->name;
+                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                            } elseif ($candidate && !empty($candidate->email)) {
+                                $candidateName = explode('@', $candidate->email)[0];
+                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                            }
                         }
                     @endphp
                     <div class="user-avatar">
@@ -534,14 +693,12 @@
         </div>
     </footer>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Nepali Datepicker JS -->
-    <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js"></script>
+    <script
+        src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js"></script>
 
     <!-- BS/AD Date Converter -->
     <script>
@@ -812,15 +969,15 @@
 
     <!-- Sidebar Toggle Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
             const footer = document.getElementById('footer');
             const toggleBtn = document.getElementById('sidebarToggle');
-            
+
             // Load saved state from localStorage or default to visible
             let isHidden = localStorage.getItem('sidebarHidden') === 'true';
-            
+
             // Apply initial state
             if (isHidden) {
                 sidebar.classList.add('hidden');
@@ -829,9 +986,9 @@
             }
 
             // Toggle functionality
-            toggleBtn.addEventListener('click', function() {
+            toggleBtn.addEventListener('click', function () {
                 isHidden = !isHidden;
-                
+
                 if (isHidden) {
                     sidebar.classList.add('hidden');
                     mainContent.classList.add('expanded');
@@ -841,7 +998,7 @@
                     mainContent.classList.remove('expanded');
                     footer.classList.remove('expanded');
                 }
-                
+
                 // Save state to localStorage
                 localStorage.setItem('sidebarHidden', isHidden);
             });

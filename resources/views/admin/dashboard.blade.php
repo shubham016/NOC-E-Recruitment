@@ -47,6 +47,12 @@
         <span class="badge bg-success ms-auto">{{ $stats['active_hr_admins'] }}</span>
     </a>
 
+    <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-person-check"></i>
+        <span>Approvers</span>
+        <span class="badge bg-success ms-auto">{{ $stats['active_approvers'] ?? 0 }}</span>
+    </a>
+
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
         <span>Reports</span>

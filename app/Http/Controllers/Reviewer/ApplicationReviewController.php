@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Reviewer;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApplicationReviewController extends Controller
@@ -27,13 +27,13 @@ class ApplicationReviewController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->whereHas('candidate', function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('candidate', function ($q) use ($search) {
                     $q->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 })
-                ->orWhereHas('jobPosting', function($q) use ($search) {
+                ->orWhereHas('jobPosting', function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%");
                 });
             });
@@ -50,9 +50,9 @@ class ApplicationReviewController extends Controller
         // Priority filter (based on deadline)
         if ($request->filled('priority')) {
             $priority = $request->priority;
-            $query->whereHas('jobPosting', function($q) use ($priority) {
+            $query->whereHas('jobPosting', function ($q) use ($priority) {
                 $now = now();
-                switch($priority) {
+                switch ($priority) {
                     case 'high':
                         $q->whereBetween('deadline', [$now, $now->copy()->addDays(2)]);
                         break;
@@ -73,6 +73,7 @@ class ApplicationReviewController extends Controller
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
+
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
@@ -88,8 +89,8 @@ class ApplicationReviewController extends Controller
 
         if ($sortBy === 'deadline') {
             $query->join('job_postings', 'application_form.job_posting_id', '=', 'job_postings.id')
-                  ->orderBy('job_postings.deadline', $sortOrder)
-                  ->select('application_form.*');
+                ->orderBy('job_postings.deadline', $sortOrder)
+                ->select('application_form.*');
         } else {
             $query->orderBy($sortBy, $sortOrder);
         }
@@ -105,20 +106,29 @@ class ApplicationReviewController extends Controller
             'total' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', '!=', 'draft')
                 ->count(),
+
             'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'pending')
                 ->count(),
+
             'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'assigned')
                 ->count(),
+
             'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'reviewed')
                 ->count(),
+
             'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'approved')
                 ->count(),
+
             'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'rejected')
+                ->count(),
+
+            'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edit')
                 ->count(),
         ];
 
@@ -142,17 +152,25 @@ class ApplicationReviewController extends Controller
             'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'pending')
                 ->count(),
+
             'assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'assigned')
                 ->count(),
+
             'reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'reviewed')
                 ->count(),
+
             'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'approved')
                 ->count(),
+
             'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'rejected')
+                ->count(),
+
+            'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edit')
                 ->count(),
         ];
 
@@ -202,7 +220,7 @@ class ApplicationReviewController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:reviewed,rejected',
+            'status' => 'required|in:reviewed,rejected,edit',
             'reviewer_notes' => 'required|string|max:1000',
         ]);
 
@@ -219,17 +237,45 @@ class ApplicationReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        // Create notifications for candidate based on status
+        $notificationMessages = [
+            'edit' => [
+                'title' => 'Application Requires Correction',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
+                'type' => 'application_sent_back'
+            ],
+            'reviewed' => [
+                'title' => 'Application Under Review',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been reviewed and forwarded to the admin for final decision.',
+                'type' => 'application_reviewed'
+            ],
+            'rejected' => [
+                'title' => 'Application Rejected',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
+                'type' => 'application_rejected'
+            ],
+        ];
+
+        if (isset($notificationMessages[$request->status])) {
+            Notification::create([
+                'user_id' => $application->candidate_id,
+                'user_type' => 'candidate',
+                'type' => $notificationMessages[$request->status]['type'],
+                'title' => $notificationMessages[$request->status]['title'],
+                'message' => $notificationMessages[$request->status]['message'],
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
+
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
             $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
+        } elseif ($request->status === 'edit') {
+            $message = 'Application sent back to candidate for correction successfully!';
         } else {
             $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
         }
-
-        // TODO: When Sparrow SMS is integrated, send SMS notification to candidate for rejected applications
-        // if ($request->status === 'rejected') {
-        //     $this->sendRejectionSMS($application);
-        // }
 
         return response()->json([
             'success' => true,
@@ -246,10 +292,15 @@ class ApplicationReviewController extends Controller
         $request->validate([
             'application_ids' => 'required|array',
             'application_ids.*' => 'exists:application_form,id',
-            'status' => 'required|in:reviewed,rejected',
+            'status' => 'required|in:reviewed,rejected,edit',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
+
+        // Get applications before updating them (needed for notifications)
+        $applications = ApplicationForm::whereIn('id', $request->application_ids)
+            ->where('reviewer_id', $reviewer->id)
+            ->get();
 
         // Only update applications assigned to this reviewer
         ApplicationForm::whereIn('id', $request->application_ids)
@@ -260,10 +311,48 @@ class ApplicationReviewController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+        // Create notifications for candidates based on status
+        $notificationMessages = [
+            'edit' => [
+                'title' => 'Application Requires Correction',
+                'message' => 'Your application for "' . '{job_title}' . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
+                'type' => 'application_sent_back'
+            ],
+            'reviewed' => [
+                'title' => 'Application Under Review',
+                'message' => 'Your application for "' . '{job_title}' . '" has been reviewed and forwarded to the admin for final decision.',
+                'type' => 'application_reviewed'
+            ],
+            'rejected' => [
+                'title' => 'Application Rejected',
+                'message' => 'Your application for "' . '{job_title}' . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
+                'type' => 'application_rejected'
+            ],
+        ];
+
+        if (isset($notificationMessages[$request->status])) {
+            foreach ($applications as $application) {
+                $message = str_replace('{job_title}', $application->jobPosting->title, $notificationMessages[$request->status]['message']);
+
+                Notification::create([
+                    'user_id' => $application->candidate_id,
+                    'user_type' => 'candidate',
+                    'type' => $notificationMessages[$request->status]['type'],
+                    'title' => $notificationMessages[$request->status]['title'],
+                    'message' => $message,
+                    'related_id' => $application->id,
+                    'related_type' => 'application',
+                ]);
+            }
+        }
+
         // Prepare response message
         $count = count($request->application_ids);
+
         if ($request->status === 'reviewed') {
             $message = $count . ' applications marked as reviewed and sent to Approver Portal!';
+        } elseif ($request->status === 'edit') {
+            $message = $count . ' applications sent back to candidates for correction!';
         } else {
             $message = $count . ' applications rejected! Candidates will be notified via SMS when integrated.';
         }
@@ -294,12 +383,12 @@ class ApplicationReviewController extends Controller
             // Otherwise apply filters
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name_english', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhereHas('jobPosting', function($q) use ($search) {
-                          $q->where('title', 'like', "%{$search}%");
-                      });
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhereHas('jobPosting', function ($q) use ($search) {
+                            $q->where('title', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -322,11 +411,11 @@ class ApplicationReviewController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() use ($applications) {
+        $callback = function () use ($applications) {
             $file = fopen('php://output', 'w');
 
             // Add BOM for Excel UTF-8 support
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
             // Add headers
             fputcsv($file, [
@@ -398,12 +487,12 @@ class ApplicationReviewController extends Controller
             // Otherwise apply filters
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name_english', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhereHas('jobPosting', function($q) use ($search) {
-                          $q->where('title', 'like', "%{$search}%");
-                      });
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhereHas('jobPosting', function ($q) use ($search) {
+                            $q->where('title', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -426,6 +515,7 @@ class ApplicationReviewController extends Controller
             'reviewed' => $applications->where('status', 'reviewed')->count(),
             'approved' => $applications->where('status', 'approved')->count(),
             'rejected' => $applications->where('status', 'rejected')->count(),
+            'edit' => $applications->where('status', 'edit')->count(),
         ];
 
         $pdf = Pdf::loadView('reviewer.applications.pdf', compact('applications', 'stats', 'reviewer'));

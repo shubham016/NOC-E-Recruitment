@@ -39,9 +39,10 @@ class ApplicationFormController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
 
-        $forms = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-            ->latest()
-            ->paginate(10);
+        $forms = ApplicationForm::with('payment')
+        ->where('citizenship_number', $candidate->citizenship_number)
+        ->latest()
+        ->paginate(10);
 
         return view('candidate.applications.index', compact('forms'));
     }
@@ -264,7 +265,7 @@ class ApplicationFormController extends Controller
             // Check if already applied (exclude drafts)
             $existingApplication = ApplicationForm::where('job_posting_id', $job->id)
                 ->where('citizenship_number', $candidate->citizenship_number)
-                ->where('status', '!=', 'draft')
+                ->whereNotIn('status', ['draft', 'edit'])
                 ->first();
 
             if ($existingApplication) {
@@ -321,7 +322,7 @@ class ApplicationFormController extends Controller
         }
 
         $data['citizenship_number'] = $candidate->citizenship_number;
-        $data['status'] = 'pending'; // Final submission
+        $data['status'] = 'submitted'; // Final submission
 
         if ($existingDraft) {
             // Update the draft to final submission
@@ -362,23 +363,28 @@ class ApplicationFormController extends Controller
      * Show the form for editing the specified application
      */
     public function edit(ApplicationForm $applicationform)
-    {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
-
-        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
-            return redirect()->route('candidate.applications.index')
-                ->withErrors(['error' => 'Unauthorized access']);
-        }
-
-        return view('candidate.applications.edit', compact('applicationform'));
+{
+    if (!Session::has('candidate_logged_in')) {
+        return redirect()->route('candidate.login');
     }
+
+    $candidate = DB::table('candidate_registration')
+        ->where('id', Session::get('candidate_id'))
+        ->first();
+
+    if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+        return redirect()->route('candidate.applications.index')
+            ->withErrors(['error' => 'Unauthorized access']);
+    }
+
+    // ✅ Block editing after payment/submission
+    if (!in_array($applicationform->status, ['draft', 'edit'])) {
+        return redirect()->route('candidate.applications.index')
+            ->with('error', 'This application has already been submitted and cannot be edited.');
+    }
+
+    return view('candidate.applications.edit', compact('applicationform'));
+}
 
     /**
      * Update the specified application
@@ -473,7 +479,7 @@ class ApplicationFormController extends Controller
 
         $existingApplication = ApplicationForm::where('job_posting_id', $job->id)
             ->where('citizenship_number', $candidate->citizenship_number)
-            ->where('status', '!=', 'draft')
+            ->whereNotIn('status', ['draft', 'edit'])
             ->first();
 
         if ($existingApplication) {

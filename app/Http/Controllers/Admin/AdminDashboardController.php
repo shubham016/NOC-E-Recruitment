@@ -8,6 +8,7 @@ use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
 use App\Models\HRAdministrator;
+use App\Models\Approver;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -29,6 +30,8 @@ class AdminDashboardController extends Controller
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
             'total_hr_admins' => HRAdministrator::count(),
             'active_hr_admins' => HRAdministrator::where('status', 'active')->count(),
+            'total_approvers' => Approver::count(),
+            'active_approvers' => Approver::where('status', 'active')->count(),
         ];
 
         // This Month Statistics

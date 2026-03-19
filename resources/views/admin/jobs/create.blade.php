@@ -359,68 +359,70 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Open/Inclusive Category -->
+                    <!-- Category Dropdown -->
                     <div class="mb-4">
                         <label for="category" class="form-label">
-                            <span>Open/Inclusive <span class="required">*</span></span>
-                            <span class="nepali-text">खुल्ला/समावेशी</span>
+                            <span>Category <span class="required">*</span></span>
+                            <span class="nepali-text">श्रेणी</span>
                         </label>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-check form-check-inline border rounded p-3 w-100">
-                                    <input class="form-check-input" type="radio" name="category" id="category_open"
-                                        value="open" {{ old('category', 'open') == 'open' ? 'checked' : '' }} required>
-                                    <label class="form-check-label w-100" for="category_open">
-                                        <strong>Open (खुल्ला)</strong>
-                                        <br><small class="text-muted">For all eligible candidates</small>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check form-check-inline border rounded p-3 w-100">
-                                    <input class="form-check-input" type="radio" name="category" id="category_inclusive"
-                                        value="inclusive" {{ old('category') == 'inclusive' ? 'checked' : '' }}>
-                                    <label class="form-check-label w-100" for="category_inclusive">
-                                        <strong>Inclusive (समावेशी)</strong>
-                                        <br><small class="text-muted">Reserved category</small>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+                        <select class="form-select form-select-lg @error('category') is-invalid @enderror"
+                            id="category" name="category" required>
+                            <option value="">-- Select Category --</option>
+                            <option value="open" {{ old('category', 'open') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
+                            <option value="inclusive" {{ old('category') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
+                            <option value="internal" {{ old('category') == 'internal' ? 'selected' : '' }}>Internal (आन्तरिक)</option>
+                        </select>
                         @error('category')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="form-text">
+                            <i class="bi bi-lightbulb me-1"></i>Select the vacancy category type
+                        </small>
+                    </div>
 
-                        <!-- Inclusive Sub-Category (Conditional) -->
-                        <div class="inclusive-subcategory" id="inclusiveSubCategory">
-                            <label for="inclusive_type" class="form-label">
-                                <span>Inclusive Type <span class="required">*</span></span>
-                                <span class="nepali-text">समावेशी प्रकार</span>
-                            </label>
-                            <select class="form-select form-select-lg @error('inclusive_type') is-invalid @enderror"
-                                id="inclusive_type" name="inclusive_type">
-                                <option value="">-- Select Inclusive Type --</option>
-                                <option value="Women" {{ old('inclusive_type') == 'Women' ? 'selected' : '' }}>Women (महिला)
-                                </option>
-                                <option value="A.J" {{ old('inclusive_type') == 'A.J' ? 'selected' : '' }}>A.J (आ.ज / आदिवासी
-                                    जनजाति)</option>
-                                <option value="Madhesi" {{ old('inclusive_type') == 'Madhesi' ? 'selected' : '' }}>Madhesi
-                                    (मधेसी)</option>
-                                <option value="Janajati" {{ old('inclusive_type') == 'Janajati' ? 'selected' : '' }}>Janajati
-                                    (जनजाति)</option>
-                                <option value="Apanga" {{ old('inclusive_type') == 'Apanga' ? 'selected' : '' }}>Apanga
-                                    (अपाङ्ग)</option>
-                                <option value="Dalit" {{ old('inclusive_type') == 'Dalit' ? 'selected' : '' }}>Dalit (दलित)
-                                </option>
-                                <option value="Pichadiyeko Chetra" {{ old('inclusive_type') == 'Pichadiyeko Chetra' ? 'selected' : '' }}>Pichadiyeko Chetra (पिचडिएको क्षेत्र)</option>
-                            </select>
-                            @error('inclusive_type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="form-text">
-                                <i class="bi bi-lightbulb me-1"></i>Select the specific inclusive category
-                            </small>
-                        </div>
+                    <!-- Internal Sub-Category (Conditional) -->
+                    <div class="inclusive-subcategory mb-4" id="internalSubCategory">
+                        <label for="internal_type" class="form-label">
+                            <span>Internal Type <span class="required">*</span></span>
+                            <span class="nepali-text">आन्तरिक प्रकार</span>
+                        </label>
+                        <select class="form-select form-select-lg @error('internal_type') is-invalid @enderror"
+                            id="internal_type" name="internal_type">
+                            <option value="">-- Select Internal Type --</option>
+                            <option value="open" {{ old('internal_type') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
+                            <option value="inclusive" {{ old('internal_type') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
+                        </select>
+                        @error('internal_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text">
+                            <i class="bi bi-lightbulb me-1"></i>Select if internal vacancy is open or inclusive
+                        </small>
+                    </div>
+
+                    <!-- Inclusive Type (Conditional - for both Inclusive and Internal-Inclusive) -->
+                    <div class="inclusive-subcategory mb-4" id="inclusiveSubCategory">
+                        <label for="inclusive_type" class="form-label">
+                            <span>Inclusive Type <span class="required">*</span></span>
+                            <span class="nepali-text">समावेशी प्रकार</span>
+                        </label>
+                        <select class="form-select form-select-lg @error('inclusive_type') is-invalid @enderror"
+                            id="inclusive_type" name="inclusive_type">
+                            <option value="">-- Select Inclusive Type --</option>
+                            <option value="Women" {{ old('inclusive_type') == 'Women' ? 'selected' : '' }}>Women (महिला)</option>
+                            <option value="A.J" {{ old('inclusive_type') == 'A.J' ? 'selected' : '' }}>A.J (आ.ज / आदिवासी जनजाति)</option>
+                            <option value="Madhesi" {{ old('inclusive_type') == 'Madhesi' ? 'selected' : '' }}>Madhesi (मधेसी)</option>
+                            <option value="Janajati" {{ old('inclusive_type') == 'Janajati' ? 'selected' : '' }}>Janajati (जनजाति)</option>
+                            <option value="Apanga" {{ old('inclusive_type') == 'Apanga' ? 'selected' : '' }}>Apanga (अपाङ्ग)</option>
+                            <option value="Dalit" {{ old('inclusive_type') == 'Dalit' ? 'selected' : '' }}>Dalit (दलित)</option>
+                            <option value="Pichadiyeko Chetra" {{ old('inclusive_type') == 'Pichadiyeko Chetra' ? 'selected' : '' }}>Pichadiyeko Chetra (पिचडिएको क्षेत्र)</option>
+                        </select>
+                        @error('inclusive_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text">
+                            <i class="bi bi-lightbulb me-1"></i>Select the specific inclusive category
+                        </small>
                     </div>
 
                     <!-- Demand Post (Number of Posts) -->
@@ -502,7 +504,7 @@
                                     required
                                     readonly>
                                 <small class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
+                                    <i class="bi bi-info-circle me-1"></i>Auto-set to 21 days from today
                                 </small>
                             </div>
                         </div>
@@ -512,9 +514,62 @@
                         @enderror
 
                         <div class="alert alert-info mt-3 mb-0">
-                            <i class="bi bi-arrows-angle-expand me-2"></i>
-                            <strong>Official Nepali Date Picker:</strong> Pick Nepali date and English date auto-syncs!
-                            <br><small>आधिकारिक नेपाली मिति: नेपाली मिति छान्नुहोस् र अंग्रेजी मिति स्वतः सिंक हुन्छ!</small>
+                            <i class="bi bi-clock-history me-2"></i>
+                            <strong>Auto-calculated:</strong> Deadline automatically set to 21 days from posting date. You can modify if needed.
+                            <br><small>स्वचालित गणना: समय सीमा स्वचालित रूपमा पोस्टिङ मितिबाट २१ दिनमा सेट गरिएको छ।</small>
+                        </div>
+                    </div>
+
+                    <!-- Double Dastur Date - Dual Date Pickers -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <span>Double Dastur Date (Extended Deadline)</span>
+                            <span class="nepali-text">दोहोरो दस्तुर मिति</span>
+                        </label>
+
+                        <div class="row g-3">
+                            <!-- Nepali Date (BS) Picker -->
+                            <div class="col-md-6">
+                                <label for="double_dastur_bs" class="form-label small fw-bold text-success">
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg"
+                                    id="double_dastur_bs"
+                                    placeholder="YYYY-MM-DD"
+                                    autocomplete="off">
+                                <input type="hidden" name="double_dastur_bs" id="double_dastur_bs_hidden">
+                                <small class="form-text text-success">
+                                    <i class="bi bi-info-circle me-1"></i>Optional extended deadline
+                                </small>
+                            </div>
+
+                            <!-- English Date (AD) - Database Field -->
+                            <div class="col-md-6">
+                                <label for="double_dastur_ad" class="form-label small fw-bold text-success">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD)
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg @error('double_dastur_date') is-invalid @enderror"
+                                    id="double_dastur_ad"
+                                    name="double_dastur_date"
+                                    placeholder="YYYY-MM-DD"
+                                    value="{{ old('double_dastur_date', '') }}"
+                                    readonly>
+                                <small class="form-text text-success">
+                                    <i class="bi bi-info-circle me-1"></i>Auto-set to 7 days after deadline (28 days total)
+                                </small>
+                            </div>
+                        </div>
+
+                        @error('double_dastur_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <div class="alert alert-success mt-3 mb-0">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            <strong>Extended Period:</strong> Double Dastur allows additional 7 days after the original deadline (total 28 days from posting).
+                            <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप ७ दिन अनुमति दिन्छ।</small>
                         </div>
                     </div>
 
@@ -557,8 +612,12 @@
                                 <td id="preview-service" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Open/Inclusive</th>
+                                <th>Category</th>
                                 <td id="preview-category" class="fw-semibold">-</td>
+                            </tr>
+                            <tr id="preview-internal-row" style="display: none;">
+                                <th>Internal Type</th>
+                                <td id="preview-internal-type" class="fw-semibold">-</td>
                             </tr>
                             <tr id="preview-inclusive-row" style="display: none;">
                                 <th>Inclusive Type</th>
@@ -575,6 +634,14 @@
                             <tr>
                                 <th>Deadline (AD)</th>
                                 <td id="preview-deadline-ad" class="fw-semibold text-danger">-</td>
+                            </tr>
+                            <tr id="preview-double-dastur-row" style="display: none;">
+                                <th>Double Dastur (BS)</th>
+                                <td id="preview-double-dastur-bs" class="fw-semibold text-success">-</td>
+                            </tr>
+                            <tr id="preview-double-dastur-ad-row" style="display: none;">
+                                <th>Double Dastur (AD)</th>
+                                <td id="preview-double-dastur-ad" class="fw-semibold text-success">-</td>
                             </tr>
                         </tbody>
                     </table>
@@ -673,15 +740,81 @@
 
         const deadlineBS = document.getElementById('deadline_bs');
         const deadlineAD = document.getElementById('deadline_ad');
+        const doubleDasturBS = document.getElementById('double_dastur_bs');
+        const doubleDasturAD = document.getElementById('double_dastur_ad');
         const previewDeadlineBS = document.getElementById('preview-deadline-bs');
         const previewDeadlineAD = document.getElementById('preview-deadline-ad');
+        const previewDoubleDasturBS = document.getElementById('preview-double-dastur-bs');
+        const previewDoubleDasturAD = document.getElementById('preview-double-dastur-ad');
+        const previewDoubleDasturRow = document.getElementById('preview-double-dastur-row');
+        const previewDoubleDasturADRow = document.getElementById('preview-double-dastur-ad-row');
 
         if (!deadlineBS || !deadlineAD) {
             console.error('❌ Date elements not found!');
             return;
         }
 
-        // Initialize Nepali Date Picker
+        // Auto-calculate dates (21 days for deadline, 28 days for double dastur)
+        function setDefaultDates() {
+            const today = new Date();
+
+            // Deadline: 21 days from today
+            const deadlineDate = new Date(today);
+            deadlineDate.setDate(deadlineDate.getDate() + 21);
+            const deadlineADFormatted = deadlineDate.toISOString().split('T')[0];
+
+            // Double Dastur: 28 days from today (7 days after deadline)
+            const doubleDasturDate = new Date(today);
+            doubleDasturDate.setDate(doubleDasturDate.getDate() + 28);
+            const doubleDasturADFormatted = doubleDasturDate.toISOString().split('T')[0];
+
+            // Set AD dates if empty
+            if (!deadlineAD.value) {
+                deadlineAD.value = deadlineADFormatted;
+                console.log('✅ Auto-set deadline to 21 days:', deadlineADFormatted);
+
+                // Convert to BS and set
+                const deadlineBSValue = window.adToBS(deadlineADFormatted);
+                if (deadlineBSValue) {
+                    const deadlineBSNepali = englishToNepali(deadlineBSValue);
+                    $('#deadline_bs').val(deadlineBSNepali);
+                    document.getElementById('deadline_bs_hidden').value = deadlineBSValue;
+
+                    // Update preview
+                    if (previewDeadlineBS) previewDeadlineBS.textContent = deadlineBSNepali + ' बि.सं.';
+                    if (previewDeadlineAD) previewDeadlineAD.textContent = deadlineADFormatted;
+                }
+            }
+
+            // Set Double Dastur dates if empty
+            if (!doubleDasturAD.value) {
+                doubleDasturAD.value = doubleDasturADFormatted;
+                console.log('✅ Auto-set double dastur to 28 days (7 days after deadline):', doubleDasturADFormatted);
+
+                // Convert to BS and set
+                const doubleDasturBSValue = window.adToBS(doubleDasturADFormatted);
+                if (doubleDasturBSValue) {
+                    const doubleDasturBSNepali = englishToNepali(doubleDasturBSValue);
+                    $('#double_dastur_bs').val(doubleDasturBSNepali);
+                    document.getElementById('double_dastur_bs_hidden').value = doubleDasturBSValue;
+
+                    // Update preview
+                    if (previewDoubleDasturBS) {
+                        previewDoubleDasturBS.textContent = doubleDasturBSNepali + ' बि.सं.';
+                        previewDoubleDasturRow.style.display = '';
+                    }
+                    if (previewDoubleDasturAD) {
+                        previewDoubleDasturAD.textContent = doubleDasturADFormatted;
+                        previewDoubleDasturADRow.style.display = '';
+                    }
+                }
+            }
+        }
+
+        // Call after converter is ready
+        setTimeout(setDefaultDates, 600);
+
+        // Initialize Nepali Date Pickers
         $('#deadline_bs').nepaliDatePicker({
             dateFormat: 'YYYY-MM-DD',
             closeOnDateSelect: true,
@@ -691,22 +824,33 @@
             ndpYearCount: 10
         });
 
-        console.log('✅ Nepali Date Picker initialized');
+        $('#double_dastur_bs').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD',
+            closeOnDateSelect: true,
+            unicodeDate: true,
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 10
+        });
+
+        console.log('✅ Nepali Date Pickers initialized');
 
         // ============================================
         // WORKING SOLUTION: Use polling to detect changes
         // ============================================
         let lastBSValue = '';
-        
+        let lastDoubleDasturBSValue = '';
+
         const pollInterval = setInterval(function() {
+            // Poll for Deadline BS changes
             const currentBSValue = $('#deadline_bs').val();
-            
+
             // Check if value changed and is valid
-            if (currentBSValue && 
-                currentBSValue !== lastBSValue && 
+            if (currentBSValue &&
+                currentBSValue !== lastBSValue &&
                 currentBSValue !== 'YYYY-MM-DD' &&
                 currentBSValue.length >= 10) {
-                
+
                 console.log('📅 BS Date changed (polling detected):', currentBSValue);
                 lastBSValue = currentBSValue;
 
@@ -742,6 +886,48 @@
                     if (previewDeadlineAD) {
                         previewDeadlineAD.textContent = adValue; // Already in YYYY-MM-DD format
                         console.log('✅ AD Preview updated:', adValue);
+                    }
+                }
+            }
+
+            // Poll for Double Dastur BS changes
+            const currentDoubleDasturBSValue = $('#double_dastur_bs').val();
+
+            if (currentDoubleDasturBSValue &&
+                currentDoubleDasturBSValue !== lastDoubleDasturBSValue &&
+                currentDoubleDasturBSValue !== 'YYYY-MM-DD' &&
+                currentDoubleDasturBSValue.length >= 10) {
+
+                console.log('📅 Double Dastur BS Date changed:', currentDoubleDasturBSValue);
+                lastDoubleDasturBSValue = currentDoubleDasturBSValue;
+
+                const ddBsValueEnglish = nepaliToEnglish(currentDoubleDasturBSValue);
+                console.log('🔢 Double Dastur after numeral conversion:', ddBsValueEnglish);
+
+                // Update hidden field
+                const ddHiddenField = document.getElementById('double_dastur_bs_hidden');
+                if (ddHiddenField) {
+                    ddHiddenField.value = ddBsValueEnglish;
+                }
+
+                // Convert BS to AD
+                const ddAdValue = window.bsToAD(ddBsValueEnglish);
+                console.log('✅ Double Dastur AD Result:', ddAdValue);
+
+                if (ddAdValue) {
+                    doubleDasturAD.value = ddAdValue;
+                    console.log('✅ Double Dastur AD field updated:', ddAdValue);
+
+                    // Update previews
+                    if (previewDoubleDasturBS) {
+                        const ddBsNepali = englishToNepali(ddBsValueEnglish);
+                        previewDoubleDasturBS.textContent = ddBsNepali + ' बि.सं.';
+                        previewDoubleDasturRow.style.display = '';
+                    }
+
+                    if (previewDoubleDasturAD) {
+                        previewDoubleDasturAD.textContent = ddAdValue;
+                        previewDoubleDasturADRow.style.display = '';
                     }
                 }
             }
@@ -821,36 +1007,70 @@
         // ============================================
         // REST OF FORM - Live Preview for other fields
         // ============================================
-        
-        const categoryRadios = document.querySelectorAll('input[name="category"]');
+
+        const categorySelect = document.getElementById('category');
+        const internalSubCategory = document.getElementById('internalSubCategory');
+        const internalTypeSelect = document.getElementById('internal_type');
         const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
         const inclusiveTypeSelect = document.getElementById('inclusive_type');
+        const previewInternalRow = document.getElementById('preview-internal-row');
+        const previewInternalType = document.getElementById('preview-internal-type');
         const previewInclusiveRow = document.getElementById('preview-inclusive-row');
         const previewInclusiveType = document.getElementById('preview-inclusive-type');
 
-        function toggleInclusiveSubCategory() {
-            const selectedCategory = document.querySelector('input[name="category"]:checked');
-            if (selectedCategory && selectedCategory.value === 'inclusive') {
+        function toggleSubCategories() {
+            const categoryValue = categorySelect ? categorySelect.value : '';
+            const internalTypeValue = internalTypeSelect ? internalTypeSelect.value : '';
+
+            // Hide all sub-categories first
+            if (internalSubCategory) {
+                internalSubCategory.classList.remove('show');
+                internalTypeSelect.removeAttribute('required');
+            }
+            if (inclusiveSubCategory) {
+                inclusiveSubCategory.classList.remove('show');
+                inclusiveTypeSelect.removeAttribute('required');
+            }
+            if (previewInternalRow) previewInternalRow.style.display = 'none';
+            if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
+
+            // Show appropriate fields based on category
+            if (categoryValue === 'internal') {
+                // Show Internal Type dropdown
+                internalSubCategory.classList.add('show');
+                internalTypeSelect.setAttribute('required', 'required');
+                if (previewInternalRow) previewInternalRow.style.display = '';
+                if (previewInternalType) {
+                    previewInternalType.textContent = internalTypeValue ?
+                        (internalTypeValue === 'open' ? 'खुल्ला (Open)' : 'समावेशी (Inclusive)') : '-';
+                }
+
+                // If Internal-Inclusive, show Inclusive Type
+                if (internalTypeValue === 'inclusive') {
+                    inclusiveSubCategory.classList.add('show');
+                    inclusiveTypeSelect.setAttribute('required', 'required');
+                    if (previewInclusiveRow) previewInclusiveRow.style.display = '';
+                    if (previewInclusiveType && inclusiveTypeSelect.value) {
+                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                    }
+                }
+            } else if (categoryValue === 'inclusive') {
+                // Show Inclusive Type dropdown directly
                 inclusiveSubCategory.classList.add('show');
                 inclusiveTypeSelect.setAttribute('required', 'required');
                 if (previewInclusiveRow) previewInclusiveRow.style.display = '';
                 if (previewInclusiveType && inclusiveTypeSelect.value) {
                     previewInclusiveType.textContent = inclusiveTypeSelect.value;
                 }
-            } else {
-                inclusiveSubCategory.classList.remove('show');
-                inclusiveTypeSelect.removeAttribute('required');
-                inclusiveTypeSelect.value = '';
-                if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
-                if (previewInclusiveType) previewInclusiveType.textContent = '-';
             }
         }
 
-        categoryRadios.forEach(radio => {
-            radio.addEventListener('change', toggleInclusiveSubCategory);
-        });
-        toggleInclusiveSubCategory();
-
+        if (categorySelect) {
+            categorySelect.addEventListener('change', toggleSubCategories);
+        }
+        if (internalTypeSelect) {
+            internalTypeSelect.addEventListener('change', toggleSubCategories);
+        }
         if (inclusiveTypeSelect) {
             inclusiveTypeSelect.addEventListener('change', function() {
                 if (previewInclusiveType) {
@@ -858,6 +1078,8 @@
                 }
             });
         }
+
+        toggleSubCategories();
 
         const previewMappings = {
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
@@ -888,20 +1110,24 @@
         });
 
         const categoryPreview = document.getElementById('preview-category');
-        if (categoryPreview) {
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'open') {
-                        categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
-                    } else if (this.value === 'inclusive') {
-                        categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
-                    }
-                });
-            });
+        if (categoryPreview && categorySelect) {
+            function updateCategoryPreview() {
+                if (categorySelect.value === 'open') {
+                    categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
+                } else if (categorySelect.value === 'inclusive') {
+                    categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
+                } else if (categorySelect.value === 'internal') {
+                    categoryPreview.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
+                } else {
+                    categoryPreview.textContent = '-';
+                }
+            }
 
-            const checkedCategory = document.querySelector('input[name="category"]:checked');
-            if (checkedCategory) {
-                checkedCategory.dispatchEvent(new Event('change'));
+            categorySelect.addEventListener('change', updateCategoryPreview);
+
+            // Trigger on page load
+            if (categorySelect.value) {
+                updateCategoryPreview();
             }
         }
 
@@ -914,7 +1140,12 @@
 
                 let descriptionText = 'Position: ' + positionLevel + '\n' +
                     'Department: ' + document.getElementById('department').value + '\n' +
-                    'Category: ' + document.querySelector('input[name="category"]:checked').value.toUpperCase();
+                    'Category: ' + document.getElementById('category').value.toUpperCase();
+
+                const internalType = document.getElementById('internal_type').value;
+                if (internalType) {
+                    descriptionText += ' - ' + internalType.toUpperCase();
+                }
 
                 const inclusiveType = document.getElementById('inclusive_type').value;
                 if (inclusiveType) {

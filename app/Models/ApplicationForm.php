@@ -205,7 +205,7 @@ class ApplicationForm extends Model
      */
     public function canEdit()
     {
-        return in_array($this->status, ['draft', 'pending']);
+        return in_array($this->status, ['draft', 'pending', 'edit']);
     }
 
     /**

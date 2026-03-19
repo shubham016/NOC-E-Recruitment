@@ -36,7 +36,7 @@
 
 @section('content')
 <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="fas fa-list"></i> All Application Records</h4>
     </div>
 
@@ -44,15 +44,17 @@
         @if($forms->count() > 0)
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
-                    <thead class="table-bg-primary">
+                    <thead class="table-bg-light">
                         <tr>
-                            <th width="80">Photo</th>
-                            <th>I.D</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Post</th>
+                            <th>Application No.</th>
                             <th>Adv. No.</th>
+                            
+                            
+                            <th>Post</th>
+                            
+                            <th>Status</th>
                             <th>Roll. No.</th>
+                            <th>Payment</th>
                             <th width="180">Documents</th>
                             <th width="160">Actions</th>
                         </tr>
@@ -60,50 +62,42 @@
                     <tbody>
                         @foreach($forms as $form)
                             <tr>
-                                <td class="text-center">
-                                    @if($form->passport_photo)
-                                        <img src="{{ asset('storage/' . $form->passport_photo) }}"
-                                             class="rounded-circle border"
-                                             width="50" height="50"
-                                             style="object-fit: cover;">
-                                    @else
-                                        <div class="bg-secondary rounded-circle" style="width:50px;height:50px;"></div>
-                                    @endif
-                                </td>
-                                <td>{{ $loop->iteration + ($forms->currentPage() - 1) * $forms->perPage() }}</td>
-                                <td><strong>{{ $form->name_english ?? '-' }}</strong></td>
-                                <td>{{ $form->phone ?? '-' }}</td>
-                                <td>{{ $form->applying_position ?? ($form->jobPosting->title ?? '-') }}</td>
-                                <td>{{ $form->advertisement_no ?? ($form->jobPosting->advertisement_no ?? '-') }}</td>
+                                <td>{{ $form->id ?? '-' }}</td>
+                                <td>{{ $form->advertisement_no ?? '-' }}</td>
+                                
+                                
+                                <td>{{ $form->applying_position ?? '-' }}</td>
+                                
+                                <td>{{ $form->status ?? '-' }}</td>
                                 <td>{{ $form->roll_number ?? '-' }}</td>
+                                <td>{{ $form->payment->status ?? 'unpaid' }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        @if($form->noc_id_card) <span class="badge bg-info">NOC</span> @endif
-                                        @if($form->disability_certificate) <span class="badge bg-warning">DIS</span> @endif
-                                        @if($form->citizenship_certificate) <span class="badge bg-success">CIT</span> @endif
-                                        @if($form->experience_certificates) <span class="badge bg-primary">WE</span> @endif
-                                        @if($form->educational_certificates) <span class="badge bg-secondary">TC</span> @endif
-                                        @if($form->character_certificate) <span class="badge bg-primary">CC</span> @endif
-                                        @if($form->signature) <span class="badge bg-secondary">S</span> @endif
+                                        @if($form->noc_id_card) <span class="badge bg-dark">NOC</span> @endif
+                                        @if($form->disability_certificate) <span class="badge bg-dark">DIS</span> @endif
+                                        @if($form->citizenship_id_document) <span class="badge bg-dark">CIT</span> @endif
+                                        @if($form->work_experience) <span class="badge bg-dark">WE</span> @endif
+                                        @if($form->transcript) <span class="badge bg-dark">TC</span> @endif
+                                        @if($form->character) <span class="badge bg-dark">CC</span> @endif
+                                        @if($form->signature) <span class="badge bg-dark">S</span> @endif
                                         @if($form->ethnic_certificate) <span class="badge bg-dark">ETH</span> @endif
-                                        @if($form->passport_photo) <span class="badge bg-primary">PSP</span> @endif
+                                        @if($form->passport_size_photo) <span class="badge bg-dark">PSP</span> @endif
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('candidate.applications.show', $form->id) }}" class="btn btn-info" title="View">
+                                        <a href="{{ route('candidate.applications.show', $form->id) }}" class="btn btn-danger" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if($form->canEdit())
-                                        <a href="{{ route('candidate.applications.edit', $form->id) }}" class="btn btn-warning" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+                                       @if(in_array($form->status, ['draft', 'edit']))
+                                            <a href="{{ route('candidate.applications.edit', $form->id) }}"
+                                            class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
                                         @endif
-                                        @if($form->canGenerateAdmitCard())
-                                        <a href="{{ route('candidate.admit-card.show', $form->id) }}" class="btn btn-dark" title="Admit Card">
-                                            <i class="fas fa-id-card"></i>
+                                        <a href="{{ route('candidate.admit-card.view', $form->id) }}" class="btn btn-dark" title="Admit Card">
+                                            <i class="fas bi-person-vcard"></i>
                                         </a>
-                                        @endif
                                     </div>
                                 </td>
                             </tr>

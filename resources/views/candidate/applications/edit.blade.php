@@ -29,7 +29,7 @@
 @endsection
 <div class="container my-2">
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-2">
+        <div class="card-header bg-light text-dark text-center py-2">
             <h3 class="mb-0 fw-bold">NOC | Edit Application Form</h3>
         </div>
         <div class="card-body px-5 pt-3 pb-5">
@@ -84,98 +84,73 @@
                 </div>
             </div>
 
-            <form action="{{ route('candidate.applications.update', $application->id) }}" method="POST" enctype="multipart/form-data" id="applicationform">
+            <form action="{{ route('candidate.applications.update', $applicationform->id) }}" method="POST" enctype="multipart/form-data" id="applicationform">
                 @csrf
                 @method('PUT')
 
                {{-- STEP 1: Personal Info --}}
                 <div class="step active" id="step1">
-                    <h5 class="mb-4 text-primary">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="name_english" class="form-label">Full Name (English) <span class="text-danger">*</span> <small>(नाम)</small></label>
-                            <input type="text" name="name_english" id="name_english" class="form-control" value="{{ old('name_english', $application->name_english) }}" required>
+                            <input type="text" name="name_english" id="name_english" class="form-control" value="{{ old('name_english', $applicationform->name_english) }}" required>
                         </div>
                         <div class="col-md-6">
                             <label for="name_nepali" class="form-label">Full Name (Nepali) <span class="text-danger">*</span> <small>(नाम)</small></label>
-                            <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali', $application->name_nepali) }}" required>
+                            <input type="text" name="name_nepali" id="name_nepali" class="form-control" value="{{ old('name_nepali', $applicationform->name_nepali) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="birth_date_bs" class="form-label">
-                                Birth Date (B.S) <span class="text-danger">*</span>
-                                <small class="text-primary">(जन्म मिति B.S)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="birth_date_bs"
-                                name="birth_date_bs"
-                                placeholder="YYYY-MM-DD"
-                                autocomplete="off"
-                                value="{{ old('birth_date_bs', $application->birth_date_bs) }}">
-                            <small class="form-text text-primary">
-                                <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
-                            </small>
+                            <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
+                            <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control" value="{{ old('birth_date_ad', $applicationform->birth_date_ad ? \Carbon\Carbon::parse($applicationform->birth_date_ad)->format('Y-m-d') : '') }}" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="birth_date_ad" class="form-label">
-                                Birth Date (A.D) <span class="text-danger">*</span>
-                                <small>(जन्म मिति A.D)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="birth_date_ad"
-                                name="birth_date_ad"
-                                placeholder="YYYY-MM-DD"
-                                value="{{ old('birth_date_ad', $application->birth_date_ad ? \Carbon\Carbon::parse($application->birth_date_ad)->format('Y-m-d') : '') }}"
-                                required
-                                readonly>
-                            <small class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
-                            </small>
+                            <label for="birth_date_bs" class="form-label">Birth Date (B.S) <span class="text-danger">*</span> <small>(जन्म मिति B.S)</small></label>
+                            <input type="text" name="birth_date_bs" id="birth_date_bs" class="form-control" placeholder="YYYY-MM-DD" value="{{ old('birth_date_bs', $applicationform->birth_date_bs) }}" required>
                         </div>
                         <div class="col-md-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $application->email) }}" required>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $applicationform->email) }}" required>
                         </div>
                         <div class="col-md-3">
                             <label for="phone" class="form-label">Phone <span class="text-danger">*</span> <small>(फोन नम्बर)</small></label>
-                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $application->phone) }}" required>
+                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $applicationform->phone) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
-                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $application->advertisement_no ?? '') }}" required>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $applicationform->advertisement_no ?? '') }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
-                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $application->applying_position ?? '') }}" required>
+                            <input type="text" name="applying_position" id="applying_position" class="form-control" value="{{ old('applying_position', $applicationform->applying_position ?? '') }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                            <input type="text" name="department" id="department" class="form-control" value="{{ old('department', $application->department ?? '') }}" required>
+                            <input type="text" name="department" id="department" class="form-control" value="{{ old('department', $applicationform->department ?? '') }}" required>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="age" class="form-label">Age <span class="text-danger">*</span> <small>(उमेर)</small></label>
-                            <input type="number" name="age" id="age" class="form-control" min="0" value="{{ old('age', $application->age) }}" required>
+                            <input type="number" name="age" id="age" class="form-control" min="0" value="{{ old('age', $applicationform->age) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="alternate_phone_number" class="form-label">Alternate Phone Number <span class="text-danger">*</span> <small>(वैकल्पिक फोन नम्बर)</small></label>
-                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control" value="{{ old('alternate_phone_number', $application->alternate_phone_number) }}" required>
+                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control" value="{{ old('alternate_phone_number', $applicationform->alternate_phone_number) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="gender" class="form-label">Gender <span class="text-danger">*</span> <small>(लिङ्ग)</small></label>
                             <select name="gender" id="gender" class="form-select" required>
                                 <option value="">-- Select / छान्नुहोस् --</option>
-                                <option value="Male" {{ old('gender', $application->gender) == 'Male' ? 'selected' : '' }}>Male / पुरुष</option>
-                                <option value="Female" {{ old('gender', $application->gender) == 'Female' ? 'selected' : '' }}>Female / महिला</option>
-                                <option value="Other" {{ old('gender', $application->gender) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
+                                <option value="Male" {{ old('gender', $applicationform->gender) == 'Male' ? 'selected' : '' }}>Male / पुरुष</option>
+                                <option value="Female" {{ old('gender', $applicationform->gender) == 'Female' ? 'selected' : '' }}>Female / महिला</option>
+                                <option value="Other" {{ old('gender', $applicationform->gender) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
                             </select>
                         </div>
                     </div>
@@ -185,188 +160,193 @@
                             <label for="marital_status" class="form-label">Marital Status <span class="text-danger">*</span></label>
                             <select name="marital_status" id="marital_status" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Single" {{ old('marital_status', $application->marital_status) == 'Single' ? 'selected' : '' }}>Single</option>
-                                <option value="Married" {{ old('marital_status', $application->marital_status) == 'Married' ? 'selected' : '' }}>Married</option>
-                                <option value="Divorced" {{ old('marital_status', $application->marital_status) == 'Divorced' ? 'selected' : '' }}>Divorced</option>
-                                <option value="Widowed" {{ old('marital_status', $application->marital_status) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                                <option value="Single" {{ old('marital_status', $applicationform->marital_status) == 'Single' ? 'selected' : '' }}>Single</option>
+                                <option value="Married" {{ old('marital_status', $applicationform->marital_status) == 'Married' ? 'selected' : '' }}>Married</option>
+                                <option value="Divorced" {{ old('marital_status', $applicationform->marital_status) == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="Widowed" {{ old('marital_status', $applicationform->marital_status) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="spouse_name_english" class="form-label">Spouse Name (If Married)</label>
-                            <input type="text" name="spouse_name_english" id="spouse_name_english" class="form-control" value="{{ old('spouse_name_english',$application->spouse_name_english) }}">
+                            <input type="text" name="spouse_name_english" id="spouse_name_english" class="form-control" value="{{ old('spouse_name_english',$applicationform->spouse_name_english) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="spouse_nationality" class="form-label">Spouse Nationality (If Married)</label>
-                            <input type="text" name="spouse_nationality" id="spouse_nationality" class="form-control" value="{{ old('spouse_nationality',$application->spouse_nationality) }}">
+                            <input type="text" name="spouse_nationality" id="spouse_nationality" class="form-control" value="{{ old('spouse_nationality',$applicationform->spouse_nationality) }}">
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="citizenship_number" class="form-label">Citizenship Number <span class="text-danger">*</span></label>
-                            <input type="text" name="citizenship_number" id="citizenship_number" class="form-control" value="{{ old('citizenship_number', $application->citizenship_number) }}" required>
+                            <input type="text" name="citizenship_number" id="citizenship_number" class="form-control" value="{{ old('citizenship_number', $applicationform->citizenship_number) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="citizenship_issue_date_bs" class="form-label">
-                                Citizenship Issue Date (B.S) <span class="text-danger">*</span>
-                                <small class="text-primary">(जारी मिति B.S)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="citizenship_issue_date_bs"
-                                name="citizenship_issue_date_bs"
-                                placeholder="YYYY-MM-DD"
-                                autocomplete="off"
-                                value="{{ old('citizenship_issue_date_bs', $application->citizenship_issue_date_bs) }}">
-                            <small class="form-text text-primary">
-                                <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
-                            </small>
+                            <label for="citizenship_issue_date_bs" class="form-label">Citizenship Issue Date (B.S)<span class="text-danger">*</span></label>
+                            <input type="text" name="citizenship_issue_date_bs" id="citizenship_issue_date_bs" class="form-control" value="{{ old('citizenship_issue_date_bs', $applicationform->citizenship_issue_date_bs) }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label for="citizenship_issue_date_ad" class="form-label">
-                                Citizenship Issue Date (A.D) <span class="text-danger">*</span>
-                                <small>(जारी मिति A.D)</small>
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="citizenship_issue_date_ad"
-                                name="citizenship_issue_date_ad"
-                                placeholder="YYYY-MM-DD"
-                                value="{{ old('citizenship_issue_date_ad', $application->citizenship_issue_date_ad ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') : '') }}"
-                                required
-                                readonly>
-                            <small class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>Auto-synced from Nepali date
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="citizenship_issue_district" class="form-label">Citizenship Issue District <span class="text-danger">*</span></label>
-                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_district" class="form-control" value="{{ old('citizenship_issue_district', $application->citizenship_issue_district) }}" required>
+                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_district" class="form-control" value="{{ old('citizenship_issue_district', $applicationform->citizenship_issue_district) }}" required>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                     <div class="col-md-4">
                             <label for="father_name_english" class="form-label">Father Name (बुबाको नाम) <span class="text-danger">*</span></label>
-                            <input type="text" name="father_name_english" id="father_name_english" class="form-control" value="{{ old('father_name_english', $application->father_name_english) }}" required>
+                            <input type="text" name="father_name_english" id="father_name_english" class="form-control" value="{{ old('father_name_english', $applicationform->father_name_english) }}" required>
                         </div>    
                     <div class="col-md-4">
                             <label for="mother_name_english" class="form-label">Mother Name (आमाको नाम) <span class="text-danger">*</span></label>
-                            <input type="text" name="mother_name_english" id="mother_name_english" class="form-control" value="{{ old('mother_name_english', $application->mother_name_english) }}" required>
+                            <input type="text" name="mother_name_english" id="mother_name_english" class="form-control" value="{{ old('mother_name_english', $applicationform->mother_name_english) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="grandfather_name_english" class="form-label">Grandfather Name (हजुरबुबाको नाम) <span class="text-danger">*</span></label>
-                            <input type="text" name="grandfather_name_english" id="grandfather_name_english" class="form-control" value="{{ old('grandfather_name_english', $application->grandfather_name_english) }}" required>
+                            <input type="text" name="grandfather_name_english" id="grandfather_name_english" class="form-control" value="{{ old('grandfather_name_english', $applicationform->grandfather_name_english) }}" required>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="father_qualification" class="form-label">Father's Qualification (बुबाको योग्यता) <span class="text-danger">*</span></label>
-                            <input type="text" name="father_qualification" id="father_qualification" class="form-control" value="{{ old('father_qualification', $application->father_qualification) }}" required>
+                            <input type="text" name="father_qualification" id="father_qualification" class="form-control" value="{{ old('father_qualification', $applicationform->father_qualification) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="mother_qualification" class="form-label">Mother's Qualification (आमाको योग्यता) <span class="text-danger">*</span></label>
-                            <input type="text" name="mother_qualification" id="mother_qualification" class="form-control" value="{{ old('mother_qualification', $application->mother_qualification) }}" required>
+                            <input type="text" name="mother_qualification" id="mother_qualification" class="form-control" value="{{ old('mother_qualification', $applicationform->mother_qualification) }}" required>
                         </div>
                          <div class="col-md-4">
                             <label for="parent_occupation" class="form-label">Parents's Occupation<span class="text-danger">*</span></label>
-                            <input type="text" name="parent_occupation" id="parent_occupation" class="form-control" value="{{ old('parent_occupation', $application->parent_occupation) }}" required>
+                            <input type="text" name="parent_occupation" id="parent_occupation" class="form-control" value="{{ old('parent_occupation', $applicationform->parent_occupation) }}" required>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="blood_group" class="form-label">Blood Group <span class="text-danger">*</span></label>
-                            <input type="text" name="blood_group" id="blood_group" class="form-control" value="{{ old('blood_group', $application->blood_group) }}" required>
+                            <input type="text" name="blood_group" id="blood_group" class="form-control" value="{{ old('blood_group', $applicationform->blood_group) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="nationality" class="form-label">Nationality <span class="text-danger">*</span></label>
-                            <input type="text" name="nationality" id="nationality" class="form-control" value="{{ old('nationality', $application->nationality) }}" required>
+                            <input type="text" name="nationality" id="nationality" class="form-control" value="{{ old('nationality', $applicationform->nationality) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="noc_employee" class="form-label">Are you NOC Employee? <span class="text-danger">*</span></label>
                             <select name="noc_employee" id="noc_employee" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="yes" {{ old('noc_employee', $application->noc_employee) == 'yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="no" {{ old('noc_employee', $application->noc_employee) == 'no' ? 'selected' : '' }}>No</option>
+                                <option value="yes" {{ old('noc_employee', $applicationform->noc_employee) == 'yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="no" {{ old('noc_employee', $applicationform->noc_employee) == 'no' ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="noc_id_card" class="form-label">NOC ID Card (If Yes)</label>
-                            <input type="file" name="noc_id_card" id="noc_id_card" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                            @if($application->noc_id_card)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->noc_id_card) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                   <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="noc_id_card" class="form-label">NOC ID Card (If Yes)</label>
+                        
+                        @if($applicationform->noc_id_card)
+                            {{-- Show current file as a styled input-like box --}}
+                            <div class="input-group">
+                                <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}" 
+                                target="_blank" 
+                                class="form-control text-primary text-decoration-none bg-white">
+                                    📄 View Current File
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" 
+                                        onclick="document.getElementById('noc_id_card_wrapper').classList.remove('d-none'); this.closest('.input-group').classList.add('d-none')">
+                                    Change
+                                </button>
+                            </div>
+                            <div id="noc_id_card_wrapper" class="d-none mt-1">
+                                <input type="file" name="noc_id_card" id="noc_id_card" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            </div>
+                        @else
+                            <input type="file" name="noc_id_card" id="noc_id_card" 
+                                class="form-control" accept="image/*,application/pdf">
+                        @endif
+                        
+                        <small class="text-muted d-block">Max size: 2MB</small>
                     </div>
+                </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 2: General Info --}}
                 <div class="step d-none" id="step2">
-                    <h5 class="mb-4 text-primary">Step 2 — General Information</h5>
+                    <h5 class="mb-4 text-dark">Step 2 — General Information</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="religion" class="form-label">Religion <span class="text-danger">*</span> <small>(धर्म)</small></label>
                             <select name="religion" id="religion" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Hindu" {{ old('religion', $application->religion) == 'Hindu' ? 'selected' : '' }}>Hindu / हिन्दू</option>
-                                <option value="Buddhist" {{ old('religion', $application->religion) == 'Buddhist' ? 'selected' : '' }}>Buddhist / बौद्ध</option>
-                                <option value="Christian" {{ old('religion', $application->religion) == 'Christian' ? 'selected' : '' }}>Christian / ख्रीष्टिय</option>
-                                <option value="Muslim" {{ old('religion', $application->religion) == 'Muslim' ? 'selected' : '' }}>Muslim / मुस्लिम</option>
-                                <option value="Other" {{ old('religion', $application->religion) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
+                                <option value="Hindu" {{ old('religion', $applicationform->religion) == 'Hindu' ? 'selected' : '' }}>Hindu / हिन्दू</option>
+                                <option value="Buddhist" {{ old('religion', $applicationform->religion) == 'Buddhist' ? 'selected' : '' }}>Buddhist / बौद्ध</option>
+                                <option value="Christian" {{ old('religion', $applicationform->religion) == 'Christian' ? 'selected' : '' }}>Christian / ख्रीष्टिय</option>
+                                <option value="Muslim" {{ old('religion', $applicationform->religion) == 'Muslim' ? 'selected' : '' }}>Muslim / मुस्लिम</option>
+                                <option value="Other" {{ old('religion', $applicationform->religion) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
                             </select>
-                            <input type="text" name="religion_other" id="religion_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('religion_other', $application->religion_other) }}">
+                            <input type="text" name="religion_other" id="religion_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('religion_other', $applicationform->religion_other) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="community" class="form-label">Community <span class="text-danger">*</span> <small>(तपाई आफैलाई के बोलाउन रुचाउनुहुन्छ)</small></label>
                             <select name="community" id="community" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Male" {{ old('community', $application->community) == 'Male' ? 'selected' : '' }}>पुरुष</option>
-                                <option value="Female" {{ old('community', $application->community) == 'Female' ? 'selected' : '' }}>महिला</option>
-                                <option value="LGBTQ" {{ old('community', $application->community) == 'LGBTQ' ? 'selected' : '' }}>LGBTQ+</option>
-                                <option value="Other" {{ old('community', $application->community) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
+                                <option value="Male" {{ old('community', $applicationform->community) == 'Male' ? 'selected' : '' }}>पुरुष</option>
+                                <option value="Female" {{ old('community', $applicationform->community) == 'Female' ? 'selected' : '' }}>महिला</option>
+                                <option value="LGBTQ" {{ old('community', $applicationform->community) == 'LGBTQ' ? 'selected' : '' }}>LGBTQ+</option>
+                                <option value="Other" {{ old('community', $applicationform->community) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
                             </select>
-                            <input type="text" name="community_other" id="community_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('community_other', $application->community_other) }}">
+                            <input type="text" name="community_other" id="community_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('community_other', $applicationform->community_other) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="ethnic_group" class="form-label">Ethnic Group <span class="text-danger">*</span> <small>(जातीय समूह)</small></label>
                             <select name="ethnic_group" id="ethnic_group" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Dalit" {{ old('ethnic_group', $application->ethnic_group) == 'Dalit' ? 'selected' : '' }}>Dalit</option>
-                                <option value="Janajati" {{ old('ethnic_group', $application->ethnic_group) == 'Janajati' ? 'selected' : '' }}>Janajati</option>
-                                <option value="Madhesi" {{ old('ethnic_group', $application->ethnic_group) == 'Madhesi' ? 'selected' : '' }}>Madhesi</option>
-                                <option value="Brahmin/Chhetri" {{ old('ethnic_group', $application->ethnic_group) == 'Brahmin/Chhetri' ? 'selected' : '' }}>Brahmin / Chhetri</option>
-                                <option value="Other" {{ old('ethnic_group', $application->ethnic_group) == 'Other' ? 'selected' : '' }}>Other</option>
+                                <option value="Dalit" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Dalit' ? 'selected' : '' }}>Dalit</option>
+                                <option value="Janajati" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Janajati' ? 'selected' : '' }}>Janajati</option>
+                                <option value="Madhesi" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Madhesi' ? 'selected' : '' }}>Madhesi</option>
+                                <option value="Brahmin/Chhetri" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Brahmin/Chhetri' ? 'selected' : '' }}>Brahmin / Chhetri</option>
+                                <option value="Other" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
-                            <input type="text" name="ethnic_group_other" id="ethnic_group_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('ethnic_group_other', $application->ethnic_group_other) }}">
+                            <input type="text" name="ethnic_group_other" id="ethnic_group_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('ethnic_group_other', $applicationform->ethnic_group_other) }}">
                         </div>
                     </div>
 
                     <div class="row mb-3">
-                       <div class="col-md-6">
-                            <label for="ethnic_certificate" class="form-label">Ethnic Certificate</label>
-                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" class="form-control" accept="image/*,application/pdf">
-                            @if($application->ethnic_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->ethnic_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
+                      <div class="col-md-6">
+                        <label for="ethnic_certificate" class="form-label">Ethnic Certificate</label>
+                        
+                        @if($applicationform->ethnic_certificate)
+                            <div class="input-group" id="ethnic_certificate_current">
+                                <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}" 
+                                target="_blank" 
+                                class="form-control text-primary text-decoration-none bg-white">
+                                    📄 View Current File
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" 
+                                        onclick="document.getElementById('ethnic_certificate_wrapper').classList.remove('d-none'); document.getElementById('ethnic_certificate_current').classList.add('d-none')">
+                                    Change
+                                </button>
+                            </div>
+                            <div id="ethnic_certificate_wrapper" class="d-none mt-1">
+                                <input type="file" name="ethnic_certificate" id="ethnic_certificate" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            </div>
+                        @else
+                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" 
+                                class="form-control" accept="image/*,application/pdf">
+                        @endif
+                        
+                        <small class="text-muted d-block">Max size: 2MB</small>
+                    </div>
                         <div class="col-md-6">
                             <label for="mother_tongue" class="form-label">Mother Tongue <span class="text-danger">*</span> <small>(मातृभाषा)</small></label>
-                            <input type="text" name="mother_tongue" id="mother_tongue" class="form-control" value="{{ old('mother_tongue', $application->mother_tongue) }}" required>
+                            <input type="text" name="mother_tongue" id="mother_tongue" class="form-control" value="{{ old('mother_tongue', $applicationform->mother_tongue) }}" required>
                         </div>
                     </div>
 
@@ -375,78 +355,96 @@
                             <label for="employment_status" class="form-label">Employment Status <span class="text-danger">*</span> <small>(रोजगार स्थिति)</small></label>
                             <select name="employment_status" id="employment_status" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="employed" {{ old('employment_status', $application->employment_status) == 'employed' ? 'selected' : '' }}>Employed</option>
-                                <option value="unemployed" {{ old('employment_status', $application->employment_status) == 'unemployed' ? 'selected' : '' }}>Unemployed</option>
+                                <option value="employed" {{ old('employment_status', $applicationform->employment_status) == 'employed' ? 'selected' : '' }}>Employed</option>
+                                <option value="unemployed" {{ old('employment_status', $applicationform->employment_status) == 'unemployed' ? 'selected' : '' }}>Unemployed</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="physical_disability" class="form-label">Physical Disability <span class="text-danger">*</span> <small>(कुनै पनि असक्षमता?)</small></label>
                             <select name="physical_disability" id="physical_disability" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="yes" {{ old('physical_disability', $application->physical_disability) == 'yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="no" {{ old('physical_disability', $application->physical_disability) == 'no' ? 'selected' : '' }}>No</option>
+                                <option value="yes" {{ old('physical_disability', $applicationform->physical_disability) == 'yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="no" {{ old('physical_disability', $applicationform->physical_disability) == 'no' ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
-                            <input type="file" name="disability_certificate" id="disability_certificate" class="form-control" accept="image/*,application/pdf">
-                            @if($application->disability_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->disability_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
+                    <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
+                    
+                    @if($applicationform->disability_certificate)
+                        <div class="input-group" id="disability_certificate_current">
+                            <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" 
+                            target="_blank" 
+                            class="form-control text-primary text-decoration-none bg-white">
+                                📄 View Current File
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary" 
+                                    onclick="document.getElementById('disability_certificate_wrapper').classList.remove('d-none'); document.getElementById('disability_certificate_current').classList.add('d-none')">
+                                Change
+                            </button>
                         </div>
+                        <div id="disability_certificate_wrapper" class="d-none mt-1">
+                            <input type="file" name="disability_certificate" id="disability_certificate" 
+                                class="form-control" accept="image/*,application/pdf">
+                        </div>
+                    @else
+                        <input type="file" name="disability_certificate" id="disability_certificate" 
+                            class="form-control" accept="image/*,application/pdf">
+                    @endif
+                    
+                    <small class="text-muted d-block">Max size: 2MB</small>
+                </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 3: Permanent Address --}}
                 <div class="step d-none" id="step3">
-                    <h5 class="mb-4 text-primary">Step 3 — Permanent Address</h5>
+                    <h5 class="mb-4 text-dark">Step 3 — Permanent Address</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="permanent_province" class="form-label">Province <span class="text-danger">*</span></label>
                             <select name="permanent_province" id="permanent_province" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Koshi" {{ old('permanent_province', $application->permanent_province) == 'Koshi' ? 'selected' : '' }}>Koshi</option>
-                                <option value="Madhesh" {{ old('permanent_province', $application->permanent_province) == 'Madhesh' ? 'selected' : '' }}>Madhesh</option>
-                                <option value="Bagmati" {{ old('permanent_province', $application->permanent_province) == 'Bagmati' ? 'selected' : '' }}>Bagmati</option>
-                                <option value="Gandaki" {{ old('permanent_province', $application->permanent_province) == 'Gandaki' ? 'selected' : '' }}>Gandaki</option>
-                                <option value="Lumbini" {{ old('permanent_province', $application->permanent_province) == 'Lumbini' ? 'selected' : '' }}>Lumbini</option>
-                                <option value="Karnali" {{ old('permanent_province', $application->permanent_province) == 'Karnali' ? 'selected' : '' }}>Karnali</option>
-                                <option value="Sudurpashchim" {{ old('permanent_province', $application->permanent_province) == 'Sudurpashchim' ? 'selected' : '' }}>Sudurpashchim</option>
+                                <option value="Koshi" {{ old('permanent_province', $applicationform->permanent_province) == 'Koshi' ? 'selected' : '' }}>Koshi</option>
+                                <option value="Madhesh" {{ old('permanent_province', $applicationform->permanent_province) == 'Madhesh' ? 'selected' : '' }}>Madhesh</option>
+                                <option value="Bagmati" {{ old('permanent_province', $applicationform->permanent_province) == 'Bagmati' ? 'selected' : '' }}>Bagmati</option>
+                                <option value="Gandaki" {{ old('permanent_province', $applicationform->permanent_province) == 'Gandaki' ? 'selected' : '' }}>Gandaki</option>
+                                <option value="Lumbini" {{ old('permanent_province', $applicationform->permanent_province) == 'Lumbini' ? 'selected' : '' }}>Lumbini</option>
+                                <option value="Karnali" {{ old('permanent_province', $applicationform->permanent_province) == 'Karnali' ? 'selected' : '' }}>Karnali</option>
+                                <option value="Sudurpashchim" {{ old('permanent_province', $applicationform->permanent_province) == 'Sudurpashchim' ? 'selected' : '' }}>Sudurpashchim</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="permanent_district" class="form-label">District <span class="text-danger">*</span></label>
-                            <input type="text" name="permanent_district" id="permanent_district" class="form-control" value="{{ old('permanent_district', $application->permanent_district) }}" required>
+                            <input type="text" name="permanent_district" id="permanent_district" class="form-control" value="{{ old('permanent_district', $applicationform->permanent_district) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="permanent_municipality" class="form-label">Municipality <span class="text-danger">*</span></label>
-                            <input type="text" name="permanent_municipality" id="permanent_municipality" class="form-control" value="{{ old('permanent_municipality', $application->permanent_municipality) }}" required>
+                            <input type="text" name="permanent_municipality" id="permanent_municipality" class="form-control" value="{{ old('permanent_municipality', $applicationform->permanent_municipality) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="permanent_ward" class="form-label">Ward No. <span class="text-danger">*</span></label>
-                            <input type="text" name="permanent_ward" id="permanent_ward" class="form-control" value="{{ old('permanent_ward', $application->permanent_ward) }}" required>
+                            <input type="text" name="permanent_ward" id="permanent_ward" class="form-control" value="{{ old('permanent_ward', $applicationform->permanent_ward) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="permanent_tole" class="form-label">Tole</label>
-                            <input type="text" name="permanent_tole" id="permanent_tole" class="form-control" value="{{ old('permanent_tole', $application->permanent_tole) }}">
+                            <input type="text" name="permanent_tole" id="permanent_tole" class="form-control" value="{{ old('permanent_tole', $applicationform->permanent_tole) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="permanent_house_number" class="form-label">House Number</label>
-                            <input type="text" name="permanent_house_number" id="permanent_house_number" class="form-control" value="{{ old('permanent_house_number', $application->permanent_house_number) }}">
+                            <input type="text" name="permanent_house_number" id="permanent_house_number" class="form-control" value="{{ old('permanent_house_number', $applicationform->permanent_house_number) }}">
                         </div>
                     </div>
 
-                    <h5 class="mb-4 text-primary mt-4">Mailing/Current Address</h5>
+                    <h5 class="mb-4 text-dark mt-4">Mailing/Current Address</h5>
                     <div class="form-check mb-4">
-                        <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent', $application->same_as_permanent) ? 'checked' : '' }}>
+                        <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1" {{ old('same_as_permanent', $applicationform->same_as_permanent) ? 'checked' : '' }}>
                         <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
                     </div>
                     <div class="row mb-3">
@@ -454,41 +452,41 @@
                             <label for="mailing_province" class="form-label">Province <span class="text-danger">*</span></label>
                             <select name="mailing_province" id="mailing_province" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Koshi" {{ old('mailing_province', $application->mailing_province) == 'Koshi' ? 'selected' : '' }}>Koshi</option>
-                                <option value="Madhesh" {{ old('mailing_province', $application->mailing_province) == 'Madhesh' ? 'selected' : '' }}>Madhesh</option>
-                                <option value="Bagmati" {{ old('mailing_province', $application->mailing_province) == 'Bagmati' ? 'selected' : '' }}>Bagmati</option>
-                                <option value="Gandaki" {{ old('mailing_province', $application->mailing_province) == 'Gandaki' ? 'selected' : '' }}>Gandaki</option>
-                                <option value="Lumbini" {{ old('mailing_province', $application->mailing_province) == 'Lumbini' ? 'selected' : '' }}>Lumbini</option>
-                                <option value="Karnali" {{ old('mailing_province', $application->mailing_province) == 'Karnali' ? 'selected' : '' }}>Karnali</option>
-                                <option value="Sudurpashchim" {{ old('mailing_province', $application->mailing_province) == 'Sudurpashchim' ? 'selected' : '' }}>Sudurpashchim</option>
+                                <option value="Koshi" {{ old('mailing_province', $applicationform->mailing_province) == 'Koshi' ? 'selected' : '' }}>Koshi</option>
+                                <option value="Madhesh" {{ old('mailing_province', $applicationform->mailing_province) == 'Madhesh' ? 'selected' : '' }}>Madhesh</option>
+                                <option value="Bagmati" {{ old('mailing_province', $applicationform->mailing_province) == 'Bagmati' ? 'selected' : '' }}>Bagmati</option>
+                                <option value="Gandaki" {{ old('mailing_province', $applicationform->mailing_province) == 'Gandaki' ? 'selected' : '' }}>Gandaki</option>
+                                <option value="Lumbini" {{ old('mailing_province', $applicationform->mailing_province) == 'Lumbini' ? 'selected' : '' }}>Lumbini</option>
+                                <option value="Karnali" {{ old('mailing_province', $applicationform->mailing_province) == 'Karnali' ? 'selected' : '' }}>Karnali</option>
+                                <option value="Sudurpashchim" {{ old('mailing_province', $applicationform->mailing_province) == 'Sudurpashchim' ? 'selected' : '' }}>Sudurpashchim</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="mailing_district" class="form-label">District <span class="text-danger">*</span></label>
-                            <input type="text" name="mailing_district" id="mailing_district" class="form-control" value="{{ old('mailing_district', $application->mailing_district) }}" required>
+                            <input type="text" name="mailing_district" id="mailing_district" class="form-control" value="{{ old('mailing_district', $applicationform->mailing_district) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="mailing_municipality" class="form-label">Municipality <span class="text-danger">*</span></label>
-                            <input type="text" name="mailing_municipality" id="mailing_municipality" class="form-control" value="{{ old('mailing_municipality', $application->mailing_municipality) }}" required>
+                            <input type="text" name="mailing_municipality" id="mailing_municipality" class="form-control" value="{{ old('mailing_municipality', $applicationform->mailing_municipality) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="mailing_ward" class="form-label">Ward No. <span class="text-danger">*</span></label>
-                            <input type="text" name="mailing_ward" id="mailing_ward" class="form-control" value="{{ old('mailing_ward', $application->mailing_ward) }}" required>
+                            <input type="text" name="mailing_ward" id="mailing_ward" class="form-control" value="{{ old('mailing_ward', $applicationform->mailing_ward) }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="mailing_tole" class="form-label">Tole</label>
-                            <input type="text" name="mailing_tole" id="mailing_tole" class="form-control" value="{{ old('mailing_tole', $application->mailing_tole) }}">
+                            <input type="text" name="mailing_tole" id="mailing_tole" class="form-control" value="{{ old('mailing_tole', $applicationform->mailing_tole) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="mailing_house_number" class="form-label">House Number</label>
-                            <input type="text" name="mailing_house_number" id="mailing_house_number" class="form-control" value="{{ old('mailing_house_number', $application->mailing_house_number) }}">
+                            <input type="text" name="mailing_house_number" id="mailing_house_number" class="form-control" value="{{ old('mailing_house_number', $applicationform->mailing_house_number) }}">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
@@ -496,160 +494,283 @@
 
                 {{-- STEP 4: Educational Background --}}
                 <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-primary">Step 4 — Educational Background</h5>
+                    <h5 class="mb-4 text-dark">Step 4 — Educational Background</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="education_level" class="form-label">Highest Education Level <span class="text-danger">*</span></label>
                             <select name="education_level" id="education_level" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Under SLC" {{ old('education_level', $application->education_level) == 'Under SLC' ? 'selected' : '' }}>Under SLC</option>
-                                <option value="SLC/SEE" {{ old('education_level', $application->education_level) == 'SLC/SEE' ? 'selected' : '' }}>SLC/SEE</option>
-                                <option value="+2/Intermediate" {{ old('education_level', $application->education_level) == '+2/Intermediate' ? 'selected' : '' }}>+2/Intermediate</option>
-                                <option value="Bachelor" {{ old('education_level', $application->education_level) == 'Bachelor' ? 'selected' : '' }}>Bachelor</option>
-                                <option value="Master" {{ old('education_level', $application->education_level) == 'Master' ? 'selected' : '' }}>Master</option>
-                                <option value="PhD" {{ old('education_level', $application->education_level) == 'PhD' ? 'selected' : '' }}>PhD</option>
+                                <option value="Under SLC" {{ old('education_level', $applicationform->education_level) == 'Under SLC' ? 'selected' : '' }}>Under SLC</option>
+                                <option value="SLC/SEE" {{ old('education_level', $applicationform->education_level) == 'SLC/SEE' ? 'selected' : '' }}>SLC/SEE</option>
+                                <option value="+2/Intermediate" {{ old('education_level', $applicationform->education_level) == '+2/Intermediate' ? 'selected' : '' }}>+2/Intermediate</option>
+                                <option value="Bachelor" {{ old('education_level', $applicationform->education_level) == 'Bachelor' ? 'selected' : '' }}>Bachelor</option>
+                                <option value="Master" {{ old('education_level', $applicationform->education_level) == 'Master' ? 'selected' : '' }}>Master</option>
+                                <option value="PhD" {{ old('education_level', $applicationform->education_level) == 'PhD' ? 'selected' : '' }}>PhD</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="field_of_study" class="form-label">Field of Study<span class="text-danger">*</span></label>
-                            <input type="text" name="field_of_study" id="field_of_study" class="form-control" value="{{ old('field_of_study', $application->field_of_study) }}" required>
+                            <input type="text" name="field_of_study" id="field_of_study" class="form-control" value="{{ old('field_of_study', $applicationform->field_of_study) }}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="institution_name" class="form-label">Institution Name<span class="text-danger">*</span></label>
-                            <input type="text" name="institution_name" id="institution_name" class="form-control" value="{{ old('institution_name', $application->institution_name) }}" required>
+                            <input type="text" name="institution_name" id="institution_name" class="form-control" value="{{ old('institution_name', $applicationform->institution_name) }}" required>
                         </div>
                         <div class="col-md-6">
                             <label for="graduation_year" class="form-label">Graduation Year<span class="text-danger">*</span></label>
-                            <input type="number" name="graduation_year" id="graduation_year" class="form-control" min="1950" max="2030" value="{{ old('graduation_year', $application->graduation_year) }}" required>
+                            <input type="number" name="graduation_year" id="graduation_year" class="form-control" min="1950" max="2030" value="{{ old('graduation_year', $applicationform->graduation_year) }}" required>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 5: Work Experience --}}
                 <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-primary">Step 5 — Work Experience</h5>
+                    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
                             <select name="has_work_experience" id="has_work_experience" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Yes" {{ old('has_work_experience', $application->has_work_experience) == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('has_work_experience', $application->has_work_experience) == 'No' ? 'selected' : '' }}>No</option>
+                                <option value="Yes" {{ old('has_work_experience', $applicationform->has_work_experience) == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="No" {{ old('has_work_experience', $applicationform->has_work_experience) == 'No' ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $application->years_of_experience) }}">
+                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $applicationform->years_of_experience) }}">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $application->previous_organization) }}">
+                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $applicationform->previous_organization) }}">
                         </div>
                         <div class="col-md-6">
                             <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $application->previous_position) }}">
+                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $applicationform->previous_position) }}">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
 
                 {{-- STEP 6: Upload Documents --}}
                 <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-primary">Step 6 — Upload Documents</h5>
+                    <h5 class="mb-4 text-dark">Step 6 — Upload Documents</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="passport_photo" class="form-label">Passport Size Photo</label>
-                            <input type="file" name="passport_photo" id="passport_photo" class="form-control" accept=".jpg,.jpeg,.png">
-                            @if($application->passport_photo)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->passport_photo) }}" target="_blank">View File</a></small>
+                            <label for="passport_size_photo" class="form-label">Passport Size Photo<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->passport_size_photo)
+                                <div class="input-group" id="passport_size_photo_current">
+                                    <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('passport_size_photo_wrapper').classList.remove('d-none'); document.getElementById('passport_size_photo_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="passport_size_photo_wrapper" class="d-none mt-1">
+                                    <input type="file" name="passport_size_photo" id="passport_size_photo" 
+                                        class="form-control" accept="image/*">
+                                </div>
+                            @else
+                                <input type="file" name="passport_size_photo" id="passport_size_photo" 
+                                    class="form-control" accept="image/*" required>
                             @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="citizenship_certificate" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span></label>
-                            <input type="file" name="citizenship_certificate" id="citizenship_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                            @if($application->citizenship_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->citizenship_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB</small>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="educational_certificates" class="form-label">Transcript Certificate</label>
-                            <input type="file" name="educational_certificates" id="educational_certificates" class="form-control" accept=".pdf,.zip">
-                            @if($application->educational_certificates)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->educational_certificates) }}" target="_blank">View File</a></small>
-                            <small class="text-muted d-block">Max size: 10MB (PDF or ZIP only)</small>
-                            @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
 
-                       <div class="col-md-6">
-                            <label for="character_certificate" class="form-label">Character Certificate</label>
-                            {{-- FIXED: Added closing > tag --}}
-                            <input type="file" name="character_certificate" id="character_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                            @if($application->character_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->character_certificate) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 2MB (PDF/JPG/PNG)</small>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="equivalency_certificate" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="equivalency_certificate" id="equivalency_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                            @if($application->equivalency_certificate)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->equivalency_certificate) }}" target="_blank">View File</a></small>
+                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small></span><span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->citizenship_id_document)
+                                <div class="input-group" id="citizenship_id_document_current">
+                                    <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('citizenship_id_document_wrapper').classList.remove('d-none'); document.getElementById('citizenship_id_document_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="citizenship_id_document_wrapper" class="d-none mt-1">
+                                    <input type="file" name="citizenship_id_document" id="citizenship_id_document" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="citizenship_id_document" id="citizenship_id_document" 
+                                    class="form-control" accept="image/*,application/pdf" required>
                             @endif
-                            <small class="text-muted d-block">Max size: 2MB (PDF/JPG/PNG)</small>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="experience_certificates" class="form-label">Work Experience Document</label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="experience_certificates" id="experience_certificates" class="form-control" accept=".pdf,.zip">
-                            @if($application->experience_certificates)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->experience_certificates) }}" target="_blank">View File</a></small>
-                            @endif
-                            <small class="text-muted d-block">Max size: 10MB (PDF/ZIP only)</small>
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="signature" class="form-label">Signature</label>
-                            {{-- FIXED: Removed value attribute from file input --}}
-                            <input type="file" name="signature" id="signature" class="form-control" accept=".jpg,.jpeg,.png">
-                            @if($application->signature)
-                                <small class="text-muted">Current: <a href="{{ asset('storage/' . $application->signature) }}" target="_blank">View File</a></small>
+                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->transcript)
+                                <div class="input-group" id="transcript_current">
+                                    <a href="{{ asset('storage/' . $applicationform->transcript) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('transcript_wrapper').classList.remove('d-none'); document.getElementById('transcript_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="transcript_wrapper" class="d-none mt-1">
+                                    <input type="file" name="transcript" id="transcript" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="transcript" id="transcript" 
+                                    class="form-control" accept="image/*,application/pdf" required>
                             @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="character" class="form-label">Character Certificate<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->character)
+                                <div class="input-group" id="character_current">
+                                    <a href="{{ asset('storage/' . $applicationform->character) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('character_wrapper').classList.remove('d-none'); document.getElementById('character_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="character_wrapper" class="d-none mt-1">
+                                    <input type="file" name="character" id="character" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="character" id="character" 
+                                    class="form-control" accept="image/*,application/pdf" required>
+                            @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal.)</label>
+                            
+                            @if($applicationform->equivalent)
+                                <div class="input-group" id="equivalent_current">
+                                    <a href="{{ asset('storage/' . $applicationform->equivalent) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('equivalent_wrapper').classList.remove('d-none'); document.getElementById('equivalent_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="equivalent_wrapper" class="d-none mt-1">
+                                    <input type="file" name="equivalent" id="equivalent" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="equivalent" id="equivalent" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            
+                            @if($applicationform->work_experience)
+                                <div class="input-group" id="work_experience_current">
+                                    <a href="{{ asset('storage/' . $applicationform->work_experience) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('work_experience_wrapper').classList.remove('d-none'); document.getElementById('work_experience_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="work_experience_wrapper" class="d-none mt-1">
+                                    <input type="file" name="work_experience" id="work_experience" 
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="work_experience" id="work_experience" 
+                                    class="form-control" accept="image/*,application/pdf">
+                            @endif
+                            
+                            <small class="text-muted d-block">Max size: 2MB</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="signature" class="form-label">Signature<span class="text-danger">*</span></label>
+                            
+                            @if($applicationform->signature)
+                                <div class="input-group" id="signature_current">
+                                    <a href="{{ asset('storage/' . $applicationform->signature) }}" 
+                                    target="_blank" 
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        📄 View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="document.getElementById('signature_wrapper').classList.remove('d-none'); document.getElementById('signature_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="signature_wrapper" class="d-none mt-1">
+                                    <input type="file" name="signature" id="signature" 
+                                        class="form-control" accept="image/*">
+                                </div>
+                            @else
+                                <input type="file" name="signature" id="signature" 
+                                    class="form-control" accept="image/*" required>
+                            @endif
+                            
                             <small class="text-muted d-block">Max size: 2MB</small>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                        <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
-                </div>       
+                </div>
                 
                 <!-- STEP 7: Review Application Before Payment -->
                 <div class="step d-none" id="step7">
-                    <h5 class="mb-4 text-primary">Step 7 — Preview Application Before Payment</h5>
+                    <h5 class="mb-4 text-dark">Step 7 — Preview Application Before Payment</h5>
 
                     <div class="alert alert-info">
                         Please review all your details carefully before proceeding to payment.
@@ -665,12 +786,45 @@
                             <tr><th>Birth Date (AD)</th><td id="p_birth_date_ad"></td></tr>
                             <tr><th>Birth Date (BS)</th><td id="p_birth_date_bs"></td></tr>
                             <tr><th>Phone</th><td id="p_phone"></td></tr>
+                            <tr><th>Advertisement Number</th><td id="p_advertisement_no"></td></tr>
+                            <tr><th>Applying Position</th><td id="p_applying_position"></td></tr>
+                            <tr><th>Department</th><td id="p_department"></td></tr>
+                            <tr><th>Age</th><td id="p_age"></td></tr>
+                            <tr><th>Alternate Phone Number</th><td id="p_alternate_phone_number"></td></tr>
                             <tr><th>Gender</th><td id="p_gender"></td></tr>
                             <tr><th>Marital Status</th><td id="p_marital_status"></td></tr>
-                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Spouse Name (If Married)</th><td id="spouse_name_english"></td></tr>
+                            <tr><th>Spouse Nationality (If Married)</th><td id="p_spouse_nationality"></td></tr>
+                            <tr><th>Citizenship Number</th><td id="p_citizenship_number"></td></tr>
+                            <tr><th>Citizenship Issue Date (B.S)</th><td id="p_citizenship_issue_date_bs"></td></tr>
+                            <tr><th>Citizenship Issue District</th><td id="p_citizenship_issue_district"></td></tr>
+                            <tr><th>Father Name (बुबाको नाम)</th><td id="p_father_name_english"></td></tr>
+                            <tr><th>Mother Name (आमाको नाम)</th><td id="p_mother_name_english"></td></tr>
+                            <tr><th>Grandfather Name (हजुरबुबाको नाम)</th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father's Qualification (बुबाको योग्यता)</th><td id="p_father_qualification"></td></tr>
+                            <tr><th>Mother's Qualification (आमाको योग्यता)</th><td id="p_mother_qualification"></td></tr>
+                            <tr><th>Parent's Occupation</th><td id="p_parent_occupation"></td></tr>
                             <tr><th>Blood Group</th><td id="p_blood_group"></td></tr>
+                            <tr><th>Nationality</th><td id="p_nationality"></td></tr>
+                            <tr><th>Are you NOC Employee?</th><td id="p_noc_employee"></td></tr>
+                            <tr><th>NOC ID Card</th><td id="p_noc_id_card"></td></tr>
                         </table>
 
+                        <!-- General Information -->
+                            <h6 class="text-secondary mt-3">General Information</h6>
+                            <table class="table table-bordered">
+
+                                <tr><th width="30%">Religion</th><td id="p_religion"></td></tr>
+                                <tr><th>Community</th><td id="p_community"></td></tr>
+                                <tr><th>Ethnic Group</th><td id="p_ethnic_group"></td></tr>
+                                <tr><th>Mother Tongue</th><td id="p_mother_tongue"></td></tr>
+                                <tr><th>Employment Status</th><td id="p_employment_status"></td></tr>
+                                <tr><th>Physical Disability</th><td id="p_physical_disability"></td></tr>
+                                <tr><th>Ethnic Certificate</th><td id="p_ethnic_certificate"></td></tr>
+                                <tr><th>Disability Certificate</th><td id="p_disability_certificate"></td></tr>
+
+                            </table>
+                            <!-- Address Information -->
                         <h6 class="text-secondary mt-4">Address Information</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Permanent Address</th>
@@ -679,7 +833,7 @@
                             <tr><th>Mailing Address</th>
                                 <td id="p_mailing_address"></td></tr>
                         </table>
-
+                            <!-- Education -->
                         <h6 class="text-secondary mt-4">Education</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Education Level</th><td id="p_education_level"></td></tr>
@@ -687,7 +841,7 @@
                             <tr><th>Institution</th><td id="p_institution_name"></td></tr>
                             <tr><th>Graduation Year</th><td id="p_graduation_year"></td></tr>
                         </table>
-
+                            <!-- Work Experience -->
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
@@ -695,39 +849,17 @@
                             <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
                             <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
                         </table>
-
+                            <!-- Uploaded Documents -->
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
-                            <tr>
-                                <th width="30%">Passport Size Photo</th>
-                                <td id="p_photo"></td>
-                            </tr>
-                            <tr>
-                                <th>Citizenship / ID Document</th>
-                                <td id="p_citizenship"></td>
-                            </tr>
-                            <tr>
-                                <th>Transcript</th>
-                                <td id="p_transcript"></td>
-                            </tr>
-                            <tr>
-                                <th>Character</th>
-                                <td id="p_character"></td>
-                            </tr>
-                            <tr>
-                                <th>Equivalent</th>
-                                <td id="p_equivalent"></td>
-                            </tr>
-                            <tr>
-                                <th>Signature</th>
-                                <td id="p_signature"></td>
-                            </tr>
-                            <tr>
-                                <th>Work Experience</th>
-                                <td id="p_work_experience"></td>
-                            </tr>
+                            <tr><th width="30%">Passport Size Photo</th><td id="p_photo"></td></tr>
+                            <tr><th>Citizenship / ID Document</th><td id="p_citizenship"></td></tr>
+                            <tr><th>Transcript</th><td id="p_transcript"></td></tr>
+                            <tr><th>Character</th><td id="p_character"></td></tr>
+                            <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
+                            <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
                         </table>
-
                         <div class="form-check mb-4">
                                 <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
                                 <label class="form-check-label" for="terms_agree">
@@ -737,7 +869,7 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="button" class="btn btn-light next-btn">Next</button>
                         </div>
                     </div>
                 </div>
@@ -745,7 +877,7 @@
 
             <!-- STEP 8: Payment Method -->
                 <div class="step d-none" id="step8">
-                    <h5 class="mb-4 text-primary">Step 8 — Payment & Declaration</h5>
+                    <h5 class="mb-4 text-dark">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
                         @if(isset($payment) && $payment->status == 'paid')
@@ -787,8 +919,8 @@
 
                             <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                            <a href="{{ route('candidate.applications.index') }}" class="btn btn-primary">
-                                Save Your Application
+                            <a href="{{ route('candidate.applications.index') }}" class="btn btn-danger">
+                                Redirect to Your Applications
                             </a>
                             </div>
 
@@ -846,22 +978,22 @@
     /* Active / Completed State */
     .tab-item.active .tab-circle,
     .tab-item.completed .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item.active .tab-label,
     .tab-item.completed .tab-label {
-        color: #0d6efd;
+        color: #000000;
         font-weight: 600;
     }
 
     /* Hover */
     .tab-item:hover .tab-circle {
-        background: #0d6efd;
+        background: #000000;
         color: white;
     }
     .tab-item:hover .tab-label {
-        color: #0d6efd;
+        color: #000000;
     }
 
     /* Progress Line */
@@ -870,8 +1002,8 @@
         bottom: -1px;
         left: 0;
         height: 4px;
-        background: #0d6efd;
-        width: 14.28%; /* Will be updated via JS */
+        background: #000000;
+        width: 14.28%; 
         transition: width 0.4s ease;
         z-index: 1;
     }
@@ -930,227 +1062,91 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-    // ============================================
-    // CRITICAL: Numeral conversion functions for Nepali Date Picker
-    // ============================================
-
-    // Convert Nepali numerals to English
-    function nepaliToEnglish(str) {
-        if (!str) return str;
-        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
-        return str.replace(/[०-९]/g, d => map[d]);
-    }
-
-    // Convert English numerals to Nepali for display
-    function englishToNepali(str) {
-        if (!str) return str;
-        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
-        return str.replace(/[0-9]/g, d => map[d]);
-    }
-
-    // ============================================
-    // Birth Date Nepali Date Picker Initialization
-    // ============================================
-    function initializeBirthDatePicker() {
-        const birthDateBS = document.getElementById('birth_date_bs');
-        const birthDateAD = document.getElementById('birth_date_ad');
-
-        if (!birthDateBS || !birthDateAD) {
-            console.error('❌ Birth date elements not found!');
-            return;
+    // ==================== CONDITIONAL FILE UPLOAD REQUIREMENTS ====================
+    
+    // NOC Employee - NOC ID Card
+    const nocEmployee = document.getElementById('noc_employee');
+    const nocIdCard = document.getElementById('noc_id_card');
+    const nocIdCardLabel = nocIdCard ? nocIdCard.closest('.col-md-6').querySelector('label') : null;
+    
+    function toggleNocIdCardRequirement() {
+        if (!nocEmployee || !nocIdCard) return;
+        
+        if (nocEmployee.value === 'yes') {
+            nocIdCard.setAttribute('required', 'required');
+            if (nocIdCardLabel && !nocIdCardLabel.querySelector('.text-danger')) {
+                nocIdCardLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            nocIdCard.removeAttribute('required');
+            nocIdCard.value = ''; // Clear file input
+            const requiredSpan = nocIdCardLabel ? nocIdCardLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
         }
-
-        // Initialize Nepali Date Picker
-        $('#birth_date_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
-            ndpYearCount: 50
-        });
-
-        console.log('✅ Birth Date Nepali Date Picker initialized');
-
-        // ============================================
-        // WORKING SOLUTION: Use polling to detect changes
-        // ============================================
-        let lastBSValue = $('#birth_date_bs').val() || '';
-
-        const pollInterval = setInterval(function() {
-            const currentBSValue = $('#birth_date_bs').val();
-
-            // Check if value changed and is valid
-            if (currentBSValue &&
-                currentBSValue !== lastBSValue &&
-                currentBSValue !== 'YYYY-MM-DD' &&
-                currentBSValue.length >= 10) {
-
-                console.log('📅 BS Birth Date changed (polling detected):', currentBSValue);
-                lastBSValue = currentBSValue;
-
-                // Convert Nepali numerals to English for calculation
-                const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                console.log('🔢 After numeral conversion:', bsValueEnglish);
-
-                // Convert BS to AD
-                const adValue = window.bsToAD(bsValueEnglish);
-                console.log('✅ AD Result:', adValue);
-
-                if (adValue) {
-                    // Update the English date field (this goes to database)
-                    birthDateAD.value = adValue;
-                    console.log('✅ Birth date AD field updated:', adValue);
-                }
-            }
-        }, 200); // Check every 200ms
-
-        // Initialize on page load
-        setTimeout(function() {
-            const existingBSValue = $('#birth_date_bs').val();
-
-            // If BS field already has a value (from database), convert English numerals to Nepali
-            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
-                console.log('📅 Converting existing Birth Date BS to Nepali numerals:', existingBSValue);
-                const bsNepali = englishToNepali(existingBSValue);
-                $('#birth_date_bs').val(bsNepali);
-                lastBSValue = bsNepali;
-                console.log('✅ Birth Date BS converted to Nepali:', bsNepali);
-
-                // Also update AD field if empty
-                if (!birthDateAD.value) {
-                    const adValue = window.bsToAD(existingBSValue);
-                    if (adValue) {
-                        birthDateAD.value = adValue;
-                    }
-                }
-            }
-            // If only AD value exists, convert to BS
-            else if (birthDateAD.value && !existingBSValue) {
-                console.log('📅 Initializing Birth Date BS from existing AD date:', birthDateAD.value);
-                const bsValue = window.adToBS(birthDateAD.value);
-                console.log('✅ Initial BS (English numerals):', bsValue);
-
-                if (bsValue) {
-                    const bsNepali = englishToNepali(bsValue);
-                    $('#birth_date_bs').val(bsNepali);
-                    lastBSValue = bsNepali;
-                    console.log('✅ Birth Date BS initialized:', bsNepali);
-                }
-            }
-        }, 500);
     }
-
-    // ============================================
-    // Citizenship Issue Date Nepali Date Picker Initialization
-    // ============================================
-    function initializeCitizenshipIssueDatePicker() {
-        const citizenshipIssueDateBS = document.getElementById('citizenship_issue_date_bs');
-        const citizenshipIssueDateAD = document.getElementById('citizenship_issue_date_ad');
-
-        if (!citizenshipIssueDateBS || !citizenshipIssueDateAD) {
-            console.error('❌ Citizenship issue date elements not found!');
-            return;
+    
+    if (nocEmployee) {
+        toggleNocIdCardRequirement(); // Initial check
+        nocEmployee.addEventListener('change', toggleNocIdCardRequirement);
+    }
+    
+    // Physical Disability - Disability Certificate
+    const physicalDisability = document.getElementById('physical_disability');
+    const disabilityCertificate = document.getElementById('disability_certificate');
+    const disabilityCertificateLabel = disabilityCertificate ? disabilityCertificate.closest('.col-md-4').querySelector('label') : null;
+    
+    function toggleDisabilityCertificateRequirement() {
+        if (!physicalDisability || !disabilityCertificate) return;
+        
+        if (physicalDisability.value === 'yes') {
+            disabilityCertificate.setAttribute('required', 'required');
+            if (disabilityCertificateLabel && !disabilityCertificateLabel.querySelector('.text-danger')) {
+                disabilityCertificateLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            disabilityCertificate.removeAttribute('required');
+            disabilityCertificate.value = ''; // Clear file input
+            const requiredSpan = disabilityCertificateLabel ? disabilityCertificateLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
         }
-
-        // Initialize Nepali Date Picker
-        $('#citizenship_issue_date_bs').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD',
-            closeOnDateSelect: true,
-            unicodeDate: true,
-            ndpYear: true,
-            ndpMonth: true,
-            ndpYearCount: 50
-        });
-
-        console.log('✅ Citizenship Issue Date Nepali Date Picker initialized');
-
-        // ============================================
-        // WORKING SOLUTION: Use polling to detect changes
-        // ============================================
-        let lastBSValue = $('#citizenship_issue_date_bs').val() || '';
-
-        const pollInterval = setInterval(function() {
-            const currentBSValue = $('#citizenship_issue_date_bs').val();
-
-            // Check if value changed and is valid
-            if (currentBSValue &&
-                currentBSValue !== lastBSValue &&
-                currentBSValue !== 'YYYY-MM-DD' &&
-                currentBSValue.length >= 10) {
-
-                console.log('📅 BS Citizenship Issue Date changed (polling detected):', currentBSValue);
-                lastBSValue = currentBSValue;
-
-                // Convert Nepali numerals to English for calculation
-                const bsValueEnglish = nepaliToEnglish(currentBSValue);
-                console.log('🔢 After numeral conversion:', bsValueEnglish);
-
-                // Convert BS to AD
-                const adValue = window.bsToAD(bsValueEnglish);
-                console.log('✅ AD Result:', adValue);
-
-                if (adValue) {
-                    // Update the English date field (this goes to database)
-                    citizenshipIssueDateAD.value = adValue;
-                    console.log('✅ Citizenship issue date AD field updated:', adValue);
-                }
-            }
-        }, 200); // Check every 200ms
-
-        // Initialize on page load
-        setTimeout(function() {
-            const existingBSValue = $('#citizenship_issue_date_bs').val();
-
-            // If BS field already has a value (from database), convert English numerals to Nepali
-            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
-                console.log('📅 Converting existing Citizenship Issue Date BS to Nepali numerals:', existingBSValue);
-                const bsNepali = englishToNepali(existingBSValue);
-                $('#citizenship_issue_date_bs').val(bsNepali);
-                lastBSValue = bsNepali;
-                console.log('✅ Citizenship Issue Date BS converted to Nepali:', bsNepali);
-
-                // Also update AD field if empty
-                if (!citizenshipIssueDateAD.value) {
-                    const adValue = window.bsToAD(existingBSValue);
-                    if (adValue) {
-                        citizenshipIssueDateAD.value = adValue;
-                    }
-                }
-            }
-            // If only AD value exists, convert to BS
-            else if (citizenshipIssueDateAD.value && !existingBSValue) {
-                console.log('📅 Initializing Citizenship Issue Date BS from existing AD date:', citizenshipIssueDateAD.value);
-                const bsValue = window.adToBS(citizenshipIssueDateAD.value);
-                console.log('✅ Initial BS (English numerals):', bsValue);
-
-                if (bsValue) {
-                    const bsNepali = englishToNepali(bsValue);
-                    $('#citizenship_issue_date_bs').val(bsNepali);
-                    lastBSValue = bsNepali;
-                    console.log('✅ Citizenship Issue Date BS initialized:', bsNepali);
-                }
-            }
-        }, 500);
     }
-
-    // Wait for converter functions to be ready from dashboard.blade.php
-    function waitForConverter() {
-        if (typeof window.bsToAD !== 'function' || typeof window.adToBS !== 'function') {
-            console.log('⏳ Waiting for date converter...');
-            setTimeout(waitForConverter, 100);
-            return;
+    
+    if (physicalDisability) {
+        toggleDisabilityCertificateRequirement(); // Initial check
+        physicalDisability.addEventListener('change', toggleDisabilityCertificateRequirement);
+    }
+    
+    // Ethnic Group - Ethnic Certificate
+    const ethnicGroup = document.getElementById('ethnic_group');
+    const ethnicCertificate = document.getElementById('ethnic_certificate');
+    const ethnicCertificateLabel = ethnicCertificate ? ethnicCertificate.closest('.col-md-6').querySelector('label') : null;
+    
+    function toggleEthnicCertificateRequirement() {
+        if (!ethnicGroup || !ethnicCertificate) return;
+        
+        if (ethnicGroup.value === 'Dalit' || ethnicGroup.value === 'Janajati'|| ethnicGroup.value === 'Madhesi') {
+            ethnicCertificate.setAttribute('required', 'required');
+            if (ethnicCertificateLabel && !ethnicCertificateLabel.querySelector('.text-danger')) {
+                ethnicCertificateLabel.innerHTML += ' <span class="text-danger">*</span>';
+            }
+        } else {
+            ethnicCertificate.removeAttribute('required');
+            ethnicCertificate.value = ''; // Clear file input
+            const requiredSpan = ethnicCertificateLabel ? ethnicCertificateLabel.querySelector('.text-danger') : null;
+            if (requiredSpan) {
+                requiredSpan.remove();
+            }
         }
-
-        console.log('✅ Date converter ready!');
-        initializeBirthDatePicker();
-        initializeCitizenshipIssueDatePicker();
     }
-
-    // Start waiting for converter
-    waitForConverter();
-
+    
+    if (ethnicGroup) {
+        toggleEthnicCertificateRequirement(); // Initial check
+        ethnicGroup.addEventListener('change', toggleEthnicCertificateRequirement);
+    }
     let currentStep = 1;
     const totalSteps = 8; // Changed from 8 to 7 since no payment step
     const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
@@ -1207,6 +1203,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         stepEl.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
             if (field.closest('.d-none')) return;
+
+            // Handle checkbox validation
+            if (field.type === 'checkbox') {
+                if (!field.checked) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+
+                    const err = document.createElement('div');
+                    err.className = 'invalid-feedback';
+                    err.textContent = 'You must agree before continuing';
+                    field.parentNode.appendChild(err);
+
+                    if (!firstInvalid) firstInvalid = field;
+                }
+                return;
+            }
+
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('is-invalid');
@@ -1319,17 +1332,43 @@ document.addEventListener('DOMContentLoaded', function () {
             if (el) el.textContent = value;
         }
 
-        // Personal Info
+       // Personal Info
         set('p_name_english', val('name_english'));
         set('p_name_nepali', val('name_nepali'));
         set('p_email', val('email'));
         set('p_birth_date_ad', val('birth_date_ad'));
         set('p_birth_date_bs', val('birth_date_bs'));
         set('p_phone', val('phone'));
+        set('p_advertisement_no', val('advertisement_no'));
+        set('p_applying_position', val('applying_position'));
+        set('p_department', val('department'));
+        set('p_age', val('age'));
+        set('p_alternate_phone_number', val('alternate_phone_number'));
         set('p_gender', val('gender'));
         set('p_marital_status', val('marital_status'));
-        set('p_nationality', val('nationality'));
+        set('spouse_name_english', val('spouse_name_english'));
+        set('p_spouse_nationality', val('spouse_nationality'));
+        set('p_citizenship_number', val('citizenship_number'));
+        set('p_citizenship_issue_date_bs', val('citizenship_issue_date_bs'));
+        set('p_citizenship_issue_district', val('citizenship_issue_district'));
+        set('p_father_name_english', val('father_name_english'));
+        set('p_mother_name_english', val('mother_name_english'));
+        set('p_grandfather_name_english', val('grandfather_name_english'));
+        set('p_father_qualification', val('father_qualification'));
+        set('p_mother_qualification', val('mother_qualification'));
+        set('p_parent_occupation', val('parent_occupation'));
         set('p_blood_group', val('blood_group'));
+        set('p_nationality', val('nationality'));
+        set('p_noc_employee', val('noc_employee'));
+        
+
+        // General Information
+        set('p_religion', val('religion'));
+        set('p_community', val('community'));
+        set('p_ethnic_group', val('ethnic_group'));
+        set('p_mother_tongue', val('mother_tongue'));
+        set('p_employment_status', val('employment_status'));
+        set('p_physical_disability', val('physical_disability'));
 
         // Address Info
         const permanentAddress =
@@ -1390,60 +1429,81 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // File previews with existing files check
-        @if($application->passport_photo)
+        @if($applicationform->passport_size_photo)
             document.getElementById('p_photo').innerHTML =
-                `<a href="{{ asset('storage/'.$application->passport_photo) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->passport_size_photo) }}" target="_blank">View Uploaded File</a>`;
         @else
-            previewFile('p_photo', 'passport_photo');
+            previewFile('p_photo', 'passport_size_photo');
         @endif
 
-        @if($application->citizenship_certificate)
+        @if($applicationform->citizenship_id_document)
             document.getElementById('p_citizenship').innerHTML =
-                `<a href="{{ asset('storage/'.$application->citizenship_certificate) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->citizenship_id_document) }}" target="_blank">View Uploaded File</a>`;
         @else
-            previewFile('p_citizenship', 'citizenship_certificate');
+            previewFile('p_citizenship', 'citizenship_id_document');
         @endif
 
-        @if($application->educational_certificates)
+        @if($applicationform->transcript)
             document.getElementById('p_transcript').innerHTML =
-                `<a href="{{ asset('storage/'.$application->educational_certificates) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->transcript) }}" target="_blank">View Uploaded File</a>`;
         @else
             previewFile('p_transcript', 'transcript');
         @endif
 
-        @if($application->character_certificate)
+        @if($applicationform->character)
             document.getElementById('p_character').innerHTML =
-                `<a href="{{ asset('storage/'.$application->character_certificate) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->character) }}" target="_blank">View Uploaded File</a>`;
         @else
             previewFile('p_character', 'character');
         @endif
 
-        @if($application->signature)
+        @if($applicationform->signature)
             document.getElementById('p_signature').innerHTML =
-                `<a href="{{ asset('storage/'.$application->signature) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->signature) }}" target="_blank">View Uploaded File</a>`;
         @else
             previewFile('p_signature', 'signature');
         @endif
 
-        @if($application->equivalency_certificate)
+        @if($applicationform->equivalent)
             document.getElementById('p_equivalent').innerHTML =
-                `<a href="{{ asset('storage/'.$application->equivalency_certificate) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->equivalent) }}" target="_blank">View Uploaded File</a>`;
         @else
             previewFile('p_equivalent', 'equivalent');
         @endif
 
-        @if($application->experience_certificates)
+        @if($applicationform->work_experience)
             document.getElementById('p_work_experience').innerHTML =
-                `<a href="{{ asset('storage/'.$application->experience_certificates) }}" target="_blank">View Uploaded File</a>`;
+                `<a href="{{ asset('storage/'.$applicationform->work_experience) }}" target="_blank">View Uploaded File</a>`;
         @else
-            previewFile('p_work_experience', 'experience_certificates');
+            previewFile('p_work_experience', 'work_experience');
         @endif
-    }
+
+        @if($applicationform->noc_id_card)
+            document.getElementById('p_noc_id_card').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->	noc_id_card) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_noc_id_card', '	noc_id_card');
+        @endif
+
+        @if($applicationform->ethnic_certificate)
+            document.getElementById('p_ethnic_certificate').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->ethnic_certificate) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_ethnic_certificate', 'ethnic_certificate');
+        @endif
+
+        @if($applicationform->disability_certificate)
+            document.getElementById('p_disability_certificate').innerHTML =
+                `<a href="{{ asset('storage/'.$applicationform->disability_certificate) }}" target="_blank">View Uploaded File</a>`;
+        @else
+            previewFile('p_disability_certificate', 'disability_certificate');
+        @endif
+    }   
 
     // PAYMENT GATEWAYS
     window.startPayment = function(gateway) {
 
-    const applicationId = "{{ $application->id ?? '' }}";
+    const applicationId = "{{ $applicationform->id ?? '' }}";
 
     if (!applicationId) {
         alert("Application ID not found. Please save the form first.");

@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'Reviewer Dashboard')
 
@@ -15,33 +15,22 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item">
-        <i class="bi bi-hourglass-split"></i>
+    <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
-        <span class="badge bg-info ms-auto">{{ $status['assigned'] }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
-        <i class="bi bi-clipboard-check"></i>
+        <i class="bi bi-inbox"></i>
         <span>Reviewed</span>
-        <span class="badge bg-primary ms-auto">{{ $status['reviewed'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="sidebar-menu-item">
-        <i class="bi bi-check-circle"></i>
-        <span>Approved</span>
-        <span class="badge bg-success ms-auto">{{ $status['approved'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="sidebar-menu-item">
-        <i class="bi bi-x-circle"></i>
-        <span>Rejected</span>
-        <span class="badge bg-danger ms-auto">{{ $status['rejected'] }}</span>
+        <span class="badge bg-info ms-auto">{{ $status['reviewed'] }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .dashboard-header {
-        background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-        border-radius: 12px;
+        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        border-radius: 10px;
         padding: 2rem;
         color: white;
         margin-bottom: 2rem;
@@ -143,17 +132,11 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h2 class="fw-bold mb-2">
-                    <i class="bi bi-clipboard-check me-2"></i>Welcome, {{ Auth::guard('reviewer')->user()->name }}!
+                    <i class="bi me-2"></i>Welcome, {{ Auth::guard('reviewer')->user()->name }}!
                 </h2>
                 <p class="mb-0 opacity-90">
-                    <i class="bi bi-calendar3 me-2"></i>{{ now()->format('l, F d, Y') }}
+                    <i class="bi me-2"></i>{{ now()->format('l, F d, Y') }}
                 </p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <div class="d-inline-block bg-white bg-opacity-10 rounded-3 px-4 py-3">
-                    <div class="fw-bold fs-4">{{ $status['assigned'] }}</div>
-                    <small class="opacity-90">Assigned to Me</small>
-                </div>
             </div>
         </div>
     </div>
@@ -162,8 +145,8 @@
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="stat-icon bg-info bg-opacity-10">
-                    <i class="bi bi-inbox text-info"></i>
+                <div>
+                    <i class="bi text-info"></i>
                 </div>
                 <h3 class="fw-bold mb-0">{{ $status['assigned'] }}</h3>
                 <p class="text-muted mb-0 small">Assigned to Me</p>
@@ -171,20 +154,11 @@
         </div>
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="stat-icon bg-success bg-opacity-10">
-                    <i class="bi bi-check-circle-fill text-success"></i>
+                <div>
+                    <i class="bi text-success"></i>
                 </div>
                 <h3 class="fw-bold mb-0">{{ $status['reviewed'] }}</h3>
                 <p class="text-muted mb-0 small">Reviewed Applications</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-icon bg-primary bg-opacity-10">
-                    <i class="bi bi-graph-up text-primary"></i>
-                </div>
-                <h3 class="fw-bold mb-0">{{ $status['completion_rate'] }}%</h3>
-                <p class="text-muted mb-0 small">Completion Rate</p>
             </div>
         </div>
     </div>
@@ -196,9 +170,9 @@
             <div class="progress-card mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-calendar-check text-primary me-2"></i>Today's Progress
+                        <i class="bi text-primary me-2"></i>Today's Progress
                     </h5>
-                    <span class="badge bg-primary">{{ $todaystatus['reviewed_today'] }} / {{ $todaystatus['daily_target'] }}</span>
+                    <span class="badge bg-success">{{ $todaystatus['reviewed_today'] }} / {{ $todaystatus['daily_target'] }}</span>
                 </div>
 
                 <div class="progress mb-3" style="height: 25px;">
@@ -226,7 +200,7 @@
 
             <!-- Pending Applications -->
             <div class="info-card">
-                <h5><i class="bi bi-list-task me-2"></i>Priority Applications</h5>
+                <h5><i class="bi me-2"></i>Priority Applications</h5>
 
                 @forelse($pendingApplications as $application)
                     @php
@@ -271,7 +245,7 @@
                             <div class="flex-grow-1">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                        <i class="bi bi-person-fill text-primary"></i>
+                                        <i class="bi text-primary"></i>
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold">{{ $application->name_english ?? 'N/A' }}</h6>
@@ -280,12 +254,12 @@
                                 </div>
                                 <div class="ms-5">
                                     <p class="mb-1">
-                                        <i class="bi bi-briefcase text-muted me-1"></i>
+                                        <i class="bi text-muted me-1"></i>
                                         <strong>{{ $application->jobPosting->title ?? 'N/A' }}</strong>
                                     </p>
                                     @if($application->jobPosting)
                                         <p class="mb-1 small text-muted">
-                                            <i class="bi bi-calendar-event me-1"></i>
+                                            <i class="bi me-1"></i>
                                             Deadline: {{ $application->jobPosting->deadline->format('M d, Y') }}
                                             @if($application->jobPosting->deadline_bs)
                                                 ({{ $application->jobPosting->deadline_bs }})
@@ -295,7 +269,7 @@
                                     <div class="d-flex gap-2">
                                         <span class="badge {{ $priorityBadge }}">
                                             @if($application->manual_priority)
-                                                <i class="bi bi-star-fill"></i> {{ $priorityText }} Priority
+                                                <i class="bi"></i> {{ $priorityText }} Priority
                                             @else
                                                 {{ $priorityText }} Priority
                                             @endif
@@ -308,14 +282,14 @@
                             </div>
                             <div>
                                 <a href="{{ route('reviewer.applications.show', $application->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-eye me-1"></i>Review
+                                    <i class="bi me-1"></i>Review
                                 </a>
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="text-center py-5">
-                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <i class="bi display-4 text-muted"></i>
                         <p class="text-muted mt-3">No pending applications</p>
                     </div>
                 @endforelse
@@ -323,7 +297,7 @@
                 @if($pendingApplications->count() > 0)
                     <div class="text-center mt-3">
                         <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-primary">
-                            View All Applications <i class="bi bi-arrow-right ms-1"></i>
+                            View All Applications <i class="bi ms-1"></i>
                         </a>
                     </div>
                 @endif
@@ -334,13 +308,13 @@
         <div class="col-lg-4">
             <!-- Recent Activity -->
             <div class="info-card">
-                <h5><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
+                <h5><i class="bi me-2"></i>Recent Activity</h5>
 
                 @forelse($recentActivity as $activity)
                     <div class="activity-item">
                         <div class="d-flex align-items-start gap-2">
                             <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                                <i class="bi bi-check-circle text-success"></i>
+                                <i class="bi text-success"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <p class="mb-1 fw-semibold small">Reviewed</p>
@@ -352,7 +326,7 @@
                     </div>
                 @empty
                     <div class="text-center py-4">
-                        <i class="bi bi-inbox fs-3 text-muted"></i>
+                        <i class="bi fs-3 text-muted"></i>
                         <p class="text-muted small mt-2 mb-0">No recent activity</p>
                     </div>
                 @endforelse
@@ -360,17 +334,17 @@
 
             <!-- Quick Actions -->
             <div class="info-card">
-                <h5><i class="bi bi-lightning-fill me-2"></i>Quick Actions</h5>
+                <h5><i class="bi me-2"></i>Quick Actions</h5>
 
                 <div class="d-grid gap-2">
-                    <a href="{{ route('reviewer.applications.index') }}" class="btn btn-primary">
-                        <i class="bi bi-eye me-2"></i>View All Applications
+                    <a href="{{ route('reviewer.applications.index') }}" class="btn btn-light">
+                        <i class="bi me-2"></i>View All Applications
                     </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="btn btn-outline-info">
-                        <i class="bi bi-inbox me-2"></i>Assigned to Me
+                    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="btn btn-light">
+                        <i class="bi me-2"></i>Assigned to Me
                     </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="btn btn-outline-primary">
-                        <i class="bi bi-clipboard-check me-2"></i>Reviewed
+                    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="btn btn-light">
+                        <i class="bi me-2"></i>Reviewed
                     </a>
                     <!-- <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="btn btn-outline-success">
                         <i class="bi bi-check-circle me-2"></i>Approved
@@ -378,36 +352,6 @@
                     <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="btn btn-outline-danger">
                         <i class="bi bi-x-circle me-2"></i>Rejected
                     </a> -->
-                </div>
-            </div>
-
-            <!-- Performance Summary -->
-            <div class="info-card">
-                <h5><i class="bi bi-trophy me-2"></i>Your Performance</h5>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <small class="text-muted">Review Completion Rate</small>
-                        <small class="fw-bold">{{ $status['completion_rate'] }}%</small>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: {{ $status['completion_rate'] }}%"></div>
-                    </div>
-                </div>
-
-                <div class="row g-2 text-center mt-3">
-                    <div class="col-6">
-                        <div class="p-2 bg-light rounded">
-                            <div class="fw-bold text-info">{{ $status['assigned'] }}</div>
-                            <small class="text-muted">Assigned</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="p-2 bg-light rounded">
-                            <div class="fw-bold text-success">{{ $status['reviewed'] }}</div>
-                            <small class="text-muted">Reviewed</small>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

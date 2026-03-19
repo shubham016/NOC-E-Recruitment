@@ -45,7 +45,7 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title">
-        <i class="bi bi-search text-primary"></i> Browse Vacancies
+        <i class="bi bi-search text-dark"></i> Browse Vacancies
     </h1>
     <p class="page-subtitle">Find and apply for available positions</p>
 </div>
@@ -84,23 +84,12 @@
     <div class="card-body">
         <form method="GET" action="{{ route('candidate.jobs.index') }}">
             <div class="row g-3">
-                <div class="col-md-5">
-                    <input type="text" name="search" class="form-control" placeholder="Search Vacancy..."
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search by Vacancy title..."
                         value="{{ request('search') }}">
                 </div>
-                <div class="col-md-5">
-                    <select name="department" class="form-select">
-                        <option value="">All Departments</option>
-                        @foreach($departments as $department)
-                            <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
-                                {{ $department }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-light w-100">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
@@ -111,28 +100,26 @@
 
 @if($jobs->count() > 0)
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-light text-black">
             <h5 class="mb-0">
                 <i class="bi bi-table"></i> Available Vacancies
             </h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle w-100" style="table-layout: auto; white-space: nowrap;">
+                <table class="table table-hover table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center text-uppercase">S.N.</th>
-                            <th class="text-center text-uppercase">Vacancy Title</th>
-                            <th class="text-center text-uppercase">Department</th>
-                            <!-- <th class="text-center text-uppercase">Location</th> -->
-                            <th class="text-center text-uppercase">Category</th>
-                            <th class="text-center text-uppercase">Vacancies</th>
-                            <th class="text-center text-uppercase">Position Level</th>
-                            <!-- <th class="text-center text-uppercase">Min. Age</th> -->
-                            <th class="text-center text-uppercase">Advertisement No.</th>
-                            <th class="text-center text-uppercase">Deadline</th>
-                            <th class="text-center text-uppercase">Status</th>
-                            <th class="text-center text-uppercase">Action</th>
+                            <th class="text-center">S.N.</th>
+                            <th>Job Title</th>
+                            <th>Department</th>
+                            <th>Category</th>
+                            <th class="text-center">Vacancies</th>
+                            <th>Position Level</th>
+                            <th>Advertisement No.</th>
+                            <th>Deadline</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,46 +139,31 @@
                         @endphp
                         <tr>
                             <td class="text-center">{{ $jobs->firstItem() + $index }}</td>
-                            <td class="text-center">
-                                <strong class="text-primary">{{ $job->title }}</strong>
+                            <td>
+                                <strong class="text-dark">{{ $job->title }}</strong>
                             </td>
-                            <td class="text-center">{{ $job->department }}</td>
-                            <!-- <td class="text-center">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                {{ $job->location }}
-                            </td> -->
-                            <td class="text-center">
-                                <span class="badge bg-info text-dark">
+                            <td>{{ $job->service_group }}</td>
+                            <td>
+                                <span class="text-dark">
                                     {{ ucfirst($job->category) }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                <strong class="text-success">{{ $job->number_of_posts }}</strong>
+                                <strong class="text-dark">{{ $job->number_of_posts }}</strong>
                             </td>
-                            <td class="text-center">{{ $job->position_level }}</td>
-                            <!-- <td class="text-center">{{ $job->minimum_age }}</td> -->
-                            <td class="text-center">{{ $job->advertisement_no }}</td>
-                            <td class="text-center">
-                                <div>
-                                    {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
-                                    <div class="text-danger fw-semibold nepali-date-bs"
-                                        data-ad-date="{{ \Carbon\Carbon::parse($job->deadline)->format('Y-m-d') }}">
-                                        <i class="bi bi-hourglass-split"></i> Converting...
-                                    </div>
-                                    {{-- English Date (AD) --}}
-                                    <div class="text-muted">
-                                        <i class="fas fa-calendar text-warning"></i>
-                                        {{ \Carbon\Carbon::parse($job->deadline)->format('Y-m-d') }}
-                                    </div>
-                                </div>
+                            <td>{{ $job->position_level }}</td>
+                            <td>{{ $job->advertisement_no }}</td>
+                            <td>
+                                <i class="text-dark"></i>
+                                {{ \Carbon\Carbon::parse($job->application_deadline)->format('M d, Y') }}
                             </td>
                             <td class="text-center">
                                 @if($hasApplied)
-                                    <span class="badge bg-success">
+                                    <span class="badge bg-secondary">
                                         <i class="fas fa-check-circle"></i> Applied
                                     </span>
                                 @elseif($job->status === 'active')
-                                    <span class="badge bg-primary">
+                                    <span class="badge bg-success">
                                         <i class="bi bi-circle-fill"></i> Active
                                     </span>
                                 @else
@@ -203,13 +175,13 @@
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
                                     <a href="{{ route('candidate.jobs.show', $job->id) }}" 
-                                       class="btn btn-sm btn-outline-primary" 
+                                       class="btn btn-sm btn-outline-danger" 
                                        title="View Details">
                                         <i class="bi bi-eye"></i> Details
                                     </a>
                                     @if(!$hasApplied && $job->status === 'active')
                                         <button onclick="checkEligibilityAndApply({{ $job->id }})"
-                                            class="btn btn-sm btn-primary apply-btn-{{ $job->id }}"
+                                            class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
                                             title="Apply Now">
                                             <i class="fas fa-paper-plane"></i> Apply
                                         </button>
@@ -234,7 +206,7 @@
             <i class="bi bi-inbox display-1 text-muted mb-3"></i>
             <h4 class="text-muted">No Vacancies Available</h4>
             <p class="text-secondary">There are no vacancy postings matching your criteria at the moment.</p>
-            <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary mt-3">
+            <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger mt-3">
                 <i class="bi bi-house-door"></i> Back to Dashboard
             </a>
         </div>
@@ -359,65 +331,5 @@ window.addEventListener('pageshow', function(event) {
         resetAllButtons();
     }
 });
-
-// ============================================
-// Nepali Date Conversion for Deadline
-// ============================================
-
-// Convert English numerals to Nepali
-function englishToNepali(str) {
-    if (!str) return str;
-    const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
-    return str.replace(/[0-9]/g, d => map[d]);
-}
-
-// Wait for converter to be ready
-function waitForConverter() {
-    if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
-        setTimeout(waitForConverter, 100);
-        return;
-    }
-
-    console.log('✅ Converter ready, converting all deadline dates...');
-    convertAllDates();
-}
-
-function convertAllDates() {
-    // Find all elements with Nepali date class
-    const dateElements = document.querySelectorAll('.nepali-date-bs');
-
-    console.log(`📅 Found ${dateElements.length} deadline dates to convert`);
-
-    dateElements.forEach((element, index) => {
-        const adDate = element.getAttribute('data-ad-date');
-
-        if (adDate) {
-            try {
-                // Convert AD to BS (returns English numerals like 2082-11-05)
-                const bsDate = window.adToBS(adDate);
-
-                if (bsDate) {
-                    // Convert to Nepali numerals (२०८२-११-०५)
-                    const bsNepali = englishToNepali(bsDate);
-
-                    // Update the element with Nepali numeral date
-                    element.innerHTML = `<span style="white-space: nowrap;"><i class="bi bi-calendar-week"></i> ${bsNepali}</span>`;
-                    element.classList.remove('nepali-date-loading');
-                    console.log(`✅ Row ${index + 1}: ${adDate} → ${bsDate} → ${bsNepali}`);
-                } else {
-                    element.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
-                    element.classList.add('text-danger');
-                }
-            } catch (error) {
-                console.error(`❌ Error converting date ${adDate}:`, error);
-                element.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
-                element.classList.add('text-danger');
-            }
-        }
-    });
-}
-
-// Start the conversion when page loads
-document.addEventListener('DOMContentLoaded', waitForConverter);
 </script>
 @endsection

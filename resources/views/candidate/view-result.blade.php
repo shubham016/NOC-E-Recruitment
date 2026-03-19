@@ -37,7 +37,7 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title">
-        <i class="bi bi-clipboard-data text-primary"></i> View Result
+        <i class="bi bi-clipboard-data text-dark"></i> View Result
     </h1>
     <p class="page-subtitle">Check your examination and interview results</p>
 </div>
@@ -48,14 +48,14 @@
             <i class="bi bi-inbox display-1 text-muted mb-3"></i>
             <h4 class="text-muted">No Results Available</h4>
             <p class="text-secondary">Your results will appear here once they are published by the administration.</p>
-            <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary mt-3">
+            <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger mt-3">
                 <i class="bi bi-house-door"></i> Back to Dashboard
             </a>
         </div>
     </div>
 @else
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-light text-dark">
             <h5 class="mb-0">
                 <i class="bi bi-table"></i> My Results
             </h5>
@@ -84,12 +84,12 @@
                         <tr>
                             <td class="text-center">{{ $index + 1 }}</td>
                             <td>
-                                <strong class="text-primary">{{ $result->roll_number ?? 'N/A' }}</strong>
+                                <strong class="text-dark">{{ $result->roll_number ?? 'N/A' }}</strong>
                             </td>
                             <td>{{ $result->full_name ?? 'N/A' }}</td>
                             <td>{{ $result->citizenship_number ?? 'N/A' }}</td>
                             <td>
-                                <span class="badge bg-info text-dark">
+                                <span class="text-dark">
                                     {{ $result->post ?? 'N/A' }}
                                 </span>
                             </td>
@@ -103,15 +103,15 @@
                             </td>
                             <td>
                                 @if($result->class)
-                                    <span class="badge 
+                                    <span class=" 
                                         @if(strtolower($result->class) === 'first' || strtolower($result->class) === '1st') 
-                                            bg-success
+                        
                                         @elseif(strtolower($result->class) === 'second' || strtolower($result->class) === '2nd')
-                                            bg-primary
+                                            
                                         @elseif(strtolower($result->class) === 'third' || strtolower($result->class) === '3rd')
-                                            bg-warning text-dark
+                                            
                                         @else
-                                            bg-secondary
+                                            
                                         @endif
                                     ">
                                         {{ $result->class }}
@@ -135,7 +135,7 @@
                             </td>
                             <td class="text-center">
                                 <a href="{{ url('/candidate/result/' . $result->id) }}" 
-                                   class="btn btn-sm btn-outline-primary" 
+                                   class="btn btn-sm btn-outline-danger" 
                                    title="View Details">
                                     <i class="bi bi-eye"></i> Details
                                 </a>
@@ -152,7 +152,7 @@
                     <div class="card bg-light">
                         <div class="card-body text-center">
                             <h6 class="text-muted mb-2">Total Applications</h6>
-                            <h3 class="text-primary mb-0">{{ $results->count() }}</h3>
+                            <h3 class="text-danger mb-0">{{ $results->count() }}</h3>
                         </div>
                     </div>
                 </div>
@@ -180,7 +180,7 @@
 
             <!-- Download Button -->
             <div class="text-center mt-4">
-                <button class="btn btn-primary" onclick="window.print()">
+                <button class="btn btn-danger" onclick="window.print()">
                     <i class="bi bi-printer"></i> Print Results
                 </button>
             </div>
