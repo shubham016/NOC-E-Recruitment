@@ -26,7 +26,9 @@
 
 @section('sidebar-menu')
     @if($isAdmin)
-        {{-- Super Admin Sidebar --}}
+        @include('admin.partials.sidebar')
+    @else
+        {{-- HR Admin Sidebar --}}
         <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>

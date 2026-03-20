@@ -11,22 +11,7 @@
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Vacancy List</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person-check"></i>
-        <span>Approvers</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('content')

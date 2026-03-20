@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title'$vacancy, 'Vacancy Details')
+@section('title', 'Vacancy Details')
 
 @php
     // Dynamically detect which guard is authenticated
@@ -11,10 +11,10 @@
         $dashboardRoute = route('admin.dashboard');
         $logoutRoute = route('admin.logout');
         $vacanciesIndexRoute = route('admin.vacancies.index');
-        $vacanciesEditRoute = route('admin.vacancies.edit'$vacancy, $vacancy->id);
-        $vacanciesDuplicateRoute = route('admin.vacancies.duplicate'$vacancy, $vacancy->id);
-        $vacanciesChangeStatusRoute = route('admin.vacancies.changeStatus'$vacancy, $vacancy->id);
-        $vacanciesDestroyRoute = route('admin.vacancies.destroy'$vacancy, $vacancy->id);
+        $vacanciesEditRoute = route('admin.vacancies.edit', $vacancy->id);
+        $vacanciesDuplicateRoute = route('admin.vacancies.duplicate', $vacancy->id);
+        $vacanciesChangeStatusRoute = route('admin.vacancies.changeStatus', $vacancy->id);
+        $vacanciesDestroyRoute = route('admin.vacancies.destroy', $vacancy->id);
     } else {
         $currentUser = Auth::guard('hr_administrator')->user();
         $portalName = 'HR Administrator Portal';
@@ -22,32 +22,35 @@
         $dashboardRoute = route('hr-administrator.dashboard');
         $logoutRoute = route('hr-administrator.logout');
         $vacanciesIndexRoute = route('hr-administrator.vacancies.index');
-        $vacanciesEditRoute = route('hr-administrator.vacancies.edit'$vacancy, $vacancy->id);
-        $vacanciesDuplicateRoute = route('hr-administrator.vacancies.duplicate'$vacancy, $vacancy->id);
-        $vacanciesChangeStatusRoute = route('hr-administrator.vacancies.changeStatus'$vacancy, $vacancy->id);
-        $vacanciesDestroyRoute = route('hr-administrator.vacancies.destroy'$vacancy, $vacancy->id);
+        $vacanciesEditRoute = route('hr-administrator.vacancies.edit', $vacancy->id);
+        $vacanciesDuplicateRoute = route('hr-administrator.vacancies.duplicate', $vacancy->id);
+        $vacanciesChangeStatusRoute = route('hr-administrator.vacancies.changeStatus', $vacancy->id);
+        $vacanciesDestroyRoute = route('hr-administrator.vacancies.destroy', $vacancy->id);
     }
 @endphp
 
-@section('portal-name'$vacancy, $portalName)
-@section('brand-icon'$vacancy, 'bi bi-shield-check')
-@section('dashboard-route'$vacancy, $dashboardRoute)
-@section('user-name'$vacancy, $currentUser->name)
-@section('user-role'$vacancy, $userRole)
-@section('user-initial'$vacancy, strtoupper(substr($currentUser->name$vacancy, 0$vacancy, 1)))
-@section('logout-route'$vacancy, $logoutRoute)
+@section('portal-name', $portalName)
+@section('brand-icon', 'bi bi-shield-check')
+@section('dashboard-route', $dashboardRoute)
+@section('user-name', $currentUser->name)
+@section('user-role', $userRole)
+@section('user-initial', strtoupper(substr($currentUser->name, 0, 1)))
+@section('logout-route', $logoutRoute)
 
 @section('sidebar-menu')
-    <a href="{{ $dashboardRoute }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ $vacanciesIndexRoute }}" class="sidebar-menu-item active">
-        <i class="bi bi-briefcase"></i>
-        <span>Vacancy Postings</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
+    @if(Auth::guard('admin')->check())
+        @include('admin.partials.sidebar')
+    @else
+        <a href="{{ $dashboardRoute }}" class="sidebar-menu-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ $vacanciesIndexRoute }}" class="sidebar-menu-item active">
+            <i class="bi bi-briefcase"></i>
+            <span>Vacancy Postings</span>
+        </a>
+        <a href="#" class="sidebar-menu-item">
+            <i class="bi bi-file-earmark-text"></i>
         <span>Applications</span>
     </a>
     <a href="#" class="sidebar-menu-item">

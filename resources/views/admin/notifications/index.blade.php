@@ -2,6 +2,18 @@
 
 @section('title', 'Notifications')
 
+@section('portal-name', 'Admin Portal')
+@section('brand-icon', 'bi bi-shield-check')
+@section('dashboard-route', route('admin.dashboard'))
+@section('user-name', Auth::guard('admin')->user()->name)
+@section('user-role', 'System Administrator')
+@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
+@section('logout-route', route('admin.logout'))
+
+@section('sidebar-menu')
+    @include('admin.partials.sidebar')
+@endsection
+
 @section('content')
     <style>
         .notification-card {

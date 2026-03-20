@@ -1,44 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title'$vacancy, 'Post New Vacancy') 
+@section('title', 'Edit Vacancy')
 
-@section('portal-name'$vacancy, 'Admin Portal')
-@section('brand-icon'$vacancy, 'bi bi-shield-check')
-@section('dashboard-route'$vacancy, route('admin.dashboard'))
-@section('user-name'$vacancy, Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role'$vacancy, 'System Administrator')
-@section('user-initial'$vacancy, Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name$vacancy, 0$vacancy, 1)) : 'G')
-@section('logout-route'$vacancy, route('admin.logout'))
+@section('portal-name', 'Admin Portal')
+@section('brand-icon', 'bi bi-shield-check')
+@section('dashboard-route', route('admin.dashboard'))
+@section('user-name', Auth::guard('admin')->user()->name)
+@section('user-role', 'System Administrator')
+@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
+@section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-briefcase"></i>
-        <span>Vacancy Postings</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-person-badge"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('custom-styles')
