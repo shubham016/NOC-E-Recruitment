@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.apps')
 
 @section('title', 'Review Application')
 
@@ -19,11 +19,6 @@
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
         <span class="badge bg-info ms-auto">{{ $stats['assigned'] }}</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
-        <i class="bi bi-inbox"></i>
-        <span>Reviewed</span>
-        <span class="badge bg-info ms-auto">{{ $stats['reviewed'] }}</span>
     </a>
 @endsection
 
@@ -258,47 +253,8 @@
         margin-bottom: 10px;
     }
 
-    /* Scroll to Top Button */
-    .stp {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .stp.v {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .stp:hover {
-        background: linear-gradient(135deg, #d4b55a 0%, #c9a84c 100%);
-        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.6);
-        transform: translateY(-3px);
-    }
-
-    .stp:active {
-        transform: translateY(-1px);
-    }
-
     @media print {
-        .review-actions, .no-print, .stp {
+        .review-actions, .no-print {
             display: none !important;
         }
     }
@@ -394,7 +350,7 @@
                 <h5><i class=""></i>Vacancy Information</h5>
                 <div class="info-row">
                     <div class="info-label">Position Applied:</div>
-                    <div class="info-value"><strong>{{ $application->vacancy->title ?? $application->applying_position ?? 'N/A' }}</strong></div>
+                    <div class="info-value"><strong>{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</strong></div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Advertisement No:</div>
@@ -402,21 +358,21 @@
                 </div>
                 <div class="info-row">
                     <div class="info-label">Department:</div>
-                    <div class="info-value">{{ $application->vacancy->department ?? $application->department ?? 'N/A' }}</div>
+                    <div class="info-value">{{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Category:</div>
                     <div class="info-value">
-                        <span class="badge bg-info">{{ ucfirst($application->vacancy->category ?? 'N/A') }}</span>
+                        <span class="badge bg-info">{{ ucfirst($application->jobPosting->category ?? 'N/A') }}</span>
                     </div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Application Deadline:</div>
                     <div class="info-value">
-                        @if($application->vacancy->deadline)
-                            <span class="text-danger fw-bold d-block">{{ $application->vacancy->deadline->format('F d, Y') }} (AD)</span>
-                            @if($application->vacancy->deadline_bs)
-                                <span class="text-muted">{{ $application->vacancy->deadline_bs }} (BS)</span>
+                        @if($application->jobPosting->deadline)
+                            <span class="text-danger fw-bold d-block">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
+                            @if($application->jobPosting->deadline_bs)
+                                <span class="text-muted">{{ $application->jobPosting->deadline_bs }} (BS)</span>
                             @endif
                         @else
                             N/A
@@ -1171,15 +1127,9 @@
         </div>
     </div>
 </div>
-
-<!-- Scroll to Top Button -->
-<button class="stp v" id="stp" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
-    <i class="fas fa-chevron-up"></i>
-</button>
-
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 // Handle status change
 document.getElementById('reviewStatus').addEventListener('change', function() {
@@ -1212,16 +1162,6 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitIcon.className = ' me-2';
         submitText.textContent = 'Reject Application';
         smsPreview.style.display = 'block';
-    } else if (status === 'edit') {
-        // Send back for correction
-        notesLabel.textContent = 'Correction Notes';
-        notesHelp.innerHTML = '<i class="bi bi-pencil-square me-1"></i><strong>Important:</strong> Clearly explain what needs to be corrected or updated in the application.';
-        reviewerNotes.placeholder = 'Example: "Please upload a clearer copy of your citizenship certificate" or "Update your work experience section with proper dates" or "Provide correct contact information"...';
-        submitBtn.className = 'btn btn-warning btn-lg';
-        submitBtn.style.background = '';
-        submitIcon.className = 'bi bi-arrow-left-circle me-2';
-        submitText.textContent = 'Send Back for Correction';
-        smsPreview.style.display = 'none';
     } else {
         submitBtn.className = 'btn btn-lg';
         submitBtn.style.background = '#64748b';
@@ -1264,8 +1204,6 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
     } else if (status === 'rejected') {
         confirmMessage = 'Are you sure you want to REJECT this application?\n\n✓ Candidate will be notified via SMS (when Sparrow SMS is integrated).\n✓ Your rejection reason will be sent to: {{ $application->phone ?? "N/A" }}\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
-    } else if (status === 'edit') {
-        confirmMessage = 'Are you sure you want to send this application back for CORRECTION?\n\n✓ Application will be returned to the candidate for editing.\n✓ Your notes will guide the candidate on what needs to be corrected.\n✓ Candidate can resubmit after making corrections.\n\nThis action will be recorded in the system.';
     }
 
     if (confirm(confirmMessage)) {
@@ -1296,15 +1234,5 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         });
     }
 });
-
-// Scroll to Top Button functionality
-window.addEventListener('scroll', function() {
-    const scrollButton = document.getElementById('stp');
-    if (window.pageYOffset > 300) {
-        scrollButton.classList.add('v');
-    } else {
-        scrollButton.classList.remove('v');
-    }
-});
 </script>
-@endpush
+@endsection

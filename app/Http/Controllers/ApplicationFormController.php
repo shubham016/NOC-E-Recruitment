@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
@@ -50,7 +50,7 @@ class ApplicationFormController extends Controller
     /**
      * Show the form for creating a new application
      */
-    public function create($vacancyId = null)
+    public function create($jobId = null)
     {
         if (!Session::has('candidate_logged_in')) {
             return redirect()->route('candidate.login')
@@ -62,33 +62,33 @@ class ApplicationFormController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
 
-        $vacancy = null;
-        if ($vacancyId) {
-            $vacancy = Vacancy::find($vacancyId);
+        $job = null;
+        if ($jobId) {
+            $job = JobPosting::find($jobId);
             
-            if (!$vacancy) {
-                return redirect()->route('candidate.vacancies.index')
-                    ->withErrors(['error' => 'Vacancy not found']);
+            if (!$job) {
+                return redirect()->route('candidate.jobs.index')
+                    ->withErrors(['error' => 'Job posting not found']);
             }
         }
 
-        // Check for existing draft application for this vacancy
+        // Check for existing draft application for this job
         $draftApplication = null;
-        if ($vacancyId) {
+        if ($jobId) {
             $draftApplication = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                ->where('vacancy_id', $vacancyId)
+                ->where('job_posting_id', $jobId)
                 ->where('status', 'draft')
                 ->first();
         } else {
-            // Get the most recent draft without vacancy_id
+            // Get the most recent draft without job_posting_id
             $draftApplication = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                ->whereNull('vacancy_id')
+                ->whereNull('job_posting_id')
                 ->where('status', 'draft')
                 ->latest()
                 ->first();
         }
 
-        return view('candidate.applications.create', compact('vacancy', 'candidate', 'draftApplication'));
+        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
     }
 
     
@@ -108,7 +108,7 @@ class ApplicationFormController extends Controller
             'candidate_id' => $candidate->id,
             'has_draft_id' => $request->has('draft_id'),
             'draft_id' => $request->draft_id,
-            'vacancy_id' => $request->vacancy_id,
+            'job_posting_id' => $request->job_posting_id,
             'has_files' => $this->hasAnyFiles($request),
             'files_present' => array_keys($request->allFiles())
         ]);
@@ -125,23 +125,23 @@ class ApplicationFormController extends Controller
             Log::info('Found draft by ID', ['draft_id' => $draft ? $draft->id : null]);
         }
         
-        if (!$draft && $request->filled('vacancy_id')) {
+        if (!$draft && $request->filled('job_posting_id')) {
             $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                ->where('vacancy_id', $request->vacancy_id)
+                ->where('job_posting_id', $request->job_posting_id)
                 ->where('status', 'draft')
                 ->first();
                 
-            Log::info('Found draft by vacancy_id', ['draft_id' => $draft ? $draft->id : null]);
+            Log::info('Found draft by job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
         }
         
         if (!$draft) {
             $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
                 ->where('status', 'draft')
-                ->whereNull('vacancy_id')
+                ->whereNull('job_posting_id')
                 ->latest()
                 ->first();
                 
-            Log::info('Found draft without vacancy_id', ['draft_id' => $draft ? $draft->id : null]);
+            Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
         }
 
         // Get all data except files and tokens
@@ -161,8 +161,8 @@ class ApplicationFormController extends Controller
         $data['citizenship_number'] = $candidate->citizenship_number;
         $data['status'] = 'draft';
         
-        if ($request->filled('vacancy_id')) {
-            $data['vacancy_id'] = $request->vacancy_id;
+        if ($request->filled('job_posting_id')) {
+            $data['job_posting_id'] = $request->job_posting_id;
         }
 
         // Remove empty values
@@ -253,17 +253,17 @@ class ApplicationFormController extends Controller
         );
 
         // Check job eligibility if applying for a job
-        if ($request->has('vacancy_id')) {
-            $vacancy = Vacancy::find($request->vacancy_id);
+        if ($request->has('job_posting_id')) {
+            $job = JobPosting::find($request->job_posting_id);
             
-            if (!$vacancy) {
+            if (!$job) {
                 return redirect()->back()
-                    ->withErrors(['error' => 'Vacancy not found'])
+                    ->withErrors(['error' => 'Job posting not found'])
                     ->withInput();
             }
 
             // Check if already applied (exclude drafts)
-            $existingApplication = ApplicationForm::where('vacancy_id', $job->id)
+            $existingApplication = ApplicationForm::where('job_posting_id', $job->id)
                 ->where('citizenship_number', $candidate->citizenship_number)
                 ->whereNotIn('status', ['draft', 'edit'])
                 ->first();
@@ -317,8 +317,8 @@ class ApplicationFormController extends Controller
         }
 
         // Add job posting ID if exists
-        if ($request->has('vacancy_id')) {
-            $data['vacancy_id'] = $request->vacancy_id;
+        if ($request->has('job_posting_id')) {
+            $data['job_posting_id'] = $request->job_posting_id;
         }
 
         $data['citizenship_number'] = $candidate->citizenship_number;
@@ -453,9 +453,9 @@ class ApplicationFormController extends Controller
     }
 
     /**
-     * Check eligibility for a vacancy
+     * Check eligibility for a job
      */
-    public function checkEligibility(Request $request, $vacancyId)
+    public function checkEligibility(Request $request, $jobId)
     {
         if (!Session::has('candidate_logged_in')) {
             return response()->json([
@@ -464,12 +464,12 @@ class ApplicationFormController extends Controller
             ], 401);
         }
 
-        $vacancy = Vacancy::find($vacancyId);
+        $job = JobPosting::find($jobId);
         
-        if (!$vacancy) {
+        if (!$job) {
             return response()->json([
                 'eligible' => false,
-                'errors' => ['Vacancy not found']
+                'errors' => ['Job posting not found']
             ], 404);
         }
 
@@ -477,7 +477,7 @@ class ApplicationFormController extends Controller
             ->where('id', Session::get('candidate_id'))
             ->first();
 
-        $existingApplication = ApplicationForm::where('vacancy_id', $job->id)
+        $existingApplication = ApplicationForm::where('job_posting_id', $job->id)
             ->where('citizenship_number', $candidate->citizenship_number)
             ->whereNotIn('status', ['draft', 'edit'])
             ->first();
@@ -551,7 +551,7 @@ class ApplicationFormController extends Controller
             'same_as_permanent' => 'nullable|boolean',
             'physical_disability' => 'required|in:yes,no',
             'noc_employee' => 'required|in:yes,no',
-            'vacancy_id' => 'nullable|exists:vacancies,id',
+            'job_posting_id' => 'nullable|exists:job_postings,id',
             'advertisement_no' => 'required|string',
             'department' => 'required|string',
             'applying_position' => 'required|string',

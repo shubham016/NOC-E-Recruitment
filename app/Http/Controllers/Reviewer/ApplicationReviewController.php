@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Reviewer;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Start query - only show applications assigned to this reviewer
-        $query = ApplicationForm::with(['candidate', 'vacancy'])
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 
@@ -33,7 +33,7 @@ class ApplicationReviewController extends Controller
                         ->orWhere('last_name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 })
-                ->orWhereHas('vacancy', function ($q) use ($search) {
+                ->orWhereHas('jobPosting', function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%");
                 });
             });
@@ -50,7 +50,7 @@ class ApplicationReviewController extends Controller
         // Priority filter (based on deadline)
         if ($request->filled('priority')) {
             $priority = $request->priority;
-            $query->whereHas('vacancy', function ($q) use ($priority) {
+            $query->whereHas('jobPosting', function ($q) use ($priority) {
                 $now = now();
                 switch ($priority) {
                     case 'high':
@@ -78,9 +78,9 @@ class ApplicationReviewController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // Vacancy filter
+        // Job filter
         if ($request->filled('job_id')) {
-            $query->where('vacancy_id', $request->job_id);
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Sorting
@@ -88,8 +88,8 @@ class ApplicationReviewController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
 
         if ($sortBy === 'deadline') {
-            $query->join('vacancies', 'application_form.vacancy_id', '=', 'vacancies.id')
-                ->orderBy('vacancies.deadline', $sortOrder)
+            $query->join('job_postings', 'application_form.job_posting_id', '=', 'job_postings.id')
+                ->orderBy('job_postings.deadline', $sortOrder)
                 ->select('application_form.*');
         } else {
             $query->orderBy($sortBy, $sortOrder);
@@ -98,8 +98,8 @@ class ApplicationReviewController extends Controller
         // Paginate
         $applications = $query->paginate(15)->withQueryString();
 
-        // Get all vacancies for filter dropdown
-        $vacancies = Vacancy::orderBy('title')->get();
+        // Get all jobs for filter dropdown
+        $jobs = JobPosting::orderBy('title')->get();
 
         // Statistics - only for this reviewer's assigned applications
         $stats = [
@@ -132,7 +132,7 @@ class ApplicationReviewController extends Controller
                 ->count(),
         ];
 
-        return view('reviewer.applications.index', compact('applications', 'vacancies', 'stats'));
+        return view('reviewer.applications.index', compact('applications', 'jobs', 'stats'));
     }
 
     /**
@@ -143,7 +143,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
@@ -185,7 +185,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
@@ -196,12 +196,12 @@ class ApplicationReviewController extends Controller
                 'candidate_name' => $application->candidate->name,
                 'candidate_email' => $application->candidate->email,
                 'candidate_phone' => $application->phone ?? $application->candidate->mobile_number,
-                'job_title' => $application->vacancy->title,
-                'job_department' => $application->vacancy->department,
-                'job_location' => $application->vacancy->location,
-                'job_type' => $application->vacancy->job_type,
-                'salary_range' => $application->vacancy->salary_min && $application->vacancy->salary_max
-                    ? 'Rs. ' . number_format($application->vacancy->salary_min) . ' - Rs. ' . number_format($application->vacancy->salary_max)
+                'job_title' => $application->jobPosting->title,
+                'job_department' => $application->jobPosting->department,
+                'job_location' => $application->jobPosting->location,
+                'job_type' => $application->jobPosting->job_type,
+                'salary_range' => $application->jobPosting->salary_min && $application->jobPosting->salary_max
+                    ? 'Rs. ' . number_format($application->jobPosting->salary_min) . ' - Rs. ' . number_format($application->jobPosting->salary_max)
                     : 'Not specified',
                 'cover_letter' => $application->cover_letter,
                 'resume' => $application->resume,
@@ -241,17 +241,17 @@ class ApplicationReviewController extends Controller
         $notificationMessages = [
             'edit' => [
                 'title' => 'Application Requires Correction',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
                 'type' => 'application_sent_back'
             ],
             'reviewed' => [
                 'title' => 'Application Under Review',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been reviewed and forwarded to the admin for final decision.',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been reviewed and forwarded to the admin for final decision.',
                 'type' => 'application_reviewed'
             ],
             'rejected' => [
                 'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
+                'message' => 'Your application for "' . $application->jobPosting->title . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
                 'type' => 'application_rejected'
             ],
         ];
@@ -332,7 +332,7 @@ class ApplicationReviewController extends Controller
 
         if (isset($notificationMessages[$request->status])) {
             foreach ($applications as $application) {
-                $message = str_replace('{job_title}', $application->vacancy->title, $notificationMessages[$request->status]['message']);
+                $message = str_replace('{job_title}', $application->jobPosting->title, $notificationMessages[$request->status]['message']);
 
                 Notification::create([
                     'user_id' => $application->candidate_id,
@@ -371,7 +371,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Build query - only for this reviewer's applications
-        $query = ApplicationForm::with(['candidate', 'vacancy'])
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 
@@ -386,7 +386,7 @@ class ApplicationReviewController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('name_english', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhereHas('vacancy', function ($q) use ($search) {
+                        ->orWhereHas('jobPosting', function ($q) use ($search) {
                             $q->where('title', 'like', "%{$search}%");
                         });
                 });
@@ -397,7 +397,7 @@ class ApplicationReviewController extends Controller
             }
 
             if ($request->filled('job_id')) {
-                $query->where('vacancy_id', $request->job_id);
+                $query->where('job_posting_id', $request->job_id);
             }
         }
 
@@ -436,8 +436,8 @@ class ApplicationReviewController extends Controller
 
             // Add data
             foreach ($applications as $application) {
-                $daysRemaining = $application->vacancy
-                    ? (int) now()->diffInDays($application->vacancy->deadline, false)
+                $daysRemaining = $application->jobPosting
+                    ? (int) now()->diffInDays($application->jobPosting->deadline, false)
                     : 0;
 
                 $priority = $application->manual_priority
@@ -449,12 +449,12 @@ class ApplicationReviewController extends Controller
                     $application->name_english ?? 'N/A',
                     $application->email ?? 'N/A',
                     $application->phone ?? 'N/A',
-                    $application->vacancy->title ?? 'N/A',
-                    $application->vacancy->department ?? 'N/A',
+                    $application->jobPosting->title ?? 'N/A',
+                    $application->jobPosting->department ?? 'N/A',
                     ucfirst($application->status),
                     $priority,
                     $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i') : 'N/A',
-                    $application->vacancy && $application->vacancy->deadline ? $application->vacancy->deadline->format('Y-m-d') : 'N/A',
+                    $application->jobPosting && $application->jobPosting->deadline ? $application->jobPosting->deadline->format('Y-m-d') : 'N/A',
                     $daysRemaining . ' days',
                     $application->reviewed_at ? $application->reviewed_at->format('Y-m-d H:i') : 'Not Reviewed',
                     $application->reviewer_notes ?? ''
@@ -475,7 +475,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Build query - only for this reviewer's applications
-        $query = ApplicationForm::with(['candidate', 'vacancy'])
+        $query = ApplicationForm::with(['candidate', 'jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 
@@ -490,7 +490,7 @@ class ApplicationReviewController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('name_english', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhereHas('vacancy', function ($q) use ($search) {
+                        ->orWhereHas('jobPosting', function ($q) use ($search) {
                             $q->where('title', 'like', "%{$search}%");
                         });
                 });
@@ -501,7 +501,7 @@ class ApplicationReviewController extends Controller
             }
 
             if ($request->filled('job_id')) {
-                $query->where('vacancy_id', $request->job_id);
+                $query->where('job_posting_id', $request->job_id);
             }
         }
 

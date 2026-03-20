@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.apps')
 
 @section('title', 'Application Reviews')
 
@@ -18,11 +18,6 @@
     <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
-        <i class="bi bi-inbox"></i>
-        <span>Reviewed</span>
-        <span class="badge bg-info ms-auto">{{ $stats['reviewed'] }}</span>
     </a>
 @endsection
 
@@ -220,15 +215,15 @@
                     <div class="col-md-3">
                         <select name="job_id" class="form-select">
                             <option value="">All Vacancies</option>
-                            @foreach($vacancies as $vacancy)
-                                <option value="{{ $vacancy->id }}" {{ request('job_id') == $vacancy->id ? 'selected' : '' }}>
-                                    {{ $vacancy->title }}
+                            @foreach($jobs as $job)
+                                <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
+                                    {{ $job->title }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-danger w-100">
                             <i class="me-1"></i> Search
                         </button>
                     </div>
@@ -269,7 +264,7 @@
                 <h6 class="mb-0 fw-bold">
                     <i class="text-dark me-2"></i>Applications List
                 </h6>
-                <span class="badge bg-primary">{{ $applications->total() }} Total</span>
+                <span class="badge bg-danger">{{ $applications->total() }} Total</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -294,7 +289,7 @@
                     <tbody>
                         @forelse($applications as $index => $application)
                             @php
-                                $daysRemaining = $application->vacancy ? (int) now()->diffInDays($application->vacancy->deadline, false) : 0;
+                                $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
 
                                 // Check if admin set manual priority
                                 if ($application->manual_priority) {
@@ -349,17 +344,17 @@
                                     <strong class="d-block">{{ $application->name_english ?? 'N/A' }}</strong>
                                     <small class="text-muted">{{ $application->email ?? 'N/A' }}</small>
                                 </td>
-                                <td class="text-col">{{ $application->vacancy->title ?? 'N/A' }}</td>
-                                <td class="text-col">{{ $application->vacancy->department ?? 'N/A' }}</td>
+                                <td class="text-col">{{ $application->jobPosting->title ?? 'N/A' }}</td>
+                                <td class="text-col">{{ $application->jobPosting->department ?? 'N/A' }}</td>
                                 <td class="nowrap">
                                     <strong class="text-success d-block">{{ adToBS($application->submitted_at ?? $application->created_at) }}</strong>
                                     <small class="text-muted">{{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}</small>
                                 </td>
                                 <td class="nowrap">
-                                    @if($application->vacancy)
-                                        <strong class="text-danger d-block">{{ $application->vacancy->deadline->format('M d, Y') }}</strong>
-                                        @if($application->vacancy->deadline_bs)
-                                            <small class="text-muted d-block">{{ $application->vacancy->deadline_bs }} (BS)</small>
+                                    @if($application->jobPosting)
+                                        <strong class="text-danger d-block">{{ $application->jobPosting->deadline->format('M d, Y') }}</strong>
+                                        @if($application->jobPosting->deadline_bs)
+                                            <small class="text-muted d-block">{{ $application->jobPosting->deadline_bs }} (BS)</small>
                                         @endif
                                         <small class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-secondary' }}">
                                             {{ $daysRemaining }} days left
@@ -389,7 +384,7 @@
                                     <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>
                                 </td>
                                 <td class="nowrap">
-                                    <a href="{{ route('reviewer.applications.show', $application->id) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('reviewer.applications.show', $application->id) }}" class="btn btn-sm btn-danger">
                                         <i class="bi"></i> Review
                                     </a>
                                 </td>

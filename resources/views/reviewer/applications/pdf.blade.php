@@ -251,7 +251,7 @@
         <tbody>
             @forelse($applications as $application)
                 @php
-                    $daysRemaining = $application->vacancy ? (int) now()->diffInDays($application->vacancy->deadline, false) : 0;
+                    $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
 
                     // Priority
                     if ($application->manual_priority) {
@@ -280,12 +280,12 @@
                         <strong>{{ $application->name_english ?? 'N/A' }}</strong><br>
                         <small style="color: #64748b;">{{ $application->email ?? 'N/A' }}</small>
                     </td>
-                    <td>{{ $application->vacancy->title ?? 'N/A' }}</td>
-                    <td>{{ $application->vacancy->department ?? 'N/A' }}</td>
+                    <td>{{ $application->jobPosting->title ?? 'N/A' }}</td>
+                    <td>{{ $application->jobPosting->department ?? 'N/A' }}</td>
                     <td>{{ $application->submitted_at ? $application->submitted_at->format('Y-m-d') : 'N/A' }}</td>
                     <td>
-                        @if($application->vacancy)
-                            {{ $application->vacancy->deadline->format('Y-m-d') }}<br>
+                        @if($application->jobPosting)
+                            {{ $application->jobPosting->deadline->format('Y-m-d') }}<br>
                             <small style="color: {{ $daysRemaining <= 5 ? '#dc2626' : '#64748b' }};">
                                 {{ $daysRemaining }} days
                             </small>

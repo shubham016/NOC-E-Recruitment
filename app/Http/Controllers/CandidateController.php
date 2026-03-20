@@ -163,13 +163,13 @@ class CandidateController extends Controller
             ->count();
 
         // Total active job postings
-        $jobpostingsCount = DB::table('vacancies')->count();
+        $jobpostingsCount = DB::table('job_postings')->count();
 
         return view('candidate.dashboard', [
             'candidate'         => $candidate,
             'applicationsCount' => $applicationsCount,
             'jobpostingsCount'  => $jobpostingsCount,
-            'vacancy'           => null,
+            'job'               => null,
         ]);
     }
 

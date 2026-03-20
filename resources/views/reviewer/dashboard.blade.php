@@ -204,7 +204,7 @@
 
                 @forelse($pendingApplications as $application)
                     @php
-                        $daysRemaining = $application->vacancy ? (int) now()->diffInDays($application->vacancy->deadline, false) : 0;
+                        $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
 
                         // Check if admin set manual priority
                         if ($application->manual_priority) {
@@ -255,14 +255,14 @@
                                 <div class="ms-5">
                                     <p class="mb-1">
                                         <i class="bi text-muted me-1"></i>
-                                        <strong>{{ $application->vacancy->title ?? 'N/A' }}</strong>
+                                        <strong>{{ $application->jobPosting->title ?? 'N/A' }}</strong>
                                     </p>
-                                    @if($application->vacancy)
+                                    @if($application->jobPosting)
                                         <p class="mb-1 small text-muted">
                                             <i class="bi me-1"></i>
-                                            Deadline: {{ $application->vacancy->deadline->format('M d, Y') }}
-                                            @if($application->vacancy->deadline_bs)
-                                                ({{ $application->vacancy->deadline_bs }})
+                                            Deadline: {{ $application->jobPosting->deadline->format('M d, Y') }}
+                                            @if($application->jobPosting->deadline_bs)
+                                                ({{ $application->jobPosting->deadline_bs }})
                                             @endif
                                         </p>
                                     @endif
@@ -274,7 +274,7 @@
                                                 {{ $priorityText }} Priority
                                             @endif
                                         </span>
-                                        @if($application->vacancy)
+                                        @if($application->jobPosting)
                                             <span class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-light text-dark' }}">{{ $daysRemaining }} days left</span>
                                         @endif
                                     </div>
@@ -319,7 +319,7 @@
                             <div class="flex-grow-1">
                                 <p class="mb-1 fw-semibold small">Reviewed</p>
                                 <p class="mb-1 text-muted small">{{ $activity->name_english ?? 'N/A' }}</p>
-                                <p class="mb-0 text-muted small">{{ $activity->vacancy->title ?? 'N/A' }}</p>
+                                <p class="mb-0 text-muted small">{{ $activity->jobPosting->title ?? 'N/A' }}</p>
                                 <small class="text-muted">{{ $activity->reviewed_at->diffForHumans() }}</small>
                             </div>
                         </div>

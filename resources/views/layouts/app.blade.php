@@ -905,7 +905,7 @@
 
                     return result;
                 } catch (error) {
-                    console.error('❌ BS to AD error:', error);
+                    console.error('BS to AD error:', error);
                     return '';
                 }
             };
@@ -956,14 +956,14 @@
 
                     return result;
                 } catch (error) {
-                    console.error('❌ AD to BS error:', error);
+                    console.error('AD to BS error:', error);
                     return '';
                 }
             };
 
             // Mark as ready
             window.nepaliLibrariesReady = true;
-            console.log('✅ Nepali Date Converter ready!');
+            console.log('Nepali Date Converter ready!');
         })();
     </script>
 

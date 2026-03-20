@@ -429,9 +429,11 @@ class CandidateAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::guard('candidate')->logout();
+        session()->forget(['candidate_id', 'candidate_name', 'candidate_email', 'candidate_logged_in']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('candidate.login');
+
+        return redirect()->route('candidate.login')
+            ->with('success', 'Logged out successfully!');
     }
 }
