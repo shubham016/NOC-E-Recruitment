@@ -8,6 +8,7 @@ use App\Http\Middleware\ReviewerMiddleware;
 use App\Http\Middleware\ApproverMiddleware;
 use App\Http\Middleware\CandidateMiddleware;
 use App\Http\Middleware\HRAdministratorMiddleware;
+use App\Http\Middleware\CandidateSessionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'approver' => ApproverMiddleware::class,
             'candidate' => CandidateMiddleware::class,
             'hr_administrator' => HRAdministratorMiddleware::class,
+            'candidate.session' => CandidateSessionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

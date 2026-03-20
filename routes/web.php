@@ -32,6 +32,10 @@ use App\Http\Controllers\Candidate\NotificationController;
 use App\Http\Controllers\Approver\ApproverAuthController;
 use App\Http\Controllers\Approver\AssignedToMeController;
 use App\Http\Controllers\Approver\NotificationController as ApproverNotificationController;
+use App\Http\Controllers\ApplicationFormController;
+use App\Http\Controllers\Candidate\JobBrowsingController;
+use App\Http\Controllers\PaymentController as ShradhaPaymentController;
+use App\Http\Controllers\CandidateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -291,15 +295,6 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
 */
 Route::prefix('reviewer')->name('reviewer.')->group(function () {
 
-    Route::get('/applications', [ApplicationReviewController::class, 'index'])
-        ->name('applications.index');
-
-    Route::get('/applications/export-csv', [ApplicationReviewController::class, 'exportCsv'])
-        ->name('applications.exportCsv');
-
-    Route::get('/applications/export-pdf', [ApplicationReviewController::class, 'exportPdf'])
-        ->name('applications.exportPdf');
-
     Route::get('/login', [ReviewerAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ReviewerAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [ReviewerAuthController::class, 'logout'])->name('logout');
@@ -318,6 +313,8 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
 
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [ApplicationReviewController::class, 'index'])->name('index');
+            Route::get('/export-csv', [ApplicationReviewController::class, 'exportCsv'])->name('exportCsv');
+            Route::get('/export-pdf', [ApplicationReviewController::class, 'exportPdf'])->name('exportPdf');
             Route::get('/{id}', [ApplicationReviewController::class, 'show'])->name('show');
             Route::post('/{id}/status', [ApplicationReviewController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/bulk-update', [ApplicationReviewController::class, 'bulkUpdate'])->name('bulkUpdate');
@@ -427,7 +424,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
 
-        // Vacancies Browsing
+        // Vacancies Browsing (HEAD's VacancyBrowsingController)
         Route::prefix('vacancies')->name('vacancies.')->group(function () {
             Route::get('/', [VacancyBrowsingController::class, 'index'])->name('index');
             Route::get('/{id}', [VacancyBrowsingController::class, 'show'])->name('show');
@@ -444,6 +441,21 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/{vacancyId}/check-eligibility', [CandidateApplicationController::class, 'checkEligibilityAjax'])->name('checkEligibility');
         });
 
+        // Jobs Browsing (shradha's JobBrowsingController)
+        Route::prefix('jobs')->name('jobs.')->group(function () {
+            Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
+            Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
+            Route::get('/{jobId}/check-eligibility', [ApplicationFormController::class, 'checkEligibility'])->name('check-eligibility');
+
+            // Application Routes (nested under jobs)
+            Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
+                Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
+                Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [ApplicationFormController::class, 'update'])->name('update');
+            });
+        });
+
         // My Applications Routes (Direct access for list/show/delete)
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
@@ -452,13 +464,28 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/{id}/edit', [CandidateApplicationController::class, 'editFlat'])->name('edit');
             Route::put('/{id}', [CandidateApplicationController::class, 'updateFlat'])->name('update');
             Route::delete('/{id}', [CandidateApplicationController::class, 'destroy'])->name('destroy');
+            Route::post('/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('saveDraft');
         });
 
-        // Payment Routes (eSewa)
+        // Payment Routes (HEAD's eSewa PaymentController)
         Route::prefix('payment')->name('payment.')->group(function () {
             Route::get('/{applicationId}/esewa', [PaymentController::class, 'showEsewa'])->name('esewa');
+            Route::get('/esewa/start/{applicationId}', [PaymentController::class, 'showEsewa'])->name('esewa.start');
             Route::get('/success', [PaymentController::class, 'success'])->name('success');
             Route::get('/failure', [PaymentController::class, 'failure'])->name('failure');
+
+            // Shradha's extended payment routes (eSewa, Khalti, ConnectIPS)
+            Route::get('/esewa/start/{draftId}', [ShradhaPaymentController::class, 'startEsewa'])->name('esewa.start.shradha');
+            Route::get('/esewa/success', [ShradhaPaymentController::class, 'esewaSuccess'])->name('esewa.success');
+            Route::get('/esewa/failure', [ShradhaPaymentController::class, 'esewaFailure'])->name('esewa.failure');
+
+            Route::get('/khalti/start/{draftId}', [ShradhaPaymentController::class, 'startKhalti'])->name('khalti.start');
+            Route::post('/khalti/verify', [ShradhaPaymentController::class, 'verifyKhalti'])->name('khalti.verify');
+            Route::get('/khalti/success', [ShradhaPaymentController::class, 'khaltiSuccess'])->name('khalti.success');
+
+            Route::get('/connectips/start/{draftId}', [ShradhaPaymentController::class, 'startConnectIps'])->name('connectips.start');
+            Route::get('/connectips/success', [ShradhaPaymentController::class, 'connectipsSuccess'])->name('connectips.success');
+            Route::get('/connectips/failure', [ShradhaPaymentController::class, 'connectipsFailure'])->name('connectips.failure');
         });
 
         // Admit Card Routes
@@ -501,8 +528,12 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
         Route::get('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'showChangePassword'])->name('change-password');
         Route::post('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePassword'])->name('password.update');
-        Route::post('/applications/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('applications.saveDraft');
-        Route::get('/payment/esewa/start/{applicationId}', [PaymentController::class, 'showEsewa'])->name('payment.esewa.start');
+        Route::get('/my-profile', [App\Http\Controllers\Candidate\ProfileController::class, 'show'])->name('my-profile');
+
+        // ApplicationForm routes (shradha's flat application routes)
+        Route::prefix('applications')->name('applications.')->group(function () {
+            Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft.shradha');
+        });
     });
 });
 
@@ -553,10 +584,10 @@ if (app()->environment('local')) {
         ");
 
         if (count($duplicates) > 0) {
-            $output .= '<p style="color:red;"><strong>⚠ Found potential duplicates:</strong></p>';
+            $output .= '<p style="color:red;"><strong>Found potential duplicates:</strong></p>';
             $output .= '<pre>' . print_r($duplicates, true) . '</pre>';
         } else {
-            $output .= '<p style="color:green;">✓ No duplicates found</p>';
+            $output .= '<p style="color:green;">No duplicates found</p>';
         }
 
         $output .= '</body></html>';

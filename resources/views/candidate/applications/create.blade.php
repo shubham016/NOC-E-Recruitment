@@ -6,7 +6,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('candidate.vacancies.index') }}" class="sidebar-menu-item">
+    <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
     </a>
@@ -93,7 +93,7 @@
                 @csrf
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $draftApplication->id ?? '' }}">
                 @if($job)
-                <input type="hidden" name="vacancy_id" value="{{ $job->id }}">
+                <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
                 @endif
 
 <!-- STEP 1: Personal Info -->                  
