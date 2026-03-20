@@ -67,8 +67,8 @@ class AdminDashboardController extends Controller
             'candidates' => $this->calculateGrowth($thisMonth['candidates'], $lastMonth['candidates']),
         ];
 
-        // Top Jobs by Applications
-        $topJobs = Vacancy::withCount('applicationForms')
+        // Top Vacancies by Applications
+        $topVacancies = Vacancy::withCount('applicationForms')
             ->orderBy('application_forms_count', 'desc')
             ->limit(5)
             ->get();
@@ -123,11 +123,11 @@ class AdminDashboardController extends Controller
             'stats',
             'thisMonth',
             'growth',
-            'topJobs',
+            'topVacancies',
             'recentApplications',
             'reviewerStats',
             'hrAdminStats',
-            'recentJobs'
+            'recentVacancies'
         ));
     }
 

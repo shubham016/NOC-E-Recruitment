@@ -11,57 +11,7 @@
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item active">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
-        <i class="bi bi-briefcase"></i>
-        <span>Post Vacancy</span>
-    </a>
-    <a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Vacancy List</span>
-        <span class="badge bg-primary ms-auto">{{ $stats['active_vacancies'] }}</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-        <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending_applications'] }}</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-        <span class="badge bg-info ms-auto">{{ $stats['total_candidates'] }}</span>
-    </a>
-
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-badge"></i>
-        <span>Reviewers</span>
-        <span class="badge bg-success ms-auto">{{ $stats['active_reviewers'] }}</span>
-    </a>
-
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-        <span class="badge bg-success ms-auto">{{ $stats['active_hr_admins'] }}</span>
-    </a>
-
-    <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-person-check"></i>
-        <span>Approvers</span>
-        <span class="badge bg-success ms-auto">{{ $stats['active_approvers'] ?? 0 }}</span>
-    </a>
-
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('custom-styles')
@@ -226,14 +176,7 @@
             background-color: rgba(139, 92, 246, 0.1) !important;
         }
 
-        /* Ensure top navbar sticks */
-        .top-navbar {
-            position: fixed !important;
-            top: 0 !important;
-            left: var(--sidebar-width) !important;
-            right: 0 !important;
-            z-index: 1000 !important;
-        }
+        /* Top navbar positioning is handled by layout.dashboard */
 
         /* Add padding to content-area to account for fixed navbar */
         .content-area {
@@ -821,23 +764,23 @@
                     </h3>
                 </div>
                 <div>
-                    @forelse($topJobs as $job)
-                        <div class="job-card">
-                            <div class="job-info">
-                                <h4 class="job-title">{{ $job->title }}</h4>
-                                <p class="job-meta">
+                    @forelse($topVacancies as $vacancy)
+                        <div class="vacancy-card">
+                            <div class="vacancy-info">
+                                <h4 class="vacancy-title">{{ $vacancy->title }}</h4>
+                                <p class="vacancy-meta">
                                     <span>
                                         <i class="bi bi-building"></i>
-                                        {{ $job->department }}
+                                        {{ $vacancy->department }}
                                     </span>
                                     <span>
                                         <i class="bi bi-geo-alt"></i>
-                                        {{ $job->location }}
+                                        {{ $vacancy->location }}
                                     </span>
                                 </p>
                             </div>
-                            <div class="job-count-box">
-                                <div class="job-count">{{ $job->application_forms_count ?? 0 }}</div>
+                            <div class="vacancy-count-box">
+                                <div class="vacancy-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
                                 <div class="job-count-label">Applications</div>
                             </div>
                         </div>

@@ -14,6 +14,9 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Nepali Datepicker  -->
     <link href="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/css/nepali.datepicker.v5.0.6.min.css"
         rel="stylesheet" type="text/css" />
@@ -24,6 +27,12 @@
             --secondary-gold: #a07828;
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 80px;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
         body {
@@ -45,7 +54,7 @@
             z-index: 1000;
             box-shadow: 2px 0 8px rgba(201, 168, 76, 0.08);
             overflow-y: auto;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             display: flex;
             flex-direction: column;
         }
@@ -57,7 +66,7 @@
             align-items: center;
             gap: 1rem;
             border-bottom: 2px solid rgba(201, 168, 76, 0.3);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .company-logo {
@@ -75,6 +84,7 @@
             flex: 1;
             min-width: 0;
             overflow: hidden;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .company-name {
@@ -87,7 +97,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .company-location {
@@ -97,7 +107,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .sidebar-collapsed .company-info {
@@ -152,7 +162,7 @@
 
         .hamburger-toggle i {
             color: #a07828;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .sidebar-brand {
@@ -175,7 +185,7 @@
 
         .brand-text {
             white-space: nowrap;
-            transition: opacity 0.3s ease, width 0.3s ease;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .sidebar-collapsed .sidebar {
@@ -186,12 +196,14 @@
             margin-left: var(--sidebar-collapsed-width);
         }
 
+        .sidebar-collapsed .top-navbar {
+            left: var(--sidebar-collapsed-width);
+        }
+
         .sidebar-collapsed .brand-text,
         .sidebar-collapsed .sidebar-menu-item span,
         .sidebar-collapsed .sidebar-menu-item .badge {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
+            display: none;
         }
 
         .sidebar-collapsed .brand-container {
@@ -200,8 +212,20 @@
 
         .sidebar-collapsed .sidebar-menu-item {
             justify-content: center;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding: 0.85rem 0;
+            display: flex;
+            align-items: center;
+            min-height: 50px;
+            width: 100%;
+            border-left: none;
+            gap: 0;
+        }
+
+        .sidebar-collapsed .sidebar-menu-item i {
+            width: auto;
+            text-align: center;
+            margin: 0;
+            flex-shrink: 0;
         }
 
         .sidebar-collapsed .hamburger-toggle i {
@@ -212,6 +236,13 @@
             padding: 1rem 0;
         }
 
+        .sidebar-collapsed .sidebar-menu {
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .sidebar-menu-item {
             padding: 0.7rem 1.25rem;
             color: #444;
@@ -219,9 +250,10 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border-left: 3px solid transparent;
             font-size: 0.9rem;
+            min-height: 44px;
         }
 
         .sidebar-menu-item:hover {
@@ -240,25 +272,42 @@
         .sidebar-menu-item i {
             font-size: 1.15rem;
             width: 22px;
+            text-align: center;
             color: #a07828;
+            flex-shrink: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-menu-item span {
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-menu-item .badge {
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-x: hidden;
         }
 
         .top-navbar {
             background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             padding: 0.75rem 1.5rem;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: var(--sidebar-width);
+            right: 0;
             z-index: 999;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .navbar-company-header {
@@ -444,6 +493,10 @@
                 margin-left: 0;
             }
 
+            .top-navbar {
+                left: 0;
+            }
+
             .navbar-company-header {
                 min-width: auto;
                 padding: 0.75rem 1rem;
@@ -492,18 +545,11 @@
             font-size: 15px;
         }
 
-        /* Ensure main-content has proper min-height for footer to stay at bottom */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         .content-area {
             padding: 2rem 1.5rem;
             flex: 1;
+            overflow-y: auto;
+            margin-top: 70px; /* Height of fixed navbar */
         }
 
         @yield('custom-styles');
