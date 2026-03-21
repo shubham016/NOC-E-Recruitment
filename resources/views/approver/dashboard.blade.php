@@ -1,45 +1,34 @@
 @extends('layouts.app')
-
+@section('sidebar-menu')
 @section('title', 'Approver Dashboard')
-
 @section('portal-name', 'Approver Portal')
-@section('brand-icon', 'bi bi-person-check')
-@section('dashboard-route', route('approver.dashboard'))
 @section('user-name', Auth::guard('approver')->user()->name)
+@section('brand-icon', 'bi bi-clipboard-check')
+@section('dashboard-route', route('approver.dashboard'))
 @section('user-role', 'Application Approver')
 @section('user-initial', strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)))
 @section('logout-route', route('approver.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item active">
+    <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item {{ request()->routeIs('approver.dashboard') ? 'active' : '' }}">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item">
+    <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item {{ request()->routeIs('approver.assignedtome') ? 'active' : '' }}">
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
-    </a>
-    <a href="{{ route('approver.assignedtome', ['status' => 'approved']) }}" class="sidebar-menu-item">
-        <i class="bi bi-check-circle"></i>
-        <span>Approved</span>
-        <span class="badge bg-success ms-auto">{{ $stats['approved_applications'] ?? 0 }}</span>
-    </a>
-    <a href="{{ route('approver.assignedtome', ['status' => 'rejected']) }}" class="sidebar-menu-item">
-        <i class="bi bi-x-circle"></i>
-        <span>Rejected</span>
-        <span class="badge bg-danger ms-auto">{{ $stats['rejected_applications'] ?? 0 }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .dashboard-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        border-radius: 10px;
+        background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        border-radius: 12px;
         padding: 2rem;
         color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
     }
 
     .stat-card {
@@ -67,6 +56,51 @@
         margin-bottom: 1rem;
     }
 
+    .progress-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .application-item {
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        border-left: 4px solid transparent;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .application-item:hover {
+        transform: translateX(8px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .application-item.priority-high {
+        border-left-color: #ef4444;
+        background: linear-gradient(to right, rgba(239, 68, 68, 0.02) 0%, white 100%);
+    }
+
+    .application-item.priority-medium {
+        border-left-color: #f59e0b;
+        background: linear-gradient(to right, rgba(245, 158, 11, 0.02) 0%, white 100%);
+    }
+
+    .application-item.priority-low {
+        border-left-color: #10b981;
+        background: linear-gradient(to right, rgba(16, 185, 129, 0.02) 0%, white 100%);
+    }
+
+    .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
     .info-card {
         background: white;
         border-radius: 12px;
@@ -82,39 +116,6 @@
         padding-bottom: 0.75rem;
         margin-bottom: 1rem;
     }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .info-row:last-child {
-        border-bottom: none;
-    }
-
-    .quick-action-btn {
-        display: block;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 1rem 1.5rem;
-        width: 100%;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        text-decoration: none;
-        text-align: center;
-    }
-
-    .quick-action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
-        color: white;
-        text-decoration: none;
-    }
 </style>
 @endsection
 
@@ -125,16 +126,17 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h2 class="fw-bold mb-2">
-                    <i class="bi bi-person-check me-2"></i>Welcome, {{ Auth::guard('approver')->user()->name }}!
+                    <i class="bi bi-clipboard-check me-2"></i>Welcome, {{ Auth::guard('approver')->user()->name }} Approver!
                 </h2>
                 <p class="mb-0 opacity-90">
-                    <i class="bi bi-calendar3 me-2"></i>{{ now()->format('l, F d, Y') }}
+                    <i class="bi bi-calendar3 me-2"></i>
                 </p>
             </div>
             <div class="col-md-4 text-md-end">
-                <span class="badge bg-light text-dark fs-6 px-3 py-2">
-                    <i class="bi bi-person-vcard me-2"></i>{{ Auth::guard('approver')->user()->employee_id }}
-                </span>
+                <div class="d-inline-block bg-white bg-opacity-10 rounded-3 px-4 py-3">
+                    <div class="fw-bold fs-4"></div>
+                    <small class="opacity-90">Assigned to Me</small>
+                </div>
             </div>
         </div>
     </div>
@@ -143,117 +145,84 @@
     <div class="row g-4 mb-4">
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
-                    <i class="bi bi-inbox"></i>
+                <div class="stat-icon bg-info bg-opacity-10">
+                    <i class="bi bi-inbox text-info"></i>
                 </div>
-                <h3 class="fw-bold mb-0">{{ $stats['pending_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Pending Applications</p>
+                <h3 class="fw-bold mb-0"></h3>
+                <p class="text-muted mb-0 small">Assigned to Me</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                    <i class="bi bi-check-circle"></i>
+                <div class="stat-icon bg-primary bg-opacity-10">
+                    <i class="bi bi-check-circle text-primary"></i>
                 </div>
-                <h3 class="fw-bold mb-0">{{ $stats['approved_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Approved</p>
+                <h3 class="fw-bold mb-0"></h3>
+                <p class="text-muted mb-0 small">Total Reviewed</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                    <i class="bi bi-x-circle"></i>
+                <div class="stat-icon bg-danger bg-opacity-10">
+                    <i class="bi bi-x-circle-fill text-danger"></i>
                 </div>
-                <h3 class="fw-bold mb-0">{{ $stats['rejected_applications'] }}</h3>
+                <h3 class="fw-bold mb-0"></h3>
                 <p class="text-muted mb-0 small">Rejected</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
-                    <i class="bi bi-file-earmark-text"></i>
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['total_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Total Applications</p>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <!-- Left Column -->
-        <div class="col-lg-8">
-            <!-- Quick Information -->
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-info-circle text-primary me-2"></i>Approver Information
-                </h5>
-                <div class="info-row">
-                    <span class="text-muted">Employee ID:</span>
-                    <span class="fw-semibold">{{ $approver->employee_id }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Department:</span>
-                    <span class="fw-semibold">{{ $approver->department ?? 'N/A' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Designation:</span>
-                    <span class="fw-semibold">{{ $approver->designation ?? 'N/A' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Email:</span>
-                    <span class="fw-semibold">{{ $approver->email }}</span>
-                </div>
-                @if($approver->vacancy_id)
-                <div class="info-row">
-                    <span class="text-muted">Assigned Job:</span>
-                    <span class="fw-semibold">{{ $approver->vacancy->title ?? 'N/A' }}</span>
-                </div>
-                @endif
-            </div>
-
-            <!-- Welcome Message -->
-            <!-- <div class="info-card">
-                <h5>
-                    <i class="bi bi-chat-left-quote text-success me-2"></i>Welcome Message
-                </h5>
-                <p class="mb-0 text-muted">
-                    Welcome to the NOC E-Recruitment Approver Portal. As an approver, you have the responsibility to review and approve/reject applications assigned to you. Please ensure timely processing of all applications to maintain an efficient recruitment process.
-                </p>
-            </div> -->
-        </div>
+        
 
         <!-- Right Column -->
         <div class="col-lg-4">
-            <!-- Quick Actions -->
+            <!-- Recent Activity -->
             <div class="info-card">
-                <h5>
-                    <i class="bi bi-lightning text-warning me-2"></i>Quick Actions
-                </h5>
-                <a href="{{ route('approver.assignedtome') }}" class="quick-action-btn">
-                    <i class="bi bi-inbox me-2"></i>Assigned Applications
-                </a>
-                <a href="{{ route('approver.assignedtome', ['status' => 'pending']) }}" class="quick-action-btn">
-                    <i class="bi bi-clock-history me-2"></i>Pending Reviews
-                </a>
-                <a href="{{ route('approver.assignedtome', ['status' => 'approved']) }}" class="quick-action-btn">
-                    <i class="bi bi-check-circle me-2"></i>Approved Applications
-                </a>
+                <h5><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
+
+               
+
+                    <div class="activity-item">
+                        <div class="d-flex align-items-start gap-2">
+                            <div class="
+                             bg-opacity-10 rounded-circle p-2">
+                                <i class="bi bi-check-circle 
+                                "></i>
+                            </div>
+                            <div class="flex-grow-1">
+                               
+                            
+                                <p class="mb-0 text-muted small">
+                                    
+                                </p>
+                                <small class="text-muted">
+                                    
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+               
             </div>
 
-            <!-- System Status -->
+            <!-- Quick Actions -->
             <div class="info-card">
-                <h5>
-                    <i class="bi bi-gear text-secondary me-2"></i>System Status
-                </h5>
-                <div class="info-row">
-                    <span class="text-muted">Status:</span>
-                    <span class="badge bg-success">Active</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Last Login:</span>
-                    <span class="fw-semibold small">{{ now()->format('M d, Y h:i A') }}</span>
+                <h5><i class="bi bi-lightning-fill me-2"></i>Quick Actions</h5>
+
+                <div class="d-grid gap-2">
+                    <a href="" class="btn btn-primary">
+                        <i class="bi bi-eye me-2"></i>View All Applications
+                    </a>
+                    <a href="" class="btn btn-outline-info">
+                        <i class="bi bi-inbox me-2"></i>Assigned to Me
+                    </a>
+                    <a href="" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle me-2"></i>Approved
+                    </a>
                 </div>
             </div>
+
+           
         </div>
     </div>
 </div>
