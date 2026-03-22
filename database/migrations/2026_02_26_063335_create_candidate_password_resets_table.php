@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('candidate_password_resets');
         Schema::create('candidate_password_resets', function (Blueprint $table) {
         $table->string('email')->index();
         $table->string('token');

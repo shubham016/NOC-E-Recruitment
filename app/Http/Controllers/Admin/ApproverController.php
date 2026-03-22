@@ -211,7 +211,7 @@ class ApproverController extends Controller
         $approver = Approver::findOrFail($id);
 
         $validated = $request->validate([
-            'vacancy_id' => ['nullable', 'exists:vacancies,id'],
+            'vacancy_id' => ['nullable', 'exists:job_postings,id'],
         ]);
 
         $approver->update([

@@ -20,12 +20,13 @@ class JobPosting extends Model
         'minimum_qualification',
         'department',
         'service_group',
-        'category', // Keeping this - replaces inclusive_type and job_type
+        'category',
         'number_of_posts',
         'location',
         'salary_min',
         'salary_max',
         'deadline',
+        'deadline_bs',
         'status',
         'posted_by',
         'min_age',
@@ -33,8 +34,9 @@ class JobPosting extends Model
         'required_education',
     ];
 
+
     protected $casts = [
-        'deadline' => 'datetime',
+        'deadline' => 'date:Y-m-d',
         'salary_min' => 'decimal:2',
         'salary_max' => 'decimal:2',
         'number_of_posts' => 'integer',

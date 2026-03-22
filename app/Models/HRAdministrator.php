@@ -32,44 +32,36 @@ class HRAdministrator extends Authenticatable
     ];
 
     /**
-     * Get vacancies created by this HR Administrator
-     * Uses 'posted_by' as the foreign key in vacancies table
+     * Get jobs created by this HR Administrator
      */
-    public function vacancies()
+    public function jobs()
     {
         return $this->hasMany(Vacancy::class, 'posted_by', 'id');
     }
 
+    public function vacancies()
+    {
+        return $this->jobs();
+    }
+
     /**
-     * Get applications for vacancies posted by this HR Administrator
+     * Get applications for jobs posted by this HR Administrator
      */
     public function applications()
     {
         return $this->hasManyThrough(
             Application::class,
             Vacancy::class,
-            'posted_by',    // Foreign key on vacancies table
-            'vacancy_id',   // Foreign key on applications table
-            'id',           // Local key on hr_administrators table
-            'id'            // Local key on vacancies table
+            'posted_by',
+            'job_posting_id',
+            'id',
+            'id'
         );
     }
 
-    /**
-     * Backward compatibility alias
-     * @deprecated Use vacancies() instead
-     */
-    public function jobPostings()
-    {
-        return $this->vacancies();
-    }
-
-    /**
-     * Alias for vacancies - for backward compatibility
-     */
     public function myJobPostings()
     {
-        return $this->vacancies();
+        return $this->jobs();
     }
 
     /**

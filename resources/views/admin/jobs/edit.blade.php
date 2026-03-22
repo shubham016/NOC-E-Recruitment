@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Edit Vacancy')
 
@@ -11,34 +11,7 @@
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-briefcase"></i>
-        <span>Vacancy Postings</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-person-badge"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-bar-chart"></i>
-        <span>Reports</span>
-    </a>
-    <a href="#" class="sidebar-menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('custom-styles')
@@ -453,7 +426,6 @@
 
                     <!-- Hidden fields -->
                     <input type="hidden" name="title" id="hidden_title" value="{{ $job->title }}">
-                    <input type="hidden" name="department" value="Government Department">
                     <input type="hidden" name="location" value="Nepal">
                     <input type="hidden" name="job_type" value="permanent">
                     <input type="hidden" name="description" id="hidden_description" value="{{ $job->description }}">

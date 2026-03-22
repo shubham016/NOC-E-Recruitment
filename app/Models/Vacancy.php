@@ -9,7 +9,7 @@ class Vacancy extends Model
 {
     use HasFactory;
 
-    protected $table = 'vacancies';
+    protected $table = 'job_postings';
 
     protected $fillable = [
         'advertisement_no',
@@ -19,6 +19,7 @@ class Vacancy extends Model
         'requirements',
         'minimum_qualification',
         'department',
+        'service_group',
         'category',
         'internal_type',
         'inclusive_type',
@@ -61,7 +62,7 @@ class Vacancy extends Model
      */
     public function applicationForms()
     {
-        return $this->hasMany(ApplicationForm::class, 'vacancy_id');
+        return $this->hasMany(ApplicationForm::class, 'job_posting_id');
     }
 
     /**

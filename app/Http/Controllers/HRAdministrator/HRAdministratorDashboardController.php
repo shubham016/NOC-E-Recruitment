@@ -69,13 +69,13 @@ class HRAdministratorDashboardController extends Controller
         ];
 
         // Recent applications - show ALL recent applications
-        $recentApplications = ApplicationForm::with(['candidate', 'vacancy'])
+        $recentApplications = ApplicationForm::with(['job'])
             ->latest()
             ->take(5)
             ->get();
 
         // Recent jobs - show ALL recent jobs
-        $recentVacancies = Vacancy::latest()
+        $recentJobs = Vacancy::latest()
             ->take(5)
             ->get();
 

@@ -466,7 +466,7 @@
                         <label for="remember">Keep me signed in</label>
                     </div>
                     <div style="text-align:right; margin-bottom:1.25rem; margin-top:-0.75rem;">
-                        <a href="{{ route('candidate.forgot-password') }}" 
+                        <a href="{{ route('candidate.forgot.password') }}" 
                         style="font-size:0.82rem; color:#1a6da8; text-decoration:none;">
                             <i class="bi bi-question-circle"></i> Forgot Password?
                         </a>

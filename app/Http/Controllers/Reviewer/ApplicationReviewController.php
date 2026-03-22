@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Reviewer;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,7 +19,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Start query - only show applications assigned to this reviewer
-        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+        $query = ApplicationForm::with(['jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 
@@ -28,14 +27,11 @@ class ApplicationReviewController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('candidate', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })
-                ->orWhereHas('jobPosting', function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%");
-                });
+                $q->where('name_english', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('jobPosting', function ($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -143,7 +139,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
@@ -185,7 +181,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['candidate', 'jobPosting', 'reviewer'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
@@ -193,9 +189,9 @@ class ApplicationReviewController extends Controller
             'success' => true,
             'application' => [
                 'id' => $application->id,
-                'candidate_name' => $application->candidate->name,
-                'candidate_email' => $application->candidate->email,
-                'candidate_phone' => $application->phone ?? $application->candidate->mobile_number,
+                'candidate_name' => $application->name_english,
+                'candidate_email' => $application->email,
+                'candidate_phone' => $application->phone,
                 'job_title' => $application->jobPosting->title,
                 'job_department' => $application->jobPosting->department,
                 'job_location' => $application->jobPosting->location,
@@ -237,37 +233,6 @@ class ApplicationReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        // Create notifications for candidate based on status
-        $notificationMessages = [
-            'edit' => [
-                'title' => 'Application Requires Correction',
-                'message' => 'Your application for "' . $application->jobPosting->title . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
-                'type' => 'application_sent_back'
-            ],
-            'reviewed' => [
-                'title' => 'Application Under Review',
-                'message' => 'Your application for "' . $application->jobPosting->title . '" has been reviewed and forwarded to the admin for final decision.',
-                'type' => 'application_reviewed'
-            ],
-            'rejected' => [
-                'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->jobPosting->title . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
-                'type' => 'application_rejected'
-            ],
-        ];
-
-        if (isset($notificationMessages[$request->status])) {
-            Notification::create([
-                'user_id' => $application->candidate_id,
-                'user_type' => 'candidate',
-                'type' => $notificationMessages[$request->status]['type'],
-                'title' => $notificationMessages[$request->status]['title'],
-                'message' => $notificationMessages[$request->status]['message'],
-                'related_id' => $application->id,
-                'related_type' => 'application',
-            ]);
-        }
-
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
             $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
@@ -297,11 +262,6 @@ class ApplicationReviewController extends Controller
 
         $reviewer = Auth::guard('reviewer')->user();
 
-        // Get applications before updating them (needed for notifications)
-        $applications = ApplicationForm::whereIn('id', $request->application_ids)
-            ->where('reviewer_id', $reviewer->id)
-            ->get();
-
         // Only update applications assigned to this reviewer
         ApplicationForm::whereIn('id', $request->application_ids)
             ->where('reviewer_id', $reviewer->id)
@@ -310,41 +270,6 @@ class ApplicationReviewController extends Controller
                 'reviewer_id' => $reviewer->id,
                 'reviewed_at' => now(),
             ]);
-
-        // Create notifications for candidates based on status
-        $notificationMessages = [
-            'edit' => [
-                'title' => 'Application Requires Correction',
-                'message' => 'Your application for "' . '{job_title}' . '" has been sent back for correction. Please review the reviewer\'s notes and resubmit.',
-                'type' => 'application_sent_back'
-            ],
-            'reviewed' => [
-                'title' => 'Application Under Review',
-                'message' => 'Your application for "' . '{job_title}' . '" has been reviewed and forwarded to the admin for final decision.',
-                'type' => 'application_reviewed'
-            ],
-            'rejected' => [
-                'title' => 'Application Rejected',
-                'message' => 'Your application for "' . '{job_title}' . '" has been rejected by the reviewer. Please check the reviewer\'s notes for more details.',
-                'type' => 'application_rejected'
-            ],
-        ];
-
-        if (isset($notificationMessages[$request->status])) {
-            foreach ($applications as $application) {
-                $message = str_replace('{job_title}', $application->jobPosting->title, $notificationMessages[$request->status]['message']);
-
-                Notification::create([
-                    'user_id' => $application->candidate_id,
-                    'user_type' => 'candidate',
-                    'type' => $notificationMessages[$request->status]['type'],
-                    'title' => $notificationMessages[$request->status]['title'],
-                    'message' => $message,
-                    'related_id' => $application->id,
-                    'related_type' => 'application',
-                ]);
-            }
-        }
 
         // Prepare response message
         $count = count($request->application_ids);
@@ -371,7 +296,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Build query - only for this reviewer's applications
-        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+        $query = ApplicationForm::with(['jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 
@@ -475,7 +400,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Build query - only for this reviewer's applications
-        $query = ApplicationForm::with(['candidate', 'jobPosting'])
+        $query = ApplicationForm::with(['jobPosting'])
             ->where('reviewer_id', $reviewer->id)
             ->where('status', '!=', 'draft');
 

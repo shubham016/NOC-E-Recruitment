@@ -80,9 +80,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         /*
-        | Vacancy Management Routes
+        | Job Management Routes
         */
-        Route::prefix('vacancies')->name('vacancies.')->group(function () {
+        Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [VacancyManagementController::class, 'index'])->name('index');
             Route::get('/create', [VacancyManagementController::class, 'create'])->name('create');
             Route::get('/download', [VacancyManagementController::class, 'downloadPDF'])->name('download');
@@ -222,7 +222,7 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
         });
 
         /*
-        | Vacancy Management Routes - Using HRVacancyController (NOT Admin's VacancyManagementController)
+        | Job Management Routes - Using HRVacancyController
         */
         Route::prefix('vacancies')->name('vacancies.')->group(function () {
             Route::get('/', [HRVacancyController::class, 'index'])->name('index');
@@ -378,43 +378,40 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     |--------------------------------------------------------------------------
     */
     // Login
-    Route::get('/login', [CandidateAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [CandidateAuthController::class, 'login'])->name('login.post');
+    Route::get('/login', [CandidateController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [CandidateController::class, 'login'])->name('login.post');
 
-    // Registration
-    Route::get('/register', [CandidateAuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [CandidateAuthController::class, 'register'])->name('register.post');
-
-    // Email Verification (OTP)
-    Route::get('/verify-otp', [CandidateAuthController::class, 'showVerifyOtpForm'])->name('verify.otp');
-    Route::post('/verify-otp', [CandidateAuthController::class, 'verifyOtp'])->name('verify.otp.post');
-    Route::post('/resend-otp', [CandidateAuthController::class, 'resendOtp'])->name('resend.otp');
+    // Registration (with OTP verification)
+    Route::get('/register', [CandidateController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [CandidateController::class, 'register'])->name('register.post');
+    Route::get('/verify-otp', [CandidateController::class, 'showVerifyOtpForm'])->name('verify.otp');
+    Route::post('/verify-otp', [CandidateController::class, 'verifyOtp'])->name('verify.otp.post');
+    Route::post('/resend-otp', [CandidateController::class, 'resendOtp'])->name('resend.otp');
 
     // Forgot Password
     Route::get('/forgot-password', [CandidateAuthController::class, 'showForgotPasswordForm'])->name('forgot.password');
     Route::post('/forgot-password', [CandidateAuthController::class, 'sendResetOtp'])->name('forgot.password.post');
 
-    // Password Reset OTP Verification
+    // Password Reset OTP
     Route::get('/password/verify-otp', [CandidateAuthController::class, 'showResetOtpForm'])->name('password.verify-otp');
     Route::post('/password/verify-otp', [CandidateAuthController::class, 'verifyResetOtp'])->name('password.verify-otp.post');
-    Route::post('/password/resend-otp', [CandidateAuthController::class, 'resendResetOtp'])->name('password.resend-otp');
 
     // Reset Password
-    Route::get('/password/reset', [CandidateAuthController::class, 'showResetPasswordForm'])->name('password.reset');
-    Route::post('/password/reset', [CandidateAuthController::class, 'resetPassword'])->name('password.reset.post');
+    Route::get('/reset-password', [CandidateAuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [CandidateAuthController::class, 'resetPassword'])->name('password.reset.post');
 
     // Logout
-    Route::post('/logout', [CandidateAuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [CandidateController::class, 'logout'])->name('logout');
 
     /*
     |--------------------------------------------------------------------------
     | Protected Candidate Routes (Requires Candidate Authentication)
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['candidate'])->group(function () {
+    Route::middleware(['candidate.session'])->group(function () {
 
         // Dashboard
-        Route::get('/dashboard', [CandidateDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [CandidateController::class, 'dashboard'])->name('dashboard');
 
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -458,13 +455,11 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
 
         // My Applications Routes (Direct access for list/show/delete)
         Route::prefix('applications')->name('applications.')->group(function () {
-            Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
-            Route::post('/', [CandidateApplicationController::class, 'storeFlat'])->name('store');
-            Route::get('/{id}', [CandidateApplicationController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [CandidateApplicationController::class, 'editFlat'])->name('edit');
-            Route::put('/{id}', [CandidateApplicationController::class, 'updateFlat'])->name('update');
-            Route::delete('/{id}', [CandidateApplicationController::class, 'destroy'])->name('destroy');
-            Route::post('/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('saveDraft');
+            Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
+            Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
+            Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
+            Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');
+            Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
         });
 
         // Payment Routes (HEAD's eSewa PaymentController)
@@ -526,13 +521,13 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::get('/view-result/{id}', [CandidateResultController::class, 'show'])->name('result.show');
         Route::get('/admit-card', [AdmitCardController::class, 'index'])->name('admit-card');
         Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
-        Route::get('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'showChangePassword'])->name('change-password');
-        Route::post('/change-password', [App\Http\Controllers\Candidate\SettingsController::class, 'updatePassword'])->name('password.update');
-        Route::get('/my-profile', [App\Http\Controllers\Candidate\ProfileController::class, 'show'])->name('my-profile');
+        Route::get('/change-password', [CandidateController::class, 'showChangePasswordForm'])->name('change-password');
+        Route::post('/change-password', [CandidateController::class, 'updatePassword'])->name('change-password.post');
+        Route::get('/my-profile', [CandidateController::class, 'profile'])->name('my-profile');
 
         // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {
-            Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft.shradha');
+            Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft');
         });
     });
 });

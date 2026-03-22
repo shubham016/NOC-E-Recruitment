@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Dashboard')
 
@@ -177,11 +177,6 @@
         }
 
         /* Top navbar positioning is handled by layout.dashboard */
-
-        /* Add padding to content-area to account for fixed navbar */
-        .content-area {
-            padding-top: calc(80px + 2rem) !important;
-        }
 
         /* Content Layout - Perfect Grid */
         .content-layout {
@@ -764,11 +759,11 @@
                     </h3>
                 </div>
                 <div>
-                    @forelse($topVacancies as $vacancy)
-                        <div class="vacancy-card">
-                            <div class="vacancy-info">
-                                <h4 class="vacancy-title">{{ $vacancy->title }}</h4>
-                                <p class="vacancy-meta">
+                    @forelse($topJobs as $vacancy)
+                        <div class="job-card">
+                            <div class="job-info">
+                                <h4 class="job-title">{{ $vacancy->title }}</h4>
+                                <p class="job-meta">
                                     <span>
                                         <i class="bi bi-building"></i>
                                         {{ $vacancy->department }}
@@ -779,8 +774,8 @@
                                     </span>
                                 </p>
                             </div>
-                            <div class="vacancy-count-box">
-                                <div class="vacancy-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
+                            <div class="job-count-box">
+                                <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
                                 <div class="job-count-label">Applications</div>
                             </div>
                         </div>
@@ -808,7 +803,7 @@
                     </h3>
                 </div>
                 <div class="widget-body">
-                    <a href="{{ route('admin.vacancies.create') }}" class="btn-action btn-primary">
+                    <a href="{{ route('admin.jobs.create') }}" class="btn-action btn-primary">
                         <i class="bi bi-plus-circle"></i>
                         Post New Vacancy
                     </a>

@@ -29,20 +29,16 @@ class Admin extends Authenticatable
     ];
 
     /**
-     * Relationship: Admin posted many vacancies
+     * Relationship: Admin posted many jobs
      */
-    public function vacancies()
+    public function jobs()
     {
         return $this->hasMany(Vacancy::class, 'posted_by');
     }
 
-    /**
-     * Backward compatibility alias
-     * @deprecated Use vacancies() instead
-     */
-    public function jobPostings()
+    public function vacancies()
     {
-        return $this->vacancies();
+        return $this->jobs();
     }
 
     /**

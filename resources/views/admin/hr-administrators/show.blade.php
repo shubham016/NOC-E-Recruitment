@@ -33,9 +33,9 @@
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item">
+        <a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item">
             <i class="bi bi-briefcase"></i>
-            <span>Post Vacancy</span>
+            <span>Post Job</span>
         </a>
         <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item">
             <i class="bi bi-file-earmark-text"></i>
@@ -590,7 +590,7 @@
                                             <small>{{ $job->created_at->format('Y-m-d') }}</small>
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ $isAdmin ? route('admin.vacancies.show', $job->id) : route('hr-administrator.vacancies.show', $job->id) }}"
+                                            <a href="{{ $isAdmin ? route('admin.jobs.show', $job->id) : route('hr-administrator.vacancies.show', $job->id) }}"
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>

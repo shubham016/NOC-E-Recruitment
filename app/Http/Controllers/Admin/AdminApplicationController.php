@@ -15,21 +15,19 @@ class AdminApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query
-        $query = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $query = ApplicationForm::with(['vacancy', 'reviewer'])
             ->where('status', '!=', 'draft');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('candidate', function ($q2) use ($search) {
-                    $q2->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('vacancy', function ($q2) use ($search) {
-                    $q2->where('title', 'like', "%{$search}%")
-                        ->orWhere('advertisement_no', 'like', "%{$search}%");
-                });
+                $q->where('name_english', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('vacancy', function ($q2) use ($search) {
+                        $q2->where('title', 'like', "%{$search}%")
+                            ->orWhere('advertisement_no', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -40,7 +38,7 @@ class AdminApplicationController extends Controller
 
         // Vacancy filter
         if ($request->filled('job_id')) {
-            $query->where('vacancy_id', $request->job_id);
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Reviewer filter
@@ -64,8 +62,9 @@ class AdminApplicationController extends Controller
         // Paginate results
         $applications = $query->paginate(20)->withQueryString();
 
-        // Get all vacancies for filter dropdown
-        $vacancies = Vacancy::select('id', 'title', 'advertisement_no')->get();
+        // Get all jobs for filter dropdown
+        $jobs = Vacancy::select('id', 'title', 'advertisement_no')->get();
+        $vacancies = $jobs;
 
         // Get all active reviewers for filter dropdown
         $reviewers = Reviewer::select('id', 'name', 'email')
@@ -87,6 +86,7 @@ class AdminApplicationController extends Controller
         return view('admin.applications.index', compact(
             'applications',
             'jobs',
+            'vacancies',
             'reviewers',
             'statuses',
             'stats'
@@ -96,21 +96,19 @@ class AdminApplicationController extends Controller
     public function export(Request $request)
     {
         // Use same filtering logic as index method
-        $query = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $query = ApplicationForm::with(['vacancy', 'reviewer'])
             ->where('status', '!=', 'draft');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('candidate', function ($q2) use ($search) {
-                    $q2->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('vacancy', function ($q2) use ($search) {
-                    $q2->where('title', 'like', "%{$search}%")
-                        ->orWhere('advertisement_no', 'like', "%{$search}%");
-                });
+                $q->where('name_english', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('vacancy', function ($q2) use ($search) {
+                        $q2->where('title', 'like', "%{$search}%")
+                            ->orWhere('advertisement_no', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -121,7 +119,7 @@ class AdminApplicationController extends Controller
 
         // Vacancy filter
         if ($request->filled('job_id')) {
-            $query->where('vacancy_id', $request->job_id);
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Reviewer filter
@@ -179,9 +177,9 @@ class AdminApplicationController extends Controller
             foreach ($applications as $application) {
                 fputcsv($file, [
                     $application->id,
-                    $application->candidate ? ($application->candidate->first_name . ' ' . $application->candidate->last_name) : 'N/A',
-                    $application->candidate->email ?? 'N/A',
-                    $application->candidate->phone ?? 'N/A',
+                    $application->name_english ?? 'N/A',
+                    $application->email ?? 'N/A',
+                    $application->phone ?? 'N/A',
                     $application->vacancy->title ?? 'N/A',
                     $application->vacancy->advertisement_no ?? 'N/A',
                     ucfirst($application->status),
@@ -201,7 +199,7 @@ class AdminApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['candidate', 'vacancy', 'reviewer']);
+        $application->load(['vacancy', 'reviewer']);
 
         $reviewers = Reviewer::where('status', 'active')->get();
         $statuses = ['pending', 'approved', 'rejected'];
@@ -242,7 +240,7 @@ class AdminApplicationController extends Controller
 
         if (isset($notificationMessages[$request->status])) {
             Notification::create([
-                'user_id' => $application->candidate_id,
+                'user_id' => null,
                 'user_type' => 'candidate',
                 'type' => $notificationMessages[$request->status]['type'],
                 'title' => $notificationMessages[$request->status]['title'],
@@ -268,39 +266,38 @@ class AdminApplicationController extends Controller
 
         $reviewer = Reviewer::find($request->reviewer_id);
 
-        // Create notification for candidate
-        $candidateNotification = Notification::create([
-            'user_id' => $application->candidate_id,
-            'user_type' => 'candidate',
-            'type' => 'reviewer_assigned',
-            'title' => 'Reviewer Assigned',
-            'message' => 'Your application for "' . $application->vacancy->title . '" has been assigned to a reviewer for evaluation.',
-            'related_id' => $application->id,
-            'related_type' => 'application',
-        ]);
+        $positionTitle = $application->applying_position ?? $application->advertisement_no ?? 'this position';
+
+        // Look up candidate ID from candidate_registration via citizenship_number
+        $candidateRecord = \DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
+
+        // Create notification for candidate (only if candidate record found)
+        if ($candidateRecord) {
+            Notification::create([
+                'user_id'      => $candidateRecord->id,
+                'user_type'    => 'candidate',
+                'type'         => 'reviewer_assigned',
+                'title'        => 'Reviewer Assigned',
+                'message'      => 'Your application for "' . $positionTitle . '" has been assigned to a reviewer for evaluation.',
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
 
         // Create notification for reviewer
-        $reviewerNotification = Notification::create([
-            'user_id' => $request->reviewer_id,
-            'user_type' => 'reviewer',
-            'type' => 'application_assigned',
-            'title' => 'New Application Assigned',
-            'message' => 'A new application for "' . $application->vacancy->title . '" has been assigned to you for review.',
-            'related_id' => $application->id,
+        Notification::create([
+            'user_id'      => $request->reviewer_id,
+            'user_type'    => 'reviewer',
+            'type'         => 'application_assigned',
+            'title'        => 'New Application Assigned',
+            'message'      => 'A new application for "' . $positionTitle . '" has been assigned to you for review.',
+            'related_id'   => $application->id,
             'related_type' => 'application',
         ]);
 
-        // Log notification creation for debugging
-        \Log::info('Reviewer assigned - Notifications created', [
-            'application_id' => $application->id,
-            'candidate_id' => $application->candidate_id,
-            'reviewer_id' => $request->reviewer_id,
-            'candidate_notification_id' => $candidateNotification->id,
-            'reviewer_notification_id' => $reviewerNotification->id,
-            'admin_id' => auth()->guard('admin')->id(),
-        ]);
-
-        return redirect()->back()->with('success', 'Reviewer assigned successfully! (Candidate Notification ID: ' . $candidateNotification->id . ', Reviewer Notification ID: ' . $reviewerNotification->id . ')');
+        return redirect()->back()->with('success', 'Reviewer assigned successfully!');
     }
 
     public function setPriority(Request $request, ApplicationForm $application)

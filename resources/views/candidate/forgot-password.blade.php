@@ -477,7 +477,7 @@
                         Enter the email address associated with your candidate account. A password reset link will be sent to your inbox.
                     </div>
 
-                    <form method="POST" action="{{ route('candidate.password.email') }}" novalidate>
+                    <form method="POST" action="{{ route('candidate.forgot.password.post') }}" novalidate>
                         @csrf
 
                         {{-- Email --}}

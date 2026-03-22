@@ -7,6 +7,8 @@ use App\Models\ApplicationForm;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class PaymentController extends Controller
@@ -16,10 +18,17 @@ class PaymentController extends Controller
      */
     public function showEsewa($applicationId)
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
         $application = ApplicationForm::where('id', $applicationId)
-            ->where('candidate_id', $candidate->id)
+            ->where('citizenship_number', $candidate->citizenship_number)
             ->firstOrFail();
 
         // Check if already paid
@@ -105,7 +114,14 @@ class PaymentController extends Controller
      */
     public function success(Request $request)
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login')
+                ->withErrors(['error' => 'Please login first']);
+        }
+
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
         $encodedData = $request->query('data');
         if (!$encodedData) {
@@ -132,8 +148,8 @@ class PaymentController extends Controller
         }
 
         // Verify ownership
-        $application = $payment->applicationForm;
-        if ($application->candidate_id !== $candidate->id) {
+        $application = $payment->application;
+        if (!$application || $application->citizenship_number !== $candidate->citizenship_number) {
             return redirect()
                 ->route('candidate.applications.index')
                 ->with('error', 'Unauthorized payment verification.');
@@ -143,7 +159,6 @@ class PaymentController extends Controller
         $payment->update([
             'status' => 'completed',
             'transaction_id' => $decodedData['transaction_code'] ?? null,
-            'gateway_response' => $decodedData,
         ]);
 
         // Update application status from 'draft' to 'pending' (submitted)
@@ -152,7 +167,13 @@ class PaymentController extends Controller
             'submitted_at' => now(),
         ]);
 
-        return view('candidate.payment.success', compact('payment', 'application'));
+        $candidateName  = $candidate->name;
+        $applicationId  = $application->id;
+        $esewaData      = $decodedData;
+
+        return view('candidate.payment.success', compact(
+            'payment', 'application', 'candidateName', 'applicationId', 'esewaData'
+        ));
     }
 
     /**
