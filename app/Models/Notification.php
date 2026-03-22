@@ -65,8 +65,8 @@ class Notification extends Model
 
         return match($this->related_type) {
             'application' => ApplicationForm::find($this->related_id),
-            'vacancy' => Vacancy::find($this->related_id),
-            'job' => Vacancy::find($this->related_id), // Backward compatibility
+            'vacancy' => JobPosting::find($this->related_id),
+            'job' => JobPosting::find($this->related_id),
             default => null,
         };
     }

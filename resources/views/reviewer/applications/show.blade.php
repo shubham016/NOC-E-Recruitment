@@ -310,8 +310,8 @@
         <div class="col-lg-8">
             <!-- Candidate Photo & Basic Info -->
             <div class="candidate-photo-section">
-                @if($application->passport_photo)
-                    <img src="{{ Storage::url($application->passport_photo) }}"
+                @if($application->passport_size_photo)
+                    <img src="{{ Storage::url($application->passport_size_photo) }}"
                          alt="Candidate Photo"
                          class="candidate-photo">
                 @else
@@ -338,7 +338,8 @@
                     </p>
                      <p class="mb-0 opacity-75">
                     <i class=""></i>
-                    Submitted: {{ $application->submitted_at ? adToBS($application->submitted_at) . ' BS, ' . $application->submitted_at->format('h:i A') : 'N/A' }}
+                    @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
+                    Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
                 </p>
                  
                 </div>
@@ -370,10 +371,9 @@
                     <div class="info-label">Application Deadline:</div>
                     <div class="info-value">
                         @if($application->jobPosting->deadline)
-                            <span class="text-danger fw-bold d-block">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
-                            @if($application->jobPosting->deadline_bs)
-                                <span class="text-muted">{{ $application->jobPosting->deadline_bs }} (BS)</span>
-                            @endif
+                            @php $deadlineBS = $application->jobPosting->deadline_bs ?: adToBS($application->jobPosting->deadline->format('Y-m-d')); @endphp
+                            <span class="text-danger fw-bold d-block">{{ $deadlineBS }} (BS)</span>
+                            <span class="text-muted">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
                         @else
                             N/A
                         @endif
@@ -443,7 +443,7 @@
                 </div>
                 <div class="info-row">
                     <div class="info-label">Issue Date (AD):</div>
-                    <div class="info-value">{{ $application->citizenship_issue_date_ad ? $application->citizenship_issue_date_ad->format('Y-m-d') : 'N/A' }}</div>
+                    <div class="info-value">{{ $application->citizenship_issue_date_ad ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') : ($application->citizenship_issue_date_bs ? bsToAD($application->citizenship_issue_date_bs) : 'N/A') }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Issue Date (BS):</div>
@@ -724,7 +724,7 @@
             <div class="info-card">
                 <h5><i class=""></i>Uploaded Documents</h5>
 
-                @if($application->passport_photo)
+                @if($application->passport_size_photo)
                 <div class="document-item">
                     <div class="document-icon">
                         <i class=""></i>
@@ -733,7 +733,7 @@
                         <p class="document-name">Passport Size Photo</p>
                         <p class="document-size">Candidate's passport photograph</p>
                     </div>
-                    <a href="{{ Storage::url($application->passport_photo) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->passport_size_photo) }}" target="_blank" class="btn-view-doc">
                         <i class="me-1"></i>View
                     </a>
                 </div>
@@ -873,7 +873,7 @@
                 </div>
                 @endif
 
-                @if(!$application->passport_photo && !$application->resume && !$application->citizenship_certificate &&
+                @if(!$application->passport_size_photo && !$application->resume && !$application->citizenship_certificate &&
                     !$application->educational_certificates && !$application->experience_certificates &&
                     !$application->character_certificate && !$application->equivalency_certificate &&
                     !$application->cover_letter_file && !$application->signature && !$application->other_documents)
@@ -926,6 +926,25 @@
                                 <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
                                 <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>Reject Application (Missing Information)</option>
                             </select>
+                        </div>
+
+                        {{-- Approver selection - shown only when "reviewed" is selected --}}
+                        <div class="mb-3" id="approverSection" style="display: none;">
+                            <label class="form-label fw-bold">Assign to Approver <span class="text-danger">*</span></label>
+                            <select name="approver_id" class="form-select" id="approverSelect">
+                                <option value="">Select Approver...</option>
+                                @foreach($approvers as $approver)
+                                    <option value="{{ $approver->id }}"
+                                        {{ $application->approver_id == $approver->id ? 'selected' : '' }}>
+                                        {{ $approver->name }}
+                                        @if($approver->designation) — {{ $approver->designation }}@endif
+                                        @if($approver->department) ({{ $approver->department }})@endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($application->approver)
+                                <small class="text-muted">Currently assigned to: <strong>{{ $application->approver->name }}</strong></small>
+                            @endif
                         </div>
 
                         <div class="mb-3">
@@ -1097,7 +1116,8 @@
                     </div>
                     <div class="info-row">
                         <div class="info-label">Submitted At:</div>
-                        <div class="info-value">{{ $application->submitted_at ? adToBS($application->submitted_at) . ' BS, ' . $application->submitted_at->format('h:i A') : 'N/A' }}</div>
+                        @php $submittedAt = $application->submitted_at ?: $application->created_at; @endphp
+                        <div class="info-value">{{ $submittedAt ? adToBS($submittedAt) . ' BS, ' . \Carbon\Carbon::parse($submittedAt)->format('h:i A') : 'N/A' }}</div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Reviewed At:</div>
@@ -1129,7 +1149,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 // Handle status change
 document.getElementById('reviewStatus').addEventListener('change', function() {
@@ -1141,27 +1161,42 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
     const submitIcon = document.getElementById('submitIcon');
     const submitText = document.getElementById('submitText');
     const smsPreview = document.getElementById('smsPreview');
+    const approverSection = document.getElementById('approverSection');
+    const approverSelect = document.getElementById('approverSelect');
 
     if (status === 'reviewed') {
-        // Reviewed - send to approver
         notesLabel.textContent = 'Review Comments';
         notesHelp.textContent = 'Add your assessment and recommendations for the Approver.';
         reviewerNotes.placeholder = 'Candidate\'s qualifications, strengths, weaknesses, and overall assessment...';
         submitBtn.className = 'btn btn-success btn-lg';
         submitBtn.style.background = '';
         submitIcon.className = ' me-2';
-        submitText.textContent = 'Submit Review';
+        submitText.textContent = 'Submit & Assign to Approver';
         smsPreview.style.display = 'none';
+        approverSection.style.display = 'block';
+        approverSelect.required = true;
     } else if (status === 'rejected') {
-        // Rejected - notify candidate
         notesLabel.textContent = 'Rejection Reason';
-        notesHelp.innerHTML = '<i class="me-1"></i><strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
-        reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy" or "Educational certificates are not clear/readable" or "Work experience documents not provided"...';
+        notesHelp.innerHTML = '<i class="me-1"></i><strong>Important:</strong> Clearly explain what is missing or incorrect.';
+        reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy" or "Educational certificates are not clear/readable"...';
         submitBtn.className = 'btn btn-danger btn-lg';
         submitBtn.style.background = '';
         submitIcon.className = ' me-2';
         submitText.textContent = 'Reject Application';
         smsPreview.style.display = 'block';
+        approverSection.style.display = 'none';
+        approverSelect.required = false;
+    } else if (status === 'edit') {
+        notesLabel.textContent = 'Edit Instructions';
+        notesHelp.textContent = 'Explain what needs to be corrected by the candidate.';
+        reviewerNotes.placeholder = 'Describe what the candidate needs to fix or update...';
+        submitBtn.className = 'btn btn-warning btn-lg';
+        submitBtn.style.background = '';
+        submitIcon.className = 'me-2';
+        submitText.textContent = 'Send Back for Edit';
+        smsPreview.style.display = 'none';
+        approverSection.style.display = 'none';
+        approverSelect.required = false;
     } else {
         submitBtn.className = 'btn btn-lg';
         submitBtn.style.background = '#64748b';
@@ -1169,6 +1204,8 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitIcon.className = 'me-2';
         submitText.textContent = 'Submit Action';
         smsPreview.style.display = 'none';
+        approverSection.style.display = 'none';
+        approverSelect.required = false;
     }
 });
 
@@ -1188,9 +1225,10 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
     const formData = new FormData(this);
     const status = formData.get('status');
     const notes = formData.get('reviewer_notes');
+    const approverId = formData.get('approver_id');
 
     if (!status) {
-        alert('⚠️ Please select an action (Reviewed or Rejected)');
+        alert('⚠️ Please select an action');
         return;
     }
 
@@ -1199,14 +1237,28 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         return;
     }
 
+    if (status === 'reviewed' && !approverId) {
+        alert('⚠️ Please select an approver to assign this application to');
+        return;
+    }
+
     let confirmMessage = '';
     if (status === 'reviewed') {
-        confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
+        const approverName = document.getElementById('approverSelect').options[document.getElementById('approverSelect').selectedIndex].text;
+        confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be assigned to: ' + approverName + '\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
     } else if (status === 'rejected') {
-        confirmMessage = 'Are you sure you want to REJECT this application?\n\n✓ Candidate will be notified via SMS (when Sparrow SMS is integrated).\n✓ Your rejection reason will be sent to: {{ $application->phone ?? "N/A" }}\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
+        confirmMessage = 'Are you sure you want to REJECT this application?\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
+    } else if (status === 'edit') {
+        confirmMessage = 'Are you sure you want to send this application back for edit?\n\nThe candidate will be asked to make corrections.';
     }
 
     if (confirm(confirmMessage)) {
+        const payload = {
+            status: status,
+            reviewer_notes: notes,
+        };
+        if (approverId) payload.approver_id = approverId;
+
         fetch(this.action, {
             method: 'POST',
             headers: {
@@ -1214,10 +1266,7 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                status: status,
-                reviewer_notes: notes
-            })
+            body: JSON.stringify(payload)
         })
         .then(response => response.json())
         .then(data => {
@@ -1225,7 +1274,8 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
                 alert('✅ ' + data.message);
                 window.location.href = '{{ route("reviewer.applications.index") }}';
             } else {
-                alert('❌ ' + (data.message || 'Error updating status'));
+                const errors = data.errors ? Object.values(data.errors).flat().join('\n') : (data.message || 'Error updating status');
+                alert('❌ ' + errors);
             }
         })
         .catch(error => {
@@ -1234,5 +1284,14 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         });
     }
 });
+
+// On page load — if status is already "reviewed", show the approver section
+document.addEventListener('DOMContentLoaded', function() {
+    const status = document.getElementById('reviewStatus').value;
+    if (status === 'reviewed') {
+        document.getElementById('approverSection').style.display = 'block';
+        document.getElementById('approverSelect').required = true;
+    }
+});
 </script>
-@endsection
+@endpush

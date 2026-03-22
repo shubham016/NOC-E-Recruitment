@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
 use App\Models\HRAdministrator;
@@ -17,10 +17,10 @@ class AdminDashboardController extends Controller
     {
         // Overall Statistics
         $stats = [
-            'total_vacancies' => Vacancy::count(),
-            'active_vacancies' => Vacancy::where('status', 'active')->count(),
-            'closed_vacancies' => Vacancy::where('status', 'closed')->count(),
-            'draft_vacancies' => Vacancy::where('status', 'draft')->count(),
+            'total_vacancies' => JobPosting::count(),
+            'active_vacancies' => JobPosting::where('status', 'active')->count(),
+            'closed_vacancies' => JobPosting::where('status', 'closed')->count(),
+            'draft_vacancies' => JobPosting::where('status', 'draft')->count(),
             'total_applications' => ApplicationForm::count(),
             'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
             'approved' => ApplicationForm::where('status', 'approved')->count(),
@@ -36,7 +36,7 @@ class AdminDashboardController extends Controller
 
         // This Month Statistics
         $thisMonth = [
-            'jobs_posted' => Vacancy::whereMonth('created_at', now()->month)
+            'jobs_posted' => JobPosting::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
             'applications' => ApplicationForm::whereMonth('created_at', now()->month)
@@ -49,7 +49,7 @@ class AdminDashboardController extends Controller
 
         // Last Month Statistics
         $lastMonth = [
-            'jobs_posted' => Vacancy::whereMonth('created_at', now()->subMonth()->month)
+            'jobs_posted' => JobPosting::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
                 ->count(),
             'applications' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
@@ -68,7 +68,7 @@ class AdminDashboardController extends Controller
         ];
 
         // Top Jobs by Applications
-        $topJobs = Vacancy::withCount('applicationForms')
+        $topJobs = JobPosting::withCount('applicationForms')
             ->orderBy('application_forms_count', 'desc')
             ->limit(5)
             ->get();
@@ -115,7 +115,7 @@ class AdminDashboardController extends Controller
             ->get();
 
         // Recent Job Postings
-        $recentJobs = Vacancy::latest()
+        $recentJobs = JobPosting::latest()
             ->limit(5)
             ->get();
 

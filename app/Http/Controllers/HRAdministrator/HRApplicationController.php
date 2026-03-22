@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRAdministrator;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\Reviewer;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,7 +63,7 @@ class HRApplicationController extends Controller
         $applications = $query->paginate(20)->withQueryString();
 
         // Get all vacancies for filter dropdown
-        $vacancies = Vacancy::select('id', 'title', 'advertisement_no')->get();
+        $vacancies = JobPosting::select('id', 'title', 'advertisement_no')->get();
 
         // Get all active reviewers for filter dropdown
         $reviewers = Reviewer::select('id', 'name', 'email')
@@ -159,25 +159,32 @@ class HRApplicationController extends Controller
 
         $reviewer = Reviewer::find($request->reviewer_id);
 
+        // Look up candidate by citizenship number
+        $candidateRecord = \DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
+
         // Create notification for candidate
-        Notification::create([
-            'user_id' => null,
-            'user_type' => 'candidate',
-            'type' => 'reviewer_assigned',
-            'title' => 'Reviewer Assigned',
-            'message' => 'Your application for "' . $application->vacancy->title . '" has been assigned to a reviewer for evaluation.',
-            'related_id' => $application->id,
-            'related_type' => 'application',
-        ]);
+        if ($candidateRecord) {
+            Notification::create([
+                'user_id'      => $candidateRecord->id,
+                'user_type'    => 'candidate',
+                'type'         => 'reviewer_assigned',
+                'title'        => 'Reviewer Assigned',
+                'message'      => 'Your application for "' . ($application->jobPosting->title ?? 'N/A') . '" has been assigned to a reviewer for evaluation.',
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
 
         // Create notification for reviewer
         Notification::create([
-            'user_id' => $request->reviewer_id,
-            'user_type' => 'reviewer',
-            'type' => 'application_assigned',
-            'title' => 'New Application Assigned',
-            'message' => 'A new application for "' . $application->vacancy->title . '" has been assigned to you for review.',
-            'related_id' => $application->id,
+            'user_id'      => $request->reviewer_id,
+            'user_type'    => 'reviewer',
+            'type'         => 'application_assigned',
+            'title'        => 'New Application Assigned',
+            'message'      => 'A new application for "' . ($application->jobPosting->title ?? 'N/A') . '" has been assigned to you for review.',
+            'related_id'   => $application->id,
             'related_type' => 'application',
         ]);
 

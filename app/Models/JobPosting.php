@@ -17,26 +17,33 @@ class JobPosting extends Model
         'position_level',
         'description',
         'requirements',
+        'responsibilities',
+        'benefits',
         'minimum_qualification',
         'department',
         'service_group',
         'category',
+        'internal_type',
+        'inclusive_type',
         'number_of_posts',
         'location',
+        'job_type',
         'salary_min',
         'salary_max',
         'deadline',
         'deadline_bs',
+        'double_dastur_date',
+        'double_dastur_bs',
         'status',
         'posted_by',
+        'posted_by_type',
         'min_age',
         'max_age',
         'required_education',
     ];
 
-
     protected $casts = [
-        'deadline' => 'date:Y-m-d',
+        'deadline' => 'datetime',
         'salary_min' => 'decimal:2',
         'salary_max' => 'decimal:2',
         'number_of_posts' => 'integer',
@@ -44,14 +51,54 @@ class JobPosting extends Model
         'max_age' => 'integer',
     ];
 
+    /**
+     * Get all application forms for this job posting
+     */
     public function applications()
     {
         return $this->hasMany(ApplicationForm::class, 'job_posting_id');
     }
 
+    /**
+     * Alias for applications()
+     */
+    public function applicationForms()
+    {
+        return $this->applications();
+    }
+
+    /**
+     * Polymorphic relationship - can be posted by Admin or HR Administrator
+     */
     public function postedBy()
     {
+        if ($this->posted_by_type === 'hr_administrator') {
+            return $this->belongsTo(HRAdministrator::class, 'posted_by');
+        }
+
         return $this->belongsTo(Admin::class, 'posted_by');
+    }
+
+    /**
+     * Get the poster (Admin or HR Administrator)
+     */
+    public function getPosterAttribute()
+    {
+        if ($this->posted_by_type === 'hr_administrator') {
+            return HRAdministrator::find($this->posted_by);
+        }
+
+        return Admin::find($this->posted_by);
+    }
+
+    public function isPostedByAdmin()
+    {
+        return $this->posted_by_type === 'admin';
+    }
+
+    public function isPostedByHRAdmin()
+    {
+        return $this->posted_by_type === 'hr_administrator';
     }
 
     public function scopeActive($query)
@@ -64,22 +111,38 @@ class JobPosting extends Model
         return $query->where('deadline', '>', now());
     }
 
+    public function scopePostedByAdmin($query)
+    {
+        return $query->where('posted_by_type', 'admin');
+    }
+
+    public function scopePostedByHRAdmin($query)
+    {
+        return $query->where('posted_by_type', 'hr_administrator');
+    }
+
+    public function scopePostedBy($query, $userType, $userId)
+    {
+        return $query->where('posted_by_type', $userType)
+                    ->where('posted_by', $userId);
+    }
+
     /**
      * Check if a candidate is eligible for this job posting
      */
     public function isEligible($application)
     {
         $errors = [];
-        
+
         // Check Age Requirements
         if ($this->min_age && $application->age < $this->min_age) {
             $errors[] = "Minimum age requirement is {$this->min_age} years. Your age: {$application->age} years.";
         }
-        
+
         if ($this->max_age && $application->age > $this->max_age) {
             $errors[] = "Maximum age requirement is {$this->max_age} years. Your age: {$application->age} years.";
         }
-        
+
         // Check Education Level
         if ($this->minimum_qualification) {
             $educationLevels = [
@@ -96,26 +159,23 @@ class JobPosting extends Model
                 'PhD' => 5,
                 'Doctorate' => 5,
             ];
-            
+
             $requiredLevel = $educationLevels[$this->minimum_qualification] ?? 0;
             $candidateLevel = $educationLevels[$application->education_level] ?? 0;
-            
+
             if ($candidateLevel < $requiredLevel) {
                 $errors[] = "Required education: {$this->minimum_qualification}. Your education: {$application->education_level}.";
             }
         }
-        
+
         // Check Job Category (Open or Inclusive)
         if ($this->category === 'Inclusive') {
             $isEligibleForInclusive = false;
-            
-            // Check if candidate belongs to any inclusive category
-            // Female
+
             if ($application->gender === 'Female') {
                 $isEligibleForInclusive = true;
             }
-            
-            // Janajati (check ethnic_group or community)
+
             $janajatiGroups = ['Janajati', 'Adivasi', 'Indigenous'];
             if ($application->ethnic_group && in_array($application->ethnic_group, $janajatiGroups)) {
                 $isEligibleForInclusive = true;
@@ -123,8 +183,7 @@ class JobPosting extends Model
             if ($application->community && in_array($application->community, $janajatiGroups)) {
                 $isEligibleForInclusive = true;
             }
-            
-            // Madhesi
+
             $madhesiGroups = ['Madhesi', 'Terai'];
             if ($application->ethnic_group && in_array($application->ethnic_group, $madhesiGroups)) {
                 $isEligibleForInclusive = true;
@@ -132,8 +191,7 @@ class JobPosting extends Model
             if ($application->community && in_array($application->community, $madhesiGroups)) {
                 $isEligibleForInclusive = true;
             }
-            
-            // Dalit
+
             $dalitGroups = ['Dalit'];
             if ($application->ethnic_group && in_array($application->ethnic_group, $dalitGroups)) {
                 $isEligibleForInclusive = true;
@@ -141,17 +199,16 @@ class JobPosting extends Model
             if ($application->community && in_array($application->community, $dalitGroups)) {
                 $isEligibleForInclusive = true;
             }
-            
-            // Disabled
+
             if ($application->physical_disability === 'yes' || $application->physical_disability === '1') {
                 $isEligibleForInclusive = true;
             }
-            
+
             if (!$isEligibleForInclusive) {
                 $errors[] = "This position is for inclusive categories only (Female, Janajati, Madhesi, Dalit, or Persons with Disabilities).";
             }
         }
-        
+
         return [
             'eligible' => empty($errors),
             'errors' => $errors

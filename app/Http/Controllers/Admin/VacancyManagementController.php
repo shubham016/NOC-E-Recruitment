@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
 use App\Models\Admin;
@@ -16,7 +16,7 @@ class VacancyManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Vacancy::query()->with('postedBy')->withCount('applicationForms');
+        $query = JobPosting::query()->with('postedBy')->withCount('applicationForms');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -44,10 +44,10 @@ class VacancyManagementController extends Controller
         $jobs = $query->paginate(10)->withQueryString();
 
         $stats = [
-            'total' => Vacancy::count(),
-            'active' => Vacancy::where('status', 'active')->count(),
-            'closed' => Vacancy::where('status', 'closed')->count(),
-            'draft' => Vacancy::where('status', 'draft')->count(),
+            'total' => JobPosting::count(),
+            'active' => JobPosting::where('status', 'active')->count(),
+            'closed' => JobPosting::where('status', 'closed')->count(),
+            'draft' => JobPosting::where('status', 'draft')->count(),
         ];
 
         return view('admin.jobs.index', compact('jobs', 'stats'));
@@ -91,7 +91,7 @@ class VacancyManagementController extends Controller
         // Keep department in sync with service_group
         $validated['department'] = $validated['service_group'];
 
-        Vacancy::create($validated);
+        JobPosting::create($validated);
 
         return redirect()
             ->route('admin.jobs.index')
@@ -100,7 +100,7 @@ class VacancyManagementController extends Controller
 
     public function show($id)
     {
-        $job = Vacancy::with(['applicationForms.reviewer', 'postedBy'])
+        $job = JobPosting::with(['applicationForms.reviewer', 'postedBy'])
             ->withCount('applicationForms')
             ->findOrFail($id);
 
@@ -118,13 +118,13 @@ class VacancyManagementController extends Controller
 
     public function edit($id)
     {
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
         return view('admin.jobs.edit', compact('job'));
     }
 
     public function update(Request $request, $id)
     {
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $validated = $request->validate([
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
@@ -155,7 +155,7 @@ class VacancyManagementController extends Controller
 
     public function destroy($id)
     {
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         if ($job->applicationForms()->count() > 0) {
             return redirect()
@@ -172,7 +172,7 @@ class VacancyManagementController extends Controller
 
     public function duplicate($id)
     {
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $newJob = $job->replicate();
         $newJob->title = $job->title . ' (Copy)';
@@ -195,7 +195,7 @@ class VacancyManagementController extends Controller
 
     public function changeStatus(Request $request, $id)
     {
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $validated = $request->validate([
             'status' => 'required|in:draft,active,closed',
@@ -212,7 +212,7 @@ class VacancyManagementController extends Controller
     {
         $lang = $request->get('lang', 'en');
 
-        $jobs = Vacancy::where('status', 'active')
+        $jobs = JobPosting::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -231,7 +231,7 @@ class VacancyManagementController extends Controller
     {
         $lang = $request->get('lang', 'en');
 
-        $jobs = Vacancy::where('status', 'active')
+        $jobs = JobPosting::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -252,7 +252,7 @@ class VacancyManagementController extends Controller
 
     public function downloadExcel()
     {
-        $jobs = Vacancy::where('status', 'active')
+        $jobs = JobPosting::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -25,7 +25,7 @@
             min-height: 100vh;
         }
     </style>
-    @yield('custom-styles');
+    @yield('custom-styles')
 </head>
 
 <body>

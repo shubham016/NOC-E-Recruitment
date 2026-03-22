@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Approver;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -59,7 +59,7 @@ class ApproverController extends Controller
         $departments = Approver::distinct()->pluck('department')->filter();
 
         // Get active vacancies for assignment dropdown
-        $vacancies = Vacancy::where('status', 'active')->get();
+        $vacancies = JobPosting::where('status', 'active')->get();
 
         return view('admin.approvers.index', compact('approvers', 'stats', 'departments', 'vacancies'));
     }
@@ -116,7 +116,7 @@ class ApproverController extends Controller
     public function edit($id)
     {
         $approver = Approver::findOrFail($id);
-        $vacancies = Vacancy::where('status', 'active')->get();
+        $vacancies = JobPosting::where('status', 'active')->get();
         return view('admin.approvers.edit', compact('approver', 'vacancies'));
     }
 

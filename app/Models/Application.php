@@ -124,16 +124,15 @@ class Application extends Model
     }
 
     /**
-     * Get the vacancy for this application
+     * Get the job posting for this application
      */
     public function vacancy()
     {
-        return $this->belongsTo(Vacancy::class);
+        return $this->belongsTo(JobPosting::class, 'vacancy_id');
     }
 
     /**
-     * Backward compatibility alias
-     * @deprecated Use vacancy() instead
+     * Alias for vacancy()
      */
     public function jobPosting()
     {

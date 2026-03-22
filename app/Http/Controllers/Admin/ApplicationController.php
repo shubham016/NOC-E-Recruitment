@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +75,7 @@ class ApplicationController extends Controller
         ];
 
         // Get vacancies for filter dropdown
-        $vacancies = Vacancy::select('id', 'advertisement_no', 'position_level', 'title')
+        $vacancies = JobPosting::select('id', 'advertisement_no', 'position_level', 'title')
             ->orderBy('created_at', 'desc')
             ->get();
 

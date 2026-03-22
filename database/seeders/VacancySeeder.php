@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -102,7 +102,7 @@ class VacancySeeder extends Seeder
         ];
 
         foreach ($vacancies as $vacancy) {
-            Vacancy::create($vacancy);
+            JobPosting::create($vacancy);
         }
     }
 }

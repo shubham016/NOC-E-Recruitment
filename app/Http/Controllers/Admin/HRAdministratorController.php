@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\HRAdministrator;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -97,15 +97,15 @@ class HRAdministratorController extends Controller
 
         // Load job postings statistics (using 'posted_by' foreign key)
         $stats = [
-            'total_vacancies_posted' => Vacancy::where('posted_by', $hrAdministrator->id)->count(),
-            'active_vacancies' => Vacancy::where('posted_by', $hrAdministrator->id)->where('status', 'active')->count(),
-            'closed_vacancies' => Vacancy::where('posted_by', $hrAdministrator->id)->where('status', 'closed')->count(),
+            'total_vacancies_posted' => JobPosting::where('posted_by', $hrAdministrator->id)->count(),
+            'active_vacancies' => JobPosting::where('posted_by', $hrAdministrator->id)->where('status', 'active')->count(),
+            'closed_vacancies' => JobPosting::where('posted_by', $hrAdministrator->id)->where('status', 'closed')->count(),
             'total_applications' => Application::whereHas('vacancy', function ($q) use ($hrAdministrator) {
                 $q->where('posted_by', $hrAdministrator->id);
             })->count(),
         ];
 
-        $recentJobs = Vacancy::where('posted_by', $hrAdministrator->id)
+        $recentJobs = JobPosting::where('posted_by', $hrAdministrator->id)
             ->latest()
             ->take(5)
             ->get();
@@ -170,7 +170,7 @@ class HRAdministratorController extends Controller
         $hrAdministrator = HRAdministrator::findOrFail($id);
 
         // Check if HR admin has job postings (using 'posted_by' foreign key)
-        if (Vacancy::where('posted_by', $hrAdministrator->id)->exists()) {
+        if (JobPosting::where('posted_by', $hrAdministrator->id)->exists()) {
             return back()->with('error', 'Cannot delete administrator with existing job postings. Please reassign or delete their jobs first.');
         }
 

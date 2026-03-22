@@ -24,4 +24,18 @@ class Approver extends Authenticatable
     protected $hidden = [
         'password'
     ];
+
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
+    public function jobPosting()
+    {
+        return $this->belongsTo(JobPosting::class, 'job_posting_id');
+    }
+
+    public function vacancy()
+    {
+        return $this->jobPosting();
+    }
 }

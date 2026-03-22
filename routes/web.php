@@ -354,8 +354,8 @@ Route::prefix('approver')->name('approver.')->group(function () {
 
         // Assigned Applications
         Route::get('/assigned-to-me', [AssignedToMeController::class, 'index'])->name('assignedtome');
-        Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('show');
-        Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('updateStatus');
+        Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('applications.show');
+        Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('applications.updateStatus');
 
         // Export routes
         Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');
@@ -381,24 +381,17 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     Route::get('/login', [CandidateController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [CandidateController::class, 'login'])->name('login.post');
 
-    // Registration (with OTP verification)
+    // Registration
     Route::get('/register', [CandidateController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [CandidateController::class, 'register'])->name('register.post');
-    Route::get('/verify-otp', [CandidateController::class, 'showVerifyOtpForm'])->name('verify.otp');
-    Route::post('/verify-otp', [CandidateController::class, 'verifyOtp'])->name('verify.otp.post');
-    Route::post('/resend-otp', [CandidateController::class, 'resendOtp'])->name('resend.otp');
 
     // Forgot Password
-    Route::get('/forgot-password', [CandidateAuthController::class, 'showForgotPasswordForm'])->name('forgot.password');
-    Route::post('/forgot-password', [CandidateAuthController::class, 'sendResetOtp'])->name('forgot.password.post');
+    Route::get('/forgot-password', [CandidateController::class, 'showForgotPasswordForm'])->name('forgot.password');
+    Route::post('/forgot-password', [CandidateController::class, 'sendResetLink'])->name('forgot.password.post');
 
-    // Password Reset OTP
-    Route::get('/password/verify-otp', [CandidateAuthController::class, 'showResetOtpForm'])->name('password.verify-otp');
-    Route::post('/password/verify-otp', [CandidateAuthController::class, 'verifyResetOtp'])->name('password.verify-otp.post');
-
-    // Reset Password
-    Route::get('/reset-password', [CandidateAuthController::class, 'showResetPasswordForm'])->name('password.reset');
-    Route::post('/reset-password', [CandidateAuthController::class, 'resetPassword'])->name('password.reset.post');
+    // Reset Password (token-based)
+    Route::get('/reset-password/{token}', [CandidateController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [CandidateController::class, 'resetPassword'])->name('password.reset.post');
 
     // Logout
     Route::post('/logout', [CandidateController::class, 'logout'])->name('logout');
@@ -456,6 +449,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         // My Applications Routes (Direct access for list/show/delete)
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
+            Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
             Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
             Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
             Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');

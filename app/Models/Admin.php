@@ -33,7 +33,7 @@ class Admin extends Authenticatable
      */
     public function jobs()
     {
-        return $this->hasMany(Vacancy::class, 'posted_by');
+        return $this->hasMany(JobPosting::class, 'posted_by');
     }
 
     public function vacancies()

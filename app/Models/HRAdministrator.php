@@ -36,7 +36,7 @@ class HRAdministrator extends Authenticatable
      */
     public function jobs()
     {
-        return $this->hasMany(Vacancy::class, 'posted_by', 'id');
+        return $this->hasMany(JobPosting::class, 'posted_by', 'id');
     }
 
     public function vacancies()
@@ -50,8 +50,8 @@ class HRAdministrator extends Authenticatable
     public function applications()
     {
         return $this->hasManyThrough(
-            Application::class,
-            Vacancy::class,
+            ApplicationForm::class,
+            JobPosting::class,
             'posted_by',
             'job_posting_id',
             'id',

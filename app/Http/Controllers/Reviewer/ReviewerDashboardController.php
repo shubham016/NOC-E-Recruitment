@@ -18,7 +18,7 @@ class ReviewerDashboardController extends Controller
             ->where('status', '!=', 'draft')
             ->whereIn('status', ['pending', 'assigned'])
             ->latest()
-            ->take(4)
+            ->take(3)
             ->get();
 
         // Calculate statistics for this reviewer's assigned applications
@@ -73,7 +73,7 @@ class ReviewerDashboardController extends Controller
             ->where('reviewer_id', $reviewer->id)
             ->whereNotNull('reviewed_at')
             ->latest('reviewed_at')
-            ->take(3)
+            ->take(2)
             ->get();
 
         // Calculate progress percentage

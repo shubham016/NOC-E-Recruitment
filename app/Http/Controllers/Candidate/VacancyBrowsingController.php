@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -16,7 +16,7 @@ class VacancyBrowsingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Vacancy::where('status', 'active')
+        $query = JobPosting::where('status', 'active')
             ->where('deadline', '>=', now());
 
         // Search
@@ -54,17 +54,17 @@ class VacancyBrowsingController extends Controller
         $vacancies = $query->withCount('applications')->paginate(12)->withQueryString();
 
         // Get filter options
-        $departments = Vacancy::where('status', 'active')
+        $departments = JobPosting::where('status', 'active')
             ->distinct()
             ->pluck('department')
             ->filter();
 
-        $locations = Vacancy::where('status', 'active')
+        $locations = JobPosting::where('status', 'active')
             ->distinct()
             ->pluck('location')
             ->filter();
 
-        $positionLevels = Vacancy::where('status', 'active')
+        $positionLevels = JobPosting::where('status', 'active')
             ->distinct()
             ->pluck('position_level')
             ->filter();
@@ -100,7 +100,7 @@ class VacancyBrowsingController extends Controller
      */
     public function show($id)
     {
-        $vacancy = Vacancy::where('status', 'active')
+        $vacancy = JobPosting::where('status', 'active')
             ->where('deadline', '>=', now())
             ->withCount('applications')
             ->findOrFail($id);

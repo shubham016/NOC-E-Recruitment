@@ -18,7 +18,11 @@ class ApplicationForm extends Model
     protected $fillable = [
         'advertisement_no',
         'reviewer_id',
+        'approver_id',
         'reviewed_at',
+        'approved_at',
+        'approver_notes',
+        'reviewer_notes',
         'job_posting_id',
         // Personal Info
         'name_english',
@@ -178,7 +182,7 @@ class ApplicationForm extends Model
 
     public function job()
     {
-        return $this->belongsTo(Vacancy::class, 'job_posting_id');
+        return $this->belongsTo(JobPosting::class, 'job_posting_id');
     }
 
     public function vacancy()
@@ -192,6 +196,11 @@ class ApplicationForm extends Model
     }
     public function reviewer()
     {
-    return $this->belongsTo(\App\Models\Reviewer::class, 'reviewer_id');
+        return $this->belongsTo(\App\Models\Reviewer::class, 'reviewer_id');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(\App\Models\Approver::class, 'approver_id');
     }
 }

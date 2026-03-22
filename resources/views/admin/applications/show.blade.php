@@ -60,8 +60,8 @@
         <div class="gov-card-body" style="padding: 2.5rem;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    @if($application->passport_photo)
-                        <img src="{{ asset('storage/' . $application->passport_photo) }}"
+                    @if($application->passport_size_photo)
+                        <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
                              alt="Candidate Photo"
                              class="gov-avatar gov-avatar-lg">
                     @else
@@ -399,15 +399,15 @@
                                         <td class="text-center">1</td>
                                         <td><i class="bi bi-image text-warning me-2"></i>Passport Photo</td>
                                         <td>
-                                            @if($application->passport_photo)
+                                            @if($application->passport_size_photo)
                                                 <span class="gov-badge gov-badge-success">Uploaded</span>
                                             @else
                                                 <span class="gov-badge gov-badge-danger">Missing</span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if($application->passport_photo)
-                                                <a href="{{ asset('storage/' . $application->passport_photo) }}" target="_blank" class="gov-btn gov-btn-primary gov-btn-sm">
+                                            @if($application->passport_size_photo)
+                                                <a href="{{ asset('storage/' . $application->passport_size_photo) }}" target="_blank" class="gov-btn gov-btn-primary gov-btn-sm">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
                                             @else

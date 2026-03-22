@@ -476,8 +476,9 @@
                                 <i class="bi bi-bell"></i>
                                 @php
                                     try {
-                                        if (Auth::guard('candidate')->check()) {
-                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('candidate')->id())
+                                        $candidateId = \Illuminate\Support\Facades\Session::get('candidate_id');
+                                        if ($candidateId) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', $candidateId)
                                                 ->where('user_type', 'candidate')
                                                 ->where('is_read', false)
                                                 ->count();
@@ -614,28 +615,36 @@
             <div class="sidebar-header">
                 <div class="user-profile-sidebar">
                     @php
-                        $candidateName    = 'User';
-                        $candidateInitial = 'U';
-                        $candidatePhoto   = null;
+                        $sidebarName    = 'User';
+                        $sidebarInitial = 'U';
+                        $sidebarRole    = 'Applicant';
+                        $sidebarPhoto   = null;
 
-                        if (session()->has('candidate_id')) {
+                        if (Auth::guard('approver')->check()) {
+                            $approver       = Auth::guard('approver')->user();
+                            $sidebarName    = $approver->name;
+                            $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
+                            $sidebarRole    = 'Approver';
+                        } elseif (Auth::guard('reviewer')->check()) {
+                            $reviewer       = Auth::guard('reviewer')->user();
+                            $sidebarName    = $reviewer->name;
+                            $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
+                            $sidebarRole    = 'Reviewer';
+                        } elseif (session()->has('candidate_id')) {
                             $candidateId = session('candidate_id');
-
-                            $candidate = \DB::table('candidate_registration')
-                                ->where('id', $candidateId)
-                                ->first();
+                            $candidate   = \DB::table('candidate_registration')
+                                ->where('id', $candidateId)->first();
 
                             if ($candidate && !empty($candidate->name)) {
-                                $candidateName    = $candidate->name;
-                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                                $sidebarName    = $candidate->name;
+                                $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
                             } elseif ($candidate && !empty($candidate->email)) {
-                                $candidateName    = explode('@', $candidate->email)[0];
-                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                                $sidebarName    = explode('@', $candidate->email)[0];
+                                $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
                             }
 
-                            // Get latest passport photo submitted in any application
                             if (!empty($candidate->citizenship_number)) {
-                                $candidatePhoto = \DB::table('application_form')
+                                $sidebarPhoto = \DB::table('application_form')
                                     ->where('citizenship_number', $candidate->citizenship_number)
                                     ->whereNotNull('passport_size_photo')
                                     ->orderBy('created_at', 'desc')
@@ -643,18 +652,18 @@
                             }
                         }
                     @endphp
-                    <div class="user-avatar" style="{{ $candidatePhoto ? 'background:none;' : '' }}">
-                        @if($candidatePhoto)
-                            <img src="{{ asset('storage/' . $candidatePhoto) }}"
-                                 alt="{{ $candidateName }}"
+                    <div class="user-avatar" style="{{ $sidebarPhoto ? 'background:none;' : '' }}">
+                        @if($sidebarPhoto)
+                            <img src="{{ asset('storage/' . $sidebarPhoto) }}"
+                                 alt="{{ $sidebarName }}"
                                  style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
                         @else
-                            {{ $candidateInitial }}
+                            {{ $sidebarInitial }}
                         @endif
                     </div>
                     <div class="user-info">
-                        <h6 title="{{ $candidateName }}">{{ $candidateName }}</h6>
-                        <small>Applicant</small>
+                        <h6 title="{{ $sidebarName }}">{{ $sidebarName }}</h6>
+                        <small>{{ $sidebarRole }}</small>
                     </div>
                 </div>
             </div>

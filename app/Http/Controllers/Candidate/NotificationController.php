@@ -5,16 +5,30 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class NotificationController extends Controller
 {
+    private function getCandidate()
+    {
+        $candidateId = Session::get('candidate_id');
+        if (!$candidateId) {
+            return null;
+        }
+        return DB::table('candidate_registration')->where('id', $candidateId)->first();
+    }
+
     /**
      * Display a listing of notifications
      */
     public function index()
     {
-        $candidate = Auth::guard('candidate')->user();
+        $candidate = $this->getCandidate();
+
+        if (!$candidate) {
+            return redirect()->route('candidate.login')->with('error', 'Please login to view notifications.');
+        }
 
         // Get unread notification IDs before marking as read
         $unreadIds = Notification::forUser($candidate->id, 'candidate')
@@ -37,14 +51,6 @@ class NotificationController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        // Log notification access
-        \Log::info('Candidate viewed notifications page', [
-            'candidate_id' => $candidate->id,
-            'total_notifications' => $notifications->total(),
-            'auto_marked_read' => count($unreadIds),
-            'marked_notification_ids' => $unreadIds,
-        ]);
-
         return view('candidate.notifications.index', compact('notifications'));
     }
 
@@ -53,19 +59,14 @@ class NotificationController extends Controller
      */
     public function markAsRead($id)
     {
-        $candidate = Auth::guard('candidate')->user();
+        $candidate = $this->getCandidate();
+
+        if (!$candidate) {
+            return redirect()->route('candidate.login');
+        }
 
         $notification = Notification::forUser($candidate->id, 'candidate')
             ->findOrFail($id);
-
-        // Log before marking as read
-        \Log::info('Candidate marking notification as read', [
-            'notification_id' => $notification->id,
-            'candidate_id' => $candidate->id,
-            'user_type' => $notification->user_type,
-            'notification_type' => $notification->type,
-            'was_read' => $notification->is_read,
-        ]);
 
         $notification->markAsRead();
 
@@ -83,27 +84,18 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        $candidate = Auth::guard('candidate')->user();
+        $candidate = $this->getCandidate();
 
-        // Get unread notification IDs before updating
-        $unreadIds = Notification::forUser($candidate->id, 'candidate')
-            ->unread()
-            ->pluck('id')
-            ->toArray();
+        if (!$candidate) {
+            return redirect()->route('candidate.login');
+        }
 
-        $affectedRows = Notification::forUser($candidate->id, 'candidate')
+        Notification::forUser($candidate->id, 'candidate')
             ->unread()
             ->update([
                 'is_read' => true,
                 'read_at' => now(),
             ]);
-
-        // Log the action
-        \Log::info('Candidate marked all notifications as read', [
-            'candidate_id' => $candidate->id,
-            'affected_rows' => $affectedRows,
-            'notification_ids' => $unreadIds,
-        ]);
 
         return redirect()->back()->with('success', 'All notifications marked as read.');
     }
@@ -113,7 +105,11 @@ class NotificationController extends Controller
      */
     public function destroy($id)
     {
-        $candidate = Auth::guard('candidate')->user();
+        $candidate = $this->getCandidate();
+
+        if (!$candidate) {
+            return redirect()->route('candidate.login');
+        }
 
         $notification = Notification::forUser($candidate->id, 'candidate')
             ->findOrFail($id);

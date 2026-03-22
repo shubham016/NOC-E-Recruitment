@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reviewer;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
+use App\Models\Approver;
 use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -139,9 +140,12 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['jobPosting', 'reviewer'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
+
+        // Get active approvers for assignment dropdown
+        $approvers = Approver::where('status', 'active')->orderBy('name')->get();
 
         // Get statistics for sidebar
         $stats = [
@@ -170,7 +174,7 @@ class ApplicationReviewController extends Controller
                 ->count(),
         ];
 
-        return view('reviewer.applications.show', compact('application', 'stats'));
+        return view('reviewer.applications.show', compact('application', 'stats', 'approvers'));
     }
 
     /**
@@ -218,6 +222,9 @@ class ApplicationReviewController extends Controller
         $request->validate([
             'status' => 'required|in:reviewed,rejected,edit',
             'reviewer_notes' => 'required|string|max:1000',
+            'approver_id' => 'required_if:status,reviewed|nullable|exists:approvers,id',
+        ], [
+            'approver_id.required_if' => 'Please select an approver to send this application to.',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
@@ -226,20 +233,39 @@ class ApplicationReviewController extends Controller
         $application = ApplicationForm::where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
-        $application->update([
+        $updateData = [
             'status' => $request->status,
             'reviewer_notes' => $request->reviewer_notes,
             'reviewer_id' => $reviewer->id,
             'reviewed_at' => now(),
-        ]);
+        ];
+
+        if ($request->status === 'reviewed' && $request->approver_id) {
+            $updateData['approver_id'] = $request->approver_id;
+        }
+
+        $application->update($updateData);
 
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
-            $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
+            $approver = Approver::find($request->approver_id);
+
+            // Notify the approver
+            \App\Models\Notification::create([
+                'user_id'      => $approver->id,
+                'user_type'    => 'approver',
+                'type'         => 'application_assigned',
+                'title'        => 'New Application for Approval',
+                'message'      => 'Application from "' . ($application->name_english ?? 'N/A') . '" for "' . ($application->jobPosting->title ?? 'N/A') . '" has been reviewed and assigned to you for final approval.',
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+
+            $message = 'Application reviewed and assigned to Approver: ' . ($approver->name ?? 'N/A') . ' for final decision.';
         } elseif ($request->status === 'edit') {
             $message = 'Application sent back to candidate for correction successfully!';
         } else {
-            $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
+            $message = 'Application rejected successfully!';
         }
 
         return response()->json([

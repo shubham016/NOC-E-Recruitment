@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\Reviewer;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Payment;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -63,7 +63,7 @@ class AdminApplicationController extends Controller
         $applications = $query->paginate(20)->withQueryString();
 
         // Get all jobs for filter dropdown
-        $jobs = Vacancy::select('id', 'title', 'advertisement_no')->get();
+        $jobs = JobPosting::select('id', 'title', 'advertisement_no')->get();
         $vacancies = $jobs;
 
         // Get all active reviewers for filter dropdown

@@ -432,10 +432,49 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                <!-- Logout -->
+                <ul class="navbar-nav ms-auto align-items-center">
+
+                    {{-- Notification Bell --}}
+                    @php
+                        $notifCount = 0;
+                        $notifRoute = null;
+
+                        if (Auth::guard('reviewer')->check()) {
+                            $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                                ->where('user_type', 'reviewer')
+                                ->where('is_read', false)
+                                ->count();
+                            $notifRoute = route('reviewer.notifications.index');
+                        } elseif (\Illuminate\Support\Facades\Session::has('candidate_id')) {
+                            $notifCount = \App\Models\Notification::where('user_id', \Illuminate\Support\Facades\Session::get('candidate_id'))
+                                ->where('user_type', 'candidate')
+                                ->where('is_read', false)
+                                ->count();
+                            $notifRoute = route('candidate.notifications.index');
+                        }
+                    @endphp
+
+                    @if($notifRoute)
+                    <li class="nav-item me-2">
+                        <a href="{{ $notifRoute }}" class="btn btn-link nav-link text-dark position-relative" style="font-size:1.3rem;">
+                            <i class="bi bi-bell"></i>
+                            @if($notifCount > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;">
+                                    {{ $notifCount > 99 ? '99+' : $notifCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                    @endif
+
+                    {{-- Logout --}}
+                    @php
+                        $logoutRoute = Auth::guard('reviewer')->check()
+                            ? route('reviewer.logout')
+                            : route('candidate.logout');
+                    @endphp
                     <li class="nav-item">
-                        <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
+                        <form method="POST" action="{{ $logoutRoute }}" class="d-inline">
                             @csrf
                             <button class="btn btn-link nav-link text-dark" type="submit">
                                 <i class="bi bi-box-arrow-right"></i> Logout
@@ -455,32 +494,20 @@
             <div class="sidebar-header">
                 <div class="user-profile-sidebar">
                     @php
-                        $reviewersName = 'Reviewer';
-                        $reviewersInitial = 'R';
-                        
-                        // Get reviewers from session
-                        if (session()->has('reviewers_id')) {
-                            $reviewersId = session('reviewers_id');
-                            
-                            // Fetch reviewers from database
-                            $reviewers = \DB::table('reviewers')
-                                ->where('id', $reviewersId)
-                                ->first();
-                            
-                            if ($reviewers && !empty($reviewers->name)) {
-                                $reviewersName = $reviewers->name;
-                                $reviewersInitial = strtoupper(substr($reviewersName, 0, 1));
-                            } elseif ($reviewers && !empty($reviewers->email)) {
-                                $reviewersName = explode('@', $reviewers->email)[0];
-                                $reviewersInitial = strtoupper(substr($reviewersName, 0, 1));
-                            }
+                        $reviewerName    = 'Reviewer';
+                        $reviewerInitial = 'R';
+
+                        if (Auth::guard('reviewer')->check()) {
+                            $reviewer        = Auth::guard('reviewer')->user();
+                            $reviewerName    = $reviewer->name;
+                            $reviewerInitial = strtoupper(substr($reviewerName, 0, 1));
                         }
                     @endphp
                     <div class="user-avatar">
-                        {{ $reviewersInitial }}
+                        {{ $reviewerInitial }}
                     </div>
                     <div class="user-info">
-                        <h6 title="{{ $reviewersName }}">{{ $reviewersName }}</h6>
+                        <h6 title="{{ $reviewerName }}">{{ $reviewerName }}</h6>
                         <small>Reviewer</small>
                     </div>
                 </div>

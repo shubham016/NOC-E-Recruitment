@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\HRAdministrator;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,16 +24,16 @@ class ProfileController extends Controller
 
         // Get statistics
         $stats = [
-            'total_vacancies_posted' => Vacancy::where('posted_by', $hrAdministrator->id)->count(),
-            'active_vacancies' => Vacancy::where('posted_by', $hrAdministrator->id)->where('status', 'active')->count(),
-            'closed_vacancies' => Vacancy::where('posted_by', $hrAdministrator->id)->where('status', 'closed')->count(),
+            'total_vacancies_posted' => JobPosting::where('posted_by', $hrAdministrator->id)->count(),
+            'active_vacancies' => JobPosting::where('posted_by', $hrAdministrator->id)->where('status', 'active')->count(),
+            'closed_vacancies' => JobPosting::where('posted_by', $hrAdministrator->id)->where('status', 'closed')->count(),
             'total_applications' => Application::whereHas('vacancy', function ($q) use ($hrAdministrator) {
                 $q->where('posted_by', $hrAdministrator->id);
             })->count(),
         ];
 
         // Get recent jobs
-        $recentJobs = Vacancy::where('posted_by', $hrAdministrator->id)
+        $recentJobs = JobPosting::where('posted_by', $hrAdministrator->id)
             ->latest()
             ->take(5)
             ->get();

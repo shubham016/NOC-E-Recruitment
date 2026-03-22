@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use Illuminate\Support\Facades\Auth;
 
 class CandidateDashboardController extends Controller
@@ -34,7 +34,7 @@ class CandidateDashboardController extends Controller
             'rejected' => ApplicationForm::where('candidate_id', $candidate->id)
                 ->where('status', 'rejected')
                 ->count(),
-            'active_vacancies' => Vacancy::where('status', 'active')
+            'active_vacancies' => JobPosting::where('status', 'active')
                 ->where('deadline', '>=', now())
                 ->count(),
         ];
@@ -52,7 +52,7 @@ class CandidateDashboardController extends Controller
             ->pluck('vacancy_id')
             ->toArray();
 
-        $recommendedJobs = Vacancy::where('status', 'active')
+        $recommendedJobs = JobPosting::where('status', 'active')
             ->where('deadline', '>=', now())
             ->whereNotIn('id', $appliedJobIds)
             ->latest()

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ class ApplicationFormController extends Controller
     public function create($vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = Vacancy::findOrFail($vacancyId);
+        $vacancy = JobPosting::findOrFail($vacancyId);
 
         // Check if already applied (non-draft)
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
@@ -85,7 +85,7 @@ class ApplicationFormController extends Controller
     public function store(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = Vacancy::findOrFail($vacancyId);
+        $vacancy = JobPosting::findOrFail($vacancyId);
 
         $isDraft = $request->has('save_draft');
 
@@ -348,7 +348,7 @@ class ApplicationFormController extends Controller
                 return response()->json(['success' => false, 'message' => 'Vacancy ID is required.'], 422);
             }
 
-            $vacancy = Vacancy::find($vacancyId);
+            $vacancy = JobPosting::find($vacancyId);
             if (!$vacancy) {
                 return response()->json(['success' => false, 'message' => 'Vacancy not found.'], 404);
             }
@@ -402,7 +402,7 @@ class ApplicationFormController extends Controller
     public function checkEligibilityAjax(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = Vacancy::findOrFail($vacancyId);
+        $vacancy = JobPosting::findOrFail($vacancyId);
 
         $error = $this->checkEligibility($candidate, $vacancy);
 

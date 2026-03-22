@@ -4,7 +4,7 @@ namespace App\Http\Controllers\HRAdministrator;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\Vacancy;
+use App\Models\JobPosting;
 use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +25,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $query = Vacancy::query()->with('postedBy')->withCount('applicationForms');
+        $query = JobPosting::query()->with('postedBy')->withCount('applicationForms');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -53,10 +53,10 @@ class HRVacancyController extends Controller
         $jobs = $query->paginate(10)->withQueryString();
 
         $stats = [
-            'total' => Vacancy::count(),
-            'active' => Vacancy::where('status', 'active')->count(),
-            'closed' => Vacancy::where('status', 'closed')->count(),
-            'draft' => Vacancy::where('status', 'draft')->count(),
+            'total' => JobPosting::count(),
+            'active' => JobPosting::where('status', 'active')->count(),
+            'closed' => JobPosting::where('status', 'closed')->count(),
+            'draft' => JobPosting::where('status', 'draft')->count(),
         ];
 
         return view('hr-administrator.vacancies.index', compact('jobs', 'stats', 'hrAdmin'));
@@ -105,7 +105,7 @@ class HRVacancyController extends Controller
 
         $validated['posted_by'] = $hrAdmin->id;
 
-        Vacancy::create($validated);
+        JobPosting::create($validated);
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
@@ -121,7 +121,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::with(['applicationForms.reviewer', 'postedBy'])
+        $job = JobPosting::with(['applicationForms.reviewer', 'postedBy'])
             ->withCount('applicationForms')
             ->findOrFail($id);
 
@@ -145,7 +145,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         return view('hr-administrator.vacancies.edit', compact('job', 'hrAdmin'));
     }
@@ -159,7 +159,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $validated = $request->validate([
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
@@ -197,7 +197,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         if ($job->applicationForms()->count() > 0) {
             return redirect()
@@ -221,7 +221,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $newJob = $job->replicate();
         $newJob->title = $job->title . ' (Copy)';
@@ -245,7 +245,7 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $job = Vacancy::findOrFail($id);
+        $job = JobPosting::findOrFail($id);
 
         $validated = $request->validate([
             'status' => 'required|in:draft,active,closed',
