@@ -41,8 +41,8 @@ class ApplicationController extends Controller
         }
 
         // Job posting filter
-        if ($request->filled('vacancy_id')) {
-            $query->where('vacancy_id', $request->vacancy_id);
+        if ($request->filled('job_id')) {
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Reviewer filter
@@ -74,15 +74,18 @@ class ApplicationController extends Controller
             'rejected' => Application::where('status', 'rejected')->count(),
         ];
 
-        // Get job postings for filter dropdown
-        $jobPostings = Vacancy::select('id', 'advertisement_no', 'position_level')
+        // Get vacancies for filter dropdown
+        $vacancies = Vacancy::select('id', 'advertisement_no', 'position_level', 'title')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get reviewers for filter dropdown - FIXED LINE
+        // Get reviewers for filter dropdown
         $reviewers = Reviewer::where('status', 'active')->get();
 
-        return view('admin.applications.index', compact('applications', 'stats', 'jobPostings', 'reviewers'));
+        // Statuses for filter dropdown
+        $statuses = ['pending', 'under_review', 'shortlisted', 'rejected'];
+
+        return view('admin.applications.index', compact('applications', 'stats', 'vacancies', 'reviewers', 'statuses'));
     }
 
     /**

@@ -48,10 +48,10 @@
                         <tr>
                             <th>Application No.</th>
                             <th>Adv. No.</th>
-                            
-                            
+
+
                             <th>Post</th>
-                            
+
                             <th>Status</th>
                             <th>Roll. No.</th>
                             <th>Payment</th>

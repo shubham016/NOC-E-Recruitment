@@ -83,7 +83,7 @@
     <div class="header">
         <h1>नेपाल सरकार</h1>
         <h2>रिक्त पद विज्ञापन सूची</h2>
-        <p>उत्पन्न मिति: {{ $generatedDate }} | कुल रिक्त पदहरू: {{ $vacancies->count() }}</p>
+        <p>उत्पन्न मिति: {{ $generatedDate }} | कुल रिक्त पदहरू: {{ $jobs->count() }}</p>
     </div>
 
     <table>
@@ -101,7 +101,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($vacancies as $index => $job)
+            @forelse($jobs as $index => $job)
                 <tr>
                     <td class="sn-col">{{ $index + 1 }}</td>
                     <td class="adv-col"><strong>{{ $vacancy->advertisement_no }}</strong></td>

@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\CandidateOtp;
+use App\Mail\CandidateOtpMail;
 
 class CandidateController extends Controller
 {
@@ -28,7 +31,7 @@ class CandidateController extends Controller
     }
 
     /**
-     * Handle candidate registration.
+     * Handle candidate registration — inserts record then sends OTP.
      */
     public function register(Request $request)
     {
@@ -49,22 +52,120 @@ class CandidateController extends Controller
                 ->withInput();
         }
 
-        DB::table('candidate_registration')->insert([
-            'name'                      => $request->name,
-            'email'                     => $request->email,
-            'phone'                     => $request->phone,
-            'gender'                    => $request->gender,
-            'date_of_birth_bs'          => $request->date_of_birth_bs,
-            'citizenship_number'        => $request->citizenship_number,
-            'citizenship_issue_distric' => $request->citizenship_issue_distric,
-            'citizenship_issue_date_bs' => $request->citizenship_issue_date_bs,
-            'password'                  => Hash::make($request->password),
-            'created_at'                => now(),
-            'updated_at'                => now(),
-        ]);
+        try {
+            DB::table('candidate_registration')->insert([
+                'name'                      => $request->name,
+                'email'                     => $request->email,
+                'phone'                     => $request->phone,
+                'gender'                    => $request->gender,
+                'date_of_birth_bs'          => $request->date_of_birth_bs,
+                'citizenship_number'        => $request->citizenship_number,
+                'citizenship_issue_distric' => $request->citizenship_issue_distric,
+                'citizenship_issue_date_bs' => $request->citizenship_issue_date_bs,
+                'password'                  => Hash::make($request->password),
+                'email_verified_at'         => null,
+                'created_at'                => now(),
+                'updated_at'                => now(),
+            ]);
 
-        return redirect()->route('candidate.login')
-            ->with('success', 'Registration successful! Please login.');
+            // Generate and send OTP
+            $otpRecord = CandidateOtp::createOTP($request->email, 'registration');
+
+            Mail::to($request->email)->send(
+                new CandidateOtpMail($otpRecord->otp, $request->name, 'registration')
+            );
+
+            Session::put('candidate_registration_email', $request->email);
+
+            Log::info('Candidate registered (pending OTP): ' . $request->email);
+
+            return redirect()
+                ->route('candidate.verify.otp')
+                ->with('success', 'Registration successful! Please check your email for the OTP code.');
+
+        } catch (\Exception $e) {
+            Log::error('Candidate registration failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Registration failed. Please try again.'])
+                ->withInput($request->except('password', 'password_confirmation'));
+        }
+    }
+
+    /**
+     * Show OTP verification form.
+     */
+    public function showVerifyOtpForm()
+    {
+        $email = Session::get('candidate_registration_email');
+
+        if (!$email) {
+            return redirect()->route('candidate.register')
+                ->with('error', 'Session expired. Please register again.');
+        }
+
+        return view('auth.candidate.verify-otp', compact('email'));
+    }
+
+    /**
+     * Verify registration OTP and activate account.
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required|string|size:6']);
+
+        $email = Session::get('candidate_registration_email');
+
+        if (!$email) {
+            return back()->withErrors(['error' => 'Session expired. Please register again.']);
+        }
+
+        $otpRecord = CandidateOtp::verifyOTP($email, $request->otp, 'registration');
+
+        if (!$otpRecord) {
+            return back()->withErrors(['otp' => 'Invalid or expired OTP code. Please try again.']);
+        }
+
+        $otpRecord->markAsUsed();
+
+        // Mark email as verified
+        DB::table('candidate_registration')
+            ->where('email', $email)
+            ->update(['email_verified_at' => now(), 'updated_at' => now()]);
+
+        Session::forget('candidate_registration_email');
+
+        Log::info('Email verified for candidate: ' . $email);
+
+        return redirect()
+            ->route('candidate.login')
+            ->with('success', 'Email verified successfully! You can now login.');
+    }
+
+    /**
+     * Resend OTP.
+     */
+    public function resendOtp()
+    {
+        $email = Session::get('candidate_registration_email');
+
+        if (!$email) {
+            return back()->withErrors(['error' => 'Session expired. Please register again.']);
+        }
+
+        $candidate = DB::table('candidate_registration')->where('email', $email)->first();
+
+        if (!$candidate) {
+            return back()->withErrors(['error' => 'Account not found.']);
+        }
+
+        $otpRecord = CandidateOtp::createOTP($email, 'registration');
+
+        Mail::to($email)->send(
+            new CandidateOtpMail($otpRecord->otp, $candidate->name, 'registration')
+        );
+
+        return back()->with('success', 'OTP code has been resent to your email.');
     }
 
     /*
@@ -108,6 +209,13 @@ class CandidateController extends Controller
             ->first();
 
         if ($candidate && Hash::check($request->password, $candidate->password)) {
+            // Block unverified accounts
+            if (empty($candidate->email_verified_at)) {
+                return redirect()->back()
+                    ->withErrors(['email' => 'Please verify your email first. Check your inbox for the OTP code.'])
+                    ->withInput($request->only('email'));
+            }
+
             Session::put('candidate_id',         $candidate->id);
             Session::put('candidate_name',       $candidate->name);
             Session::put('candidate_email',      $candidate->email);

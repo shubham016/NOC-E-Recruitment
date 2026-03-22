@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Applications Management - NOC E-Recruitment')
 
@@ -267,37 +267,37 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            @if($application->passport_photo)
-                                                <img src="{{ asset('storage/' . $application->passport_photo) }}"
+                                            @if($application->passport_size_photo)
+                                                <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
                                                      class="gov-avatar me-3"
                                                      alt="Photo">
                                             @else
                                                 <div class="gov-avatar-placeholder me-3">
-                                                    {{ strtoupper(substr($application->candidate->name, 0, 1)) }}
+                                                    {{ strtoupper(substr($application->name_english ?? '?', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
                                                 <div class="gov-font-semibold gov-text-md" style="color: #1f2937;">
-                                                    {{ $application->candidate->name }}
+                                                    {{ $application->name_english ?? '-' }}
                                                 </div>
                                                 <small class="gov-text-sm" style="color: #6b7280;">
-                                                    username: {{ $application->candidate->username }}
+                                                    {{ $application->citizenship_number ?? '-' }}
                                                 </small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="gov-font-semibold gov-text-md" style="color: #1f2937;">
-                                            {{ $application->vacancy->title }}
+                                            {{ $application->applying_position ?? '-' }}
                                         </div>
                                         <small class="gov-text-sm" style="color: #6b7280;">
-                                            {{ $application->vacancy->advertisement_no }}
+                                            {{ $application->advertisement_no ?? '-' }}
                                         </small>
                                     </td>
                                     <td>
                                         <div class="mb-1 gov-text-sm">
                                             <i class="bi bi-envelope" style="color: #6b7280;"></i>
-                                            {{ Str::limit($application->candidate->email, 22) }}
+                                            {{ Str::limit($application->email ?? '-', 22) }}
                                         </div>
                                         <div class="gov-text-sm">
                                             <i class="bi bi-telephone" style="color: #6b7280;"></i>

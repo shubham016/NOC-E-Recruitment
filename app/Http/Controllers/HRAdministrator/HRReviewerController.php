@@ -136,7 +136,7 @@ class HRReviewerController extends Controller
         ])->findOrFail($id);
 
         // Get recent applications assigned to this reviewer
-        $recentApplications = ApplicationForm::with(['candidate', 'vacancy'])
+        $recentApplications = ApplicationForm::with(['vacancy'])
             ->where('reviewer_id', $id)
             ->latest()
             ->take(10)

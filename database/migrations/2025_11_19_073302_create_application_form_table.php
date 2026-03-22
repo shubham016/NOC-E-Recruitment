@@ -8,8 +8,10 @@ return new class extends Migration
 {
     public function up()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('application_form');
-        
+        Schema::enableForeignKeyConstraints();
+
         Schema::create('application_form', function (Blueprint $table) {
             $table->id();
             

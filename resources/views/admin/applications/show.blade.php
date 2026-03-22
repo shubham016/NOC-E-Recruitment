@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Application Details - NOC E-Recruitment')
 
@@ -14,9 +14,9 @@
     @include('admin.partials.sidebar')
 @endsection
 
-@push('styles')
+@section('custom-styles')
 <link rel="stylesheet" href="{{ asset('css/government-professional.css') }}">
-@endpush
+@endsection
 
 @section('content')
 <div class="container-fluid px-4 py-4 gov-page-container">

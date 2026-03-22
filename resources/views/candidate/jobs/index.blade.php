@@ -154,8 +154,13 @@
                             <td>{{ $job->position_level }}</td>
                             <td>{{ $job->advertisement_no }}</td>
                             <td>
-                                <i class="text-dark"></i>
-                                {{ \Carbon\Carbon::parse($job->application_deadline)->format('M d, Y') }}
+                                <div>
+                                    <small class="text-danger d-block fw-semibold nepali-date-bs"
+                                        data-ad-date="{{ \Carbon\Carbon::parse($job->deadline)->format('Y-m-d') }}">
+                                        <i class="bi bi-hourglass-split"></i> ...
+                                    </small>
+                                    <small class="text-muted">{{ \Carbon\Carbon::parse($job->deadline)->format('M d, Y') }}</small>
+                                </div>
                             </td>
                             <td class="text-center">
                                 @if($hasApplied)
@@ -331,5 +336,41 @@ window.addEventListener('pageshow', function(event) {
         resetAllButtons();
     }
 });
+
+// Convert AD dates to Nepali BS
+(function() {
+    function englishToNepali(str) {
+        const map = {'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'७','8':'८','9':'९'};
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    function convertAllDates() {
+        document.querySelectorAll('.nepali-date-bs').forEach(function(el) {
+            var adDate = el.getAttribute('data-ad-date');
+            if (adDate) {
+                try {
+                    var bsDate = window.adToBS(adDate);
+                    if (bsDate) {
+                        el.textContent = englishToNepali(bsDate);
+                    } else {
+                        el.textContent = '';
+                    }
+                } catch(e) {
+                    el.textContent = '';
+                }
+            }
+        });
+    }
+
+    function waitAndConvert() {
+        if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+            setTimeout(waitAndConvert, 100);
+            return;
+        }
+        convertAllDates();
+    }
+
+    document.addEventListener('DOMContentLoaded', waitAndConvert);
+})();
 </script>
 @endsection

@@ -6,25 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        if (!Schema::hasColumn('application_form', 'email')) {
+        if (!Schema::hasColumn('application_form', 'submitted_at')) {
             Schema::table('application_form', function (Blueprint $table) {
-                $table->string('email')->nullable()->after('name_english');
+                $table->timestamp('submitted_at')->nullable();
             });
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('application_form', function (Blueprint $table) {
-        $table->dropColumn('email');
-     });
+        if (Schema::hasColumn('application_form', 'submitted_at')) {
+            Schema::table('application_form', function (Blueprint $table) {
+                $table->dropColumn('submitted_at');
+            });
+        }
     }
 };

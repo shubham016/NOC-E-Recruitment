@@ -67,14 +67,14 @@ class AdminDashboardController extends Controller
             'candidates' => $this->calculateGrowth($thisMonth['candidates'], $lastMonth['candidates']),
         ];
 
-        // Top Vacancies by Applications
-        $topVacancies = Vacancy::withCount('applicationForms')
+        // Top Jobs by Applications
+        $topJobs = Vacancy::withCount('applicationForms')
             ->orderBy('application_forms_count', 'desc')
             ->limit(5)
             ->get();
 
         // Recent Applications (last 10)
-        $recentApplications = ApplicationForm::with(['candidate', 'vacancy'])
+        $recentApplications = ApplicationForm::with(['job'])
             ->latest()
             ->limit(10)
             ->get();
@@ -105,17 +105,17 @@ class AdminDashboardController extends Controller
             ->select('hr_administrators.*')
             ->selectSub(function ($query) {
                 $query->selectRaw('count(*)')
-                    ->from('vacancies')
-                    ->whereColumn('vacancies.posted_by', 'hr_administrators.id')
-                    ->whereMonth('vacancies.created_at', now()->month)
-                    ->whereYear('vacancies.created_at', now()->year);
+                    ->from('job_postings')
+                    ->whereColumn('job_postings.posted_by', 'hr_administrators.id')
+                    ->whereMonth('job_postings.created_at', now()->month)
+                    ->whereYear('job_postings.created_at', now()->year);
             }, 'jobs_posted')
             ->orderBy('jobs_posted', 'desc')
             ->limit(5)
             ->get();
 
         // Recent Job Postings
-        $recentVacancies = Vacancy::latest()
+        $recentJobs = Vacancy::latest()
             ->limit(5)
             ->get();
 
@@ -123,11 +123,11 @@ class AdminDashboardController extends Controller
             'stats',
             'thisMonth',
             'growth',
-            'topVacancies',
+            'topJobs',
             'recentApplications',
             'reviewerStats',
             'hrAdminStats',
-            'recentVacancies'
+            'recentJobs'
         ));
     }
 

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class AdmitCardController extends Controller
 {
@@ -14,12 +16,17 @@ class AdmitCardController extends Controller
      */
     public function index()
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login');
+        }
 
-        $applications = ApplicationForm::where('candidate_id', $candidate->id)
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        $applications = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('vacancy')
             ->latest()
             ->get();
 
@@ -31,13 +38,18 @@ class AdmitCardController extends Controller
      */
     public function show($id)
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login');
+        }
+
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
         $application = ApplicationForm::where('id', $id)
-            ->where('candidate_id', $candidate->id)
+            ->where('citizenship_number', $candidate->citizenship_number)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('vacancy')
             ->firstOrFail();
 
         return view('candidate.admit-card-view', compact('application', 'candidate'));
@@ -48,13 +60,18 @@ class AdmitCardController extends Controller
      */
     public function download($id)
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login');
+        }
+
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
         $application = ApplicationForm::where('id', $id)
-            ->where('candidate_id', $candidate->id)
+            ->where('citizenship_number', $candidate->citizenship_number)
             ->whereIn('status', ['approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
-            ->with('vacancy')
             ->firstOrFail();
 
         $pdf = Pdf::loadView('candidate.admit-card-pdf', compact('application', 'candidate'));

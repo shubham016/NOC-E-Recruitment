@@ -8,14 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('application_form', function (Blueprint $table) {
-            $table->unsignedBigInteger('job_posting_id')->after('id'); 
-            
-            $table->foreign('job_posting_id')
-                  ->references('id')
-                  ->on('job_postings')
-                  ->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('application_form', 'job_posting_id')) {
+            Schema::table('application_form', function (Blueprint $table) {
+                $table->unsignedBigInteger('job_posting_id')->nullable()->after('id');
+                $table->foreign('job_posting_id')
+                      ->references('id')
+                      ->on('job_postings')
+                      ->onDelete('cascade');
+            });
+        }
     }
 
     public function down(): void

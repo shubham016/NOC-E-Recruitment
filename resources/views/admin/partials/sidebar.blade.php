@@ -4,14 +4,14 @@
     <span>Dashboard</span>
 </a>
 
-<a href="{{ route('admin.vacancies.create') }}" class="sidebar-menu-item {{ request()->routeIs('admin.vacancies.create') ? 'active' : '' }}">
+<a href="{{ route('admin.jobs.create') }}" class="sidebar-menu-item {{ request()->routeIs('admin.jobs.create') ? 'active' : '' }}">
     <i class="bi bi-briefcase"></i>
-    <span>Post Vacancy</span>
+    <span>Post Job</span>
 </a>
 
-<a href="{{ route('admin.vacancies.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.vacancies.*') && !request()->routeIs('admin.vacancies.create') ? 'active' : '' }}">
+<a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.jobs.*') && !request()->routeIs('admin.jobs.create') ? 'active' : '' }}">
     <i class="bi bi-file-earmark-text"></i>
-    <span>Vacancy List</span>
+    <span>Job List</span>
     @if(isset($stats['active_vacancies']))
         <span class="badge bg-primary ms-auto">{{ $stats['active_vacancies'] }}</span>
     @endif

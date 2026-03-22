@@ -11,17 +11,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HRVacancyController extends Controller
 {
-    /**
-     * Get the authenticated HR Administrator
-     */
     private function getAuthUser()
     {
         return Auth::guard('hr_administrator')->user();
     }
 
-    /**
-     * Display a listing of vacancies
-     */
     public function index(Request $request)
     {
         $hrAdmin = $this->getAuthUser();
@@ -33,7 +27,6 @@ class HRVacancyController extends Controller
 
         $query = Vacancy::query()->with('postedBy')->withCount('applicationForms');
 
-        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -45,25 +38,20 @@ class HRVacancyController extends Controller
             });
         }
 
-        // Status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Job type filter
         if ($request->filled('job_type')) {
             $query->where('job_type', $request->job_type);
         }
 
-        // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $vacancies = $query->paginate(10)->withQueryString();
+        $jobs = $query->paginate(10)->withQueryString();
 
-        // Statistics
         $stats = [
             'total' => Vacancy::count(),
             'active' => Vacancy::where('status', 'active')->count(),
@@ -71,12 +59,9 @@ class HRVacancyController extends Controller
             'draft' => Vacancy::where('status', 'draft')->count(),
         ];
 
-        return view('hr-administrator.vacancies.index', compact('vacancies', 'stats', 'hrAdmin'));
+        return view('hr-administrator.vacancies.index', compact('jobs', 'stats', 'hrAdmin'));
     }
 
-    /**
-     * Show the form for creating a new vacancy
-     */
     public function create()
     {
         $hrAdmin = $this->getAuthUser();
@@ -89,9 +74,6 @@ class HRVacancyController extends Controller
         return view('hr-administrator.vacancies.create', compact('hrAdmin'));
     }
 
-    /**
-     * Store a newly created vacancy
-     */
     public function store(Request $request)
     {
         $hrAdmin = $this->getAuthUser();
@@ -102,7 +84,7 @@ class HRVacancyController extends Controller
         }
 
         $validated = $request->validate([
-            'advertisement_no' => 'required|string|max:50|unique:vacancies,advertisement_no',
+            'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'department' => 'required|string|max:100',
@@ -121,19 +103,15 @@ class HRVacancyController extends Controller
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        // Set posted_by to the HR Administrator's ID
         $validated['posted_by'] = $hrAdmin->id;
 
-        $vacancy = Vacancy::create($validated);
+        Vacancy::create($validated);
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
-            ->with('success', 'Vacancy posted successfully!');
+            ->with('success', 'Job posted successfully!');
     }
 
-    /**
-     * Display the specified vacancy
-     */
     public function show($id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -143,25 +121,21 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::with(['applicationForms.candidate', 'applicationForms.reviewer', 'postedBy'])
+        $job = Vacancy::with(['applicationForms.reviewer', 'postedBy'])
             ->withCount('applicationForms')
             ->findOrFail($id);
 
-        // Application statistics
         $applicationStats = [
-            'total' => $vacancy->applicationForms->count(),
-            'pending' => $vacancy->applicationForms->where('status', 'pending')->count(),
-            'approved' => $vacancy->applicationForms->where('status', 'approved')->count(),
-            'shortlisted' => $vacancy->applicationForms->where('status', 'shortlisted')->count(),
-            'rejected' => $vacancy->applicationForms->where('status', 'rejected')->count(),
+            'total' => $job->applicationForms->count(),
+            'pending' => $job->applicationForms->where('status', 'pending')->count(),
+            'approved' => $job->applicationForms->where('status', 'approved')->count(),
+            'shortlisted' => $job->applicationForms->where('status', 'shortlisted')->count(),
+            'rejected' => $job->applicationForms->where('status', 'rejected')->count(),
         ];
 
-        return view('admin.vacancies.show', compact('vacancy', 'applicationStats', 'hrAdmin'));
+        return view('hr-administrator.vacancies.show', compact('job', 'applicationStats', 'hrAdmin'));
     }
 
-    /**
-     * Show the form for editing the specified vacancy
-     */
     public function edit($id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -171,14 +145,11 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::findOrFail($id);
+        $job = Vacancy::findOrFail($id);
 
-        return view('hr-administrator.vacancies.edit', compact('vacancy', 'hrAdmin'));
+        return view('hr-administrator.vacancies.edit', compact('job', 'hrAdmin'));
     }
 
-    /**
-     * Update the specified vacancy
-     */
     public function update(Request $request, $id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -188,10 +159,10 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::findOrFail($id);
+        $job = Vacancy::findOrFail($id);
 
         $validated = $request->validate([
-            'advertisement_no' => 'required|string|max:50|unique:vacancies,advertisement_no,' . $id,
+            'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'department' => 'required|string|max:100',
@@ -210,16 +181,13 @@ class HRVacancyController extends Controller
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        $vacancy->update($validated);
+        $job->update($validated);
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
-            ->with('success', 'Vacancy updated successfully!');
+            ->with('success', 'Job updated successfully!');
     }
 
-    /**
-     * Remove the specified vacancy
-     */
     public function destroy($id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -229,25 +197,21 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::findOrFail($id);
+        $job = Vacancy::findOrFail($id);
 
-        // Check if vacancy has applications
-        if ($vacancy->applicationForms()->count() > 0) {
+        if ($job->applicationForms()->count() > 0) {
             return redirect()
                 ->route('hr-administrator.vacancies.index')
-                ->with('error', 'Cannot delete vacancy with existing applications. Please close it instead.');
+                ->with('error', 'Cannot delete job with existing applications. Please close it instead.');
         }
 
-        $vacancy->delete();
+        $job->delete();
 
         return redirect()
             ->route('hr-administrator.vacancies.index')
-            ->with('success', 'Vacancy deleted successfully!');
+            ->with('success', 'Job deleted successfully!');
     }
 
-    /**
-     * Duplicate a vacancy
-     */
     public function duplicate($id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -257,24 +221,21 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::findOrFail($id);
+        $job = Vacancy::findOrFail($id);
 
-        $newVacancy = $vacancy->replicate();
-        $newVacancy->title = $vacancy->title . ' (Copy)';
-        $newVacancy->advertisement_no = $vacancy->advertisement_no . '-COPY-' . time();
-        $newVacancy->status = 'draft';
-        $newVacancy->posted_by = $hrAdmin->id;
-        $newVacancy->deadline = now()->addDays(30);
-        $newVacancy->save();
+        $newJob = $job->replicate();
+        $newJob->title = $job->title . ' (Copy)';
+        $newJob->advertisement_no = $job->advertisement_no . '-COPY-' . time();
+        $newJob->status = 'draft';
+        $newJob->posted_by = $hrAdmin->id;
+        $newJob->deadline = now()->addDays(30);
+        $newJob->save();
 
         return redirect()
-            ->route('hr-administrator.vacancies.edit', $newVacancy->id)
-            ->with('success', 'Vacancy duplicated successfully! Please review and update.');
+            ->route('hr-administrator.vacancies.edit', $newJob->id)
+            ->with('success', 'Job duplicated successfully! Please review and update.');
     }
 
-    /**
-     * Change vacancy status
-     */
     public function changeStatus(Request $request, $id)
     {
         $hrAdmin = $this->getAuthUser();
@@ -284,16 +245,16 @@ class HRVacancyController extends Controller
                 ->with('error', 'Please login to continue.');
         }
 
-        $vacancy = Vacancy::findOrFail($id);
+        $job = Vacancy::findOrFail($id);
 
         $validated = $request->validate([
             'status' => 'required|in:draft,active,closed',
         ]);
 
-        $vacancy->update(['status' => $validated['status']]);
+        $job->update(['status' => $validated['status']]);
 
         return redirect()
             ->back()
-            ->with('success', 'Vacancy status updated successfully!');
+            ->with('success', 'Job status updated successfully!');
     }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Result;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class CandidateResultController extends Controller
 {
@@ -14,11 +16,16 @@ class CandidateResultController extends Controller
      */
     public function index()
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login');
+        }
 
-        $results = Result::where('candidate_id', $candidate->id)
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
+
+        $results = Result::where('citizenship_number', $candidate->citizenship_number)
             ->whereNotNull('published_at')
-            ->with('applicationForm.jobPosting')
             ->latest('published_at')
             ->get();
 
@@ -30,12 +37,17 @@ class CandidateResultController extends Controller
      */
     public function show($id)
     {
-        $candidate = Auth::guard('candidate')->user();
+        if (!Session::has('candidate_logged_in')) {
+            return redirect()->route('candidate.login');
+        }
+
+        $candidate = DB::table('candidate_registration')
+            ->where('id', Session::get('candidate_id'))
+            ->first();
 
         $result = Result::where('id', $id)
-            ->where('candidate_id', $candidate->id)
+            ->where('citizenship_number', $candidate->citizenship_number)
             ->whereNotNull('published_at')
-            ->with('applicationForm.jobPosting')
             ->firstOrFail();
 
         return view('candidate.result-detail', compact('result', 'candidate'));

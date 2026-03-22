@@ -15,21 +15,19 @@ class HRApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query - show all submitted applications
-        $query = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $query = ApplicationForm::with(['vacancy', 'reviewer'])
             ->where('status', '!=', 'draft');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('candidate', function ($q2) use ($search) {
-                    $q2->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('vacancy', function ($q2) use ($search) {
-                    $q2->where('title', 'like', "%{$search}%")
-                        ->orWhere('advertisement_no', 'like', "%{$search}%");
-                });
+                $q->where('name_english', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('vacancy', function ($q2) use ($search) {
+                        $q2->where('title', 'like', "%{$search}%")
+                            ->orWhere('advertisement_no', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -40,7 +38,7 @@ class HRApplicationController extends Controller
 
         // Vacancy filter
         if ($request->filled('job_id')) {
-            $query->where('vacancy_id', $request->job_id);
+            $query->where('job_posting_id', $request->job_id);
         }
 
         // Reviewer filter
@@ -94,7 +92,7 @@ class HRApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['candidate', 'vacancy', 'reviewer']);
+        $application->load(['vacancy', 'reviewer']);
 
         $reviewers = Reviewer::where('status', 'active')->get();
         $statuses = ['pending', 'approved', 'rejected'];
@@ -135,7 +133,7 @@ class HRApplicationController extends Controller
 
         if (isset($notificationMessages[$request->status])) {
             Notification::create([
-                'user_id' => $application->candidate_id,
+                'user_id' => null,
                 'user_type' => 'candidate',
                 'type' => $notificationMessages[$request->status]['type'],
                 'title' => $notificationMessages[$request->status]['title'],
@@ -163,7 +161,7 @@ class HRApplicationController extends Controller
 
         // Create notification for candidate
         Notification::create([
-            'user_id' => $application->candidate_id,
+            'user_id' => null,
             'user_type' => 'candidate',
             'type' => 'reviewer_assigned',
             'title' => 'Reviewer Assigned',

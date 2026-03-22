@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\JobPosting;
 
 class ApplicationForm extends Model
 {
@@ -173,6 +174,16 @@ class ApplicationForm extends Model
     public function jobPosting()
     {
         return $this->belongsTo(JobPosting::class, 'job_posting_id');
+    }
+
+    public function job()
+    {
+        return $this->belongsTo(Vacancy::class, 'job_posting_id');
+    }
+
+    public function vacancy()
+    {
+        return $this->job();
     }
 
     public function payment()

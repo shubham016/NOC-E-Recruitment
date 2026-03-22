@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('application_form', function (Blueprint $table) {
-            $table->timestamp('reviewed_at')->nullable()->after('reviewer_id');
-        });
+        if (!Schema::hasColumn('application_form', 'reviewed_at')) {
+            Schema::table('application_form', function (Blueprint $table) {
+                $table->timestamp('reviewed_at')->nullable();
+            });
+        }
     }
 
     public function down(): void
     {
         Schema::table('application_form', function (Blueprint $table) {
-            $table->dropColumn('reviewed_at');
+            if (Schema::hasColumn('application_form', 'reviewed_at')) {
+                $table->dropColumn('reviewed_at');
+            }
         });
     }
 };

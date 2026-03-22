@@ -142,7 +142,7 @@ class ReviewerController extends Controller
 
         // Get recent applications assigned to this reviewer
         $recentApplications = ApplicationForm::where('reviewer_id', $reviewer->id)
-            ->with(['vacancy', 'candidate'])
+            ->with(['vacancy'])
             ->latest()
             ->take(5)
             ->get();

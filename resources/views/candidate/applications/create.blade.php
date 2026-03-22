@@ -1611,5 +1611,77 @@ setTimeout(() => {
     console.log('✓ Form initialized with strict validation, conditional file uploads, preview, and auto-save');
     console.log('Draft ID on load:', draftIdInput ? draftIdInput.value : 'none');
 });
+
+// ============================================================
+// Auto-fill Birth Date (A.D) and Age from Birth Date (B.S)
+// ============================================================
+(function () {
+    function calculateAge(adDateStr) {
+        if (!adDateStr) return '';
+        const birth = new Date(adDateStr);
+        if (isNaN(birth.getTime())) return '';
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+        return age > 0 ? age : '';
+    }
+
+    function applyFromBS(bsValue) {
+        if (!bsValue || typeof window.bsToAD !== 'function') return;
+        const adDate = window.bsToAD(bsValue.trim());
+        if (!adDate) return;
+
+        const adInput  = document.getElementById('birth_date_ad');
+        const ageInput = document.getElementById('age');
+
+        if (adInput) adInput.value = adDate;
+
+        const age = calculateAge(adDate);
+        if (ageInput && age !== '') ageInput.value = age;
+    }
+
+    function applyFromAD(adValue) {
+        const ageInput = document.getElementById('age');
+        const age = calculateAge(adValue);
+        if (ageInput && age !== '') ageInput.value = age;
+    }
+
+    function init() {
+        const bsInput = document.getElementById('birth_date_bs');
+        const adInput = document.getElementById('birth_date_ad');
+        if (!bsInput) return;
+
+        // On page load: fill AD and Age if BS has a value
+        if (bsInput.value) {
+            applyFromBS(bsInput.value);
+        } else if (adInput && adInput.value) {
+            applyFromAD(adInput.value);
+        }
+
+        // When BS changes: update AD and Age
+        bsInput.addEventListener('change', function () { applyFromBS(this.value); });
+        bsInput.addEventListener('input',  function () { applyFromBS(this.value); });
+
+        // When AD changes manually: recalculate Age only
+        if (adInput) {
+            adInput.addEventListener('change', function () { applyFromAD(this.value); });
+        }
+    }
+
+    function waitForConverter() {
+        if (!window.nepaliLibrariesReady || typeof window.bsToAD !== 'function') {
+            setTimeout(waitForConverter, 100);
+            return;
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    }
+
+    waitForConverter();
+})();
 </script>
 @endsection

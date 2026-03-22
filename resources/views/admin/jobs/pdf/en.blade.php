@@ -83,7 +83,7 @@
     <div class="header">
         <h1>Government of Nepal</h1>
         <h2>Vacancy Advertisement List</h2>
-        <p>Generated on: {{ $generatedDate }} | Total Vacancies: {{ $vacancies->count() }}</p>
+        <p>Generated on: {{ $generatedDate }} | Total Vacancies: {{ $jobs->count() }}</p>
     </div>
 
     <table>
@@ -101,7 +101,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($vacancies as $index => $job)
+            @forelse($jobs as $index => $job)
                 <tr>
                     <td class="sn-col">{{ $index + 1 }}</td>
                     <td class="adv-col"><strong>{{ $vacancy->advertisement_no }}</strong></td>
