@@ -70,13 +70,13 @@ class AdminDashboardController extends Controller
         // Top Jobs by Applications
         $topJobs = JobPosting::withCount('applicationForms')
             ->orderBy('application_forms_count', 'desc')
-            ->limit(5)
+            ->limit(4)
             ->get();
 
-        // Recent Applications (last 10)
+        // Recent Applications (last 4)
         $recentApplications = ApplicationForm::with(['job'])
             ->latest()
-            ->limit(10)
+            ->limit(4)
             ->get();
 
         // Reviewer Statistics

@@ -696,10 +696,10 @@
             <div class="stat-icon bg-purple bg-opacity-10 text-purple">
                 <i class="bi bi-person-check-fill"></i>
             </div>
-            <div class="stat-value">{{ $stats['active_hr_admins'] }}</div>
+            <div class="stat-value">{{ $stats['active_approvers'] }}</div>
             <div class="stat-label">Active Approvers</div>
             <!-- <div class="stat-meta">
-                <span class="stat-text">{{ $stats['total_hr_admins'] }} total approvers</span>
+                <span class="stat-text">{{ $stats['total_approvers'] }} total approvers</span>
             </div> -->
         </div>
     </div>
@@ -713,7 +713,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="bi bi-clock-history text-primary"></i>
+                        <!-- <i class="bi bi-clock-history text-primary"></i> -->
                         Recent Applications
                     </h3>
                     <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
@@ -721,11 +721,18 @@
                 <div>
                     @forelse($recentApplications as $application)
                         <div class="list-item">
-                            <div class="item-avatar bg-primary bg-opacity-10 text-primary">
-                                {{ strtoupper(substr($application->candidate->name ?? 'U', 0, 1)) }}
-                            </div>
+                            @if($application->passport_size_photo)
+                                <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
+                                     alt="{{ $application->name_english }}"
+                                     class="item-avatar"
+                                     style="object-fit: cover;">
+                            @else
+                                <div class="item-avatar bg-primary bg-opacity-10 text-primary">
+                                    {{ strtoupper(substr($application->name_english ?? 'U', 0, 1)) }}
+                                </div>
+                            @endif
                             <div class="item-content">
-                                <h4 class="item-name">{{ $application->candidate->name ?? 'Unknown' }}</h4>
+                                <h4 class="item-name">{{ $application->name_english ?? 'Unknown' }}</h4>
                                 <p class="item-text">Applied for
                                     <strong>{{ $application->vacancy->title ?? 'Position' }}</strong>
                                 </p>
@@ -757,6 +764,7 @@
                         <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
                         Total Vacancies by Applications
                     </h3>
+                    <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
                 </div>
                 <div>
                     @forelse($topJobs as $vacancy)
@@ -798,7 +806,7 @@
             <div class="widget">
                 <div class="widget-header">
                     <h3 class="widget-title">
-                        <i class="bi bi-lightning-fill text-warning"></i>
+                        <!-- <i class="bi bi-lightning-fill text-warning"></i> -->
                         Quick Actions
                     </h3>
                 </div>
@@ -807,10 +815,14 @@
                         <i class="bi bi-plus-circle"></i>
                         Post New Vacancy
                     </a>
-                    <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
+                    <a href="{{ route('admin.reviewers.create') }}" class="btn-action btn-secondary">
                         <i class="bi bi-person-plus"></i>
                         Add Reviewer
-                    </button>
+                    </a>
+                    <a href="{{ route('admin.approvers.create') }}" class="btn-action btn-secondary">
+                        <i class="bi bi-person-plus"></i>
+                        Add Approver
+                    </a>
                     <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
                         <i class="bi bi-download"></i>
                         Export Report

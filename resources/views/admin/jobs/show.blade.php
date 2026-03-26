@@ -381,9 +381,9 @@
                                                     <i class="bi bi-person-fill text-danger"></i>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold">{{ $application->candidate->user->name ?? 'N/A' }}</div>
+                                                    <div class="fw-bold">{{ $application->name_english ?? 'N/A' }}</div>
                                                     <small
-                                                        class="text-muted">{{ $application->candidate->user->email ?? '' }}</small>
+                                                        class="text-muted">{{ $application->email ?? '' }}</small>
                                                 </div>
                                             </div>
                                         </td>

@@ -78,17 +78,26 @@ class AssignedToMeController extends Controller
         ]);
 
         // Notify candidate
-        $candidateRecord = \DB::table('candidate_registration')
-            ->where('citizenship_number', $application->citizenship_number)
-            ->first();
+        $candidate = \App\Models\Candidate::where('email', $application->email)->first();
 
-        if ($candidateRecord) {
+        if ($request->status == 'approved') {
             Notification::create([
-                'user_id'      => $candidateRecord->id,
+                'user_id'      => $candidate?->id,
                 'user_type'    => 'candidate',
-                'type'         => 'application_' . $request->status,
-                'title'        => 'Application ' . ucfirst($request->status),
-                'message'      => 'Your application for "' . ($application->jobPosting->title ?? 'N/A') . '" has been ' . $request->status . ' by the approver.',
+                'type'         => 'application_approved',
+                'title'        => 'Application Approved',
+                'message'      => 'Congratulations! Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been approved by the approver.',
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        } elseif ($request->status == 'rejected') {
+            $rejectionReason = $request->approver_notes ? ' Reason: ' . $request->approver_notes : '';
+            Notification::create([
+                'user_id'      => $candidate?->id,
+                'user_type'    => 'candidate',
+                'type'         => 'application_rejected',
+                'title'        => 'Application Rejected',
+                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been rejected by the approver.' . $rejectionReason,
                 'related_id'   => $application->id,
                 'related_type' => 'application',
             ]);

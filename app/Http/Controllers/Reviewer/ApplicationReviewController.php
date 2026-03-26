@@ -263,8 +263,36 @@ class ApplicationReviewController extends Controller
 
             $message = 'Application reviewed and assigned to Approver: ' . ($approver->name ?? 'N/A') . ' for final decision.';
         } elseif ($request->status === 'edit') {
+            // Notify candidate for edit request
+            $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+            $rejectionReason = $request->reviewer_notes ? ' Reason: ' . $request->reviewer_notes : '';
+
+            \App\Models\Notification::create([
+                'user_id'      => $candidate?->id,
+                'user_type'    => 'candidate',
+                'type'         => 'application_edit_required',
+                'title'        => 'Application Edit Required',
+                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" requires corrections.' . $rejectionReason,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+
             $message = 'Application sent back to candidate for correction successfully!';
         } else {
+            // Notify candidate for rejection
+            $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+            $rejectionReason = $request->reviewer_notes ? ' Reason: ' . $request->reviewer_notes : '';
+
+            \App\Models\Notification::create([
+                'user_id'      => $candidate?->id,
+                'user_type'    => 'candidate',
+                'type'         => 'application_rejected',
+                'title'        => 'Application Rejected',
+                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been rejected by the reviewer.' . $rejectionReason,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+
             $message = 'Application rejected successfully!';
         }
 

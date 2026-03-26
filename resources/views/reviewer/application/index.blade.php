@@ -382,15 +382,15 @@
                         <tr class="application-row {{ $priorityClass }}">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" 
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
                                          style="width: 40px; height: 40px;">
                                         <span class="fw-bold text-primary">
-                                            {{ strtoupper(substr($application->candidate->name, 0, 1)) }}
+                                            {{ strtoupper(substr($application->name_english ?? 'U', 0, 1)) }}
                                         </span>
                                     </div>
                                     <div>
-                                        <div class="fw-semibold">{{ $application->candidate->name }}</div>
-                                        <small class="text-muted">{{ $application->candidate->email }}</small>
+                                        <div class="fw-semibold">{{ $application->name_english }}</div>
+                                        <small class="text-muted">{{ $application->email }}</small>
                                     </div>
                                 </div>
                             </td>

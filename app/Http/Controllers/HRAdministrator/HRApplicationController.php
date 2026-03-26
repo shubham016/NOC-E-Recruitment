@@ -118,26 +118,26 @@ class HRApplicationController extends Controller
         ]);
 
         // Create notification for candidate
-        $notificationMessages = [
-            'approved' => [
+        $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+
+        if ($request->status == 'approved') {
+            Notification::create([
+                'user_id' => $candidate?->id,
+                'user_type' => 'candidate',
+                'type' => 'application_approved',
                 'title' => 'Application Approved',
                 'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by HR.',
-                'type' => 'application_approved'
-            ],
-            'rejected' => [
-                'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected. Please check the HR notes for more details.',
-                'type' => 'application_rejected'
-            ],
-        ];
-
-        if (isset($notificationMessages[$request->status])) {
+                'related_id' => $application->id,
+                'related_type' => 'application',
+            ]);
+        } elseif ($request->status == 'rejected') {
+            $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
             Notification::create([
-                'user_id' => null,
+                'user_id' => $candidate?->id,
                 'user_type' => 'candidate',
-                'type' => $notificationMessages[$request->status]['type'],
-                'title' => $notificationMessages[$request->status]['title'],
-                'message' => $notificationMessages[$request->status]['message'],
+                'type' => 'application_rejected',
+                'title' => 'Application Rejected',
+                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected by HR.' . $rejectionReason,
                 'related_id' => $application->id,
                 'related_type' => 'application',
             ]);

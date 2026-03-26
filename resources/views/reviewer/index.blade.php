@@ -403,8 +403,8 @@
                             </td>
                             <td>
                                 <div>
-                                    <div class="fw-semibold">{{ $application->candidate->name }}</div>
-                                    <small class="text-muted">{{ $application->candidate->email }}</small>
+                                    <div class="fw-semibold">{{ $application->name_english }}</div>
+                                    <small class="text-muted">{{ $application->email }}</small>
                                 </div>
                             </td>
                             <td>
