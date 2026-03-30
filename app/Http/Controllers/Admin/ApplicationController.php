@@ -17,20 +17,24 @@ class ApplicationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Application::with(['jobPosting', 'candidate.user', 'reviewer'])
+        $query = Application::with(['jobPosting', 'candidate', 'reviewer'])
             ->latest();
 
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('candidate.user', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                $q->whereHas('candidate', function ($q2) use ($search) {
+                    $q2->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('middle_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('citizenship_number', 'like', "%{$search}%");
                 })
                     ->orWhereHas('vacancy', function ($q2) use ($search) {
                         $q2->where('advertisement_no', 'like', "%{$search}%")
-                            ->orWhere('position_level', 'like', "%{$search}%");
+                            ->orWhere('position_level', 'like', "%{$search}%")
+                            ->orWhere('title', 'like', "%{$search}%");
                     });
             });
         }
@@ -95,8 +99,8 @@ class ApplicationController extends Controller
     {
         $application = Application::with([
             'jobPosting',
-            'candidate.user',
-            'reviewer'  // REMOVED ->user from here
+            'candidate',
+            'reviewer'
         ])->findOrFail($id);
 
         // Get available reviewers for assignment - FIXED LINE
@@ -234,7 +238,7 @@ class ApplicationController extends Controller
         // This will be implemented with Excel export functionality
         // For now, return a simple CSV
 
-        $applications = Application::with(['jobPosting', 'candidate.user'])
+        $applications = Application::with(['jobPosting', 'candidate'])
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->vacancy_id, fn($q) => $q->where('vacancy_id', $request->vacancy_id))
             ->get();
@@ -267,11 +271,11 @@ class ApplicationController extends Controller
             foreach ($applications as $app) {
                 fputcsv($file, [
                     $app->id,
-                    $app->vacancy->advertisement_no,
-                    $app->vacancy->position_level,
-                    $app->candidate->user->name ?? 'N/A',
-                    $app->candidate->user->email ?? 'N/A',
-                    $app->candidate->phone ?? 'N/A',
+                    $app->vacancy->advertisement_no ?? 'N/A',
+                    $app->vacancy->position_level ?? 'N/A',
+                    $app->candidate->name ?? 'N/A',
+                    $app->candidate->email ?? 'N/A',
+                    $app->candidate->mobile_number ?? 'N/A',
                     $app->status,
                     $app->created_at->format('Y-m-d'),
                     $app->reviewer->name ?? 'Unassigned',

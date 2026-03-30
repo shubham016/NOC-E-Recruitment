@@ -89,6 +89,21 @@ class ApplicationFormController extends Controller
 
         $isDraft = $request->has('save_draft');
 
+        // Check if vacancy is closed or deadline has passed (only for final submission, not drafts)
+        if (!$isDraft) {
+            if ($vacancy->status !== 'active') {
+                return redirect()
+                    ->route('candidate.jobs.show', $vacancyId)
+                    ->with('error', 'This vacancy is closed and no longer accepting applications.');
+            }
+
+            if ($vacancy->deadline && $vacancy->deadline < now()) {
+                return redirect()
+                    ->route('candidate.jobs.show', $vacancyId)
+                    ->with('error', 'The application deadline for this vacancy has passed.');
+            }
+        }
+
         // Check for existing application
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
             ->where('vacancy_id', $vacancyId)

@@ -762,7 +762,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
-                        Total Vacancies by Applications
+                        Applications per Vacancy
                     </h3>
                     <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
                 </div>
@@ -842,9 +842,16 @@
                     @forelse($reviewerStats as $reviewer)
                         <div class="reviewer-item">
                             <div class="reviewer-row">
-                                <div class="reviewer-avatar bg-success bg-opacity-10 text-success">
-                                    {{ strtoupper(substr($reviewer->name, 0, 1)) }}
-                                </div>
+                                @if($reviewer->photo)
+                                    <img src="{{ asset('storage/' . $reviewer->photo) }}"
+                                         alt="{{ $reviewer->name }}"
+                                         class="reviewer-avatar"
+                                         style="object-fit: cover;">
+                                @else
+                                    <div class="reviewer-avatar bg-success bg-opacity-10 text-success">
+                                        {{ strtoupper(substr($reviewer->name, 0, 1)) }}
+                                    </div>
+                                @endif
                                 <div class="reviewer-info">
                                     <h4 class="reviewer-name">{{ $reviewer->name }}</h4>
                                     <p class="reviewer-email">{{ $reviewer->email }}</p>

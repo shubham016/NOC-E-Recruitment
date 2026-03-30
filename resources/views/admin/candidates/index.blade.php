@@ -116,21 +116,21 @@
             <div class="col-md-3">
                 <div class="card stat-card h-100" style="border-left-color: #10b981;">
                     <div class="card-body">
-                        <h6 class="text-muted">Active</h6>
-                        <h2 class="text-success">{{ $stats['active'] }}</h2>
+                        <h6 class="text-muted">With Applications</h6>
+                        <h2 class="text-success">{{ $stats['with_applications'] }}</h2>
                         <small class="text-muted">
-                            <i class="bi bi-check-circle me-1"></i>Active accounts
+                            <i class="bi bi-file-earmark-text me-1"></i>Applied for jobs
                         </small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card h-100" style="border-left-color: #ef4444;">
+                <div class="card stat-card h-100" style="border-left-color: #3b82f6;">
                     <div class="card-body">
-                        <h6 class="text-muted">Inactive</h6>
-                        <h2 class="text-danger">{{ $stats['inactive'] }}</h2>
+                        <h6 class="text-muted">Verified</h6>
+                        <h2 class="text-primary">{{ $stats['verified'] }}</h2>
                         <small class="text-muted">
-                            <i class="bi bi-x-circle me-1"></i>Inactive accounts
+                            <i class="bi bi-check-circle me-1"></i>Email verified
                         </small>
                     </div>
                 </div>
@@ -151,23 +151,15 @@
         <!-- Search & Filter Section -->
         <div class="search-section mb-4">
             <form method="GET" class="row g-3">
-                <div class="col-md-5">
+                <div class="col-md-8">
                     <label class="form-label fw-semibold">Search</label>
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="search" class="form-control"
-                            placeholder="Search by name, email, username, mobile..." value="{{ $search }}">
+                            placeholder="Search by name, email, username, mobile..." value="{{ $search ?? '' }}">
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
@@ -208,7 +200,7 @@
                                 <th class="border-0">Email</th>
                                 <th class="border-0">Mobile</th>
                                 <th class="border-0">Applications</th>
-                                <th class="border-0">Status</th>
+                                <th class="border-0">Email Verified</th>
                                 <th class="border-0">Registered</th>
                                 <th class="border-0 pe-4">Actions</th>
                             </tr>
@@ -228,11 +220,15 @@
                                             {{ $candidate->applications_count }} Applications
                                         </span>
                                     </td>
-                                    <td>
-                                        @if($candidate->status === 'active')
-                                            <span class="badge bg-success">Active</span>
+                                    <td class="text-center">
+                                        @if($candidate->email_verified_at)
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Verified
+                                            </span>
                                         @else
-                                            <span class="badge bg-danger">Inactive</span>
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-clock"></i> Not Verified
+                                            </span>
                                         @endif
                                     </td>
                                     <td>{{ $candidate->created_at->format('M d, Y') }}</td>

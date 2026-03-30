@@ -205,6 +205,50 @@
             font-size: 0.875rem;
             font-weight: 600;
         }
+
+        /* Scroll to Top Button */
+        .stp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            opacity: 0;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s ease;
+            z-index: 9999;
+            will-change: transform, opacity;
+        }
+
+        .stp:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+        }
+
+        .stp:active {
+            transform: translateY(-2px);
+        }
+
+        /* Force smooth rendering */
+        * {
+            scroll-behavior: auto !important;
+        }
+
+        html, body {
+            scroll-behavior: auto !important;
+        }
     </style>
 @endsection
 
@@ -335,14 +379,14 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Open/Inclusive Category -->
+                    <!-- Category Selection -->
                     <div class="mb-4">
                         <label for="category" class="form-label">
-                            <span>Open/Inclusive <span class="required">*</span></span>
-                            <span class="nepali-text">खुल्ला/समावेशी</span>
+                            <span>Category <span class="required">*</span></span>
+                            <span class="nepali-text">श्रेणी</span>
                         </label>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_open"
                                         value="open" {{ old('category', $job->category) == 'open' ? 'checked' : '' }}
@@ -353,7 +397,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_inclusive"
                                         value="inclusive" {{ old('category', $job->category) == 'inclusive' ? 'checked' : '' }}>
@@ -363,13 +407,44 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-check-inline border rounded p-3 w-100">
+                                    <input class="form-check-input" type="radio" name="category" id="category_internal"
+                                        value="internal" {{ old('category', $job->category) == 'internal' ? 'checked' : '' }}>
+                                    <label class="form-check-label w-100" for="category_internal">
+                                        <strong>Internal (आन्तरिक)</strong>
+                                        <br><small class="text-muted">Internal promotion</small>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         @error('category')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
 
-                        <!-- Inclusive Sub-Category (Conditional) -->
-                        <div class="inclusive-subcategory {{ old('category', $job->category) == 'inclusive' ? 'show' : '' }}"
+                        <!-- Internal Sub-Category (Conditional) -->
+                        <div class="inclusive-subcategory {{ old('category', $job->category) == 'internal' ? 'show' : '' }}"
+                            id="internalSubCategory">
+                            <label for="internal_type" class="form-label">
+                                <span>Internal Type <span class="required">*</span></span>
+                                <span class="nepali-text">आन्तरिक प्रकार</span>
+                            </label>
+                            <select class="form-select form-select-lg @error('internal_type') is-invalid @enderror"
+                                id="internal_type" name="internal_type">
+                                <option value="">-- Select Internal Type --</option>
+                                <option value="open" {{ old('internal_type', $job->internal_type) == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
+                                <option value="inclusive" {{ old('internal_type', $job->internal_type) == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
+                            </select>
+                            @error('internal_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text">
+                                <i class="bi bi-lightbulb me-1"></i>Select if internal vacancy is open or inclusive
+                            </small>
+                        </div>
+
+                        <!-- Inclusive Type (Conditional - for both Inclusive and Internal-Inclusive) -->
+                        <div class="inclusive-subcategory {{ old('category', $job->category) == 'inclusive' || (old('category', $job->category) == 'internal' && old('internal_type', $job->internal_type) == 'inclusive') ? 'show' : '' }}"
                             id="inclusiveSubCategory">
                             <label for="inclusive_type" class="form-label">
                                 <span>Inclusive Type <span class="required">*</span></span>
@@ -424,13 +499,170 @@
                         @enderror
                     </div>
 
+                    <div class="section-divider"></div>
+
+                    <!-- Application Deadline - Dual Date Pickers -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <span>Application Deadline <span class="required">*</span></span>
+                            <span class="nepali-text">आवेदन दिने अन्तिम मिति</span>
+                        </label>
+
+                        <div class="row g-3">
+                            <!-- Nepali Date (BS) Picker -->
+                            <div class="col-md-6">
+                                <label for="deadline_bs" class="form-label small fw-bold text-primary">
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg"
+                                    id="deadline_bs"
+                                    placeholder="YYYY-MM-DD"
+                                    autocomplete="off">
+                                <input type="hidden" name="deadline_bs" id="deadline_bs_hidden" value="{{ old('deadline_bs', $job->deadline_bs) }}">
+                                <small class="form-text text-primary">
+                                    <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
+                                </small>
+                            </div>
+
+                            <!-- English Date (AD) - Database Field -->
+                            <div class="col-md-6">
+                                <label for="deadline_ad" class="form-label small fw-bold">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD) <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg @error('deadline') is-invalid @enderror"
+                                    id="deadline_ad"
+                                    name="deadline"
+                                    placeholder="YYYY-MM-DD"
+                                    value="{{ old('deadline', $job->deadline->format('Y-m-d')) }}"
+                                    required
+                                    readonly>
+                                <small class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>Current deadline date
+                                </small>
+                            </div>
+                        </div>
+
+                        @error('deadline')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-clock-history me-2"></i>
+                            <strong>Current Deadline:</strong> {{ $job->deadline->format('Y-m-d') }} - You can update if needed.
+                            <br><small>हालको समय सीमा: {{ $job->deadline->format('Y-m-d') }} - आवश्यक भएमा अपडेट गर्न सक्नुहुन्छ।</small>
+                        </div>
+                    </div>
+
+                    <!-- Double Dastur Date - Dual Date Pickers -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <span>Double Dastur Date</span>
+                            <span class="nepali-text">दोहोरो दस्तुर मिति</span>
+                        </label>
+
+                        <div class="row g-3">
+                            <!-- Nepali Date (BS) Picker -->
+                            <div class="col-md-6">
+                                <label for="double_dastur_bs" class="form-label small fw-bold text-success">
+                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg"
+                                    id="double_dastur_bs"
+                                    placeholder="YYYY-MM-DD"
+                                    autocomplete="off">
+                                <input type="hidden" name="double_dastur_bs" id="double_dastur_bs_hidden" value="{{ old('double_dastur_bs', $job->double_dastur_bs) }}">
+                            </div>
+
+                            <!-- English Date (AD) - Database Field -->
+                            <div class="col-md-6">
+                                <label for="double_dastur_ad" class="form-label small fw-bold text-success">
+                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD)
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg @error('double_dastur_date') is-invalid @enderror"
+                                    id="double_dastur_ad"
+                                    name="double_dastur_date"
+                                    placeholder="YYYY-MM-DD"
+                                    value="{{ old('double_dastur_date', $job->double_dastur_date) }}"
+                                    readonly>
+                                <small class="form-text text-success">
+                                    <i class="bi bi-info-circle me-1"></i>Optional extended deadline
+                                </small>
+                            </div>
+                        </div>
+
+                        @error('double_dastur_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <div class="alert alert-success mt-3 mb-0">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            <strong>Extended Period:</strong> Double Dastur allows additional time after the original deadline.
+                            <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप समय अनुमति दिन्छ।</small>
+                        </div>
+                    </div>
+
+                    <!-- Application Fee & Double Dastur Fee Row -->
+                    <div class="row mb-4">
+                        <!-- Application Fee -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <span>Application Fee<span class="text-danger">*</span></span>
+                                <span class="nepali-text">आवेदन शुल्क</span>
+                            </label>
+                            <input type="number"
+                                   class="form-control form-control-lg @error('application_fee') is-invalid @enderror"
+                                   id="application_fee"
+                                   name="application_fee"
+                                   value="{{ old('application_fee', $job->application_fee ? rtrim(rtrim(sprintf('%.2f', $job->application_fee), '0'), '.') : '') }}"
+                                   placeholder="Enter Application Fee"
+                                   min="0"
+                                   step="0.01"
+                                   required>
+                            @error('application_fee')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <!-- <div class="alert alert-info mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> Enter the application fee amount in Nepali Rupees (required field).
+                                <br><small>नोट: नेपlी रुपैयाँमा आवेदन शुल्क रकम प्रविष्ट गर्नुहोस् (अनिवार्य)।</small>
+                            </div> -->
+                        </div>
+
+                        <!-- Double Dastur Fee -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <span>Double Dastur Fee<span class="text-danger">*</span></span>
+                                <span class="nepali-text">दोहोरो दस्तुर शुल्क</span>
+                            </label>
+                            <input type="number"
+                                   class="form-control form-control-lg @error('double_dastur_fee') is-invalid @enderror"
+                                   id="double_dastur_fee"
+                                   name="double_dastur_fee"
+                                   value="{{ old('double_dastur_fee', $job->double_dastur_fee ? rtrim(rtrim(sprintf('%.2f', $job->double_dastur_fee), '0'), '.') : '') }}"
+                                   placeholder="Enter Double Dastur Fee"
+                                   min="0"
+                                   step="0.01"
+                                   required>
+                            @error('double_dastur_fee')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <!-- <div class="alert alert-warning mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> Fee for extended application period (required field).
+                                <br><small>नोट: विस्तारित आवेदन अवधिको लागि शुल्क (अनिवार्य)।</small>
+                            </div> -->
+                        </div>
+                    </div>
+
                     <!-- Hidden fields -->
                     <input type="hidden" name="title" id="hidden_title" value="{{ $job->title }}">
                     <input type="hidden" name="location" value="Nepal">
-                    <input type="hidden" name="job_type" value="permanent">
                     <input type="hidden" name="description" id="hidden_description" value="{{ $job->description }}">
                     <input type="hidden" name="requirements" id="hidden_requirements" value="{{ $job->requirements }}">
-                    <input type="hidden" name="deadline" value="{{ $job->deadline->format('Y-m-d') }}">
                     <input type="hidden" name="status" value="{{ $job->status }}">
                 </div>
             </div>
@@ -463,12 +695,28 @@
                                 <td id="preview-service" class="fw-semibold">{{ $job->service_group }}</td>
                             </tr>
                             <tr>
-                                <th>Open/Inclusive</th>
+                                <th>Category</th>
                                 <td id="preview-category" class="fw-semibold">
                                     @if($job->category == 'open')
                                         <span class="badge bg-success">खुल्ला (Open)</span>
-                                    @else
+                                    @elseif($job->category == 'inclusive')
                                         <span class="badge bg-info">समावेशी (Inclusive)</span>
+                                    @elseif($job->category == 'internal')
+                                        <span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr id="preview-internal-row" style="display: {{ $job->internal_type ? '' : 'none' }};">
+                                <th>Internal Type</th>
+                                <td id="preview-internal-type" class="fw-semibold">
+                                    @if($job->internal_type == 'open')
+                                        खुल्ला (Open)
+                                    @elseif($job->internal_type == 'inclusive')
+                                        समावेशी (Inclusive)
+                                    @else
+                                        {{ $job->internal_type ?? '-' }}
                                     @endif
                                 </td>
                             </tr>
@@ -479,6 +727,56 @@
                             <tr>
                                 <th>Demand Post</th>
                                 <td id="preview-posts" class="fw-semibold">{{ $job->number_of_posts }}</td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (BS)</th>
+                                <td id="preview-deadline-bs" class="fw-semibold text-danger">
+                                    @if($job->deadline_bs)
+                                        {{ $job->deadline_bs }} बि.सं.
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Deadline (AD)</th>
+                                <td id="preview-deadline-ad" class="fw-semibold text-danger">{{ $job->deadline->format('Y-m-d') }}</td>
+                            </tr>
+                            <tr id="preview-double-dastur-row" style="display: {{ $job->double_dastur_bs ? '' : 'none' }};">
+                                <th>Double Dastur (BS)</th>
+                                <td id="preview-double-dastur-bs" class="fw-semibold text-success">
+                                    @if($job->double_dastur_bs)
+                                        {{ $job->double_dastur_bs }} बि.सं.
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr id="preview-double-dastur-ad-row" style="display: {{ $job->double_dastur_date ? '' : 'none' }};">
+                                <th>Double Dastur (AD)</th>
+                                <td id="preview-double-dastur-ad" class="fw-semibold text-success">
+                                    {{ $job->double_dastur_date ?? '-' }}
+                                </td>
+                            </tr>
+                            <tr id="preview-application-fee-row">
+                                <th>Application Fee</th>
+                                <td id="preview-application-fee" class="fw-semibold text-primary">
+                                    @if($job->application_fee)
+                                        NPR {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}
+                                    @else
+                                        NPR
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr id="preview-double-dastur-fee-row">
+                                <th>Double Dastur Fee</th>
+                                <td id="preview-double-dastur-fee" class="fw-semibold text-danger">
+                                    @if($job->double_dastur_fee)
+                                        NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
+                                    @else
+                                        NPR
+                                    @endif
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -518,12 +816,14 @@
                     <div class="card-body py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-x-circle me-2"></i>Cancel
+                                <!-- <i class="bi bi-x-circle me-2"></i> -->
+                                Cancel
                             </a>
                             <div class="d-flex gap-3">
-                                <button type="submit" class="btn btn-danger btn-lg btn-action px-5"
+                                <button type="submit" class="btn btn-success btn-lg btn-action px-5"
                                     onclick="return confirmUpdate()">
-                                    <i class="bi bi-check-circle me-2"></i>Update Vacancy
+                                    <!-- <i class="bi bi-check-circle me-2"></i> -->
+                                    Update Vacancy
                                 </button>
                             </div>
                         </div>
@@ -532,58 +832,361 @@
             </div>
         </div>
     </form>
+
+    <!-- Scroll to Top Button -->
+    <button class="stp" id="stp">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 @endsection
 
 @section('scripts')
-    <script>
+<script>
+(function() {
+    'use strict';
+
+    console.log('📝 === Edit Page Date System Initializing ===');
+
+    // ============================================
+    // CRITICAL: Numeral conversion functions
+    // ============================================
+
+    // Convert Nepali numerals to English
+    function nepaliToEnglish(str) {
+        if (!str) return str;
+        const map = {'०':'0', '१':'1', '२':'2', '३':'3', '४':'4', '५':'5', '६':'6', '७':'7', '८':'8', '९':'9'};
+        return str.replace(/[०-९]/g, d => map[d]);
+    }
+
+    // Convert English numerals to Nepali for display
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४', '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'};
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    function waitForConverter() {
+        if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+            console.log('⏳ Waiting for converter...');
+            setTimeout(waitForConverter, 100);
+            return;
+        }
+
+        console.log('✅ Converter ready!');
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeForm);
+        } else {
+            initializeForm();
+        }
+    }
+
+    function initializeForm() {
+        console.log('🔧 Initializing edit form...');
+
+        const deadlineBS = document.getElementById('deadline_bs');
+        const deadlineAD = document.getElementById('deadline_ad');
+        const doubleDasturBS = document.getElementById('double_dastur_bs');
+        const doubleDasturAD = document.getElementById('double_dastur_ad');
+        const previewDeadlineBS = document.getElementById('preview-deadline-bs');
+        const previewDeadlineAD = document.getElementById('preview-deadline-ad');
+        const previewDoubleDasturBS = document.getElementById('preview-double-dastur-bs');
+        const previewDoubleDasturAD = document.getElementById('preview-double-dastur-ad');
+        const previewDoubleDasturRow = document.getElementById('preview-double-dastur-row');
+        const previewDoubleDasturADRow = document.getElementById('preview-double-dastur-ad-row');
+
+        if (!deadlineBS || !deadlineAD) {
+            console.error('❌ Date elements not found!');
+            return;
+        }
+
+        // Initialize Nepali Date Pickers
+        $('#deadline_bs').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD',
+            unicodeDate: true
+        });
+
+        $('#double_dastur_bs').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD',
+            unicodeDate: true
+        });
+
+        console.log('✅ Nepali Date Pickers initialized');
+
+        // ============================================
+        // WORKING SOLUTION: Use polling to detect changes
+        // ============================================
+        let lastBSValue = '';
+        let lastDoubleDasturBSValue = '';
+
+        const pollInterval = setInterval(function() {
+            // Poll for Deadline BS changes
+            const currentBSValue = $('#deadline_bs').val();
+
+            if (currentBSValue &&
+                currentBSValue !== lastBSValue &&
+                currentBSValue !== 'YYYY-MM-DD' &&
+                currentBSValue.length >= 10) {
+
+                console.log('📅 BS Date changed (polling detected):', currentBSValue);
+                lastBSValue = currentBSValue;
+
+                const bsValueEnglish = nepaliToEnglish(currentBSValue);
+                console.log('🔢 After numeral conversion:', bsValueEnglish);
+
+                const hiddenField = document.getElementById('deadline_bs_hidden');
+                if (hiddenField) {
+                    hiddenField.value = bsValueEnglish;
+                    console.log('✅ Hidden BS field updated:', bsValueEnglish);
+                }
+
+                const adValue = window.bsToAD(bsValueEnglish);
+                console.log('✅ AD Result:', adValue);
+
+                if (adValue) {
+                    deadlineAD.value = adValue;
+                    console.log('✅ English date field updated:', adValue);
+
+                    if (previewDeadlineBS) {
+                        const bsNepali = englishToNepali(bsValueEnglish);
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                        console.log('✅ BS Preview:', bsNepali);
+                    }
+
+                    if (previewDeadlineAD) {
+                        previewDeadlineAD.textContent = adValue;
+                        console.log('✅ AD Preview updated:', adValue);
+                    }
+                }
+            }
+
+            // Poll for Double Dastur BS changes
+            const currentDoubleDasturBSValue = $('#double_dastur_bs').val();
+
+            if (currentDoubleDasturBSValue &&
+                currentDoubleDasturBSValue !== lastDoubleDasturBSValue &&
+                currentDoubleDasturBSValue !== 'YYYY-MM-DD' &&
+                currentDoubleDasturBSValue.length >= 10) {
+
+                console.log('📅 Double Dastur BS Date changed:', currentDoubleDasturBSValue);
+                lastDoubleDasturBSValue = currentDoubleDasturBSValue;
+
+                const ddBsValueEnglish = nepaliToEnglish(currentDoubleDasturBSValue);
+                console.log('🔢 Double Dastur after numeral conversion:', ddBsValueEnglish);
+
+                const ddHiddenField = document.getElementById('double_dastur_bs_hidden');
+                if (ddHiddenField) {
+                    ddHiddenField.value = ddBsValueEnglish;
+                }
+
+                const ddAdValue = window.bsToAD(ddBsValueEnglish);
+                console.log('✅ Double Dastur AD Result:', ddAdValue);
+
+                if (ddAdValue) {
+                    doubleDasturAD.value = ddAdValue;
+                    console.log('✅ Double Dastur AD field updated:', ddAdValue);
+
+                    if (previewDoubleDasturBS) {
+                        const ddBsNepali = englishToNepali(ddBsValueEnglish);
+                        previewDoubleDasturBS.textContent = ddBsNepali + ' बि.सं.';
+                        previewDoubleDasturRow.style.display = '';
+                    }
+
+                    if (previewDoubleDasturAD) {
+                        previewDoubleDasturAD.textContent = ddAdValue;
+                        previewDoubleDasturADRow.style.display = '';
+                    }
+                }
+            }
+        }, 200);
+
+        // Initialize existing dates on page load
+        setTimeout(function() {
+            const existingBSValue = $('#deadline_bs').val();
+
+            if (existingBSValue && existingBSValue.match(/[0-9]/)) {
+                console.log('📅 Converting existing Deadline BS to Nepali numerals:', existingBSValue);
+                const bsNepali = englishToNepali(existingBSValue);
+                $('#deadline_bs').val(bsNepali);
+                lastBSValue = bsNepali;
+
+                const hiddenField = document.getElementById('deadline_bs_hidden');
+                if (hiddenField) {
+                    hiddenField.value = existingBSValue;
+                }
+
+                console.log('✅ Deadline BS converted to Nepali:', bsNepali);
+
+                if (previewDeadlineBS) {
+                    previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                }
+                if (previewDeadlineAD) {
+                    previewDeadlineAD.textContent = deadlineAD.value;
+                }
+            } else if (deadlineAD.value && !existingBSValue) {
+                console.log('📅 Initializing Deadline BS from existing AD date:', deadlineAD.value);
+
+                const bsValue = window.adToBS(deadlineAD.value);
+                console.log('✅ Initial BS (English numerals):', bsValue);
+
+                if (bsValue) {
+                    const bsNepali = englishToNepali(bsValue);
+                    $('#deadline_bs').val(bsNepali);
+                    lastBSValue = bsNepali;
+
+                    const hiddenField = document.getElementById('deadline_bs_hidden');
+                    if (hiddenField) {
+                        hiddenField.value = bsValue;
+                    }
+
+                    console.log('✅ Initial BS (Nepali numerals):', bsNepali);
+
+                    if (previewDeadlineBS) {
+                        previewDeadlineBS.textContent = bsNepali + ' बि.सं.';
+                    }
+                    if (previewDeadlineAD) {
+                        previewDeadlineAD.textContent = deadlineAD.value;
+                    }
+                }
+            }
+
+            // Initialize Double Dastur if exists
+            const existingDDBSValue = document.getElementById('double_dastur_bs_hidden').value;
+            if (existingDDBSValue) {
+                const ddBsNepali = englishToNepali(existingDDBSValue);
+                $('#double_dastur_bs').val(ddBsNepali);
+                lastDoubleDasturBSValue = ddBsNepali;
+            } else if (doubleDasturAD.value) {
+                const ddBsValue = window.adToBS(doubleDasturAD.value);
+                if (ddBsValue) {
+                    const ddBsNepali = englishToNepali(ddBsValue);
+                    $('#double_dastur_bs').val(ddBsNepali);
+                    lastDoubleDasturBSValue = ddBsNepali;
+                    document.getElementById('double_dastur_bs_hidden').value = ddBsValue;
+                }
+            }
+        }, 500);
+
+        console.log('✅ Date system ready (edit page)!');
+
+        // ============================================
+        // REST OF FORM - Live Preview and other logic
+        // ============================================
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Same JavaScript as create.blade.php
             const categoryRadios = document.querySelectorAll('input[name="category"]');
+            const internalSubCategory = document.getElementById('internalSubCategory');
+            const internalTypeSelect = document.getElementById('internal_type');
             const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
             const inclusiveTypeSelect = document.getElementById('inclusive_type');
             const previewInclusiveRow = document.getElementById('preview-inclusive-row');
             const previewInclusiveType = document.getElementById('preview-inclusive-type');
+            const previewInternalRow = document.getElementById('preview-internal-row');
+            const previewInternalType = document.getElementById('preview-internal-type');
 
-            function toggleInclusiveSubCategory() {
+            function toggleSubCategories() {
                 const selectedCategory = document.querySelector('input[name="category"]:checked');
+                const categoryValue = selectedCategory ? selectedCategory.value : '';
+                const internalTypeValue = internalTypeSelect ? internalTypeSelect.value : '';
 
-                if (selectedCategory && selectedCategory.value === 'inclusive') {
-                    inclusiveSubCategory.classList.add('show');
-                    inclusiveTypeSelect.setAttribute('required', 'required');
-                    previewInclusiveRow.style.display = '';
-
-                    if (inclusiveTypeSelect.value) {
-                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
-                    }
-                } else {
+                // Hide all sub-categories first
+                if (internalSubCategory) {
+                    internalSubCategory.classList.remove('show');
+                    internalTypeSelect.removeAttribute('required');
+                }
+                if (inclusiveSubCategory) {
                     inclusiveSubCategory.classList.remove('show');
                     inclusiveTypeSelect.removeAttribute('required');
-                    inclusiveTypeSelect.value = '';
-                    previewInclusiveRow.style.display = 'none';
-                    previewInclusiveType.textContent = '-';
+                }
+                if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
+                if (previewInternalRow) previewInternalRow.style.display = 'none';
+
+                // Show appropriate fields based on category
+                if (categoryValue === 'internal') {
+                    // Show Internal Type dropdown
+                    internalSubCategory.classList.add('show');
+                    internalTypeSelect.setAttribute('required', 'required');
+
+                    // Show Internal Type preview if value exists
+                    if (previewInternalRow && internalTypeValue) {
+                        previewInternalRow.style.display = '';
+                        if (previewInternalType) {
+                            if (internalTypeValue === 'open') {
+                                previewInternalType.textContent = 'खुल्ला (Open)';
+                            } else if (internalTypeValue === 'inclusive') {
+                                previewInternalType.textContent = 'समावेशी (Inclusive)';
+                            } else {
+                                previewInternalType.textContent = internalTypeValue;
+                            }
+                        }
+                    }
+
+                    // If Internal-Inclusive, show Inclusive Type
+                    if (internalTypeValue === 'inclusive') {
+                        inclusiveSubCategory.classList.add('show');
+                        inclusiveTypeSelect.setAttribute('required', 'required');
+                        if (previewInclusiveRow) previewInclusiveRow.style.display = '';
+                        if (previewInclusiveType && inclusiveTypeSelect.value) {
+                            previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                        }
+                    }
+                } else if (categoryValue === 'inclusive') {
+                    // Show Inclusive Type dropdown directly
+                    inclusiveSubCategory.classList.add('show');
+                    inclusiveTypeSelect.setAttribute('required', 'required');
+                    if (previewInclusiveRow) previewInclusiveRow.style.display = '';
+                    if (previewInclusiveType && inclusiveTypeSelect.value) {
+                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
+                    }
                 }
             }
 
             categoryRadios.forEach(radio => {
-                radio.addEventListener('change', toggleInclusiveSubCategory);
+                radio.addEventListener('change', toggleSubCategories);
             });
 
-            toggleInclusiveSubCategory();
+            if (internalTypeSelect) {
+                internalTypeSelect.addEventListener('change', function() {
+                    toggleSubCategories();
 
-            inclusiveTypeSelect.addEventListener('change', function () {
-                if (this.value) {
-                    previewInclusiveType.textContent = this.value;
-                } else {
-                    previewInclusiveType.textContent = '-';
-                }
-            });
+                    // Update Internal Type preview
+                    const previewInternalRow = document.getElementById('preview-internal-row');
+                    const previewInternalType = document.getElementById('preview-internal-type');
+                    if (previewInternalRow && previewInternalType) {
+                        if (this.value) {
+                            previewInternalRow.style.display = '';
+                            if (this.value === 'open') {
+                                previewInternalType.textContent = 'खुल्ला (Open)';
+                            } else if (this.value === 'inclusive') {
+                                previewInternalType.textContent = 'समावेशी (Inclusive)';
+                            } else {
+                                previewInternalType.textContent = this.value;
+                            }
+                        } else {
+                            previewInternalRow.style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            if (inclusiveTypeSelect) {
+                inclusiveTypeSelect.addEventListener('change', function () {
+                    if (previewInclusiveType) {
+                        previewInclusiveType.textContent = this.value || '-';
+                    }
+                });
+            }
+
+            // Initialize on page load
+            toggleSubCategories();
 
             const previewMappings = {
                 'advertisement_no': { preview: 'preview-adv-no', default: '-' },
                 'position_level': { preview: 'preview-position', default: '-' },
                 'service_group': { preview: 'preview-service', default: '-' },
                 'number_of_posts': { preview: 'preview-posts', default: '-' },
-                'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' }
+                'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' },
+                'application_fee': { preview: 'preview-application-fee', default: '-' },
+                'double_dastur_fee': { preview: 'preview-double-dastur-fee', default: '-' }
             };
 
             Object.keys(previewMappings).forEach(fieldId => {
@@ -597,6 +1200,19 @@
                         const value = this.value.trim();
                         if (fieldId === 'minimum_qualification') {
                             preview.textContent = value.substring(0, 100) + (value.length > 100 ? '...' : '');
+                        } else if (fieldId === 'application_fee' || fieldId === 'double_dastur_fee') {
+                            const feeRow = document.getElementById(`preview-${fieldId}-row`);
+                            if (value && parseFloat(value) >= 0) {
+                                const numValue = parseFloat(value);
+                                // Only show decimals if they exist (not .00)
+                                const formattedValue = numValue % 1 === 0
+                                    ? numValue.toLocaleString('en-NP', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                                    : numValue.toLocaleString('en-NP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                preview.textContent = 'NPR ' + formattedValue;
+                            } else {
+                                preview.textContent = 'NPR';
+                            }
+                            if (feeRow) feeRow.style.display = '';
                         } else {
                             preview.textContent = value || previewMappings[fieldId].default;
                         }
@@ -611,6 +1227,8 @@
                         categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
                     } else if (this.value === 'inclusive') {
                         categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
+                    } else if (this.value === 'internal') {
+                        categoryPreview.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
                     }
                 });
             });
@@ -636,12 +1254,114 @@
             });
         });
 
-        function confirmUpdate() {
-            return confirm(
-                '⚠️ Are you sure you want to update this vacancy?\n\n' +
-                'यो रिक्त पद अपडेट गर्न निश्चित हुनुहुन्छ?\n\n' +
-                'The changes will be saved immediately.'
-            );
+        console.log('✅ === ALL COMPLETE (Edit Page) ===');
+    }
+
+    waitForConverter();
+})();
+
+function confirmUpdate() {
+    return confirm(
+        '⚠️ Are you sure you want to update this vacancy?\n\n' +
+        'यो रिक्त पद अपडेट गर्न निश्चित हुनुहुन्छ?\n\n' +
+        'The changes will be saved immediately.'
+    );
+}
+
+// Scroll to Top Button - Zero Delays
+(function() {
+    'use strict';
+
+    const btn = document.getElementById('stp');
+    if (!btn) return;
+
+    let isAnimating = false;
+    let animationId = null;
+
+    btn.style.display = 'none';
+
+    function easeInOutQuad(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+
+    function scrollToTop() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
         }
-    </script>
+
+        if (isAnimating) return;
+
+        isAnimating = true;
+
+        const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+        const startTime = performance.now();
+        const duration = 700;
+
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            const easeProgress = easeInOutQuad(progress);
+            const currentPosition = startPosition * (1 - easeProgress);
+
+            window.scrollTo(0, currentPosition);
+
+            if (progress < 1) {
+                animationId = requestAnimationFrame(animate);
+            } else {
+                isAnimating = false;
+                animationId = null;
+            }
+        }
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        scrollToTop();
+        return false;
+    }, true);
+
+    let visible = false;
+
+    function checkScroll() {
+        const scrolled = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrolled > 200) {
+            if (!visible) {
+                btn.style.display = 'flex';
+                setTimeout(function() {
+                    btn.style.opacity = '1';
+                }, 10);
+                visible = true;
+            }
+        } else {
+            if (visible) {
+                btn.style.opacity = '0';
+                setTimeout(function() {
+                    btn.style.display = 'none';
+                }, 300);
+                visible = false;
+            }
+        }
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                checkScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    checkScroll();
+
+})();
+</script>
 @endsection

@@ -106,7 +106,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{application}', [AdminApplicationController::class, 'show'])->name('show');
             Route::post('/{application}/update-status', [AdminApplicationController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{application}/assign-reviewer', [AdminApplicationController::class, 'assignReviewer'])->name('assignReviewer');
-            Route::post('/{application}/set-priority', [AdminApplicationController::class, 'setPriority'])->name('setPriority');
             Route::delete('/{application}', [AdminApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [AdminApplicationController::class, 'bulkAction'])->name('bulkAction');
             Route::delete('/{application}/reset-payment', [AdminApplicationController::class, 'resetPayment'])->name('resetPayment');
@@ -244,7 +243,6 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
             Route::get('/{application}', [HRApplicationController::class, 'show'])->name('show');
             Route::post('/{application}/update-status', [HRApplicationController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{application}/assign-reviewer', [HRApplicationController::class, 'assignReviewer'])->name('assignReviewer');
-            Route::post('/{application}/set-priority', [HRApplicationController::class, 'setPriority'])->name('setPriority');
             Route::delete('/{application}', [HRApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [HRApplicationController::class, 'bulkAction'])->name('bulkAction');
         });

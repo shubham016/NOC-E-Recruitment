@@ -203,4 +203,12 @@ class ApplicationForm extends Model
     {
         return $this->belongsTo(\App\Models\Approver::class, 'approver_id');
     }
+
+    /**
+     * Get status label attribute
+     */
+    public function getStatusLabelAttribute()
+    {
+        return ucfirst(str_replace('_', ' ', $this->status ?? ''));
+    }
 }

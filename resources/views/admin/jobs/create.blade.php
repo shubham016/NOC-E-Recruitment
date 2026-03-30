@@ -198,6 +198,50 @@
             margin-top: 1rem;
             opacity: 1;
         }
+
+        /* Scroll to Top Button */
+        .stp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            opacity: 0;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s ease;
+            z-index: 9999;
+            will-change: transform, opacity;
+        }
+
+        .stp:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+        }
+
+        .stp:active {
+            transform: translateY(-2px);
+        }
+
+        /* Force smooth rendering */
+        * {
+            scroll-behavior: auto !important;
+        }
+
+        html, body {
+            scroll-behavior: auto !important;
+        }
     </style>
 @endsection
 
@@ -238,6 +282,22 @@
     <!-- Form -->
     <form method="POST" action="{{ route('admin.jobs.store') }}" id="vacancyForm">
         @csrf
+
+        <!-- Validation Errors Display -->
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Validation Errors
+                </h5>
+                <hr>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
         <div class="row g-4">
             <!-- Main Form Column -->
@@ -496,7 +556,7 @@
                     <!-- Double Dastur Date - Dual Date Pickers -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <span>Double Dastur Date (Extended Deadline)</span>
+                            <span>Double Dastur Date</span>
                             <span class="nepali-text">दोहोरो दस्तुर मिति</span>
                         </label>
 
@@ -512,9 +572,9 @@
                                     placeholder="YYYY-MM-DD"
                                     autocomplete="off">
                                 <input type="hidden" name="double_dastur_bs" id="double_dastur_bs_hidden">
-                                <small class="form-text text-success">
+                                <!-- <small class="form-text text-success">
                                     <i class="bi bi-info-circle me-1"></i>Optional extended deadline
-                                </small>
+                                </small> -->
                             </div>
 
                             <!-- English Date (AD) - Database Field -->
@@ -546,13 +606,65 @@
                         </div>
                     </div>
 
+                    <!-- Application Fee & Double Dastur Fee Row -->
+                    <div class="row mb-4">
+                        <!-- Application Fee -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <span>Application Fee <span class="text-danger">*</span></span>
+                                <span class="nepali-text">आवेदन शुल्क</span>
+                            </label>
+                            <input type="number"
+                                   class="form-control form-control-lg @error('application_fee') is-invalid @enderror"
+                                   id="application_fee"
+                                   name="application_fee"
+                                   value="{{ old('application_fee') }}"
+                                   placeholder="Enter Application Fee"
+                                   min="0"
+                                   step="0.01"
+                                   required>
+                            @error('application_fee')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <!-- <div class="alert alert-info mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> Enter the application fee amount in Nepali Rupees (required field).
+                                <br><small>नोट: नेपाली रुपैयाँमा आवेदन शुल्क रकम प्रविष्ट गर्नुहोस् (अनिवार्य)।</small>
+                            </div> -->
+                        </div>
+
+                        <!-- Double Dastur Fee -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <span>Double Dastur Fee<span class="text-danger">*</span></span>
+                                <span class="nepali-text">दोहोरो दस्तुर</span>
+                            </label>
+                            <input type="number"
+                                   class="form-control form-control-lg @error('double_dastur_fee') is-invalid @enderror"
+                                   id="double_dastur_fee"
+                                   name="double_dastur_fee"
+                                   value="{{ old('double_dastur_fee') }}"
+                                   placeholder="Enter Double Dastur Fee"
+                                   min="0"
+                                   step="0.01"
+                                   required>
+                            @error('double_dastur_fee')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <!-- <div class="alert alert-warning mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> Fee for extended application period (required field).
+                                <br><small>नोट: विस्तारित आवेदन अवधिको लागि शुल्क (अनिवार्य)।</small>
+                            </div> -->
+                        </div>
+                    </div>
+
                     <!-- Hidden fields for required database columns -->
                     <input type="hidden" name="title" id="hidden_title" value="">
                     <input type="hidden" name="location" value="Nepal">
-                    <input type="hidden" name="job_type" value="permanent">
                     <input type="hidden" name="description" id="hidden_description" value="">
                     <input type="hidden" name="requirements" id="hidden_requirements" value="">
-                    <input type="hidden" name="status" value="active">
+                    <input type="hidden" name="status" value="draft">
                 </div>
             </div>
 
@@ -615,6 +727,14 @@
                                 <th>Double Dastur (AD)</th>
                                 <td id="preview-double-dastur-ad" class="fw-semibold text-success">-</td>
                             </tr>
+                            <tr id="preview-application-fee-row">
+                                <th>Application Fee</th>
+                                <td id="preview-application-fee" class="fw-semibold text-primary">NPR</td>
+                            </tr>
+                            <tr id="preview-double-dastur-fee-row">
+                                <th>Double Dastur Fee</th>
+                                <td id="preview-double-dastur-fee" class="fw-semibold text-danger">NPR</td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -650,12 +770,14 @@
                     <div class="card-body py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-x-circle me-2"></i>Cancel
+                                <!-- <i class="bi bi-x-circle me-2"></i> -->
+                                Cancel
                             </a>
                             <div class="d-flex gap-3">
-                                <button type="submit" class="btn btn-danger btn-lg btn-action px-5"
-                                    onclick="return confirmPublish()">
-                                    <i class="bi bi-megaphone-fill me-2"></i>Publish Vacancy
+                                <button type="submit" class="btn btn-warning btn-lg btn-action px-5"
+                                    onclick="return confirmSaveDraft()">
+                                    <!-- <i class="bi bi-save-fill me-2"></i> -->
+                                    Save as Draft
                                 </button>
                             </div>
                         </div>
@@ -664,6 +786,11 @@
             </div>
         </div>
     </form>
+
+    <!-- Scroll to Top Button -->
+    <button class="stp" id="stp">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 @endsection
 
 @section('scripts')
@@ -1051,7 +1178,9 @@
             'position_level': { preview: 'preview-position', default: '-' },
             'service_group': { preview: 'preview-service', default: '-' },
             'number_of_posts': { preview: 'preview-posts', default: '-' },
-            'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' }
+            'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' },
+            'application_fee': { preview: 'preview-application-fee', default: '-' },
+            'double_dastur_fee': { preview: 'preview-double-dastur-fee', default: '-' }
         };
 
         Object.keys(previewMappings).forEach(fieldId => {
@@ -1065,6 +1194,17 @@
                     const value = this.value.trim();
                     if (fieldId === 'minimum_qualification') {
                         preview.innerHTML = value ? value.replace(/\n/g, '<br>') : '<em>' + previewMappings[fieldId].default + '</em>';
+                    } else if (fieldId === 'application_fee' || fieldId === 'double_dastur_fee') {
+                        if (value && parseFloat(value) >= 0) {
+                            const numValue = parseFloat(value);
+                            // Only show decimals if they exist (not .00)
+                            const formattedValue = numValue % 1 === 0
+                                ? numValue.toLocaleString('en-NP', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                                : numValue.toLocaleString('en-NP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            preview.textContent = 'NPR ' + formattedValue;
+                        } else {
+                            preview.textContent = 'NPR';
+                        }
                     } else {
                         preview.textContent = value || previewMappings[fieldId].default;
                     }
@@ -1129,12 +1269,108 @@
     waitForConverter();
 })();
 
-function confirmPublish() {
+function confirmSaveDraft() {
     return confirm(
-        '⚠️ Are you sure you want to publish this vacancy?\n\n' +
-        'यो रिक्त पद प्रकाशित गर्न निश्चित हुनुहुन्छ?\n\n' +
-        'Once published, it will be visible to all candidates.'
+        '💾 Save this vacancy as draft?\n\n' +
+        'यो रिक्त पद ड्राफ्टमा सुरक्षित गर्नुहोस्?\n\n' +
+        'The vacancy will be saved as draft and will NOT be visible to candidates until you change the status to "Active".'
     );
 }
+
+// Scroll to Top Button - Zero Delays
+(function() {
+    'use strict';
+
+    const btn = document.getElementById('stp');
+    if (!btn) return;
+
+    let isAnimating = false;
+    let animationId = null;
+
+    btn.style.display = 'none';
+
+    function easeInOutQuad(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+
+    function scrollToTop() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+
+        if (isAnimating) return;
+
+        isAnimating = true;
+
+        const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+        const startTime = performance.now();
+        const duration = 700;
+
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            const easeProgress = easeInOutQuad(progress);
+            const currentPosition = startPosition * (1 - easeProgress);
+
+            window.scrollTo(0, currentPosition);
+
+            if (progress < 1) {
+                animationId = requestAnimationFrame(animate);
+            } else {
+                isAnimating = false;
+                animationId = null;
+            }
+        }
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        scrollToTop();
+        return false;
+    }, true);
+
+    let visible = false;
+
+    function checkScroll() {
+        const scrolled = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrolled > 200) {
+            if (!visible) {
+                btn.style.display = 'flex';
+                setTimeout(function() {
+                    btn.style.opacity = '1';
+                }, 10);
+                visible = true;
+            }
+        } else {
+            if (visible) {
+                btn.style.opacity = '0';
+                setTimeout(function() {
+                    btn.style.display = 'none';
+                }, 300);
+                visible = false;
+            }
+        }
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                checkScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    checkScroll();
+
+})();
 </script>
 @endsection
