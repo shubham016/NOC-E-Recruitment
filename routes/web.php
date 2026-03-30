@@ -36,6 +36,7 @@ use App\Http\Controllers\ApplicationFormController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\PaymentController as ShradhaPaymentController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\Approver\MyProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -354,6 +355,12 @@ Route::prefix('approver')->name('approver.')->group(function () {
         Route::get('/assigned-to-me', [AssignedToMeController::class, 'index'])->name('assignedtome');
         Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('applications.show');
         Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('applications.updateStatus');
+
+        // My Profile
+        Route::get('/my-profile', [MyProfileController::class, 'index'])->name('myprofile');
+
+        // Change Password for Approver
+        Route::post('/change-password', [MyProfileController::class, 'changePassword'])->name('change.password');
 
         // Export routes
         Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');
