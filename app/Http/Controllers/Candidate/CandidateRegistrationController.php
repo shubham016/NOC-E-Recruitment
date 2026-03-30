@@ -4,13 +4,9 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
-use App\Models\CandidateOtp;
-use App\Mail\CandidateOtpMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class CandidateRegistrationController extends Controller
@@ -61,7 +57,7 @@ class CandidateRegistrationController extends Controller
                 $username = $baseUsername . '_' . $counter++;
             }
 
-            $candidate = Candidate::create([
+            Candidate::create([
                 'first_name'                 => $firstName,
                 'middle_name'                => $middleName,
                 'last_name'                  => $lastName,
@@ -75,23 +71,14 @@ class CandidateRegistrationController extends Controller
                 'citizenship_issue_district' => $validated['citizenship_issue_distric'],
                 'citizenship_issue_date_bs'  => $validated['citizenship_issue_date_bs'],
                 'status'                     => 'active',
-                'email_verified_at'          => null,
+                'email_verified_at'          => now(),
             ]);
 
-            // Generate and send OTP
-            $otpRecord = CandidateOtp::createOTP($validated['email'], 'registration');
-
-            Mail::to($validated['email'])->send(
-                new CandidateOtpMail($otpRecord->otp, $candidate->name, 'registration')
-            );
-
-            Session::put('candidate_registration_email', $validated['email']);
-
-            Log::info('New candidate registered (pending OTP): ' . $candidate->email);
+            Log::info('New candidate registered: ' . $validated['email']);
 
             return redirect()
-                ->route('candidate.verify.otp')
-                ->with('success', 'Registration successful! Please check your email for the OTP code.');
+                ->route('candidate.login')
+                ->with('success', 'Registration successful! You can now login to your account.');
 
         } catch (\Exception $e) {
             Log::error('Candidate registration failed: ' . $e->getMessage());

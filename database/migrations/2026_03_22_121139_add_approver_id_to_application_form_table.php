@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('approvers', function (Blueprint $table) {
-            $table->rememberToken()->after('password');
+        Schema::table('application_form', function (Blueprint $table) {
+            $table->unsignedBigInteger('approver_id')->nullable()->after('reviewer_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('approvers', function (Blueprint $table) {
-            $table->dropColumn('remember_token');
+        Schema::table('application_form', function (Blueprint $table) {
+            $table->dropColumn('approver_id');
         });
     }
 };

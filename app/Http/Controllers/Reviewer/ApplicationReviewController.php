@@ -36,11 +36,14 @@ class ApplicationReviewController extends Controller
         }
 
         // Status filter
-        if ($request->filled('status')) {
+        // If status is "all" or "all status", show everything (no extra filter)
+        if ($request->filled('status') && !in_array($request->status, ['all', 'all status'])) {
             $query->where('status', $request->status);
         } else {
-            // Default to pending and assigned (under review)
-            $query->whereIn('status', ['pending', 'assigned']);
+            // Default to pending + assigned only IF no status was chosen at all
+            if (!$request->filled('status')) {
+                $query->whereIn('status', ['pending', 'assigned']);
+            }
         }
 
         // Priority filter (based on deadline)
@@ -48,6 +51,7 @@ class ApplicationReviewController extends Controller
             $priority = $request->priority;
             $query->whereHas('jobPosting', function ($q) use ($priority) {
                 $now = now();
+
                 switch ($priority) {
                     case 'high':
                         $q->whereBetween('deadline', [$now, $now->copy()->addDays(2)]);
@@ -192,17 +196,17 @@ class ApplicationReviewController extends Controller
                 'candidate_name' => $application->name_english,
                 'candidate_email' => $application->email,
                 'candidate_phone' => $application->phone,
-                'job_title' => $application->jobPosting->title,
-                'job_department' => $application->jobPosting->department,
-                'job_location' => $application->jobPosting->location,
-                'job_type' => $application->jobPosting->job_type,
-                'salary_range' => $application->jobPosting->salary_min && $application->jobPosting->salary_max
+                'job_title' => $application->jobPosting->title ?? 'N/A',
+                'job_department' => $application->jobPosting->department ?? 'N/A',
+                'job_location' => $application->jobPosting->location ?? 'N/A',
+                'job_type' => $application->jobPosting->job_type ?? 'N/A',
+                'salary_range' => ($application->jobPosting && $application->jobPosting->salary_min && $application->jobPosting->salary_max)
                     ? 'Rs. ' . number_format($application->jobPosting->salary_min) . ' - Rs. ' . number_format($application->jobPosting->salary_max)
                     : 'Not specified',
                 'cover_letter' => $application->cover_letter,
                 'resume' => $application->resume,
                 'status' => $application->status,
-                'applied_at' => $application->created_at->format('M d, Y h:i A'),
+                'applied_at' => $application->created_at ? $application->created_at->format('M d, Y h:i A') : 'N/A',
                 'reviewer_notes' => $application->reviewer_notes,
                 'reviewed_by' => $application->reviewer ? $application->reviewer->name : null,
                 'reviewed_at' => $application->reviewed_at ? $application->reviewed_at->format('M d, Y h:i A') : null,
@@ -242,11 +246,17 @@ class ApplicationReviewController extends Controller
             $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'application' => $application
-        ]);
+        // If request is AJAX / fetch, return JSON
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'application' => $application
+            ]);
+        }
+
+        // Normal form submit -> stay on same page
+        return redirect()->back()->with('success', $message);
     }
 
     /**
@@ -263,7 +273,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only update applications assigned to this reviewer
-        ApplicationForm::whereIn('id', $request->application_ids)
+        $updatedCount = ApplicationForm::whereIn('id', $request->application_ids)
             ->where('reviewer_id', $reviewer->id)
             ->update([
                 'status' => $request->status,
@@ -271,15 +281,20 @@ class ApplicationReviewController extends Controller
                 'reviewed_at' => now(),
             ]);
 
-        // Prepare response message
-        $count = count($request->application_ids);
+        if ($updatedCount === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No applications were updated. Please make sure items are selected.',
+            ], 422);
+        }
 
+        // Prepare response message
         if ($request->status === 'reviewed') {
-            $message = $count . ' applications marked as reviewed and sent to Approver Portal!';
+            $message = $updatedCount . ' applications marked as reviewed and sent to Approver Portal!';
         } elseif ($request->status === 'edit') {
-            $message = $count . ' applications sent back to candidates for correction!';
+            $message = $updatedCount . ' applications sent back to candidates for correction!';
         } else {
-            $message = $count . ' applications rejected! Candidates will be notified via SMS when integrated.';
+            $message = $updatedCount . ' applications rejected! Candidates will be notified via SMS when integrated.';
         }
 
         return response()->json([
@@ -302,7 +317,7 @@ class ApplicationReviewController extends Controller
 
         // If specific IDs are provided (bulk export), use only those
         if ($request->filled('ids')) {
-            $ids = $request->input('ids', []);
+            $ids = is_array($request->input('ids')) ? $request->input('ids') : explode(',', $request->input('ids'));
             $query->whereIn('id', $ids);
         } else {
             // Otherwise apply filters
@@ -317,7 +332,7 @@ class ApplicationReviewController extends Controller
                 });
             }
 
-            if ($request->filled('status')) {
+            if ($request->filled('status') && !in_array($request->status, ['all', 'all status'])) {
                 $query->where('status', $request->status);
             }
 
@@ -361,7 +376,7 @@ class ApplicationReviewController extends Controller
 
             // Add data
             foreach ($applications as $application) {
-                $daysRemaining = $application->jobPosting
+                $daysRemaining = ($application->jobPosting && $application->jobPosting->deadline)
                     ? (int) now()->diffInDays($application->jobPosting->deadline, false)
                     : 0;
 
@@ -379,7 +394,7 @@ class ApplicationReviewController extends Controller
                     ucfirst($application->status),
                     $priority,
                     $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i') : 'N/A',
-                    $application->jobPosting && $application->jobPosting->deadline ? $application->jobPosting->deadline->format('Y-m-d') : 'N/A',
+                    ($application->jobPosting && $application->jobPosting->deadline) ? $application->jobPosting->deadline->format('Y-m-d') : 'N/A',
                     $daysRemaining . ' days',
                     $application->reviewed_at ? $application->reviewed_at->format('Y-m-d H:i') : 'Not Reviewed',
                     $application->reviewer_notes ?? ''
@@ -406,7 +421,7 @@ class ApplicationReviewController extends Controller
 
         // If specific IDs are provided (bulk export), use only those
         if ($request->filled('ids')) {
-            $ids = $request->input('ids', []);
+            $ids = is_array($request->input('ids')) ? $request->input('ids') : explode(',', $request->input('ids'));
             $query->whereIn('id', $ids);
         } else {
             // Otherwise apply filters
@@ -421,7 +436,7 @@ class ApplicationReviewController extends Controller
                 });
             }
 
-            if ($request->filled('status')) {
+            if ($request->filled('status') && !in_array($request->status, ['all', 'all status'])) {
                 $query->where('status', $request->status);
             }
 

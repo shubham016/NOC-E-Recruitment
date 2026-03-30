@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('candidate.applications.store') }}" method="POST" enctype="multipart/form-data" id="applicationform">
+            <form action="{{ route('candidate.jobs.applications.store', ['jobId' => $job->id]) }}" method="POST" enctype="multipart/form-data" id="applicationform">
                 @csrf
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $draftApplication->id ?? '' }}">
                 @if($job)
