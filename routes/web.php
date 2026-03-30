@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Reviewer\MyProfileController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ReviewerAuthController;
 use App\Http\Controllers\Auth\CandidateAuthController;
@@ -302,7 +303,9 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
     Route::middleware('reviewer')->group(function () {
 
         Route::get('/dashboard', [ReviewerDashboardController::class, 'index'])->name('dashboard');
-
+        Route::get('/my-profile', [MyProfileController::class, 'index'])->name('myprofile');
+        // Change Password
+        Route::post('/change-password', [MyProfileController::class, 'changePassword'])->name('change.password');
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [ReviewerNotificationController::class, 'index'])->name('index');
@@ -318,7 +321,10 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
             Route::get('/{id}', [ApplicationReviewController::class, 'show'])->name('show');
             Route::post('/{id}/status', [ApplicationReviewController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/bulk-update', [ApplicationReviewController::class, 'bulkUpdate'])->name('bulkUpdate');
-        });
+            // Export routes
+            Route::get('/export-csv', [ApplicationReviewController::class, 'exportCsv'])->name('exportCsv');
+            Route::get('/export-pdf', [ApplicationReviewController::class, 'exportPdf'])->name('exportPdf');       
+            });
 
     });
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.apps')
 
 @section('title', 'Reviewer Dashboard')
 
@@ -19,10 +19,9 @@
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
     </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="sidebar-menu-item">
-        <i class="bi bi-inbox"></i>
-        <span>Reviewed</span>
-        <span class="badge bg-info ms-auto">{{ $status['reviewed'] }}</span>
+    <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
     </a>
 @endsection
 
@@ -197,164 +196,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Pending Applications -->
-            <div class="info-card">
-                <h5><i class="bi me-2"></i>Priority Applications</h5>
-
-                @forelse($pendingApplications as $application)
-                    @php
-                        $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
-
-                        // Check if admin set manual priority
-                        if ($application->manual_priority) {
-                            $priorityClass = 'priority-' . $application->manual_priority;
-                            $priorityText = ucfirst($application->manual_priority);
-                            $priorityBadge = match($application->manual_priority) {
-                                'critical' => 'bg-dark',
-                                'high' => 'bg-danger',
-                                'medium' => 'bg-warning',
-                                'low' => 'bg-success',
-                                'normal' => 'bg-secondary',
-                                default => 'bg-secondary'
-                            };
-                        } else {
-                            // Auto priority based on deadline
-                            $priorityClass = '';
-                            $priorityBadge = 'bg-secondary';
-                            $priorityText = 'Normal';
-
-                            if ($daysRemaining <= 2) {
-                                $priorityClass = 'priority-high';
-                                $priorityBadge = 'bg-danger';
-                                $priorityText = 'High';
-                            } elseif ($daysRemaining <= 5) {
-                                $priorityClass = 'priority-medium';
-                                $priorityBadge = 'bg-warning';
-                                $priorityText = 'Medium';
-                            } elseif ($daysRemaining <= 10) {
-                                $priorityClass = 'priority-low';
-                                $priorityBadge = 'bg-success';
-                                $priorityText = 'Low';
-                            }
-                        }
-                    @endphp
-
-                    <div class="application-item {{ $priorityClass }}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                        <i class="bi text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">{{ $application->name_english ?? 'N/A' }}</h6>
-                                        <small class="text-muted">{{ $application->email ?? 'N/A' }}</small>
-                                    </div>
-                                </div>
-                                <div class="ms-5">
-                                    <p class="mb-1">
-                                        <i class="bi text-muted me-1"></i>
-                                        <strong>{{ $application->jobPosting->title ?? 'N/A' }}</strong>
-                                    </p>
-                                    @if($application->jobPosting)
-                                        <p class="mb-1 small text-muted">
-                                            <i class="bi me-1"></i>
-                                            Deadline: {{ $application->jobPosting->deadline->format('M d, Y') }}
-                                            @if($application->jobPosting->deadline_bs)
-                                                ({{ $application->jobPosting->deadline_bs }})
-                                            @endif
-                                        </p>
-                                    @endif
-                                    <div class="d-flex gap-2">
-                                        <span class="badge {{ $priorityBadge }}">
-                                            @if($application->manual_priority)
-                                                <i class="bi"></i> {{ $priorityText }} Priority
-                                            @else
-                                                {{ $priorityText }} Priority
-                                            @endif
-                                        </span>
-                                        @if($application->jobPosting)
-                                            <span class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-light text-dark' }}">{{ $daysRemaining }} days left</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <a href="{{ route('reviewer.applications.show', $application->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="bi me-1"></i>Review
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="text-center py-5">
-                        <i class="bi display-4 text-muted"></i>
-                        <p class="text-muted mt-3">No pending applications</p>
-                    </div>
-                @endforelse
-
-                @if($pendingApplications->count() > 0)
-                    <div class="text-center mt-3">
-                        <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-primary">
-                            View All Applications <i class="bi ms-1"></i>
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-lg-4">
-            <!-- Recent Activity -->
-            <div class="info-card">
-                <h5><i class="bi me-2"></i>Recent Activity</h5>
-
-                @forelse($recentActivity as $activity)
-                    <div class="activity-item">
-                        <div class="d-flex align-items-start gap-2">
-                            <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                                <i class="bi text-success"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="mb-1 fw-semibold small">Reviewed</p>
-                                <p class="mb-1 text-muted small">{{ $activity->name_english ?? 'N/A' }}</p>
-                                <p class="mb-0 text-muted small">{{ $activity->jobPosting->title ?? 'N/A' }}</p>
-                                <small class="text-muted">{{ $activity->reviewed_at->diffForHumans() }}</small>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="text-center py-4">
-                        <i class="bi fs-3 text-muted"></i>
-                        <p class="text-muted small mt-2 mb-0">No recent activity</p>
-                    </div>
-                @endforelse
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="info-card">
-                <h5><i class="bi me-2"></i>Quick Actions</h5>
-
-                <div class="d-grid gap-2">
-                    <a href="{{ route('reviewer.applications.index') }}" class="btn btn-light">
-                        <i class="bi me-2"></i>View All Applications
-                    </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="btn btn-light">
-                        <i class="bi me-2"></i>Assigned to Me
-                    </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'reviewed']) }}" class="btn btn-light">
-                        <i class="bi me-2"></i>Reviewed
-                    </a>
-                    <!-- <a href="{{ route('reviewer.applications.index', ['status' => 'approved']) }}" class="btn btn-outline-success">
-                        <i class="bi bi-check-circle me-2"></i>Approved
-                    </a>
-                    <a href="{{ route('reviewer.applications.index', ['status' => 'rejected']) }}" class="btn btn-outline-danger">
-                        <i class="bi bi-x-circle me-2"></i>Rejected
-                    </a> -->
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection

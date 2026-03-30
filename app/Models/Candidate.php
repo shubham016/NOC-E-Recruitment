@@ -56,24 +56,6 @@ class Candidate extends Authenticatable
     }
 
     /**
-     * Check if candidate's email is verified
-     */
-    public function hasVerifiedEmail(): bool
-    {
-        return $this->email_verified_at !== null;
-    }
-
-    /**
-     * Mark the candidate's email as verified
-     */
-    public function markEmailAsVerified(): bool
-    {
-        return $this->forceFill([
-            'email_verified_at' => $this->freshTimestamp(),
-        ])->save();
-    }
-
-    /**
      * Find candidate by email, username, or citizenship number (for login)
      */
     public static function findByCredential($identifier)

@@ -15,10 +15,13 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item">
+    <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
-        <span class="badge bg-info ms-auto">{{ $stats['assigned'] }}</span>
+    </a>
+    <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
     </a>
 @endsection
 
@@ -173,7 +176,7 @@
 
     .btn-view-doc {
         padding: 0.4rem 1rem;
-        background: #3b82f6;
+        background: #ff0000;
         color: white;
         text-decoration: none;
         border-radius: 6px;
@@ -182,7 +185,7 @@
     }
 
     .btn-view-doc:hover {
-        background: #2563eb;
+        background: #cc0000;
         color: white;
         transform: scale(1.05);
     }
@@ -235,8 +238,8 @@
     }
 
     .alert-info-custom {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border-left: 4px solid #3b82f6;
+        background: linear-gradient(135deg, #fedbdb 0%, #febfbf 100%);
+        border-left: 4px solid #fa0000;
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1rem;
@@ -244,7 +247,7 @@
 
     .section-divider {
         height: 2px;
-        background: linear-gradient(to right, #e5e7eb 0%, #3b82f6 50%, #e5e7eb 100%);
+        background: linear-gradient(to right, #e5e7eb 0%, #ff0000 50%, #e5e7eb 100%);
         margin: 2rem 0;
     }
 
@@ -268,17 +271,15 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <a href="{{ route('reviewer.applications.index') }}" class="text-white text-decoration-none mb-2 d-inline-block opacity-75 no-print">
-                    <i class="me-2"></i>Back to Applications
+                    <i class="bi bi-arrow-left me-2"></i>Back to Applications
                 </a>
                 <h2 class="mb-1 fw-bold">Application Review</h2>
-                <!-- <p style="color: #cbd5e1; margin: 0; font-size: 1.0625rem;">Nepal Oil Corporation E-Recruitment Portal</p> -->
-               
             </div>
             <div class="text-end">
                 @php
                     $statusColors = [
                         'pending' => 'bg-warning text-dark',
-                        'assigned' => 'bg-info text-white',
+                        'assigned' => 'bg-danger text-white',
                         'reviewed' => 'bg-success text-white',
                         'approved' => 'bg-success text-white',
                         'rejected' => 'bg-danger text-white',
@@ -305,13 +306,21 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <div class="row">
         <!-- Main Content -->
         <div class="col-lg-8">
+
             <!-- Candidate Photo & Basic Info -->
             <div class="candidate-photo-section">
-                @if($application->passport_photo)
-                    <img src="{{ Storage::url($application->passport_photo) }}"
+                @if($application->passport_size_photo)
+                    <img src="{{ Storage::url($application->passport_size_photo) }}"
                          alt="Candidate Photo"
                          class="candidate-photo">
                 @else
@@ -336,16 +345,15 @@
                         <i class=""></i>
                         {{ $application->permanent_municipality }}, {{ $application->permanent_district }}
                     </p>
-                     <p class="mb-0 opacity-75">
-                    <i class=""></i>
-                    Submitted: {{ $application->submitted_at ? adToBS($application->submitted_at) . ' BS, ' . $application->submitted_at->format('h:i A') : 'N/A' }}
-                </p>
-                 
+                    <p class="mb-0 opacity-75">
+                        <i class=""></i>
+                        @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
+                        Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
+                    </p>
                 </div>
-                
             </div>
 
-            <!-- Job Information -->
+            <!-- Vacancy Information -->
             <div class="info-card">
                 <h5><i class=""></i>Vacancy Information</h5>
                 <div class="info-row">
@@ -370,10 +378,9 @@
                     <div class="info-label">Application Deadline:</div>
                     <div class="info-value">
                         @if($application->jobPosting->deadline)
-                            <span class="text-danger fw-bold d-block">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
-                            @if($application->jobPosting->deadline_bs)
-                                <span class="text-muted">{{ $application->jobPosting->deadline_bs }} (BS)</span>
-                            @endif
+                            @php $deadlineBS = $application->jobPosting->deadline_bs ?: adToBS($application->jobPosting->deadline->format('Y-m-d')); @endphp
+                            <span class="text-danger fw-bold d-block">{{ $deadlineBS }} (BS)</span>
+                            <span class="text-muted">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
                         @else
                             N/A
                         @endif
@@ -403,20 +410,36 @@
                     <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
                 </div>
                 <div class="info-row">
+                    <div class="info-label">Email:</div>
+                    <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
+                </div>
+                <div class="info-row">
                     <div class="info-label">Age:</div>
                     <div class="info-value">{{ $application->age ?? 'N/A' }} years</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Alternate Phone Number:</div>
+                    <div class="info-value">{{ $application->alternate_phone_number ?? 'N/A' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Gender:</div>
                     <div class="info-value">{{ ucfirst($application->gender ?? 'N/A') }}</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Blood Group:</div>
-                    <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
                     <div class="info-label">Marital Status:</div>
                     <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Spouse Name:</div>
+                    <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Spouse Nationality (If Married):</div>
+                    <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Blood Group:</div>
+                    <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Nationality:</div>
@@ -443,7 +466,7 @@
                 </div>
                 <div class="info-row">
                     <div class="info-label">Issue Date (AD):</div>
-                    <div class="info-value">{{ $application->citizenship_issue_date_ad ? $application->citizenship_issue_date_ad->format('Y-m-d') : 'N/A' }}</div>
+                    <div class="info-value">{{ $application->citizenship_issue_date_ad ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') : 'N/A' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Issue Date (BS):</div>
@@ -458,6 +481,12 @@
             <!-- Community & Ethnic Information -->
             <div class="info-card">
                 <h5><i class=""></i>Community & Ethnic Information</h5>
+                <div class="info-row">
+                    <div class="info-label">Religion:</div>
+                    <div class="info-value">
+                        {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
+                    </div>
+                </div>
                 <div class="info-row">
                     <div class="info-label">Community:</div>
                     <div class="info-value">
@@ -480,6 +509,10 @@
                     </div>
                 </div>
                 @endif
+                <div class="info-row">
+                    <div class="info-label">Mother Tongue:</div>
+                    <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
+                </div>
             </div>
 
             <!-- Disability & Employment Information -->
@@ -524,6 +557,12 @@
             <div class="info-card">
                 <h5><i class=""></i>Family Information</h5>
 
+                <!-- Grandfather's Information -->
+                <div class="info-row">
+                    <div class="info-label">Grandfather Name:</div>
+                    <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
+                </div>
+
                 <!-- Father's Information -->
                 <h6 class="text-dark mt-3 mb-2"><i class=""></i>Father's Information</h6>
                 <div class="info-row">
@@ -554,28 +593,15 @@
                     <div class="info-value">{{ $application->mother_qualification ?? 'N/A' }}</div>
                 </div>
 
-                <!-- Grandfather's Information -->
-                @if($application->grandfather_name_english || $application->grandfather_name_nepali)
-                <h6 class="text-dark mt-3 mb-2"><i class=""></i>Grandfather's Information</h6>
-                <div class="info-row">
-                    <div class="info-label">Name (English):</div>
-                    <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Name (Nepali):</div>
-                    <div class="info-value">{{ $application->grandfather_name_nepali ?? 'N/A' }}</div>
-                </div>
-                @endif
-
                 <!-- Parent Occupation -->
                 <div class="info-row">
-                    <div class="info-label">Parent Occupation:</div>
+                    <div class="info-label">Parent's Occupation:</div>
                     <div class="info-value">
                         {{ $application->parent_occupation == 'other' ? $application->parent_occupation_other : ucfirst($application->parent_occupation ?? 'N/A') }}
                     </div>
                 </div>
 
-                <!-- Spouse Information (if married) -->
+                <!-- Spouse Information -->
                 @if($application->marital_status == 'married')
                 <h6 class="text-dark mt-3 mb-2"><i class=""></i>Spouse Information</h6>
                 <div class="info-row">
@@ -660,7 +686,7 @@
 
             <div class="section-divider"></div>
 
-            <!-- Education -->
+            <!-- Educational Background -->
             <div class="info-card">
                 <h5><i class=""></i>Educational Background</h5>
                 <div class="info-row">
@@ -684,7 +710,7 @@
             <!-- Work Experience -->
             <div class="info-card">
                 <h5><i class=""></i>Work Experience</h5>
-                @if($application->has_work_experience === 'yes')
+                @if(strtolower($application->has_work_experience ?? '') == 'yes')
                     <div class="info-row">
                         <div class="info-label">Previous Organization:</div>
                         <div class="info-value">{{ $application->previous_organization ?? 'N/A' }}</div>
@@ -720,20 +746,18 @@
 
             <div class="section-divider"></div>
 
-            <!-- All Documents -->
+            <!-- Uploaded Documents -->
             <div class="info-card">
                 <h5><i class=""></i>Uploaded Documents</h5>
 
-                @if($application->passport_photo)
+                @if($application->passport_size_photo)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Passport Size Photo</p>
                         <p class="document-size">Candidate's passport photograph</p>
                     </div>
-                    <a href="{{ Storage::url($application->passport_photo) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->passport_size_photo) }}" target="_blank" class="btn-view-doc">
                         <i class="me-1"></i>View
                     </a>
                 </div>
@@ -741,9 +765,7 @@
 
                 @if($application->resume)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Resume / CV</p>
                         <p class="document-size">Detailed curriculum vitae</p>
@@ -754,31 +776,40 @@
                 </div>
                 @endif
 
-                @if($application->citizenship_certificate)
+                @if($application->work_experience)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
+                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-info">
+                        <p class="document-name">Work Experience</p>
+                        <p class="document-size">Work experience verification documents</p>
                     </div>
+                    <a href="{{ Storage::url($application->work_experience) }}" target="_blank" class="btn-view-doc">
+                        <i class="me-1"></i>Download
+                    </a>
+                </div>
+                @endif
+
+                @if($application->citizenship_certificate || $application->citizenship_id_document)
+                <div class="document-item">
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Citizenship Certificate</p>
                         <p class="document-size">Nepali citizenship document</p>
                     </div>
-                    <a href="{{ Storage::url($application->citizenship_certificate) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->citizenship_certificate ?? $application->citizenship_id_document) }}" target="_blank" class="btn-view-doc">
                         <i class=" me-1"></i>View
                     </a>
                 </div>
                 @endif
 
-                @if($application->educational_certificates)
+                @if($application->educational_certificates || $application->transcript)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Educational Certificates</p>
                         <p class="document-size">Academic transcripts and degrees</p>
                     </div>
-                    <a href="{{ Storage::url($application->educational_certificates) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->educational_certificates ?? $application->transcript) }}" target="_blank" class="btn-view-doc">
                         <i class="me-1"></i>Download
                     </a>
                 </div>
@@ -786,9 +817,7 @@
 
                 @if($application->experience_certificates)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Experience Certificates</p>
                         <p class="document-size">Work experience verification documents</p>
@@ -799,41 +828,74 @@
                 </div>
                 @endif
 
-                @if($application->character_certificate)
+                @if($application->character_certificate || $application->character)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Character Certificate</p>
                         <p class="document-size">Good character verification</p>
                     </div>
-                    <a href="{{ Storage::url($application->character_certificate) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->character_certificate ?? $application->character) }}" target="_blank" class="btn-view-doc">
                         <i class="me-1"></i>View
                     </a>
                 </div>
                 @endif
 
-                @if($application->equivalency_certificate)
+                @if($application->equivalency_certificate || $application->equivalent)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Equivalency Certificate</p>
                         <p class="document-size">Educational equivalency document</p>
                     </div>
-                    <a href="{{ Storage::url($application->equivalency_certificate) }}" target="_blank" class="btn-view-doc">
+                    <a href="{{ Storage::url($application->equivalency_certificate ?? $application->equivalent) }}" target="_blank" class="btn-view-doc">
                         <i class=" me-1"></i>View
+                    </a>
+                </div>
+                @endif
+
+                @if($application->ethnic_certificate)
+                <div class="document-item">
+                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-info">
+                        <p class="document-name">Ethnic Certificate</p>
+                        <p class="document-size">Candidate's ethnicity proof</p>
+                    </div>
+                    <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn-view-doc">
+                        <i class="me-1"></i>View
+                    </a>
+                </div>
+                @endif
+
+                @if($application->disability_certificate)
+                <div class="document-item">
+                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-info">
+                        <p class="document-name">Disability Certificate</p>
+                        <p class="document-size">Candidate's proof of disability</p>
+                    </div>
+                    <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn-view-doc">
+                        <i class="me-1"></i>View
+                    </a>
+                </div>
+                @endif
+
+                @if($application->noc_id_card)
+                <div class="document-item">
+                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-info">
+                        <p class="document-name">NOC Employee ID Card</p>
+                        <p class="document-size">Candidate's NOC ID Card</p>
+                    </div>
+                    <a href="{{ Storage::url($application->noc_id_card) }}" target="_blank" class="btn-view-doc">
+                        <i class="me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->cover_letter_file)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Cover Letter (File)</p>
                         <p class="document-size">Uploaded cover letter document</p>
@@ -846,9 +908,7 @@
 
                 @if($application->signature)
                 <div class="document-item">
-                    <div class="document-icon">
-                        <i class=""></i>
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Signature</p>
                         <p class="document-size">Candidate's signature</p>
@@ -861,8 +921,7 @@
 
                 @if($application->other_documents)
                 <div class="document-item">
-                    <div class="document-icon">
-                    </div>
+                    <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Other Documents</p>
                         <p class="document-size">Additional supporting documents</p>
@@ -873,17 +932,33 @@
                 </div>
                 @endif
 
-                @if(!$application->passport_photo && !$application->resume && !$application->citizenship_certificate &&
-                    !$application->educational_certificates && !$application->experience_certificates &&
-                    !$application->character_certificate && !$application->equivalency_certificate &&
-                    !$application->cover_letter_file && !$application->signature && !$application->other_documents)
+                @if(
+                    !$application->passport_size_photo &&
+                    !$application->resume &&
+                    !$application->work_experience &&
+                    !$application->citizenship_certificate &&
+                    !$application->citizenship_id_document &&
+                    !$application->educational_certificates &&
+                    !$application->transcript &&
+                    !$application->experience_certificates &&
+                    !$application->character_certificate &&
+                    !$application->character &&
+                    !$application->equivalency_certificate &&
+                    !$application->equivalent &&
+                    !$application->ethnic_certificate &&
+                    !$application->disability_certificate &&
+                    !$application->noc_id_card &&
+                    !$application->cover_letter_file &&
+                    !$application->signature &&
+                    !$application->other_documents
+                )
                 <div class="alert alert-warning">
                     <i class="me-2"></i>No documents uploaded
                 </div>
                 @endif
             </div>
 
-            <!-- Admin Notes (if any) -->
+            <!-- Admin Notes -->
             @if($application->admin_notes)
             <div class="info-card">
                 <h5>Admin Notes</h5>
@@ -894,6 +969,7 @@
             </div>
             @endif
 
+            <!-- Priority Note -->
             @if($application->priority_note)
             <div class="info-card">
                 <h5>Priority Note</h5>
@@ -902,18 +978,16 @@
                 </div>
             </div>
             @endif
+
         </div>
 
         <!-- Sidebar - Review Actions & Payment -->
         <div class="col-lg-4">
             <div class="review-actions">
+
                 <!-- Review Status Form -->
                 <div class="info-card no-print">
                     <h5>Review Action</h5>
-
-                    <!-- <div class="alert alert-info" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border-left: 4px solid #0284c7; margin-bottom: 1rem;">
-                        <small><i class="bi bi-info-circle me-1"></i><strong>Info:</strong> Reviewed applications go to Approver Portal for final decision. Rejected applications will notify candidates via SMS (upcoming feature).</small>
-                    </div> -->
 
                     <form action="{{ route('reviewer.applications.updateStatus', $application->id) }}" method="POST" id="reviewForm">
                         @csrf
@@ -941,7 +1015,7 @@
                         <!-- SMS Preview (for rejected applications) -->
                         <div id="smsPreview" style="display: none;" class="mb-3">
                             <div class="alert alert-warning" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b;">
-                                <strong> SMS Notification Preview:</strong>
+                                <strong>SMS Notification Preview:</strong>
                                 <p class="mt-2 mb-0 small" style="font-family: monospace; background: white; padding: 0.75rem; border-radius: 6px;">
                                     <strong>Nepal Oil Corporation</strong><br>
                                     Your application (ID: {{ $application->id }}) has been rejected.<br><br>
@@ -949,7 +1023,7 @@
                                     Please review and reapply if eligible.<br>
                                     - NOC E-Recruitment
                                 </p>
-                                <small class="text-muted mt-2 d-block"> This SMS will be sent to: <strong>{{ $application->phone ?? 'N/A' }}</strong> (via Sparrow SMS - upcoming)</small>
+                                <small class="text-muted mt-2 d-block">This SMS will be sent to: <strong>{{ $application->phone ?? 'N/A' }}</strong> (via Sparrow SMS - upcoming)</small>
                             </div>
                         </div>
 
@@ -998,14 +1072,14 @@
                             <div class="info-value">
                                 @php
                                     $gatewayIcons = [
-                                        'esewa' => ['icon' => 'bi-wallet2', 'color' => '#60bb46', 'name' => 'eSewa'],
-                                        'khalti' => ['icon' => 'bi-credit-card-2-front', 'color' => '#5c2d91', 'name' => 'Khalti'],
-                                        'connectips' => ['icon' => 'bi-bank', 'color' => '#0066cc', 'name' => 'ConnectIPS'],
-                                        'fonepay' => ['icon' => 'bi-phone', 'color' => '#ff0000', 'name' => 'FonePay'],
-                                        'imepay' => ['icon' => 'bi-credit-card', 'color' => '#ff0000', 'name' => 'IME Pay'],
+                                        'esewa'      => ['icon' => 'bi-wallet2',              'color' => '#60bb46', 'name' => 'eSewa'],
+                                        'khalti'     => ['icon' => 'bi-credit-card-2-front',  'color' => '#5c2d91', 'name' => 'Khalti'],
+                                        'connectips' => ['icon' => 'bi-bank',                 'color' => '#0066cc', 'name' => 'ConnectIPS'],
+                                        'fonepay'    => ['icon' => 'bi-phone',                'color' => '#ff0000', 'name' => 'FonePay'],
+                                        'imepay'     => ['icon' => 'bi-credit-card',          'color' => '#ff0000', 'name' => 'IME Pay'],
                                     ];
-                                    $gateway = strtolower($payment->gateway);
-                                    $gatewayInfo = $gatewayIcons[$gateway] ?? ['name' => ucfirst($payment->gateway)];
+                                    $gateway     = strtolower($payment->gateway);
+                                    $gatewayInfo = $gatewayIcons[$gateway] ?? ['icon' => 'bi-credit-card', 'color' => '#64748b', 'name' => ucfirst($payment->gateway)];
                                 @endphp
                                 <span class="gateway-badge" style="background-color: {{ $gatewayInfo['color'] }}; color: white;">
                                     <i class="bi {{ $gatewayInfo['icon'] }}"></i>{{ $gatewayInfo['name'] }}
@@ -1013,7 +1087,6 @@
                             </div>
                         </div>
                         @endif
-                        
                         <div class="info-row">
                             <div class="info-label">Payment Date:</div>
                             <div class="info-value"><small>{{ $payment->created_at ? adToBS($payment->created_at) . ' BS, ' . $payment->created_at->format('h:i A') : 'N/A' }}</small></div>
@@ -1062,6 +1135,44 @@
                 </div>
                 @endif
 
+                <!-- Application Timeline -->
+                <div class="info-card mt-3">
+                    <h5>
+                        <i class="bi bi-clock-history text-primary me-2"></i>Timeline
+                    </h5>
+                    <div class="timeline">
+                        <div class="mb-3">
+                            <div class="small text-muted">Applied</div>
+                            <div class="fw-semibold">
+                                {{ $application->created_at->format('M d, Y h:i A') }}
+                                <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
+                            </div>
+                        </div>
+                        @if($application->reviewed_at)
+                        <div class="mb-3">
+                            <div class="small text-muted">Reviewed</div>
+                            <div class="fw-semibold">
+                                {{ $application->reviewed_at->format('M d, Y h:i A') }}
+                                <small class="text-muted d-block">
+                                    {{ adToBS($application->reviewed_at->format('Y-m-d')) }} (BS)
+                                </small>
+                            </div>
+                        </div>
+                        @endif
+                        @if($application->approved_at)
+                        <div class="mb-3">
+                            <div class="small text-muted">Approved</div>
+                            <div class="fw-semibold">
+                                {{ \Carbon\Carbon::parse($application->approved_at)->format('M d, Y h:i A') }}
+                                <small class="text-muted d-block">
+                                    {{ adToBS(\Carbon\Carbon::parse($application->approved_at)->format('Y-m-d')) }} (BS)
+                                </small>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
                 <!-- Exam Information (if scheduled) -->
                 @if($application->exam_date)
                 <div class="info-card mt-3">
@@ -1092,27 +1203,25 @@
                     <h5>Quick Stats</h5>
                     <div class="info-row">
                         <div class="info-label">Application ID:</div>
-                        <div class="info-value"><strong>
-                        {{ $application->id }}</strong></div>
+                        <div class="info-value"><strong>{{ $application->id }}</strong></div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Submitted At:</div>
-                        <div class="info-value">{{ $application->submitted_at ? adToBS($application->submitted_at) . ' BS, ' . $application->submitted_at->format('h:i A') : 'N/A' }}</div>
+                        <div class="info-value">
+                            @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
+                            {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
+                        </div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Reviewed At:</div>
                         <div class="info-value">
                             @if($application->reviewed_at)
-                                {{-- Application has been reviewed --}}
                                 @php
                                     $reviewDays = $application->submitted_at ? (int)$application->submitted_at->diffInDays($application->reviewed_at, false) : 0;
                                 @endphp
-                                <span class="badge bg-success">
-                                    Reviewed
-                                </span>
+                                <span class="badge bg-success">Reviewed</span>
                                 <span class="text-muted ms-2">({{ $reviewDays }} {{ $reviewDays == 1 ? 'day' : 'days' }})</span>
                             @elseif($application->submitted_at)
-                                {{-- Application is pending review --}}
                                 @php
                                     $daysPending = (int)$application->submitted_at->diffInDays(now(), false);
                                 @endphp
@@ -1123,6 +1232,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -1131,7 +1241,6 @@
 
 @section('scripts')
 <script>
-// Handle status change
 document.getElementById('reviewStatus').addEventListener('change', function() {
     const status = this.value;
     const notesLabel = document.getElementById('notesLabel');
@@ -1143,7 +1252,6 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
     const smsPreview = document.getElementById('smsPreview');
 
     if (status === 'reviewed') {
-        // Reviewed - send to approver
         notesLabel.textContent = 'Review Comments';
         notesHelp.textContent = 'Add your assessment and recommendations for the Approver.';
         reviewerNotes.placeholder = 'Candidate\'s qualifications, strengths, weaknesses, and overall assessment...';
@@ -1153,10 +1261,9 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitText.textContent = 'Submit Review';
         smsPreview.style.display = 'none';
     } else if (status === 'rejected') {
-        // Rejected - notify candidate
         notesLabel.textContent = 'Rejection Reason';
         notesHelp.innerHTML = '<i class="me-1"></i><strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
-        reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy" or "Educational certificates are not clear/readable" or "Work experience documents not provided"...';
+        reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy" or "Educational certificates are not clear/readable"...';
         submitBtn.className = 'btn btn-danger btn-lg';
         submitBtn.style.background = '';
         submitIcon.className = ' me-2';
@@ -1172,7 +1279,6 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
     }
 });
 
-// Update SMS preview as user types
 document.getElementById('reviewerNotes').addEventListener('input', function() {
     const status = document.getElementById('reviewStatus').value;
     if (status === 'rejected') {
@@ -1181,7 +1287,6 @@ document.getElementById('reviewerNotes').addEventListener('input', function() {
     }
 });
 
-// Form submission
 document.getElementById('reviewForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -1204,6 +1309,8 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
     } else if (status === 'rejected') {
         confirmMessage = 'Are you sure you want to REJECT this application?\n\n✓ Candidate will be notified via SMS (when Sparrow SMS is integrated).\n✓ Your rejection reason will be sent to: {{ $application->phone ?? "N/A" }}\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
+    } else {
+        confirmMessage = 'Are you sure you want to submit this action?';
     }
 
     if (confirm(confirmMessage)) {
@@ -1223,7 +1330,7 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         .then(data => {
             if (data.success) {
                 alert('✅ ' + data.message);
-                window.location.href = '{{ route("reviewer.applications.index") }}';
+                location.reload();
             } else {
                 alert('❌ ' + (data.message || 'Error updating status'));
             }
