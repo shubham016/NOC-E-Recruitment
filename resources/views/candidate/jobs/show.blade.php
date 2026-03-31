@@ -197,16 +197,12 @@
                             <i class="fas"></i> Requirements
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#responsibilities">
-                            <i class="fas"></i> Responsibilities
-                        </a>
-                    </li>
-                    <li class="nav-item">
+                    <!-- http://localhost:8000/candidate/applications -->
+                    <!-- <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#benefits">
                             <i class="fas"></i> Benefits
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
             <div class="card-body">

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ class ApplicationFormController extends Controller
     public function create($vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = JobPosting::findOrFail($vacancyId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied (non-draft)
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
@@ -85,24 +85,9 @@ class ApplicationFormController extends Controller
     public function store(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = JobPosting::findOrFail($vacancyId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         $isDraft = $request->has('save_draft');
-
-        // Check if vacancy is closed or deadline has passed (only for final submission, not drafts)
-        if (!$isDraft) {
-            if ($vacancy->status !== 'active') {
-                return redirect()
-                    ->route('candidate.jobs.show', $vacancyId)
-                    ->with('error', 'This vacancy is closed and no longer accepting applications.');
-            }
-
-            if ($vacancy->deadline && $vacancy->deadline < now()) {
-                return redirect()
-                    ->route('candidate.jobs.show', $vacancyId)
-                    ->with('error', 'The application deadline for this vacancy has passed.');
-            }
-        }
 
         // Check for existing application
         $existingApplication = ApplicationForm::where('candidate_id', $candidate->id)
@@ -363,7 +348,7 @@ class ApplicationFormController extends Controller
                 return response()->json(['success' => false, 'message' => 'Vacancy ID is required.'], 422);
             }
 
-            $vacancy = JobPosting::find($vacancyId);
+            $vacancy = Vacancy::find($vacancyId);
             if (!$vacancy) {
                 return response()->json(['success' => false, 'message' => 'Vacancy not found.'], 404);
             }
@@ -417,7 +402,7 @@ class ApplicationFormController extends Controller
     public function checkEligibilityAjax(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = JobPosting::findOrFail($vacancyId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         $error = $this->checkEligibility($candidate, $vacancy);
 

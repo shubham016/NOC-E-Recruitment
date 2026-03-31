@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\JobPosting;
+use App\Models\Vacancy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,7 +32,7 @@ class ApplicationController extends Controller
     public function create($vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = JobPosting::findOrFail($vacancyId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied
         $existingApplication = Application::where('candidate_id', $candidate->id)
@@ -61,7 +61,7 @@ class ApplicationController extends Controller
     public function store(Request $request, $vacancyId)
     {
         $candidate = Auth::guard('candidate')->user();
-        $vacancy = JobPosting::findOrFail($vacancyId);
+        $vacancy = Vacancy::findOrFail($vacancyId);
 
         // Check if already applied
         $existingApplication = Application::where('candidate_id', $candidate->id)
