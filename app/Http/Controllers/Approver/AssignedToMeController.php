@@ -41,11 +41,18 @@ class AssignedToMeController extends Controller
             $query->where('job_posting_id', $request->job_id);
         }
 
+        $stats = [
+            'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
+            'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
+        ];
+
         $applications = $query->latest()->paginate(15)->withQueryString();
 
         $jobs = JobPosting::select('id', 'title')->orderBy('title')->get();
 
-        return view('approver.assignedtome', compact('jobs', 'applications'));
+        return view('approver.assignedtome', compact('jobs', 'applications', 'stats'));
     }
 
     public function show($id)
@@ -100,11 +107,74 @@ class AssignedToMeController extends Controller
 
     public function exportCsv(Request $request)
     {
-        //
+        $ids = explode(',', $request->ids);
+    $approver = Auth::guard('approver')->user();
+
+    $applications = ApplicationForm::with(['jobPosting', 'payment'])
+        ->where('approver_id', $approver->id)
+        ->whereIn('id', $ids)
+        ->get();
+
+    $filename = 'applications_' . now()->format('Y-m-d') . '.csv';
+
+    $headers = [
+        'Content-Type'        => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+    ];
+
+    $callback = function () use ($applications) {
+        $handle = fopen('php://output', 'w');
+
+        // Header row
+        fputcsv($handle, [
+            'App ID',
+            'Name (EN)',
+            'Name (NP)',
+            'Email',
+            'Vacancy Type',
+            'Payment Status',
+            'Amount',
+            'Applied Date & Time',
+            'Status'
+        ]);
+
+        foreach ($applications as $index => $app) {
+             $date = $app->submitted_at ?? $app->created_at;
+            fputcsv($handle, [
+               $app->id,
+                $app->name_english ?? 'N/A',
+                $app->name_nepali ?? 'N/A',
+                $app->email ?? 'N/A',
+                $app->jobPosting->category ?? 'N/A',
+                $app->payment->status ?? 'N/A',
+                $app->payment->amount ?? 'N/A',
+                $date ? $date->format('M d, Y h:i A') : 'N/A',
+                ucfirst($app->status),
+            ]);
+        }
+
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
     }
 
     public function exportPdf(Request $request)
-    {
-        //
-    }
+{
+  
+    $ids = explode(',', $request->ids);
+    $approver = Auth::guard('approver')->user();
+
+    $applications = ApplicationForm::with('jobPosting')
+        ->where('approver_id', $approver->id)
+        ->whereIn('id', $ids)
+        ->get();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        'approver.exports.applications_pdf',
+        compact('applications')
+    )->setPaper('a4', 'landscape');
+
+    return $pdf->download('applications_' . now()->format('Y-m-d') . '.pdf');
+}
 }
