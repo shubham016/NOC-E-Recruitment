@@ -16,7 +16,6 @@ class Reviewer extends Authenticatable
         'phone',
         'department',
         'status',
-        'photo',
     ];
 
     protected $hidden = [

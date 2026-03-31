@@ -294,11 +294,13 @@
                     </div>
                 @endforelse
 
-                <div class="text-center mt-3">
-                    <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-primary">
-                        View All Applications <i class="bi ms-1"></i>
-                    </a>
-                </div>
+                @if($pendingApplications->count() > 0)
+                    <div class="text-center mt-3">
+                        <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-primary">
+                            View All Applications <i class="bi ms-1"></i>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
