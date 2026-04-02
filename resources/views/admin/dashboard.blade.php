@@ -21,7 +21,7 @@
             box-sizing: border-box;
         }
 
-        :root {
+       :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --secondary: #64748b;
@@ -41,11 +41,6 @@
             --gray-700: #334155;
             --gray-800: #1e293b;
             --gray-900: #0f172a;
-
-            --white: #ffffff;
-            --border: 1px solid #e5e7eb;
-            --radius: 12px;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
         /* Page Header */
@@ -85,8 +80,13 @@
         /* Stats Grid - Perfect Alignment */
         .stats-grid {
             display: grid;
+<<<<<<< HEAD
             grid-template-columns: repeat(5, 1fr);
             gap: 20px;
+=======
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+>>>>>>> b0a5300 (admin dashboard updated)
             margin-bottom: 32px;
         }
 
@@ -95,7 +95,10 @@
             border: var(--border);
             border-radius: var(--radius);
             padding: 24px;
+<<<<<<< HEAD
             text-align: center;
+=======
+>>>>>>> b0a5300 (admin dashboard updated)
             transition: all 0.2s ease;
         }
 
@@ -105,14 +108,23 @@
         }
 
         .stat-icon {
+<<<<<<< HEAD
             width: 56px;
             height: 56px;
+=======
+            width: 48px;
+            height: 48px;
+>>>>>>> b0a5300 (admin dashboard updated)
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
+<<<<<<< HEAD
             margin: 0 auto 16px;
+=======
+            margin-bottom: 16px;
+>>>>>>> b0a5300 (admin dashboard updated)
         }
 
         .stat-value {
@@ -163,6 +175,7 @@
             color: var(--gray-500);
         }
 
+<<<<<<< HEAD
         /* Purple Color Utilities */
         .bg-purple {
             background-color: var(--purple) !important;
@@ -178,6 +191,8 @@
 
         /* Top navbar positioning is handled by layout.dashboard */
 
+=======
+>>>>>>> b0a5300 (admin dashboard updated)
         /* Content Layout - Perfect Grid */
         .content-layout {
             display: grid;
@@ -297,16 +312,23 @@
             color: #92400e;
         }
 
+<<<<<<< HEAD
         .badge-approved {
+=======
+        .badge-under_review {
+>>>>>>> b0a5300 (admin dashboard updated)
             background: #dbeafe;
             color: #1e40af;
         }
 
+<<<<<<< HEAD
         .badge-selected {
             background: #e0e7ff;
             color: #3730a3;
         }
 
+=======
+>>>>>>> b0a5300 (admin dashboard updated)
         .badge-shortlisted {
             background: #d1fae5;
             color: #065f46;
@@ -630,9 +652,15 @@
             <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                 <i class="bi bi-briefcase-fill"></i>
             </div>
+<<<<<<< HEAD
             <div class="stat-value">{{ $stats['active_vacancies'] }}</div>
             <div class="stat-label">Active Vacancies</div>
             <!-- <div class="stat-meta">
+=======
+            <div class="stat-value">{{ $stats['active_jobs'] }}</div>
+            <div class="stat-label">Active Vacancies</div>
+            <div class="stat-meta">
+>>>>>>> b0a5300 (admin dashboard updated)
                 @if($growth['jobs_posted'] != 0)
                     <span class="stat-badge {{ $growth['jobs_posted'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['jobs_posted'] > 0 ? 'up' : 'down' }}"></i>
@@ -640,7 +668,11 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['jobs_posted'] }} this month</span>
+<<<<<<< HEAD
             </div> -->
+=======
+            </div>
+>>>>>>> b0a5300 (admin dashboard updated)
         </div>
 
         <!-- Stat 2 -->
@@ -650,7 +682,11 @@
             </div>
             <div class="stat-value">{{ $stats['pending_applications'] }}</div>
             <div class="stat-label">Pending Reviews</div>
+<<<<<<< HEAD
             <!-- <div class="stat-meta">
+=======
+            <div class="stat-meta">
+>>>>>>> b0a5300 (admin dashboard updated)
                 @if($growth['applications'] != 0)
                     <span class="stat-badge {{ $growth['applications'] > 0 ? 'badge-up' : 'badge-down' }}">
                         <i class="bi bi-arrow-{{ $growth['applications'] > 0 ? 'up' : 'down' }}"></i>
@@ -658,15 +694,23 @@
                     </span>
                 @endif
                 <span class="stat-text">{{ $thisMonth['applications'] }} received</span>
+<<<<<<< HEAD
             </div> -->
         </div>
 
         <!-- Stat 3 - Total Candidates -->
+=======
+            </div>
+        </div>
+
+        <!-- Stat 3 -->
+>>>>>>> b0a5300 (admin dashboard updated)
         <div class="stat-box">
             <div class="stat-icon bg-info bg-opacity-10 text-info">
                 <i class="bi bi-people-fill"></i>
             </div>
             <div class="stat-value">{{ $stats['total_candidates'] }}</div>
+<<<<<<< HEAD
             <div class="stat-label">Registered Candidates</div>
             <!-- <div class="stat-meta">
                 @if($growth['candidates'] != 0)
@@ -677,6 +721,18 @@
                 @endif
                 <span class="stat-text">{{ $thisMonth['candidates'] }} this month</span>
             </div> -->
+=======
+            <div class="stat-label">Total Candidates</div>
+            <div class="stat-meta">
+                @if($growth['candidates_registered'] != 0)
+                    <span class="stat-badge {{ $growth['candidates_registered'] > 0 ? 'badge-up' : 'badge-down' }}">
+                        <i class="bi bi-arrow-{{ $growth['candidates_registered'] > 0 ? 'up' : 'down' }}"></i>
+                        {{ abs($growth['candidates_registered']) }}%
+                    </span>
+                @endif
+                <span class="stat-text">{{ $thisMonth['candidates_registered'] }} registered</span>
+            </div>
+>>>>>>> b0a5300 (admin dashboard updated)
         </div>
 
         <!-- Stat 4 -->
@@ -686,6 +742,7 @@
             </div>
             <div class="stat-value">{{ $stats['active_reviewers'] }}</div>
             <div class="stat-label">Active Reviewers</div>
+<<<<<<< HEAD
             <!-- <div class="stat-meta">
                 <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
             </div> -->
@@ -701,6 +758,11 @@
             <!-- <div class="stat-meta">
                 <span class="stat-text">{{ $stats['total_hr_admins'] }} total approvers</span>
             </div> -->
+=======
+            <div class="stat-meta">
+                <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
+            </div>
+>>>>>>> b0a5300 (admin dashboard updated)
         </div>
     </div>
 
@@ -709,7 +771,10 @@
         <!-- Main Content -->
         <div>
             <!-- Recent Applications -->
+<<<<<<< HEAD
             <!-- Recent Applications -->
+=======
+>>>>>>> b0a5300 (admin dashboard updated)
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -726,8 +791,12 @@
                             </div>
                             <div class="item-content">
                                 <h4 class="item-name">{{ $application->candidate->name ?? 'Unknown' }}</h4>
+<<<<<<< HEAD
                                 <p class="item-text">Applied for
                                     <strong>{{ $application->vacancy->title ?? 'Position' }}</strong>
+=======
+                                <p class="item-text">Applied for <strong>{{ $application->job->title ?? 'Position' }}</strong>
+>>>>>>> b0a5300 (admin dashboard updated)
                                 </p>
                                 <p class="item-meta">
                                     <i class="bi bi-clock"></i>
@@ -754,6 +823,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
+<<<<<<< HEAD
                         <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
                         Total Vacancies by Applications
                     </h3>
@@ -771,11 +841,34 @@
                                     <span>
                                         <i class="bi bi-geo-alt"></i>
                                         {{ $vacancy->location }}
+=======
+                        <i class="bi bi-trophy-fill text-warning"></i>
+                        Top Jobs by Applications
+                    </h3>
+                </div>
+                <div>
+                    @forelse($topJobs as $job)
+                        <div class="job-card">
+                            <div class="job-info">
+                                <h4 class="job-title">{{ $job->title }}</h4>
+                                <p class="job-meta">
+                                    <span>
+                                        <i class="bi bi-building"></i>
+                                        {{ $job->department }}
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-geo-alt"></i>
+                                        {{ $job->location }}
+>>>>>>> b0a5300 (admin dashboard updated)
                                     </span>
                                 </p>
                             </div>
                             <div class="job-count-box">
+<<<<<<< HEAD
                                 <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
+=======
+                                <div class="job-count">{{ $job->applications_count }}</div>
+>>>>>>> b0a5300 (admin dashboard updated)
                                 <div class="job-count-label">Applications</div>
                             </div>
                         </div>
@@ -784,8 +877,13 @@
                             <div class="empty-icon">
                                 <i class="bi bi-briefcase"></i>
                             </div>
+<<<<<<< HEAD
                             <h4 class="empty-title">No Vacancy Posted</h4>
                             <p class="empty-text">Create your first vacancy posting</p>
+=======
+                            <h4 class="empty-title">No Jobs Posted</h4>
+                            <p class="empty-text">Create your first job posting</p>
+>>>>>>> b0a5300 (admin dashboard updated)
                         </div>
                     @endforelse
                 </div>
@@ -805,7 +903,11 @@
                 <div class="widget-body">
                     <a href="{{ route('admin.jobs.create') }}" class="btn-action btn-primary">
                         <i class="bi bi-plus-circle"></i>
+<<<<<<< HEAD
                         Post New Vacancy
+=======
+                        Post New Job
+>>>>>>> b0a5300 (admin dashboard updated)
                     </a>
                     <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
                         <i class="bi bi-person-plus"></i>

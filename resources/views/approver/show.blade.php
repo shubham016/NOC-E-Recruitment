@@ -944,6 +944,29 @@
                 @endif
             </div>
 
+
+            <!-- Reviewed Details -->
+            <div class="info-card">
+                <h5>
+                    <i class="text-primary me-2"></i>Reviewed Details
+                </h5>
+                <div class="timeline">
+                    <div class="info-row">
+                            <div class="info-label">Reviewer:</div>
+                            <div class="info-value">{{ $application->reviewer->name ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Reviewed Date:</div>
+                            <div class="info-value">{{ $application->reviewed_at ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Reviewer Note:</div>
+                            <div class="info-value">{{ $application->reviewer_notes?? 'N/A' }}</div>
+                        </div>
+                    
+                </div>
+            </div>
+
             <!-- Admin Notes (if any) -->
             @if($application->admin_notes)
             <div class="info-card">
@@ -971,7 +994,7 @@
             @if($application->status !== 'approved' && $application->status !== 'rejected')
             <div class="info-card">
                 <h5>
-                    <i class="bi bi-gear text-secondary me-2"></i>Actions
+                    <i class="text-secondary me-2"></i>Actions
                 </h5>
                 <form action="{{ route('approver.applications.updateStatus', $application->id) }}" method="POST">
                     @csrf
@@ -1003,32 +1026,7 @@
             </div>
             @endif
 
-            <!-- Application Timeline -->
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-clock-history text-primary me-2"></i>Timeline
-                </h5>
-                <div class="timeline">
-                    <div class="mb-3">
-                        <div class="small text-muted">Applied</div>
-                        <div class="fw-semibold">
-                            {{ $application->created_at->format('M d, Y h:i A') }}
-                            <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
-                        </div>
-                    </div>
-                    @if($application->approved_at)
-                    <div class="mb-3">
-                        <div class="small text-muted">Approved</div>
-                        <div class="fw-semibold">
-                            {{ \Carbon\Carbon::parse($application->approved_at)->format('M d, Y h:i A') }}
-                            <small class="text-muted d-block">
-                                {{ adToBS(\Carbon\Carbon::parse($application->approved_at)->format('Y-m-d')) }} (BS)
-                            </small>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
