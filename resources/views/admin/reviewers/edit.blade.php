@@ -29,13 +29,13 @@
         }
 
         .photo-upload-container:hover {
-            border-color: #10b981;
+            border-color: #c9a84c;
             background: #f8fafc;
         }
 
         .photo-upload-container.dragover {
-            border-color: #10b981;
-            background: #ecfdf5;
+            border-color: #c9a84c;
+            background: #fef3c7;
             transform: scale(1.02);
         }
 
@@ -62,7 +62,7 @@
         .upload-icon {
             width: 64px;
             height: 64px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -75,7 +75,7 @@
         .upload-text {
             font-size: 1rem;
             font-weight: 600;
-            color: #065f46;
+            color: #92400e;
             margin-bottom: 0.5rem;
         }
 
@@ -88,7 +88,7 @@
         .upload-button {
             display: inline-block;
             padding: 0.625rem 1.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             color: white;
             border-radius: 8px;
             font-weight: 600;
@@ -145,7 +145,7 @@
         .section-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -157,7 +157,7 @@
         .section-title {
             font-size: 1.125rem;
             font-weight: 700;
-            color: #065f46;
+            color: #92400e;
             margin: 0;
         }
 
@@ -184,7 +184,7 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #10b981;
+            border-color: #c9a84c;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
             outline: none;
         }
@@ -273,7 +273,7 @@
         }
 
         .btn-primary-custom {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             color: white;
         }
 
@@ -306,10 +306,10 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #10b981;">Dashboard</a>
+                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #c9a84c;">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.reviewers.index') }}"
-                        style="color: #10b981;">Reviewers</a></li>
+                        style="color: #c9a84c;">Reviewers</a></li>
                 <li class="breadcrumb-item active">Edit Reviewer</li>
             </ol>
         </nav>
@@ -317,12 +317,12 @@
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold mb-2" style="color: #065f46;">
+                <h2 class="fw-bold mb-2" style="color: #92400e;">
                     <i class="bi bi-pencil-square me-2"></i>Edit Reviewer
                 </h2>
                 <p class="text-muted mb-0">Update reviewer information and settings</p>
             </div>
-            <a href="{{ route('admin.reviewers.show', $reviewer->id) }}" class="btn btn-outline-success">
+            <a href="{{ route('admin.reviewers.show', $reviewer->id) }}" class="btn btn-outline-warning">
                 <i class="bi bi-eye me-2"></i>View Profile
             </a>
         </div>
@@ -445,7 +445,7 @@
                             <div class="section-icon">
                                 <i class="bi bi-key"></i>
                             </div>
-                            <h3 class="section-title">Change Password (Optional)</h3>
+                            <h3 class="section-title">Change Password</h3>
                         </div>
 
                         <div class="alert-info-custom mb-3">
@@ -784,7 +784,7 @@
                 color = '#f59e0b';
             } else {
                 text = 'Strong';
-                color = '#10b981';
+                color = '#c9a84c';
             }
 
             strengthText.textContent = text;

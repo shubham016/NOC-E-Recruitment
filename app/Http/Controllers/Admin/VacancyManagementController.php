@@ -65,7 +65,7 @@ class VacancyManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive,internal',
+            'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
@@ -139,7 +139,7 @@ class VacancyManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive,internal',
+            'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
@@ -209,7 +209,7 @@ class VacancyManagementController extends Controller
 
         return redirect()
             ->route('admin.jobs.edit', $newJob->id)
-            ->with('success', 'Job duplicated successfully! Please review and update.');
+            ->with('success', 'Vacancy duplicated successfully! Please review and update.');
     }
 
     public function changeStatus(Request $request, $id)
@@ -224,7 +224,7 @@ class VacancyManagementController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Job status updated successfully!');
+            ->with('success', 'Vacancy status updated successfully!');
     }
 
     public function previewPDF(Request $request)

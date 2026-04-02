@@ -126,8 +126,8 @@ class ReviewerController extends Controller
 
         // Get review statistics
         $stats = [
-            'total_assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)->count(),
-            'pending_review' => ApplicationForm::where('reviewer_id', $reviewer->id)
+            'total' => ApplicationForm::where('reviewer_id', $reviewer->id)->count(),
+            'pending' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->whereNull('reviewed_at')
                 ->whereNull('reviewer_notes')
                 ->count(),
@@ -136,8 +136,8 @@ class ReviewerController extends Controller
                     $q->whereNotNull('reviewed_at')
                       ->orWhereNotNull('reviewer_notes');
                 })->count(),
-            'approved' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->where('status', 'approved')->count(),
+            'rejected' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'rejected')->count(),
         ];
 
         // Get recent applications assigned to this reviewer

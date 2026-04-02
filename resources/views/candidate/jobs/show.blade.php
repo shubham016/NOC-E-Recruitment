@@ -100,7 +100,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-2">
-                            <strong>Employment Type:</strong> {{ ucfirst($job->category) }}
+                            <strong>Employment Type:</strong>
+                            @if($job->category == 'internal_appraisal')
+                                Internal Appraisal
+                            @else
+                                {{ ucfirst($job->category) }}
+                            @endif
                         </p>
                         <p class="mb-2">
                             <strong>Number of Vacancies:</strong> {{ $job->number_of_posts }}

@@ -233,7 +233,7 @@ class AdminApplicationController extends Controller
         $application->update($updateData);
 
         // Create notification for candidate
-        $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+        $candidate = $application->candidate;
 
         if ($request->status === 'reviewed' && $request->approver_id) {
             $approver = \App\Models\Approver::find($request->approver_id);
@@ -251,37 +251,43 @@ class AdminApplicationController extends Controller
 
             return redirect()->back()->with('success', 'Application reviewed and assigned to Approver: ' . ($approver->name ?? 'N/A') . ' for final decision.');
         } elseif ($request->status == 'approved') {
-            Notification::create([
-                'user_id' => $candidate?->id,
-                'user_type' => 'candidate',
-                'type' => 'application_approved',
-                'title' => 'Application Approved',
-                'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by the admin.',
-                'related_id' => $application->id,
-                'related_type' => 'application',
-            ]);
+            if ($candidate) {
+                Notification::create([
+                    'user_id' => $candidate->id,
+                    'user_type' => 'candidate',
+                    'type' => 'application_approved',
+                    'title' => 'Application Approved',
+                    'message' => 'Congratulations! Your application for "' . $application->vacancy->title . '" has been approved by the admin.',
+                    'related_id' => $application->id,
+                    'related_type' => 'application',
+                ]);
+            }
         } elseif ($request->status == 'edit') {
-            $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
-            Notification::create([
-                'user_id' => $candidate?->id,
-                'user_type' => 'candidate',
-                'type' => 'application_edit_request',
-                'title' => 'Application Requires Editing',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been sent back for corrections by the admin.' . $rejectionReason,
-                'related_id' => $application->id,
-                'related_type' => 'application',
-            ]);
+            if ($candidate) {
+                $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
+                Notification::create([
+                    'user_id' => $candidate->id,
+                    'user_type' => 'candidate',
+                    'type' => 'application_edit_request',
+                    'title' => 'Application Requires Editing',
+                    'message' => 'Your application for "' . $application->vacancy->title . '" has been sent back for corrections by the admin.' . $rejectionReason,
+                    'related_id' => $application->id,
+                    'related_type' => 'application',
+                ]);
+            }
         } elseif ($request->status == 'rejected') {
-            $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
-            Notification::create([
-                'user_id' => $candidate?->id,
-                'user_type' => 'candidate',
-                'type' => 'application_rejected',
-                'title' => 'Application Rejected',
-                'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected by the admin.' . $rejectionReason,
-                'related_id' => $application->id,
-                'related_type' => 'application',
-            ]);
+            if ($candidate) {
+                $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
+                Notification::create([
+                    'user_id' => $candidate->id,
+                    'user_type' => 'candidate',
+                    'type' => 'application_rejected',
+                    'title' => 'Application Rejected',
+                    'message' => 'Your application for "' . $application->vacancy->title . '" has been rejected by the admin.' . $rejectionReason,
+                    'related_id' => $application->id,
+                    'related_type' => 'application',
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Application status updated successfully!');

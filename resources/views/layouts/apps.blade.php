@@ -496,15 +496,21 @@
                     @php
                         $reviewerName    = 'Reviewer';
                         $reviewerInitial = 'R';
+                        $reviewerPhoto   = null;
 
                         if (Auth::guard('reviewer')->check()) {
                             $reviewer        = Auth::guard('reviewer')->user();
                             $reviewerName    = $reviewer->name;
                             $reviewerInitial = strtoupper(substr($reviewerName, 0, 1));
+                            $reviewerPhoto   = $reviewer->photo;
                         }
                     @endphp
                     <div class="user-avatar">
-                        {{ $reviewerInitial }}
+                        @if($reviewerPhoto)
+                            <img src="{{ asset('storage/' . $reviewerPhoto) }}" alt="{{ $reviewerName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        @else
+                            {{ $reviewerInitial }}
+                        @endif
                     </div>
                     <div class="user-info">
                         <h6 title="{{ $reviewerName }}">{{ $reviewerName }}</h6>

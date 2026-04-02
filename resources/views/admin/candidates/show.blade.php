@@ -579,8 +579,14 @@
         <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-top">
-                <div class="profile-avatar">
-                    {{ strtoupper(substr($candidate->first_name, 0, 1)) }}{{ strtoupper(substr($candidate->last_name, 0, 1)) }}
+                <div class="profile-avatar" style="overflow: hidden;">
+                    @if($candidate->photo)
+                        <img src="{{ asset('storage/' . $candidate->photo) }}"
+                             alt="{{ $candidate->name }}"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        {{ strtoupper(substr($candidate->first_name, 0, 1)) }}{{ strtoupper(substr($candidate->last_name, 0, 1)) }}
+                    @endif
                 </div>
 
                 <div class="profile-main">
@@ -598,34 +604,22 @@
                                 Inactive
                             </span>
                         @endif
-
-                        @if($candidate->email_verified_at)
-                            <span class="badge badge-verified">
-                                <i class="bi bi-patch-check-fill"></i>
-                                Verified
-                            </span>
-                        @else
-                            <span class="badge badge-pending">
-                                <i class="bi bi-clock-fill"></i>
-                                Unverified
-                            </span>
-                        @endif
                     </div>
                 </div>
 
                 <div class="profile-id">
                     <div class="profile-id-label">Candidate ID</div>
-                    <div class="profile-id-value">NOC-{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</div>
+                    <div class="profile-id-value">{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</div>
                 </div>
             </div>
 
             <div class="profile-info-grid">
                 <div class="info-item">
                     <div class="info-icon">
-                        <i class="bi bi-at"></i>
+                        <i class="bi bi-credit-card-2-front"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Username</div>
+                        <div class="info-label">Citizenship Number</div>
                         <div class="info-value">{{ $candidate->username }}</div>
                     </div>
                 </div>
@@ -656,7 +650,12 @@
                     </div>
                     <div class="info-content">
                         <div class="info-label">Registered</div>
-                        <div class="info-value">{{ $candidate->created_at->format('M d, Y') }}</div>
+                        <div class="info-value">
+                            <div class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
+                                <i class="bi bi-hourglass-split"></i> Converting...
+                            </div>
+                            <small style="color: #718096;">{{ $candidate->created_at->format('M d, Y') }}</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -670,13 +669,13 @@
             </div>
 
             <div class="stat-box orange">
-                <div class="stat-number">{{ $applicationStats['pending'] + $applicationStats['approved'] }}</div>
+                <div class="stat-number">{{ $applicationStats['pending'] }}</div>
                 <div class="stat-label">Pending Review</div>
             </div>
 
             <div class="stat-box green">
-                <div class="stat-number">{{ $applicationStats['shortlisted'] }}</div>
-                <div class="stat-label">Shortlisted</div>
+                <div class="stat-number">{{ $applicationStats['approved'] }}</div>
+                <div class="stat-label">Approved</div>
             </div>
 
             <div class="stat-box red">
@@ -715,10 +714,6 @@
                             <td class="label">Full Name</td>
                             <td class="value"><strong>{{ $candidate->name }}</strong></td>
                         </tr>
-                        <tr>
-                            <td class="label">Username</td>
-                            <td class="value">{{ $candidate->username }}</td>
-                        </tr>
                     </table>
                 </div>
             </div>
@@ -745,24 +740,6 @@
                                 <a href="tel:{{ $candidate->mobile_number }}">{{ $candidate->mobile_number }}</a>
                             </td>
                         </tr>
-                        @if($candidate->city)
-                            <tr>
-                                <td class="label">City</td>
-                                <td class="value">{{ $candidate->city }}</td>
-                            </tr>
-                        @endif
-                        @if($candidate->state)
-                            <tr>
-                                <td class="label">State</td>
-                                <td class="value">{{ $candidate->state }}</td>
-                            </tr>
-                        @endif
-                        @if($candidate->country)
-                            <tr>
-                                <td class="label">Country</td>
-                                <td class="value">{{ $candidate->country }}</td>
-                            </tr>
-                        @endif
                     </table>
                 </div>
             </div>
@@ -796,30 +773,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="label">Email Verification</td>
-                            <td class="value">
-                                @if($candidate->email_verified_at)
-                                    <span class="badge badge-verified">
-                                        <i class="bi bi-patch-check-fill"></i>
-                                        Verified
-                                    </span>
-                                    <br>
-                                    <small
-                                        style="color: #718096;">{{ $candidate->email_verified_at->format('F d, Y h:i A') }}</small>
-                                @else
-                                    <span class="badge badge-pending">
-                                        <i class="bi bi-clock-fill"></i>
-                                        Not Verified
-                                    </span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
                             <td class="label">Registered</td>
                             <td class="value">
-                                <strong>{{ $candidate->created_at->format('F d, Y') }}</strong>
+                                <strong class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
+                                    <i class="bi bi-hourglass-split"></i> Converting...
+                                </strong>
                                 <br>
-                                <small style="color: #718096;">{{ $candidate->created_at->diffForHumans() }}</small>
+                                <small style="color: #718096;">{{ $candidate->created_at->format('F d, Y') }} ({{ $candidate->created_at->diffForHumans() }})</small>
                             </td>
                         </tr>
                         <tr>
@@ -896,7 +856,7 @@
                     <div class="timeline">
                         @foreach($applications as $application)
                             <div
-                                class="timeline-item {{ $application->status === 'shortlisted' ? 'success' : ($application->status === 'rejected' ? 'rejected' : 'pending') }}">
+                                class="timeline-item {{ $application->status === 'approved' ? 'success' : ($application->status === 'rejected' ? 'rejected' : 'pending') }}">
                                 <div class="timeline-header">
                                     <div>
                                         <div class="timeline-title">{{ $application->vacancy->title }}</div>
@@ -908,9 +868,8 @@
                                     </div>
                                     @php
                                         $badgeClass = match ($application->status) {
-                                            'shortlisted' => 'badge-active',
+                                            'approved' => 'badge-active',
                                             'rejected' => 'badge-inactive',
-                                            'approved' => 'badge-verified',
                                             'selected' => 'badge-verified',
                                             default => 'badge-pending'
                                         };
@@ -950,4 +909,69 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        // Convert English numerals to Nepali numerals
+        function englishToNepali(str) {
+            if (!str) return str;
+            const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+            return str.replace(/[0-9]/g, d => map[d]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔧 Initializing Nepali date conversion...');
+
+            // Wait for converter to be ready
+            function waitForConverter() {
+                if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+                    setTimeout(waitForConverter, 100);
+                    return;
+                }
+
+                console.log('✅ Converter ready, converting dates...');
+                convertAllDates();
+            }
+
+            function convertAllDates() {
+                // Find all elements with Nepali date class
+                const dateElements = document.querySelectorAll('.nepali-date-bs');
+
+                console.log(`📅 Found ${dateElements.length} dates to convert`);
+
+                dateElements.forEach((element, index) => {
+                    const adDate = element.getAttribute('data-ad-date');
+
+                    if (adDate) {
+                        try {
+                            // Convert AD to BS (returns English numerals like 2082-11-05)
+                            const bsDate = window.adToBS(adDate);
+
+                            if (bsDate) {
+                                // Convert to Nepali numerals (२०८२-११-०५)
+                                const bsNepali = englishToNepali(bsDate);
+
+                                // Update the element with Nepali numeral date
+                                element.innerHTML = `${bsNepali}`;
+                                console.log(`✅ Date ${index + 1}: ${adDate} → ${bsDate} → ${bsNepali}`);
+                            } else {
+                                element.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                                element.style.color = '#f56565';
+                            }
+                        } catch (error) {
+                            console.error(`❌ Error converting date ${adDate}:`, error);
+                            element.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+                            element.style.color = '#f56565';
+                        }
+                    }
+                });
+
+                console.log('✅ All dates converted successfully!');
+            }
+
+            // Start the conversion process
+            waitForConverter();
+        });
+    </script>
 @endsection

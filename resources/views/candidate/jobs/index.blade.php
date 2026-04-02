@@ -111,7 +111,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="text-center">S.N.</th>
-                            <th>Job Title</th>
+                            <th>Vacancy Title</th>
                             <th>Department</th>
                             <th>Category</th>
                             <th class="text-center">Vacancies</th>
@@ -145,7 +145,11 @@
                             <td>{{ $job->service_group }}</td>
                             <td>
                                 <span class="text-dark">
-                                    {{ ucfirst($job->category) }}
+                                    @if($job->category == 'internal_appraisal')
+                                        Internal Appraisal
+                                    @else
+                                        {{ ucfirst($job->category) }}
+                                    @endif
                                 </span>
                             </td>
                             <td class="text-center">

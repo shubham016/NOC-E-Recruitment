@@ -404,6 +404,7 @@
                             <option value="open" {{ old('category', 'open') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
                             <option value="inclusive" {{ old('category') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
                             <option value="internal" {{ old('category') == 'internal' ? 'selected' : '' }}>Internal (आन्तरिक)</option>
+                            <option value="internal_appraisal" {{ old('category') == 'internal_appraisal' ? 'selected' : '' }}>Internal Appraisal (आन्तरिक बढुवा)</option>
                         </select>
                         @error('category')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -546,11 +547,11 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
 
-                        <div class="alert alert-info mt-3 mb-0">
+                        <!-- <div class="alert alert-info mt-3 mb-0">
                             <i class="bi bi-clock-history me-2"></i>
                             <strong>Auto-calculated:</strong> Deadline automatically set to 21 days from posting date. You can modify if needed.
                             <br><small>स्वचालित गणना: समय सीमा स्वचालित रूपमा पोस्टिङ मितिबाट २१ दिनमा सेट गरिएको छ।</small>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Double Dastur Date - Dual Date Pickers -->
@@ -599,11 +600,11 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
 
-                        <div class="alert alert-success mt-3 mb-0">
-                            <i class="bi bi-calendar-plus me-2"></i>
-                            <strong>Extended Period:</strong> Double Dastur allows additional 7 days after the original deadline (total 28 days from posting).
-                            <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप ७ दिन अनुमति दिन्छ।</small>
-                        </div>
+                            <!-- <div class="alert alert-success mt-3 mb-0">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                <strong>Extended Period:</strong> Double Dastur allows additional 7 days after the original deadline (total 28 days from posting).
+                                <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप ७ दिन अनुमति दिन्छ।</small>
+                            </div> -->
                     </div>
 
                     <!-- Application Fee & Double Dastur Fee Row -->
@@ -747,7 +748,7 @@
                         </p>
                     </div>
 
-                    <div class="mt-4 p-3 bg-danger bg-opacity-10 rounded">
+                    <!-- <div class="mt-4 p-3 bg-danger bg-opacity-10 rounded">
                         <h6 class="small fw-bold mb-2">
                             <i class="bi bi-info-circle-fill text-danger me-1"></i>Checklist
                         </h6>
@@ -758,7 +759,7 @@
                             <li class="mb-1">✓ Accurate post count</li>
                             <li>✓ Complete qualifications</li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -1223,6 +1224,8 @@
                     categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
                 } else if (categorySelect.value === 'internal') {
                     categoryPreview.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
+                } else if (categorySelect.value === 'internal_appraisal') {
+                    categoryPreview.innerHTML = '<span class="badge bg-purple text-white" style="background-color: #8b5cf6;">आन्तरिक बढुवा (Internal Appraisal)</span>';
                 } else {
                     categoryPreview.textContent = '-';
                 }

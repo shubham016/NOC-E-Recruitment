@@ -108,7 +108,11 @@
                     <td class="position-col">{{ $vacancy->position_level }}</td>
                     <td class="dept-col">{{ $vacancy->department }}</td>
                     <td class="cat-col">
-                        {{ ucfirst($vacancy->category) }}
+                        @if($vacancy->category === 'internal_appraisal')
+                            Internal Appraisal
+                        @else
+                            {{ ucfirst($vacancy->category) }}
+                        @endif
                         @if($vacancy->category === 'internal' && $vacancy->internal_type)
                             <br><small>({{ ucfirst($vacancy->internal_type) }})</small>
                         @endif

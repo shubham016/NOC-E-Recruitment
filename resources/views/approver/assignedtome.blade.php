@@ -1,7 +1,5 @@
 @extends('layouts.approver')
-
-@section('title', 'Assigned Applications')
-
+@section('title', 'Approver Dashboard')
 @section('portal-name', 'Approver Portal')
 @section('brand-icon', 'bi bi-person-check')
 @section('dashboard-route', route('approver.dashboard'))
@@ -15,7 +13,7 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
-    <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item active">
+    <a href="{{ route('approver.assignedtome', ['status' => 'assigned']) }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
         <span>Assigned to Me</span>
     </a>
@@ -23,31 +21,48 @@
         <i class="bi bi-person"></i>
         <span>My Profile</span>
     </a>
-    
 @endsection
 
 @section('custom-styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
         border-radius: 12px;
         padding: 1.5rem;
         color: white;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
     }
 
-    .filter-card {
+    .stat-card {
         background: white;
         border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
         border: 1px solid #e5e7eb;
+        height: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .application-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+
+    .application-card:hover {
+        background-color: #f8fafc;
+        border-left-color: #64748b;
+        transform: translateX(4px);
     }
 
     .modern-table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: auto;
     }
 
     .modern-table thead th {
@@ -60,6 +75,7 @@
         letter-spacing: 0.5px;
         border: 1px solid #e5e7eb;
         text-align: center;
+        white-space: nowrap;
     }
 
     .modern-table tbody td {
@@ -69,33 +85,40 @@
         text-align: center;
     }
 
+    .modern-table tbody td.nowrap {
+        white-space: nowrap;
+    }
+
+    .modern-table tbody td.text-col {
+        max-width: 200px;
+    }
+
     .modern-table tbody tr {
         transition: all 0.2s;
     }
 
     .modern-table tbody tr:hover {
-        background: #fef3c7;
-    }
-
-    .btn-gold {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        color: white;
-        border: none;
-    }
-
-    .btn-gold:hover {
-        background: linear-gradient(135deg, #a07828 0%, #c9a84c 100%);
-        color: white;
-    }
-
-    .form-check-input:checked {
-        background-color: #c9a84c;
-        border-color: #c9a84c;
+        background: #f8fafc;
     }
 
     #bulkActionsBar {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-left: 4px solid #c9a84c;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-left: 4px solid #ff0000;
+    }
+
+    #bulkActionsBar .card-body {
+        background: white;
+        border-radius: 8px;
+    }
+
+    .form-check-input:checked {
+        background-color: #ff0000;
+        border-color: #ff0000;
+    }
+
+    .application-card.selected {
+        background-color: #eff6ff !important;
+        border-left-color: #ff0000 !important;
     }
 </style>
 @endsection
@@ -107,74 +130,111 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h3 class="fw-bold mb-1">
-                    <i class="bi bi-inbox me-2"></i>Assigned Applications
+                    <i class="bi me-2"></i>Application Approves
                 </h3>
-                <p class="mb-0 opacity-90 small">Review and manage applications assigned to you</p>
-            </div>
-            <div>
-                <span class="badge bg-light text-dark fs-6 px-3 py-2">
-                    Total: {{ $applications->total() }}
-                </span>
+                <p class="mb-0 opacity-90">Approve and process candidate applications</p>
             </div>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="filter-card">
-        <form method="GET" action="{{ route('approver.assignedtome') }}" class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label fw-semibold small">Vacancy</label>
-                <select name="vacancy_id" class="form-select">
-                    <option value="">All Vacancies</option>
-                    @foreach($vacancies as $vacancy)
-                        <option value="{{ $vacancy->id }}" {{ request('vacancy_id') == $vacancy->id ? 'selected' : '' }}>
-                            {{ $vacancy->title }}
-                        </option>
-                    @endforeach
-                </select>
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['pending_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Pending Applications</p>
             </div>
-
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">Status</label>
-                <select name="status" class="form-select">
-                    <option value="">All Status</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                </select>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['approved_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Approved</p>
             </div>
-
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Candidate name or email" value="{{ request('search') }}">
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['rejected_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Rejected</p>
             </div>
-
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-gold w-100">
-                    <i class="bi bi-funnel me-2"></i>Filter
-                </button>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['total_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Total Applications</p>
             </div>
-        </form>
+        </div>
+    </div>
+    
+    
+    <!-- Search and Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('approver.assignedtome') }}" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Search candidates..." value="{{ request('search') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="job_id" class="form-select">
+                            <option value="">All Vacancies</option>
+                            @foreach($jobs as $job)
+                                <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
+                                    {{ $job->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="me-1"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Bulk Actions Bar (Hidden by default) -->
-    <div id="bulkActionsBar" class="card mb-3" style="display: none;">
-        <div class="card-body">
+    
+
+    <!-- Bulk Actions Bar (Hidden by default, shown when items selected) -->
+    <div id="bulkActionsBar" class="card border-0 shadow-sm mb-3" style="display: none;">
+        <div class="card-body py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="fw-bold">
+                    <span class="fw-bold text-dark me-3">
+                        <i class="bi me-2"></i>
                         <span id="selectedCount">0</span> application(s) selected
                     </span>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-gold" onclick="bulkExport('csv')">
-                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV
-                    </button>
-                    <button type="button" class="btn btn-sm btn-gold" onclick="bulkExport('pdf')">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
-                    </button>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                        <i class="bi bi-x-circle me-1"></i>Clear
+                        <i class="bi me-1"></i>Clear Selection
+                    </button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
+                        <i class="bi me-1"></i>Export to Excel
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
+                        <i class="bi me-1"></i>Export to PDF
                     </button>
                 </div>
             </div>
@@ -182,63 +242,100 @@
     </div>
 
     <!-- Applications Table -->
-    <div class="card">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">
+                    <i class="text-dark me-2"></i>Applications List
+                </h6>
+                <span >{{ $applications->total() }} Total</span>
+            </div>
+        </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="modern-table">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="modern-table table table-hover mb-0" style="min-width: 1200px;">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">
-                                <input type="checkbox" class="form-check-input" id="selectAll">
+                            <th style="width: 40px;">
+                                <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th style="width: 60px;">S.N</th>
-                            <th>Candidate Name</th>
-                            <th>Email</th>
-                            <th>Vacancy Title</th>
+                            <th>Advertisement No</th>
+                            <th>App ID</th>
+                            <th>Photo</th>
+                            <th>Full Name</th>
+                            <th>Vacancy Type</th>
+                            <th>Payment</th>
                             <th>Applied Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($applications as $application)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input application-checkbox" value="{{ $application->id }}">
+                        @forelse($applications as $index => $application)
+                            @php
+                                $daysRemaining = $application->jobPosting ? (int) now()->diffInDays($application->jobPosting->deadline, false) : 0;
+
+                               
+
+                                $statusColors = [
+                                    'pending' => 'bg-warning text-dark',
+                                    'assigned' => 'bg-info',
+                                    'reviewed' => 'bg-success',
+                                    'approved' => 'bg-success',
+                                    'rejected' => 'bg-danger',
+                                ];
+                                $statusColor = $statusColors[$application->status] ?? 'bg-secondary';
+                            @endphp
+                            <tr class="application-card ">
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input application-checkbox"
+                                           value="{{ $application->id }}">
                                 </td>
-                                <td class="fw-semibold">{{ ($applications->currentPage() - 1) * $applications->perPage() + $loop->iteration }}</td>
-                                <td>{{ $application->candidate->name ?? 'N/A' }}</td>
-                                <td>{{ $application->candidate->email ?? 'N/A' }}</td>
-                                <td>{{ $application->vacancy->title ?? 'N/A' }}</td>
-                                <td>
-                                    {{ $application->created_at->format('M d, Y') }}
-                                    <small class="text-muted d-block">{{ adToBS($application->created_at) }} (BS)</small>
-                                </td>
-                                <td>
-                                    @if($application->status === 'approved')
-                                        <span class="badge bg-success">Approved</span>
-                                    @elseif($application->status === 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
+                                <td class="text-col">{{ $application->jobPosting->advertisement_no ?? 'N/A' }}</td>
+                                <td class="text-col">{{ $application->id ?? 'N/A' }}</td>
+                                <td class="text-col">
+                                    @if($application->passport_size_photo)
+                                        <img
+                                            src="{{ asset('storage/' . $application->passport_size_photo) }}"
+                                            alt="Passport Photo"
+                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid #e5e7eb;">
                                     @else
-                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        <span class="text-muted">N/A</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <a href="{{ route('approver.show', $application->id) }}" class="btn btn-sm btn-gold">
-                                        <i class="bi bi-eye"></i> View
+                                <td class="text-col">
+                                    <span class="d-block">{{ $application->name_english ?? 'N/A' }}</span>
+                                    <small class="text-muted">{{ $application->name_nepali ?? 'N/A' }}</small>
+                                </td>
+                                <td class="text-col">{{ $application->jobPosting->category ?? 'N/A' }}</td>
+                                <td class="text-col">
+                                    <span class="d-block">{{ $application->payment->status ?? 'N/A' }}</span>
+                                    <small class="text-muted">Rs. {{ $application->payment->amount ?? 'N/A' }}</small>
+                                </td>
+                                <td class="nowrap">
+                                    <span class="d-block">{{ ($application->submitted_at ?? $application->created_at)->format('M d, Y') }}</span>
+                                    <small class="text-muted">{{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}</small>
+                                </td>
+                                <td class="nowrap">
+                                    <span >{{ ucfirst($application->status) }}</span>
+                                </td>
+                                <td class="nowrap">
+                                    <a href="{{ route('approver.applications.show', $application->id) }}" 
+                                    class="btn btn-sm 
+                                    {{ in_array($application->status, ['approved', 'rejected']) ? 'btn-success' : 'btn-danger' }}">
+                                        
+                                        <i class="bi {{ in_array($application->status, ['approved', 'rejected']) ? 'bi-check-circle' : 'bi-eye' }} me-1"></i>
+                                        
+                                        {{ in_array($application->status, ['approved', 'rejected']) ? 'Checked' : 'Check' }}
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                    @if(!Auth::guard('approver')->user()->vacancy_id)
-                                        <strong class="d-block mb-2">No Vacancy Assigned</strong>
-                                        <p class="small">You have not been assigned to any vacancy yet. Please contact the administrator.</p>
-                                    @else
-                                        No applications found for your assigned vacancy
-                                    @endif
+                                <td colspan="10" class="text-center py-5">
+                                    <i class="display-1 text-muted"></i>
+                                    <h5 class="text-muted mt-3">No Applications Found</h5>
+                                    <p class="text-secondary">No applications match your criteria.</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -246,80 +343,109 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
-        {{ $applications->links() }}
+        @if($applications->hasPages())
+            <div class="card-footer bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        Showing {{ $applications->firstItem() }} to {{ $applications->lastItem() }} of {{ $applications->total() }}
+                    </div>
+                    <div>
+                        {{ $applications->links() }}
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-    // Select All Functionality
-    document.getElementById('selectAll').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.application-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
+document.addEventListener('DOMContentLoaded', function () {
+
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.application-checkbox');
+
+    // Select all
+    selectAll.addEventListener('click', function () {
+        checkboxes.forEach(cb => {
+            cb.checked = selectAll.checked;
+
+            const row = cb.closest('tr');
+            cb.checked
+                ? row.classList.add('selected')
+                : row.classList.remove('selected');
         });
-        updateBulkActionsBar();
+
+        updateBulkActions();
     });
 
-    // Individual checkbox change
-    document.querySelectorAll('.application-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', updateBulkActionsBar);
+    // Individual checkbox
+    checkboxes.forEach(cb => {
+        cb.addEventListener('click', function () {
+            const row = cb.closest('tr');
+            cb.checked
+                ? row.classList.add('selected')
+                : row.classList.remove('selected');
+
+            updateBulkActions();
+        });
     });
 
-    function updateBulkActionsBar() {
-        const selected = document.querySelectorAll('.application-checkbox:checked');
-        const bulkBar = document.getElementById('bulkActionsBar');
-        const countSpan = document.getElementById('selectedCount');
+    function updateBulkActions() {
+        const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
+        const count = checkedBoxes.length;
 
-        if (selected.length > 0) {
-            bulkBar.style.display = 'block';
-            countSpan.textContent = selected.length;
+        const bulkActionsBar = document.getElementById('bulkActionsBar');
+        const selectedCount = document.getElementById('selectedCount');
+
+        if (count > 0) {
+            bulkActionsBar.style.display = 'block';
+            selectedCount.textContent = count;
         } else {
-            bulkBar.style.display = 'none';
-        }
-    }
-
-    function clearSelection() {
-        document.querySelectorAll('.application-checkbox').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        document.getElementById('selectAll').checked = false;
-        updateBulkActionsBar();
-    }
-
-    function bulkExport(format) {
-        const selected = Array.from(document.querySelectorAll('.application-checkbox:checked'))
-            .map(cb => cb.value);
-
-        if (selected.length === 0) {
-            alert('Please select at least one application');
-            return;
+            bulkActionsBar.style.display = 'none';
         }
 
-        const url = format === 'csv'
-            ? '{{ route("approver.applications.exportCsv") }}'
-            : '{{ route("approver.applications.exportPdf") }}';
-
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = url;
-
-        selected.forEach(id => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'ids[]';
-            input.value = id;
-            form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+        selectAll.checked = checkboxes.length === count;
     }
+
+    window.clearSelection = function () {
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+            cb.closest('tr').classList.remove('selected');
+        });
+        selectAll.checked = false;
+        updateBulkActions();
+    };
+
+    function exportSelected(type) {
+    const selected = [];
+
+    document.querySelectorAll('.application-checkbox:checked').forEach(cb => {
+        selected.push(cb.value);
+    });
+
+    if (selected.length === 0) {
+        alert('Please select at least one application');
+        return;
+    }
+
+    let url = '';
+
+    if (type === 'csv') {
+        url = "{{ route('approver.applications.exportCsv') }}";
+    } else if (type === 'pdf') {
+        url = "{{ route('approver.applications.exportPdf') }}";
+    }
+
+    // Attach selected IDs as query params
+    url += '?ids=' + selected.join(',');
+
+    window.location.href = url;
+}
+window.exportSelected = exportSelected;
+
+});
 </script>
 @endsection

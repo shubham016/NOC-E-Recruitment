@@ -23,6 +23,7 @@ class ApplicationForm extends Model
         'approved_at',
         'approver_notes',
         'reviewer_notes',
+        'admin_notes',
         'job_posting_id',
         // Personal Info
         'name_english',
@@ -204,11 +205,42 @@ class ApplicationForm extends Model
         return $this->belongsTo(\App\Models\Approver::class, 'approver_id');
     }
 
+    public function candidate()
+    {
+        return $this->belongsTo(\App\Models\Candidate::class, 'candidate_id');
+    }
+
     /**
      * Get status label attribute
      */
     public function getStatusLabelAttribute()
     {
         return ucfirst(str_replace('_', ' ', $this->status ?? ''));
+    }
+
+    /**
+     * Check if application is in draft status
+     */
+    public function isDraft()
+    {
+        return $this->status === 'draft';
+    }
+
+    /**
+     * Check if application can be edited
+     * Editable when status is 'draft' or 'edit' (sent back for corrections)
+     */
+    public function canEdit()
+    {
+        return in_array($this->status, ['draft', 'edit']);
+    }
+
+    /**
+     * Check if application can be withdrawn
+     * Can withdraw when status is 'draft', 'pending', or 'edit'
+     */
+    public function canWithdraw()
+    {
+        return in_array($this->status, ['draft', 'pending', 'edit']);
     }
 }

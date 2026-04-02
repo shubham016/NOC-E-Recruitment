@@ -84,10 +84,6 @@
             background: #f8fafc;
         }
 
-        .modern-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
         .nepali-date-loading {
             color: #9ca3af;
             font-style: italic;
@@ -127,52 +123,7 @@
                 </h4>
                 <p class="mb-0 opacity-90">Create and manage Vacancies</p>
             </div>
-            <div class="d-flex gap-2">
-                <!-- Bulk Download Dropdown -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-download me-2"></i>Bulk Download
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <h6 class="dropdown-header">Preview & Download PDF</h6>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'en']) }}"
-                                target="_blank">
-                                <i class="bi bi-eye text-primary me-2"></i>Preview PDF (English)
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.preview', ['lang' => 'ne']) }}"
-                                target="_blank">
-                                <i class="bi bi-eye text-primary me-2"></i>Preview PDF (Nepali)
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'en']) }}">
-                                <i class="bi bi-download text-danger me-2"></i>Download PDF (English)
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download', ['lang' => 'ne']) }}">
-                                <i class="bi bi-download text-danger me-2"></i>Download PDF (Nepali)
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.jobs.download-excel') }}">
-                                <i class="bi bi-file-earmark-excel text-success me-2"></i>Download Excel
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
+            <div>
                 <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
                     <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
                 </a>
@@ -297,11 +248,41 @@
             </div>
         </div>
         <div class="card-body p-0">
+            <!-- Bulk Actions Bar -->
+            <div id="bulkActionsBar" class="m-3" style="display: none;">
+                <div class="card border-0 shadow-sm" style="background: #f8f9fa;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-dark me-3">
+                                    <i class="bi bi-check-square me-2"></i>
+                                    <span id="selectedCount">0</span> vacancy(ies) selected
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
+                                    <i class="bi bi-x-circle me-1"></i>Clear Selection
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>Export to PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 modern-table w-100"
                     style="table-layout: auto; white-space: nowrap;">
                     <thead class="table-light">
                         <tr>
+                            <th class="text-center text-uppercase" style="width: 50px;">
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
                             <th class="text-center text-uppercase">S.N</th>
                             <th class="text-center text-uppercase">Advertisement No.</th>
                             <th class="text-center text-uppercase">Position</th>
@@ -332,6 +313,9 @@
                                 $deadlineColor = $daysRemaining <= 7 ? 'text-danger' : ($daysRemaining <= 14 ? 'text-warning' : 'text-success');
                             @endphp
                             <tr class="job-row {{ $job->status }}">
+                                <td class="text-center">
+                                    <input type="checkbox" name="job_ids[]" value="{{ $job->id }}" class="form-check-input job-checkbox">
+                                </td>
                                 <td>{{ $jobs->firstItem() + $loop->index }}</td>
                                 <td>{{ $job->advertisement_no }}</td>
                                 <td>{{ $job->position_level }}</td>
@@ -350,6 +334,8 @@
                                         @else
                                             Internal
                                         @endif
+                                    @elseif($job->category == 'internal_appraisal')
+                                        Internal Appraisal
                                     @else
                                         {{ ucfirst($job->category) }}
                                     @endif
@@ -545,5 +531,79 @@
             // Start the conversion process
             waitForConverter();
         });
+
+        // ============================================
+        // Bulk Selection and Export
+        // ============================================
+
+        // Select All Checkbox
+        document.getElementById('selectAll')?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.job-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+            updateSelectedCount();
+        });
+
+        // Individual Checkbox
+        document.querySelectorAll('.job-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectedCount();
+                const allChecked = document.querySelectorAll('.job-checkbox:checked').length ===
+                                  document.querySelectorAll('.job-checkbox').length;
+                if (document.getElementById('selectAll')) {
+                    document.getElementById('selectAll').checked = allChecked;
+                }
+            });
+        });
+
+        // Update Count and Show/Hide Bulk Actions Bar
+        function updateSelectedCount() {
+            const count = document.querySelectorAll('.job-checkbox:checked').length;
+            const countElement = document.getElementById('selectedCount');
+            const bulkActionsBar = document.getElementById('bulkActionsBar');
+
+            if (countElement) {
+                countElement.textContent = count;
+            }
+
+            // Show/hide bulk actions bar based on selection
+            if (bulkActionsBar) {
+                if (count > 0) {
+                    bulkActionsBar.style.display = 'block';
+                } else {
+                    bulkActionsBar.style.display = 'none';
+                }
+            }
+        }
+
+        // Clear Selection
+        function clearSelection() {
+            document.querySelectorAll('.job-checkbox:checked').forEach(cb => {
+                cb.checked = false;
+            });
+            if (document.getElementById('selectAll')) {
+                document.getElementById('selectAll').checked = false;
+            }
+            updateSelectedCount();
+        }
+
+        // Export Selected Vacancies
+        function exportSelected(type) {
+            const selected = [];
+
+            document.querySelectorAll('.job-checkbox:checked').forEach(cb => {
+                selected.push(cb.value);
+            });
+
+            if (selected.length === 0) {
+                alert('Please select at least one vacancy to export.');
+                return;
+            }
+
+            // Use the export route with type and selected IDs
+            let url = "{{ route('admin.jobs.index') }}";
+            url += '?export=' + type + '&ids=' + selected.join(',');
+
+            window.location.href = url;
+        }
     </script>
 @endsection

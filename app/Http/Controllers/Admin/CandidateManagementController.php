@@ -18,25 +18,34 @@ class CandidateManagementController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
 
-        $candidates = Candidate::query()
+        // Get unique candidates from application_form table
+        $candidates = ApplicationForm::query()
+            ->select([
+                \DB::raw('MIN(id) as id'),
+                'email',
+                \DB::raw('MAX(name_english) as name_english'),
+                \DB::raw('MAX(citizenship_number) as citizenship_number'),
+                \DB::raw('MAX(phone) as phone'),
+                \DB::raw('MAX(created_at) as created_at'),
+                \DB::raw('COUNT(*) as applications_count')
+            ])
+            ->groupBy('email')
             ->when($search, function ($query, $search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('mobile_number', 'like', "%{$search}%");
+                $query->havingRaw('MAX(name_english) like ?', ["%{$search}%"])
+                    ->orHavingRaw('email like ?', ["%{$search}%"])
+                    ->orHavingRaw('MAX(phone) like ?', ["%{$search}%"])
+                    ->orHavingRaw('MAX(citizenship_number) like ?', ["%{$search}%"]);
             })
-            ->withCount('applications')
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         $stats = [
-            'total' => Candidate::count(),
-            'this_month' => Candidate::whereMonth('created_at', now()->month)
+            'total' => ApplicationForm::distinct('email')->count('email'),
+            'this_month' => ApplicationForm::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
-                ->count(),
-            'with_applications' => Candidate::has('applications')->count(),
-            'verified' => Candidate::whereNotNull('email_verified_at')->count(),
+                ->distinct('email')
+                ->count('email'),
+            'with_applications' => ApplicationForm::distinct('email')->count('email'),
         ];
 
         return view('admin.candidates.index', compact('candidates', 'stats', 'search'));
@@ -47,18 +56,47 @@ class CandidateManagementController extends Controller
      */
     public function show($id)
     {
-        $candidate = Candidate::withCount('applications')->findOrFail($id);
+        // Get the specific application form record
+        $application = ApplicationForm::findOrFail($id);
 
-        $applications = ApplicationForm::where('candidate_id', $id)
-            ->with('jobPosting', 'reviewer')
+        // Get all applications with the same email (same candidate)
+        $applications = ApplicationForm::where('email', $application->email)
+            ->with('vacancy', 'reviewer')
             ->latest()
             ->get();
+
+        // Parse the full name into parts
+        $nameParts = explode(' ', trim($application->name_english));
+        $firstName = $nameParts[0] ?? '';
+        $lastName = count($nameParts) > 1 ? array_pop($nameParts) : '';
+        $middleName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
+
+        // Create a candidate object from the application form data
+        $candidate = (object) [
+            'id' => $application->id,
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
+            'name' => $application->name_english,
+            'username' => $application->citizenship_number ?? $application->email,
+            'email' => $application->email,
+            'mobile_number' => $application->phone,
+            'city' => $application->temporary_municipality ?? '',
+            'state' => $application->temporary_province ?? '',
+            'country' => 'Nepal',
+            'qualification' => $application->education_level ?? '',
+            'status' => 'active',
+            'email_verified_at' => null,
+            'photo' => $application->passport_size_photo,
+            'created_at' => $application->created_at,
+            'updated_at' => $application->updated_at,
+            'applications_count' => $applications->count(),
+        ];
 
         $applicationStats = [
             'total' => $applications->count(),
             'pending' => $applications->where('status', 'pending')->count(),
             'approved' => $applications->where('status', 'approved')->count(),
-            'shortlisted' => $applications->where('status', 'shortlisted')->count(),
             'rejected' => $applications->where('status', 'rejected')->count(),
             'selected' => $applications->where('status', 'selected')->count(),
         ];
@@ -71,7 +109,32 @@ class CandidateManagementController extends Controller
      */
     public function edit($id)
     {
-        $candidate = Candidate::findOrFail($id);
+        // Get the specific application form record
+        $application = ApplicationForm::findOrFail($id);
+
+        // Parse the full name into parts
+        $nameParts = explode(' ', trim($application->name_english));
+        $firstName = $nameParts[0] ?? '';
+        $lastName = count($nameParts) > 1 ? array_pop($nameParts) : '';
+        $middleName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
+
+        // Create a candidate object from the application form data
+        $candidate = (object) [
+            'id' => $application->id,
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
+            'username' => $application->citizenship_number ?? $application->email,
+            'email' => $application->email,
+            'mobile_number' => $application->phone,
+            'city' => $application->temporary_municipality ?? '',
+            'state' => $application->temporary_province ?? '',
+            'country' => 'Nepal',
+            'qualification' => $application->education_level ?? '',
+            'status' => 'active',
+            'created_at' => $application->created_at,
+        ];
+
         return view('admin.candidates.edit', compact('candidate'));
     }
 
@@ -80,26 +143,30 @@ class CandidateManagementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $application = ApplicationForm::findOrFail($id);
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:candidates,username,' . $id,
-            'email' => 'required|email|unique:candidates,email,' . $id,
-            'mobile_number' => 'required|string|max:10|unique:candidates,mobile_number,' . $id,
-            'city' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:255',
+            'email' => 'required|email',
+            'mobile_number' => 'required|string|max:10',
             'qualification' => 'nullable|string|max:255',
         ]);
 
-        $candidate->update($validated);
+        // Update the application form with the new data
+        $fullName = trim($validated['first_name'] . ' ' . ($validated['middle_name'] ?? '') . ' ' . $validated['last_name']);
+
+        $application->update([
+            'name_english' => $fullName,
+            'email' => $validated['email'],
+            'phone' => $validated['mobile_number'],
+            'education_level' => $validated['qualification'] ?? $application->education_level,
+        ]);
 
         return redirect()
             ->route('admin.candidates.show', $id)
-            ->with('success', 'Candidate profile updated successfully!');
+            ->with('success', 'Candidate information updated successfully!');
     }
 
     /**
@@ -111,21 +178,21 @@ class CandidateManagementController extends Controller
     }
 
     /**
-     * Delete candidate
+     * Delete candidate (and all their applications with same email)
      */
     public function destroy($id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $application = ApplicationForm::findOrFail($id);
+        $email = $application->email;
 
-        // Check if candidate has applications
-        if ($candidate->applications()->count() > 0) {
-            return back()->with('error', 'Cannot delete candidate with existing applications.');
-        }
+        // Get count of all applications with this email
+        $count = ApplicationForm::where('email', $email)->count();
 
-        $candidate->delete();
+        // Delete all applications with this email
+        ApplicationForm::where('email', $email)->delete();
 
         return redirect()
             ->route('admin.candidates.index')
-            ->with('success', 'Candidate deleted successfully!');
+            ->with('success', "Candidate deleted successfully! ({$count} application(s) removed)");
     }
 }

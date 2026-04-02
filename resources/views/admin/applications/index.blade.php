@@ -17,6 +17,22 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/government-professional.css') }}">
 <style>
+    /* Page Header Spacing */
+    .gov-page-header {
+        margin-bottom: 2rem !important;
+        padding: 2rem;
+        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        border-radius: 10px;
+    }
+
+    .gov-page-header .gov-page-title {
+        color: white !important;
+    }
+
+    .gov-page-header .gov-page-subtitle {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+
     /* Modern Table - Matching Vacancy List Style */
     .modern-table {
         width: 100%;
@@ -107,19 +123,11 @@
                 <h1 class="gov-page-title">Applications Management</h1>
                 <p class="gov-page-subtitle">Nepal Oil Corporation - E-Recruitment System</p>
             </div>
-            <div class="d-flex gap-3" style="position: relative; z-index: 1001;">
-                <button type="button" class="gov-btn gov-btn-secondary"
-                        id="exportDataButton"
-                        style="cursor: pointer !important; pointer-events: auto !important; position: relative; z-index: 1002;"
-                        onclick="exportData(); return false;">
-                    <i class="bi bi-download"></i> Export Data
-                </button>
-                <button type="button" class="gov-btn gov-btn-primary"
-                        id="bulkActionButton"
-                        style="cursor: pointer !important; pointer-events: auto !important; position: relative; z-index: 1002;"
-                        onclick="openBulkActionModal(); return false;">
-                    <i class="bi bi-check2-square"></i> Bulk Actions
-                </button>
+            <div style="position: relative; z-index: 10;">
+                <a href="{{ route('admin.dashboard') }}" class="btn"
+                   style="border: 2px solid white; color: white; padding: 0.5rem 1.5rem; font-weight: 600; border-radius: 6px; text-decoration: none; transition: all 0.2s; cursor: pointer; background: transparent;">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
             </div>
         </div>
     </div>
@@ -246,6 +254,34 @@
         </div>
     </div>
 
+    <!-- Bulk Actions Bar -->
+    <div id="bulkActionsBar" class="gov-card" style="display: none; margin-bottom: 1.5rem;">
+        <div class="gov-card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-bold text-dark me-3">
+                        <i class="bi bi-check-square me-2"></i>
+                        <span id="selectedCount">0</span> application(s) selected
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
+                        <i class="bi bi-x-circle me-1"></i>Clear Selection
+                    </button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" id="bulkActionButton" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#bulkActionModal">
+                        <i class="bi bi-lightning-fill me-1"></i>Bulk Actions
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>Export to PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Applications Table -->
     <div class="gov-card">
         <div class="gov-card-header">
@@ -316,13 +352,13 @@
                                         </small>
                                     </td>
                                     <td>
-                                        <div class="mb-1 gov-text-sm">
-                                            <i class="bi bi-envelope" style="color: #6b7280;"></i>
-                                            {{ Str::limit($application->email ?? '-', 22) }}
+                                        <div class="gov-text-sm d-flex align-items-center" style="line-height: 1.6; margin-bottom: 0.25rem;">
+                                            <i class="bi bi-envelope me-2" style="color: #6b7280; flex-shrink: 0;"></i>
+                                            <span>{{ Str::limit(trim($application->email ?? '-'), 22) }}</span>
                                         </div>
-                                        <div class="gov-text-sm">
-                                            <i class="bi bi-telephone" style="color: #6b7280;"></i>
-                                            {{ $application->phone ?? '-' }}
+                                        <div class="gov-text-sm d-flex align-items-center" style="line-height: 1.6;">
+                                            <i class="bi bi-telephone me-2" style="color: #6b7280; flex-shrink: 0;"></i>
+                                            <span>{{ trim($application->phone ?? '-') }}</span>
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -337,7 +373,13 @@
                                         {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
                                     </td>
                                     <td class="compact-col-code">
-                                        {{ $application->noc_id_card ?? '-' }}
+                                        @if($application->noc_employee == 'yes' && $application->noc_id_card)
+                                            <a href="{{ asset('storage/' . $application->noc_id_card) }}" target="_blank" class="text-primary" title="View NOC ID Card">
+                                                <i class="bi bi-file-earmark-text"></i> View
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
                                         @if($application->reviewer)
@@ -451,10 +493,10 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="gov-alert gov-alert-info mb-0">
+                                                    <!-- <div class="gov-alert gov-alert-info mb-0">
                                                         <i class="bi bi-info-circle"></i>
                                                         <small>Application status will automatically change to "Approved"</small>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
                                                     <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -567,7 +609,7 @@
 
                     <div class="gov-alert gov-alert-info mb-0">
                         <i class="bi bi-info-circle"></i>
-                        <strong id="selectedCount">0</strong> application(s) selected
+                        <strong id="modalSelectedCount">0</strong> application(s) selected
                     </div>
                 </div>
                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
@@ -645,6 +687,16 @@
 
         if (modalElement) {
             console.log('✓ Bulk Action Modal ready');
+
+            // Update count when modal is shown
+            modalElement.addEventListener('show.bs.modal', function() {
+                const count = document.querySelectorAll('.application-checkbox:checked').length;
+                const modalCountElement = document.getElementById('modalSelectedCount');
+                if (modalCountElement) {
+                    modalCountElement.textContent = count;
+                }
+                console.log('Modal opening with', count, 'applications selected');
+            });
         } else {
             console.error('✗ Bulk Action Modal NOT found');
         }
@@ -766,14 +818,65 @@
         });
     });
 
-    // Update Count
+    // Update Count and Show/Hide Bulk Actions Bar
     function updateSelectedCount() {
         const count = document.querySelectorAll('.application-checkbox:checked').length;
         const countElement = document.getElementById('selectedCount');
+        const modalCountElement = document.getElementById('modalSelectedCount');
+        const bulkActionsBar = document.getElementById('bulkActionsBar');
+
         if (countElement) {
             countElement.textContent = count;
         }
+
+        if (modalCountElement) {
+            modalCountElement.textContent = count;
+        }
+
+        // Show/hide bulk actions bar based on selection
+        if (bulkActionsBar) {
+            if (count > 0) {
+                bulkActionsBar.style.display = 'block';
+            } else {
+                bulkActionsBar.style.display = 'none';
+            }
+        }
     }
+
+    // Clear Selection
+    function clearSelection() {
+        document.querySelectorAll('.application-checkbox:checked').forEach(cb => {
+            cb.checked = false;
+        });
+        if (document.getElementById('selectAll')) {
+            document.getElementById('selectAll').checked = false;
+        }
+        updateSelectedCount();
+    }
+
+    // Export Selected Applications
+    function exportSelected(type) {
+        const selected = [];
+
+        document.querySelectorAll('.application-checkbox:checked').forEach(cb => {
+            selected.push(cb.value);
+        });
+
+        if (selected.length === 0) {
+            alert('Please select at least one application to export.');
+            return;
+        }
+
+        // Use the existing export route with type and selected IDs
+        let url = "{{ route('admin.applications.export') }}";
+        url += '?type=' + type + '&ids=' + selected.join(',');
+
+        window.location.href = url;
+    }
+
+    // Make functions globally accessible
+    window.clearSelection = clearSelection;
+    window.exportSelected = exportSelected;
 
     // Bulk Action Type
     const bulkActionSelect = document.getElementById('bulkAction');

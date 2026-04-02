@@ -386,7 +386,7 @@
                             <span class="nepali-text">श्रेणी</span>
                         </label>
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_open"
                                         value="open" {{ old('category', $job->category) == 'open' ? 'checked' : '' }}
@@ -397,7 +397,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_inclusive"
                                         value="inclusive" {{ old('category', $job->category) == 'inclusive' ? 'checked' : '' }}>
@@ -407,13 +407,23 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-check form-check-inline border rounded p-3 w-100">
                                     <input class="form-check-input" type="radio" name="category" id="category_internal"
                                         value="internal" {{ old('category', $job->category) == 'internal' ? 'checked' : '' }}>
                                     <label class="form-check-label w-100" for="category_internal">
                                         <strong>Internal (आन्तरिक)</strong>
-                                        <br><small class="text-muted">Internal promotion</small>
+                                        <br><small class="text-muted">Internal examination</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-check-inline border rounded p-3 w-100">
+                                    <input class="form-check-input" type="radio" name="category" id="category_internal_appraisal"
+                                        value="internal_appraisal" {{ old('category', $job->category) == 'internal_appraisal' ? 'checked' : '' }}>
+                                    <label class="form-check-label w-100" for="category_internal_appraisal">
+                                        <strong>Internal Appraisal (आन्तरिक बढुवा)</strong>
+                                        <br><small class="text-muted">Performance appraisal</small>
                                     </label>
                                 </div>
                             </div>
@@ -548,11 +558,11 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
 
-                        <div class="alert alert-info mt-3 mb-0">
+                        <!-- <div class="alert alert-info mt-3 mb-0">
                             <i class="bi bi-clock-history me-2"></i>
                             <strong>Current Deadline:</strong> {{ $job->deadline->format('Y-m-d') }} - You can update if needed.
                             <br><small>हालको समय सीमा: {{ $job->deadline->format('Y-m-d') }} - आवश्यक भएमा अपडेट गर्न सक्नुहुन्छ।</small>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Double Dastur Date - Dual Date Pickers -->
@@ -586,7 +596,7 @@
                                     id="double_dastur_ad"
                                     name="double_dastur_date"
                                     placeholder="YYYY-MM-DD"
-                                    value="{{ old('double_dastur_date', $job->double_dastur_date) }}"
+                                    value="{{ old('double_dastur_date', $job->double_dastur_date ? \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') : '') }}"
                                     readonly>
                                 <small class="form-text text-success">
                                     <i class="bi bi-info-circle me-1"></i>Optional extended deadline
@@ -598,11 +608,11 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
 
-                        <div class="alert alert-success mt-3 mb-0">
+                        <!-- <div class="alert alert-success mt-3 mb-0">
                             <i class="bi bi-calendar-plus me-2"></i>
                             <strong>Extended Period:</strong> Double Dastur allows additional time after the original deadline.
                             <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप समय अनुमति दिन्छ।</small>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Application Fee & Double Dastur Fee Row -->
@@ -755,7 +765,7 @@
                             <tr id="preview-double-dastur-ad-row" style="display: {{ $job->double_dastur_date ? '' : 'none' }};">
                                 <th>Double Dastur (AD)</th>
                                 <td id="preview-double-dastur-ad" class="fw-semibold text-success">
-                                    {{ $job->double_dastur_date ?? '-' }}
+                                    {{ $job->double_dastur_date ? \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') : '-' }}
                                 </td>
                             </tr>
                             <tr id="preview-application-fee-row">

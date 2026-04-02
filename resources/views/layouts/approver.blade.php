@@ -435,8 +435,35 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Notifications -->
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-dark position-relative"
+                           href="{{ route('approver.notifications.index') }}"
+                           title="Notifications">
+                            <i class="bi bi-bell fs-5"></i>
+                            @php
+                                try {
+                                    if (Auth::guard('approver')->check()) {
+                                        $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('approver')->id())
+                                            ->where('user_type', 'approver')
+                                            ->where('is_read', false)
+                                            ->count();
+                                    } else {
+                                        $unreadCount = 0;
+                                    }
+                                } catch (\Exception $e) {
+                                    $unreadCount = 0;
+                                }
+                            @endphp
+                            @if($unreadCount > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
 
-                    <!-- Logout -->  
+                    <!-- Logout -->
                     <li class="nav-item">
                         <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
                             @csrf
@@ -456,9 +483,15 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="user-profile-sidebar">
-                    <!-- User Avatar with Initial -->
-                    <div class="user-avatar">
-                        {{ strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)) }}
+                    <!-- User Avatar with Photo or Initial -->
+                    <div class="user-avatar" style="{{ Auth::guard('approver')->user()->photo ? 'background:none;' : '' }}">
+                        @if(Auth::guard('approver')->user()->photo)
+                            <img src="{{ asset('storage/' . Auth::guard('approver')->user()->photo) }}"
+                                 alt="{{ Auth::guard('approver')->user()->name }}"
+                                 style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
+                        @else
+                            {{ strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)) }}
+                        @endif
                     </div>
 
                     <!-- User Info -->
@@ -552,7 +585,7 @@
 
     function adToBs(adYear, adMonth, adDay) {
         // Reference: Baisakh 1, 2081 = April 13, 2024 (AD)
-        const refAD = new Date(2024, 3, 13);
+        const refAD = new Date(2024, 3, 14);
         const refBS = { year: 2081, month: 0, day: 1 };
 
         const given = new Date(adYear, adMonth, adDay);
@@ -643,7 +676,7 @@
     setInterval(updateDates, 60000);
 </script>
 
-@stack('scripts')
+@yield('scripts')
 </body>
 
 </html>

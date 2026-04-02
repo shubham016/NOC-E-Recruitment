@@ -359,6 +359,8 @@
                             @else
                                 <span class="badge bg-warning text-dark">Internal</span>
                             @endif
+                        @elseif($job->category == 'internal_appraisal')
+                            <span class="badge text-white" style="background-color: #8b5cf6;">Internal Appraisal</span>
                         @else
                             <span class="badge bg-secondary">{{ ucfirst($job->category) }}</span>
                         @endif

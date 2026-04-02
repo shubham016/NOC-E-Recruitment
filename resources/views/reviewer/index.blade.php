@@ -476,9 +476,6 @@
     <button class="btn btn-danger btn-sm" onclick="bulkAction('rejected')">
         <i class="bi bi-x-circle me-1"></i>Reject
     </button>
-    <button class="btn btn-info btn-sm" onclick="bulkAction('approved')">
-        <i class="bi bi-arrow-repeat me-1"></i>Approved
-    </button>
     <button class="btn btn-outline-light btn-sm" onclick="clearSelection()">
         <i class="bi bi-x-lg"></i>
     </button>

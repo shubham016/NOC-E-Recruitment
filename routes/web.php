@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\HRAdministratorAuthController;
 use App\Http\Controllers\Reviewer\ReviewerDashboardController;
 use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Reviewer\NotificationController as ReviewerNotificationController;
+use App\Http\Controllers\Reviewer\MyProfileController as ReviewerMyProfileController;
 use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\VacancyManagementController;
@@ -319,6 +320,11 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
             Route::post('/bulk-update', [ApplicationReviewController::class, 'bulkUpdate'])->name('bulkUpdate');
         });
 
+        // My Profile
+        Route::get('/myprofile', [ReviewerMyProfileController::class, 'index'])->name('myprofile');
+        Route::post('/myprofile/update', [ReviewerMyProfileController::class, 'update'])->name('myprofile.update');
+        Route::post('/change-password', [ReviewerMyProfileController::class, 'changePassword'])->name('change.password');
+
     });
 
 });
@@ -345,10 +351,10 @@ Route::prefix('approver')->name('approver.')->group(function () {
 
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
-            Route::get('/', [ApproverNotificationController::class, 'index'])->name('index');
-            Route::post('/{id}/mark-as-read', [ApproverNotificationController::class, 'markAsRead'])->name('markAsRead');
-            Route::post('/mark-all-as-read', [ApproverNotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
-            Route::delete('/{id}', [ApproverNotificationController::class, 'destroy'])->name('destroy');
+            Route::get('/', [\App\Http\Controllers\Approver\NotificationController::class, 'index'])->name('index');
+            Route::post('/{id}/mark-as-read', [\App\Http\Controllers\Approver\NotificationController::class, 'markAsRead'])->name('markAsRead');
+            Route::post('/mark-all-as-read', [\App\Http\Controllers\Approver\NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+            Route::delete('/{id}', [\App\Http\Controllers\Approver\NotificationController::class, 'destroy'])->name('destroy');
         });
 
         // Assigned Applications

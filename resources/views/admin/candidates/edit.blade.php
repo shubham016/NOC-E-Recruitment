@@ -309,13 +309,11 @@
 
                         <div class="form-group">
                             <label class="form-label">
-                                Username <span class="required">*</span>
+                                Citizenship Number
                             </label>
-                            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror"
-                                value="{{ old('username', $candidate->username) }}" required>
-                            @error('username')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" class="form-control"
+                                value="{{ $candidate->username }}" disabled>
+                            <small class="form-text">Citizenship number cannot be changed</small>
                         </div>
                     </div>
                 </div>
@@ -358,35 +356,6 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror"
-                                value="{{ old('city', $candidate->city) }}">
-                            @error('city')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">State/Province</label>
-                            <input type="text" name="state" class="form-control @error('state') is-invalid @enderror"
-                                value="{{ old('state', $candidate->state) }}">
-                            @error('state')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Country</label>
-                            <input type="text" name="country" class="form-control @error('country') is-invalid @enderror"
-                                value="{{ old('country', $candidate->country) }}">
-                            @error('country')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
                             <label class="form-label">Qualification</label>
                             <input type="text" name="qualification"
                                 class="form-control @error('qualification') is-invalid @enderror"
@@ -394,6 +363,10 @@
                             @error('qualification')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <!-- Placeholder for balance -->
                         </div>
                     </div>
                 </div>
@@ -429,24 +402,20 @@
                         <div class="form-group">
                             <label class="form-label">Candidate ID</label>
                             <input type="text" class="form-control"
-                                value="NOC-{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}" disabled>
+                                value="{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}" disabled>
                             <small class="form-text">System generated, cannot be changed</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Email Verification Status</label>
-                            <input type="text" class="form-control"
-                                value="{{ $candidate->email_verified_at ? 'Verified on ' . $candidate->email_verified_at->format('M d, Y h:i A') : 'Not Verified' }}"
-                                disabled>
-                            <small class="form-text">Email verification cannot be manually changed</small>
-                        </div>
-
-                        <div class="form-group">
                             <label class="form-label">Registration Date</label>
                             <input type="text" class="form-control"
                                 value="{{ $candidate->created_at->format('F d, Y h:i A') }}" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <!-- Placeholder for balance -->
                         </div>
                     </div>
                 </div>

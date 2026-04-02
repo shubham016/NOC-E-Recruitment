@@ -115,15 +115,21 @@
 @section('content')
 <div class="container-fluid px-4 py-4">
     <!-- Dashboard Header -->
-    <div class="dashboard-header">
+        <div class="dashboard-header">
         <div class="row align-items-center">
+            <!-- Left side: Welcome message -->
             <div class="col-md-8">
                 <h2 class="fw-bold mb-2">
                     Welcome, {{ Auth::guard('approver')->user()->name }}!
                 </h2>
-                <small><i class="mb-0 opacity-90">
-                    <span id="english-date"></span> | <span id="nepali-date"></span>
-                </i></small>
+            </div>
+
+            <!-- Right side: Calendar -->
+            <div class="col-md-4 text-end"> <!-- text-end aligns content to right -->
+                <small>
+                    <span id="english-date"></span> <br> <span id="nepali-date"></span>
+                </small>
+                
             </div>
         </div>
     </div>
@@ -168,82 +174,6 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Left Column -->
-        <div class="col-lg-8">
-            <!-- Quick Information -->
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-info-circle text-primary me-2"></i>Approver Information
-                </h5>
-                <div class="info-row">
-                    <span class="text-muted">Employee ID:</span>
-                    <span class="fw-semibold">{{ $approver->employee_id }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Department:</span>
-                    <span class="fw-semibold">{{ $approver->department ?? 'N/A' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Designation:</span>
-                    <span class="fw-semibold">{{ $approver->designation ?? 'N/A' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Email:</span>
-                    <span class="fw-semibold">{{ $approver->email }}</span>
-                </div>
-                @if($approver->vacancy_id)
-                <div class="info-row">
-                    <span class="text-muted">Assigned Job:</span>
-                    <span class="fw-semibold">{{ $approver->vacancy->title ?? 'N/A' }}</span>
-                </div>
-                @endif
-            </div>
-
-            <!-- Welcome Message -->
-            <!-- <div class="info-card">
-                <h5>
-                    <i class="bi bi-chat-left-quote text-success me-2"></i>Welcome Message
-                </h5>
-                <p class="mb-0 text-muted">
-                    Welcome to the NOC E-Recruitment Approver Portal. As an approver, you have the responsibility to review and approve/reject applications assigned to you. Please ensure timely processing of all applications to maintain an efficient recruitment process.
-                </p>
-            </div> -->
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-lg-4">
-            <!-- Quick Actions -->
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-lightning text-warning me-2"></i>Quick Actions
-                </h5>
-                <a href="{{ route('approver.assignedtome') }}" class="quick-action-btn">
-                    <i class="bi bi-inbox me-2"></i>Assigned Applications
-                </a>
-                <a href="{{ route('approver.assignedtome', ['status' => 'pending']) }}" class="quick-action-btn">
-                    <i class="bi bi-clock-history me-2"></i>Pending Reviews
-                </a>
-                <a href="{{ route('approver.assignedtome', ['status' => 'approved']) }}" class="quick-action-btn">
-                    <i class="bi bi-check-circle me-2"></i>Approved Applications
-                </a>
-            </div>
-
-            <!-- System Status -->
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-gear text-secondary me-2"></i>System Status
-                </h5>
-                <div class="info-row">
-                    <span class="text-muted">Status:</span>
-                    <span class="badge bg-success">Active</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-muted">Last Login:</span>
-                    <span class="fw-semibold small">{{ now()->format('M d, Y h:i A') }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 @endsection

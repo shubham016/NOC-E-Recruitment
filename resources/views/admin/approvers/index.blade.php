@@ -14,6 +14,109 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+    <style>
+        /* Modern Table */
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .modern-table thead {
+            background: #f9fafb;
+        }
+
+        .modern-table thead th {
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            color: #000;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #000;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            text-align: center;
+        }
+
+        .modern-table tbody td {
+            color: #000 !important;
+            border: 1px solid #060606;
+            vertical-align: middle;
+        }
+
+        .modern-table tbody td:not(:has(.badge, .btn)) {
+            color: #000 !important;
+        }
+
+        .modern-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Assign Vacancy Dropdown */
+        .assign-vacancy-select {
+            width: auto !important;
+            max-width: 160px;
+            padding: 0.25rem 1.75rem 0.25rem 0.5rem !important;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Card Header Border */
+        .card-header.border-bottom {
+            border-bottom: 2px solid #dee2e6 !important;
+        }
+
+        /* Action Buttons */
+        .gov-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .gov-action-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #1f2937;
+        }
+
+        .gov-action-btn-success {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .gov-action-btn-success:hover {
+            background: #ecfdf5;
+            border-color: #059669;
+            color: #059669;
+        }
+
+        .gov-action-btn-danger {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .gov-action-btn-danger:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+    </style>
+@endsection
+
 @section('content')
 <div class="container-fluid px-4 py-4">
     <!-- Page Header -->
@@ -115,7 +218,8 @@
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-funnel me-1"></i>Filter
+                        <!-- <i class="bi bi-funnel me-1"></i> -->
+                        Search
                     </button>
                 </div>
             </form>
@@ -124,33 +228,52 @@
 
     <!-- Approvers Table -->
     <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">
+                    <!-- <i class="bi bi-people-fill text-primary me-2"></i> -->
+                    Approvers List
+                </h6>
+                <span class="badge bg-primary ms-2">Total {{ $approvers->total() }}</span>
+            </div>
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0 modern-table w-100"
+                    style="table-layout: auto; white-space: nowrap;">
+                    <thead class="table-light">
                         <tr>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Department</th>
-                            <th>Designation</th>
-                            <th style="min-width: 200px;">Assign Vacancy</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center text-uppercase">S.N</th>
+                            <th class="text-center text-uppercase">Employee ID</th>
+                            <th class="text-center text-uppercase">Name</th>
+                            <th class="text-center text-uppercase">Email</th>
+                            <th class="text-center text-uppercase">Department</th>
+                            <th class="text-center text-uppercase">Designation</th>
+                            <th class="text-center text-uppercase">Status</th>
+                            <th class="text-center text-uppercase" style="min-width: 200px;">Assign Vacancy</th>
+                            <th class="text-center text-uppercase">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="text-center align-middle">
                         @forelse($approvers as $approver)
                             <tr>
-                                <td class="fw-semibold">{{ $approver->employee_id }}</td>
+                                <td>{{ $approvers->firstItem() + $loop->index }}</td>
+                                <td>{{ $approver->employee_id }}</td>
                                 <td>{{ $approver->name }}</td>
                                 <td>{{ $approver->email }}</td>
                                 <td>{{ $approver->department }}</td>
                                 <td>{{ $approver->designation ?? 'N/A' }}</td>
                                 <td>
-                                    <form action="{{ route('admin.approvers.assign-vacancy', $approver->id) }}" method="POST" class="d-flex gap-1">
+                                    @if($approver->status === 'active')
+                                        Active
+                                    @else
+                                        Inactive
+                                    @endif
+                                </td>
+                                <td>
+                                    <form action="{{ route('admin.approvers.assign-vacancy', $approver->id) }}" method="POST" class="d-flex justify-content-center">
                                         @csrf
-                                        <select name="vacancy_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <select name="vacancy_id" class="form-select form-select-sm assign-vacancy-select" onchange="this.form.submit()">
                                             <option value="">All Vacancies</option>
                                             @foreach($vacancies as $vacancy)
                                                 <option value="{{ $vacancy->id }}" {{ $approver->vacancy_id == $vacancy->id ? 'selected' : '' }}>
@@ -161,32 +284,35 @@
                                     </form>
                                 </td>
                                 <td>
-                                    @if($approver->status === 'active')
-                                        <span class="badge bg-success">Active</span>
-                                    @else
-                                        <span class="badge bg-danger">Inactive</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.approvers.show', $approver->id) }}" class="btn btn-outline-primary" title="View">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ route('admin.approvers.show', $approver->id) }}"
+                                           class="gov-action-btn"
+                                           title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.approvers.edit', $approver->id) }}" class="btn btn-outline-warning" title="Edit">
+                                        <a href="{{ route('admin.approvers.edit', $approver->id) }}"
+                                           class="gov-action-btn"
+                                           title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('admin.approvers.toggle-status', $approver->id) }}" method="POST" class="d-inline">
+                                        <button type="button"
+                                                class="gov-action-btn"
+                                                onclick="event.preventDefault(); if(confirm('Toggle status?')) document.getElementById('toggle-form-{{ $approver->id }}').submit();"
+                                                title="Toggle Status">
+                                            <i class="bi bi-toggle-{{ $approver->status === 'active' ? 'on' : 'off' }}"></i>
+                                        </button>
+                                        <form id="toggle-form-{{ $approver->id }}" action="{{ route('admin.approvers.toggle-status', $approver->id) }}" method="POST" style="display: none;">
                                             @csrf
-                                            <button type="submit" class="btn btn-outline-secondary" title="Toggle Status">
-                                                <i class="bi bi-toggle-{{ $approver->status === 'active' ? 'on' : 'off' }}"></i>
-                                            </button>
                                         </form>
-                                        <form action="{{ route('admin.approvers.destroy', $approver->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
+                                        <button type="button"
+                                                class="gov-action-btn gov-action-btn-danger"
+                                                onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this approver?')) document.getElementById('delete-form-{{ $approver->id }}').submit();"
+                                                title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <form id="delete-form-{{ $approver->id }}" action="{{ route('admin.approvers.destroy', $approver->id) }}" method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
                                         </form>
                                     </div>
                                 </td>

@@ -114,6 +114,8 @@
                             समावेशी
                         @elseif($vacancy->category === 'internal')
                             आन्तरिक
+                        @elseif($vacancy->category === 'internal_appraisal')
+                            आन्तरिक बढुवा
                         @endif
 
                         @if($vacancy->category === 'internal' && $vacancy->internal_type)

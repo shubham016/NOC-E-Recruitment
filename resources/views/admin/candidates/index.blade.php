@@ -17,37 +17,62 @@
 @section('custom-styles')
     <style>
         .stat-card {
-            border-left: 4px solid #6366f1;
+            background: white;
+            border-radius: 10px;
+            padding: 1.25rem;
             transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            height: 100%;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        .stat-card h2 {
-            font-size: 2rem;
+        .candidate-row {
+            transition: all 0.2s;
+        }
+
+        .candidate-row:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Modern Table */
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .modern-table thead {
+            background: #f9fafb;
+        }
+
+        .modern-table thead th {
+            padding: 1.25rem 1.5rem;
             font-weight: 700;
-            margin: 0;
-        }
-
-        .stat-card h6 {
-            color: #6b7280;
+            color: #000;
             font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #000;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            text-align: center;
         }
 
-        .badge-status {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.375rem;
+        .modern-table tbody td {
+            color: #000;
+            border: 1px solid #060606;
+            vertical-align: middle;
         }
 
-        .table-hover tbody tr:hover {
-            background-color: #f9fafb;
-            cursor: pointer;
+        .modern-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
         }
 
         .search-section {
@@ -55,22 +80,6 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-action {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        .empty-state {
-            padding: 3rem 1rem;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #d1d5db;
-            margin-bottom: 1rem;
         }
     </style>
 @endsection
@@ -100,49 +109,44 @@
             </div>
         @endif
 
-        <!-- Stats Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="card stat-card h-100">
-                    <div class="card-body">
-                        <h6 class="text-muted">Total Candidates</h6>
-                        <h2 class="text-primary">{{ $stats['total'] }}</h2>
-                        <small class="text-muted">
-                            <i class="bi bi-people me-1"></i>All registered
-                        </small>
+        <!-- Statistics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-people-fill text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
+                            <small class="text-muted">Total Candidates</small>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card h-100" style="border-left-color: #10b981;">
-                    <div class="card-body">
-                        <h6 class="text-muted">With Applications</h6>
-                        <h2 class="text-success">{{ $stats['with_applications'] }}</h2>
-                        <small class="text-muted">
-                            <i class="bi bi-file-earmark-text me-1"></i>Applied for jobs
-                        </small>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-file-earmark-text-fill text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ $stats['with_applications'] }}</h3>
+                            <small class="text-muted">With Applications</small>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card h-100" style="border-left-color: #3b82f6;">
-                    <div class="card-body">
-                        <h6 class="text-muted">Verified</h6>
-                        <h2 class="text-primary">{{ $stats['verified'] }}</h2>
-                        <small class="text-muted">
-                            <i class="bi bi-check-circle me-1"></i>Email verified
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card h-100" style="border-left-color: #8b5cf6;">
-                    <div class="card-body">
-                        <h6 class="text-muted">This Month</h6>
-                        <h2 class="text-purple">{{ $stats['this_month'] }}</h2>
-                        <small class="text-muted">
-                            <i class="bi bi-calendar me-1"></i>New registrations
-                        </small>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-calendar-fill text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ $stats['this_month'] }}</h3>
+                            <small class="text-muted">This Month</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -178,95 +182,168 @@
 
         <!-- Candidates Table -->
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0 py-3">
+            <div class="card-header bg-white py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-people me-2"></i>Candidates List
-                    </h5>
-                    <div class="text-muted">
-                        <small>Showing {{ $candidates->firstItem() ?? 0 }} to {{ $candidates->lastItem() ?? 0 }} of
-                            {{ $candidates->total() }} entries</small>
-                    </div>
+                    <h6 class="mb-0 fw-bold">
+                        <i class="bi bi-list-ul text-primary me-2"></i>Candidates List
+                    </h6>
+                    <span class="badge bg-primary ms-2"> Total {{ $candidates->total() }}</span>
                 </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 modern-table w-100"
+                        style="table-layout: auto; white-space: nowrap;">
                         <thead class="table-light">
                             <tr>
-                                <th class="border-0 ps-4">ID</th>
-                                <th class="border-0">Name</th>
-                                <th class="border-0">Username</th>
-                                <th class="border-0">Email</th>
-                                <th class="border-0">Mobile</th>
-                                <th class="border-0">Applications</th>
-                                <th class="border-0">Email Verified</th>
-                                <th class="border-0">Registered</th>
-                                <th class="border-0 pe-4">Actions</th>
+                                <th class="text-center text-uppercase">S.N</th>
+                                <th class="text-center text-uppercase">Name</th>
+                                <th class="text-center text-uppercase">Citizenship No.</th>
+                                <th class="text-center text-uppercase">Email</th>
+                                <th class="text-center text-uppercase">Phone</th>
+                                <th class="text-center text-uppercase">Applications</th>
+                                <th class="text-center text-uppercase">Registered</th>
+                                <th class="text-center text-uppercase">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-center align-middle">
                             @forelse($candidates as $candidate)
-                                <tr>
-                                    <td>{{ $candidate->id }}</td>
-                                    <td>
-                                        <strong>{{ $candidate->name }}</strong>
-                                    </td>
-                                    <td>{{ $candidate->username }}</td>
+                                <tr class="candidate-row">
+                                    <td>{{ $candidates->firstItem() + $loop->index }}</td>
+                                    <td>{{ $candidate->name_english }}</td>
+                                    <td>{{ $candidate->citizenship_number }}</td>
                                     <td>{{ $candidate->email }}</td>
-                                    <td>{{ $candidate->mobile_number }}</td>
+                                    <td>{{ $candidate->phone }}</td>
                                     <td>
-                                        <span class="badge bg-info">
-                                            {{ $candidate->applications_count }} Applications
-                                        </span>
+                                        {{ $candidate->applications_count }}
                                     </td>
-                                    <td class="text-center">
-                                        @if($candidate->email_verified_at)
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-check-circle"></i> Verified
-                                            </span>
-                                        @else
-                                            <span class="badge bg-warning">
-                                                <i class="bi bi-clock"></i> Not Verified
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $candidate->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <a href="{{ route('admin.candidates.show', $candidate->id) }}"
-                                            class="btn btn-sm btn-primary">
-                                            <i class="bi bi-eye"></i> View
-                                        </a>
+                                        <div class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
+                                            <i class="bi bi-hourglass-split"></i> Converting...
+                                        </div>
+                                        <small style="color: #718096;">{{ $candidate->created_at->format('M d, Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('admin.candidates.show', $candidate->id) }}"
+                                                class="btn btn-outline-primary" title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.candidates.edit', $candidate->id) }}"
+                                                class="btn btn-outline-secondary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                onclick="confirmDelete({{ $candidate->id }})" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center py-4">
-                                        <i class="bi bi-inbox" style="font-size: 48px; color: #ccc;"></i>
-                                        <p class="text-muted mt-2">No candidates found</p>
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="bi bi-inbox display-1 text-muted"></i>
+                                        <h5 class="text-muted mt-3">No Candidates Found</h5>
+                                        <p class="text-muted">No candidates have registered yet.</p>
                                     </td>
                                 </tr>
                             @endforelse
-
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <!-- Pagination -->
-                @if($candidates->hasPages())
-                    <div class="card-footer bg-white border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-muted">
-                                Showing {{ $candidates->firstItem() }} to {{ $candidates->lastItem() }} of
-                                {{ $candidates->total() }} results
-                            </div>
-                            <div>
-                                {{ $candidates->links() }}
-                            </div>
+            @if($candidates->hasPages())
+                <div class="card-footer bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted small">
+                            Showing {{ $candidates->firstItem() }} to {{ $candidates->lastItem() }} of {{ $candidates->total() }}
+                        </div>
+                        <div>
+                            {{ $candidates->links() }}
                         </div>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
-    </div>
+
+    <!-- Delete Confirmation Form (Hidden) -->
+    <form id="deleteForm" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+@endsection
+
+@section('scripts')
+    <script>
+        function confirmDelete(candidateId) {
+            if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
+                const form = document.getElementById('deleteForm');
+                form.action = `/admin/candidates/${candidateId}`;
+                form.submit();
+            }
+        }
+
+        // Convert English numerals to Nepali numerals
+        function englishToNepali(str) {
+            if (!str) return str;
+            const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+            return str.replace(/[0-9]/g, d => map[d]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔧 Initializing Nepali date conversion for candidates table...');
+
+            // Wait for converter to be ready
+            function waitForConverter() {
+                if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+                    setTimeout(waitForConverter, 100);
+                    return;
+                }
+
+                console.log('✅ Converter ready, converting all dates...');
+                convertAllDates();
+            }
+
+            function convertAllDates() {
+                // Find all elements with Nepali date class
+                const dateElements = document.querySelectorAll('.nepali-date-bs');
+
+                console.log(`📅 Found ${dateElements.length} dates to convert`);
+
+                dateElements.forEach((element, index) => {
+                    const adDate = element.getAttribute('data-ad-date');
+
+                    if (adDate) {
+                        try {
+                            // Convert AD to BS (returns English numerals like 2082-11-05)
+                            const bsDate = window.adToBS(adDate);
+
+                            if (bsDate) {
+                                // Convert to Nepali numerals (२०८२-११-०५)
+                                const bsNepali = englishToNepali(bsDate);
+
+                                // Update the element with Nepali numeral date
+                                element.innerHTML = `${bsNepali}`;
+                                console.log(`✅ Row ${index + 1}: ${adDate} → ${bsDate} → ${bsNepali}`);
+                            } else {
+                                element.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                                element.style.color = '#f56565';
+                            }
+                        } catch (error) {
+                            console.error(`❌ Error converting date ${adDate}:`, error);
+                            element.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+                            element.style.color = '#f56565';
+                        }
+                    }
+                });
+
+                console.log('✅ All dates converted successfully!');
+            }
+
+            // Start the conversion process
+            waitForConverter();
+        });
+    </script>
 @endsection

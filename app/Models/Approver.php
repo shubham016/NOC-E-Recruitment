@@ -58,4 +58,12 @@ class Approver extends Authenticatable
     {
         return $this->jobPosting();
     }
+
+    /**
+     * Get all application forms assigned to this approver
+     */
+    public function applicationForms()
+    {
+        return $this->hasMany(ApplicationForm::class, 'approver_id');
+    }
 }

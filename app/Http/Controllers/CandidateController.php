@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -120,6 +121,12 @@ class CandidateController extends Controller
             ->first();
 
         if ($candidate && Hash::check($request->password, $candidate->password)) {
+            // Clear all other guard sessions to prevent conflicts
+            Auth::guard('admin')->logout();
+            Auth::guard('hr_administrator')->logout();
+            Auth::guard('reviewer')->logout();
+            Auth::guard('approver')->logout();
+
             Session::put('candidate_id',         $candidate->id);
             Session::put('candidate_name',       $candidate->name);
             Session::put('candidate_email',      $candidate->email);

@@ -3,215 +3,178 @@
 namespace App\Http\Controllers\Approver;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Vacancy;
 use App\Models\ApplicationForm;
+use App\Models\JobPosting;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class AssignedToMeController extends Controller
 {
-    /**
-     * Display applications assigned to this approver
-     */
     public function index(Request $request)
     {
         $approver = Auth::guard('approver')->user();
 
-        // If approver is not assigned to any vacancy, show empty results
-        if (!$approver->vacancy_id) {
-            $vacancies = collect();
-            $applications = ApplicationForm::where('id', null)->paginate(10); // Empty collection
-            return view('approver.assignedtome', compact('vacancies', 'applications'));
+        $query = ApplicationForm::with(['jobPosting', 'reviewer'])
+            ->where('approver_id', $approver->id)
+            ->where('status', '!=', 'draft');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name_english', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('jobPosting', function ($q2) use ($search) {
+                        $q2->where('title', 'like', "%{$search}%");
+                    });
+            });
         }
 
-        // Get vacancies for filter (only the assigned vacancy)
-        $vacancies = Vacancy::select('id', 'title')
-            ->where('id', $approver->vacancy_id)
-            ->where('status', 'active')
-            ->get();
-
-        // Build query - Only show applications for assigned vacancy
-        // and only those that are ready for approval (reviewed/shortlisted)
-        $query = ApplicationForm::with(['candidate', 'vacancy'])
-            ->where('vacancy_id', $approver->vacancy_id)
-            ->whereIn('status', ['shortlisted', 'pending', 'approved', 'rejected']);
-
-        // Apply filters
-        if ($request->filled('vacancy_id')) {
-            $query->where('vacancy_id', $request->vacancy_id);
-        }
-
+        // Status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('candidate', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
+        // Job filter
+        if ($request->filled('job_id')) {
+            $query->where('job_posting_id', $request->job_id);
         }
 
-        // Paginate results (oldest first - ascending order)
-        $applications = $query->oldest()->paginate(10);
-
-        return view('approver.assignedtome', compact('vacancies', 'applications'));
-    }
-
-    /**
-     * Export applications to CSV
-     */
-    public function exportCsv(Request $request)
-    {
-        $approver = Auth::guard('approver')->user();
-        $ids = $request->ids ?? [];
-
-        $query = ApplicationForm::with(['candidate', 'vacancy']);
-
-        if (!empty($ids)) {
-            $query->whereIn('id', $ids);
-        } elseif ($approver->vacancy_id) {
-            $query->where('vacancy_id', $approver->vacancy_id);
-        }
-
-        $applications = $query->get();
-
-        $filename = 'applications_' . date('Y-m-d_His') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        $stats = [
+            'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
+            'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
         ];
 
-        $callback = function() use ($applications) {
-            $file = fopen('php://output', 'w');
+        $applications = $query->latest()->paginate(15)->withQueryString();
 
-            // Add CSV headers
-            fputcsv($file, [
-                'Application ID',
-                'Candidate Name',
-                'Email',
-                'Phone',
-                'Vacancy Title',
-                'Status',
-                'Applied Date'
-            ]);
+        $jobs = JobPosting::select('id', 'title')->orderBy('title')->get();
 
-            // Add data rows
-            foreach ($applications as $application) {
-                fputcsv($file, [
-                    $application->id,
-                    $application->candidate->name ?? 'N/A',
-                    $application->candidate->email ?? 'N/A',
-                    $application->candidate->phone ?? 'N/A',
-                    $application->vacancy->title ?? 'N/A',
-                    $application->status,
-                    $application->created_at->format('Y-m-d'),
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return view('approver.assignedtome', compact('jobs', 'applications', 'stats'));
     }
 
-    /**
-     * Export applications to PDF
-     */
-    public function exportPdf(Request $request)
-    {
-        $approver = Auth::guard('approver')->user();
-        $ids = $request->ids ?? [];
-
-        $query = ApplicationForm::with(['candidate', 'vacancy']);
-
-        if (!empty($ids)) {
-            $query->whereIn('id', $ids);
-        } elseif ($approver->vacancy_id) {
-            $query->where('vacancy_id', $approver->vacancy_id);
-        }
-
-        $applications = $query->get();
-
-        $pdf = Pdf::loadView('approver.pdf.applications', compact('applications', 'approver'));
-
-        return $pdf->download('applications_' . date('Y-m-d_His') . '.pdf');
-    }
-
-    /**
-     * Show application detail
-     */
     public function show($id)
     {
         $approver = Auth::guard('approver')->user();
 
-        $application = ApplicationForm::with(['candidate', 'vacancy', 'reviewer'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver'])
+            ->where('approver_id', $approver->id)
             ->findOrFail($id);
-
-        // Check if approver has access to this application
-        if ($approver->vacancy_id && $application->vacancy_id != $approver->vacancy_id) {
-            abort(403, 'Unauthorized access to this application.');
-        }
 
         return view('approver.show', compact('application'));
     }
 
-    /**
-     * Update application status (approve/reject)
-     */
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'remarks' => 'nullable|string|max:1000',
+            'status'         => 'required|in:approved,rejected',
+            'approver_notes' => 'required|string|max:1000',
         ]);
 
         $approver = Auth::guard('approver')->user();
 
-        $application = ApplicationForm::findOrFail($id);
+        $application = ApplicationForm::where('approver_id', $approver->id)
+            ->findOrFail($id);
 
-        // Check if approver has access to this application (Ashmir's security check)
-        if ($approver->vacancy_id && $application->vacancy_id != $approver->vacancy_id) {
-            abort(403, 'Unauthorized access to this application.');
-        }
-
-        // Update application status with Ashmir's improved fields
         $application->update([
-            'status' => $request->status,
-            'approver_remarks' => $request->remarks,
-            'approved_at' => $request->status === 'approved' ? now() : null,
-            'approved_by' => $request->status === 'approved' ? $approver->id : null,
+            'status'         => $request->status,
+            'approver_notes' => $request->approver_notes,
+            'approved_at'    => now(),
         ]);
 
-        // Notify candidate (Your notification logic)
-        $candidate = \App\Models\Candidate::where('email', $application->email)->first();
+        // Notify candidate
+        $candidateRecord = \DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
 
-        if ($request->status == 'approved') {
+        if ($candidateRecord) {
             Notification::create([
-                'user_id'      => $candidate?->id,
+                'user_id'      => $candidateRecord->id,
                 'user_type'    => 'candidate',
-                'type'         => 'application_approved',
-                'title'        => 'Application Approved',
-                'message'      => 'Congratulations! Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been approved by the approver.',
-                'related_id'   => $application->id,
-                'related_type' => 'application',
-            ]);
-        } elseif ($request->status == 'rejected') {
-            $rejectionReason = $request->remarks ? ' Reason: ' . $request->remarks : '';
-            Notification::create([
-                'user_id'      => $candidate?->id,
-                'user_type'    => 'candidate',
-                'type'         => 'application_rejected',
-                'title'        => 'Application Rejected',
-                'message'      => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been rejected by the approver.' . $rejectionReason,
+                'type'         => 'application_' . $request->status,
+                'title'        => 'Application ' . ucfirst($request->status),
+                'message'      => 'Your application for "' . ($application->jobPosting->title ?? 'N/A') . '" has been ' . $request->status . ' by the approver.',
                 'related_id'   => $application->id,
                 'related_type' => 'application',
             ]);
         }
 
-        return redirect()->back()->with('success', 'Application status updated successfully.');
+        return redirect()->route('approver.assignedtome')
+            ->with('success', 'Application ' . ucfirst($request->status) . ' successfully.');
     }
+
+    public function exportCsv(Request $request)
+    {
+        $ids = explode(',', $request->ids);
+    $approver = Auth::guard('approver')->user();
+
+    $applications = ApplicationForm::with(['jobPosting', 'payment'])
+        ->where('approver_id', $approver->id)
+        ->whereIn('id', $ids)
+        ->get();
+
+    $filename = 'applications_' . now()->format('Y-m-d') . '.csv';
+
+    $headers = [
+        'Content-Type'        => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+    ];
+
+    $callback = function () use ($applications) {
+        $handle = fopen('php://output', 'w');
+
+        // Header row
+        fputcsv($handle, [
+            'App ID',
+            'Name (EN)',
+            'Name (NP)',
+            'Email',
+            'Vacancy Type',
+            'Payment Status',
+            'Amount',
+            'Applied Date & Time',
+            'Status'
+        ]);
+
+        foreach ($applications as $index => $app) {
+             $date = $app->submitted_at ?? $app->created_at;
+            fputcsv($handle, [
+               $app->id,
+                $app->name_english ?? 'N/A',
+                $app->name_nepali ?? 'N/A',
+                $app->email ?? 'N/A',
+                $app->jobPosting->category ?? 'N/A',
+                $app->payment->status ?? 'N/A',
+                $app->payment->amount ?? 'N/A',
+                $date ? $date->format('M d, Y h:i A') : 'N/A',
+                ucfirst($app->status),
+            ]);
+        }
+
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportPdf(Request $request)
+{
+
+    $ids = explode(',', $request->ids);
+    $approver = Auth::guard('approver')->user();
+
+    $applications = ApplicationForm::with(['jobPosting', 'payment'])
+        ->where('approver_id', $approver->id)
+        ->whereIn('id', $ids)
+        ->get();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        'approver.exports.applications_pdf',
+        compact('applications')
+    )->setPaper('a4', 'landscape');
+
+    return $pdf->download('applications_' . now()->format('Y-m-d') . '.pdf');
+}
 }

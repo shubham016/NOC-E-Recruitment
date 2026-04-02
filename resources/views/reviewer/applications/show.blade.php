@@ -147,15 +147,27 @@
     }
 
     .document-icon {
-        width: 40px;
-        height: 40px;
+        width: 60px;
+        height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: white;
-        border-radius: 6px;
+        background: #f8fafc;
+        border-radius: 8px;
         font-size: 1.2rem;
         color: #64748b;
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+    }
+
+    .document-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .document-icon i {
+        font-size: 1.5rem;
     }
 
     .document-info {
@@ -752,182 +764,210 @@
 
                 @if($application->passport_size_photo)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->passport_size_photo) }}" alt="Passport Photo">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Passport Size Photo</p>
                         <p class="document-size">Candidate's passport photograph</p>
                     </div>
                     <a href="{{ Storage::url($application->passport_size_photo) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->resume)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Resume / CV</p>
                         <p class="document-size">Detailed curriculum vitae</p>
                     </div>
                     <a href="{{ Storage::url($application->resume) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
 
                 @if($application->work_experience)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Work Experience</p>
                         <p class="document-size">Work experience verification documents</p>
                     </div>
                     <a href="{{ Storage::url($application->work_experience) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
 
                 @if($application->citizenship_certificate || $application->citizenship_id_document)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->citizenship_certificate ?? $application->citizenship_id_document) }}" alt="Citizenship">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Citizenship Certificate</p>
                         <p class="document-size">Nepali citizenship document</p>
                     </div>
                     <a href="{{ Storage::url($application->citizenship_certificate ?? $application->citizenship_id_document) }}" target="_blank" class="btn-view-doc">
-                        <i class=" me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->educational_certificates || $application->transcript)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Educational Certificates</p>
                         <p class="document-size">Academic transcripts and degrees</p>
                     </div>
                     <a href="{{ Storage::url($application->educational_certificates ?? $application->transcript) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
 
                 @if($application->experience_certificates)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Experience Certificates</p>
                         <p class="document-size">Work experience verification documents</p>
                     </div>
                     <a href="{{ Storage::url($application->experience_certificates) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
 
                 @if($application->character_certificate || $application->character)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->character_certificate ?? $application->character) }}" alt="Character Certificate">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Character Certificate</p>
                         <p class="document-size">Good character verification</p>
                     </div>
                     <a href="{{ Storage::url($application->character_certificate ?? $application->character) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->equivalency_certificate || $application->equivalent)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->equivalency_certificate ?? $application->equivalent) }}" alt="Equivalency Certificate">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Equivalency Certificate</p>
                         <p class="document-size">Educational equivalency document</p>
                     </div>
                     <a href="{{ Storage::url($application->equivalency_certificate ?? $application->equivalent) }}" target="_blank" class="btn-view-doc">
-                        <i class=" me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->ethnic_certificate)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->ethnic_certificate) }}" alt="Ethnic Certificate">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Ethnic Certificate</p>
                         <p class="document-size">Candidate's ethnicity proof</p>
                     </div>
                     <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->disability_certificate)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->disability_certificate) }}" alt="Disability Certificate">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Disability Certificate</p>
                         <p class="document-size">Candidate's proof of disability</p>
                     </div>
                     <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->noc_id_card)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->noc_id_card) }}" alt="NOC ID Card">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">NOC Employee ID Card</p>
                         <p class="document-size">Candidate's NOC ID Card</p>
                     </div>
                     <a href="{{ Storage::url($application->noc_id_card) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->cover_letter_file)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Cover Letter (File)</p>
                         <p class="document-size">Uploaded cover letter document</p>
                     </div>
                     <a href="{{ Storage::url($application->cover_letter_file) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
 
                 @if($application->signature)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <img src="{{ Storage::url($application->signature) }}" alt="Signature">
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Signature</p>
                         <p class="document-size">Candidate's signature</p>
                     </div>
                     <a href="{{ Storage::url($application->signature) }}" target="_blank" class="btn-view-doc">
-                        View
+                        <i class="bi bi-eye me-1"></i>View
                     </a>
                 </div>
                 @endif
 
                 @if($application->other_documents)
                 <div class="document-item">
-                    <div class="document-icon"><i class=""></i></div>
+                    <div class="document-icon">
+                        <i class="bi bi-file-earmark-zip text-warning"></i>
+                    </div>
                     <div class="document-info">
                         <p class="document-name">Other Documents</p>
                         <p class="document-size">Additional supporting documents</p>
                     </div>
                     <a href="{{ Storage::url($application->other_documents) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>Download
                     </a>
                 </div>
                 @endif
@@ -1000,6 +1040,20 @@
                                 <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
                                 <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>Reject Application (Missing Information)</option>
                             </select>
+                        </div>
+
+                        <!-- Approver Selection (shown only when status is 'reviewed') -->
+                        <div class="mb-3" id="approverSelection">
+                            <label class="form-label fw-bold">Assign to Approver <span class="text-danger" id="approverRequired">*</span></label>
+                            <select name="approver_id" class="form-select" id="approverSelect">
+                                <option value="">-- Select Approver --</option>
+                                @foreach($approvers as $approver)
+                                    <option value="{{ $approver->id }}" {{ $application->approver_id == $approver->id ? 'selected' : '' }}>
+                                        {{ $approver->name }} ({{ $approver->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted" id="approverHelpText">Select the approver who will make the final decision (required when marking as reviewed)</small>
                         </div>
 
                         <div class="mb-3">
@@ -1250,6 +1304,9 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
     const submitIcon = document.getElementById('submitIcon');
     const submitText = document.getElementById('submitText');
     const smsPreview = document.getElementById('smsPreview');
+    const approverSelect = document.getElementById('approverSelect');
+    const approverRequired = document.getElementById('approverRequired');
+    const approverHelpText = document.getElementById('approverHelpText');
 
     if (status === 'reviewed') {
         notesLabel.textContent = 'Review Comments';
@@ -1260,6 +1317,11 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitIcon.className = ' me-2';
         submitText.textContent = 'Submit Review';
         smsPreview.style.display = 'none';
+        approverSelect.required = true;
+        approverRequired.style.display = 'inline';
+        approverHelpText.classList.remove('text-muted');
+        approverHelpText.classList.add('text-danger');
+        approverHelpText.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i><strong>Required:</strong> Select the approver who will make the final decision';
     } else if (status === 'rejected') {
         notesLabel.textContent = 'Rejection Reason';
         notesHelp.innerHTML = '<i class="me-1"></i><strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
@@ -1269,6 +1331,11 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitIcon.className = ' me-2';
         submitText.textContent = 'Reject Application';
         smsPreview.style.display = 'block';
+        approverSelect.required = false;
+        approverRequired.style.display = 'none';
+        approverHelpText.classList.remove('text-danger');
+        approverHelpText.classList.add('text-muted');
+        approverHelpText.innerHTML = 'Select the approver who will make the final decision (required when marking as reviewed)';
     } else {
         submitBtn.className = 'btn btn-lg';
         submitBtn.style.background = '#64748b';
@@ -1276,6 +1343,27 @@ document.getElementById('reviewStatus').addEventListener('change', function() {
         submitIcon.className = 'me-2';
         submitText.textContent = 'Submit Action';
         smsPreview.style.display = 'none';
+        approverSelect.required = false;
+        approverRequired.style.display = 'none';
+        approverHelpText.classList.remove('text-danger');
+        approverHelpText.classList.add('text-muted');
+        approverHelpText.innerHTML = 'Select the approver who will make the final decision (required when marking as reviewed)';
+    }
+});
+
+// Initialize approver selection on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const status = document.getElementById('reviewStatus').value;
+    const approverSelect = document.getElementById('approverSelect');
+    const approverRequired = document.getElementById('approverRequired');
+    const approverHelpText = document.getElementById('approverHelpText');
+
+    if (status === 'reviewed') {
+        approverSelect.required = true;
+        approverRequired.style.display = 'inline';
+        approverHelpText.classList.remove('text-muted');
+        approverHelpText.classList.add('text-danger');
+        approverHelpText.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i><strong>Required:</strong> Select the approver who will make the final decision';
     }
 });
 
@@ -1304,9 +1392,20 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
         return;
     }
 
+    // Check if approver is selected when status is 'reviewed'
+    if (status === 'reviewed') {
+        const approverId = formData.get('approver_id');
+        if (!approverId || approverId === '') {
+            alert('⚠️ Please select an approver before marking as reviewed');
+            return;
+        }
+    }
+
     let confirmMessage = '';
     if (status === 'reviewed') {
-        confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
+        const approverSelect = document.getElementById('approverSelect');
+        const approverName = approverSelect.options[approverSelect.selectedIndex].text;
+        confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be assigned to: ' + approverName + '\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
     } else if (status === 'rejected') {
         confirmMessage = 'Are you sure you want to REJECT this application?\n\n✓ Candidate will be notified via SMS (when Sparrow SMS is integrated).\n✓ Your rejection reason will be sent to: {{ $application->phone ?? "N/A" }}\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
     } else {

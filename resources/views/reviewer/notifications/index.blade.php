@@ -164,9 +164,9 @@
                                               onsubmit="return confirm('Are you sure you want to delete this notification?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <!-- <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Delete
-                                            </button>
+                                            </button> -->
                                         </form>
                                     </div>
                                 </div>

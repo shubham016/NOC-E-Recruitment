@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Reviewer Profile')
+@section('title', 'Reviewer Details')
 
 @section('portal-name', 'Admin Portal')
 @section('brand-icon', 'bi bi-shield-check')
@@ -14,190 +14,231 @@
     @include('admin.partials.sidebar')
 @endsection
 
-@section('content')
+@section('custom-styles')
 <style>
-    /* Profile Header Styles */
-    .profile-header-card {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        border-radius: 16px;
+    .profile-card {
+        background: white;
+        border-radius: 10px;
         padding: 2rem;
-        color: white;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
     }
 
-    .profile-photo {
-        width: 120px;
-        height: 120px;
-        border-radius: 16px;
+    .profile-header-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f3f4f6;
+        margin-bottom: 1.5rem;
+    }
+
+    .reviewer-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
         object-fit: cover;
-        border: 4px solid rgba(255,255,255,0.3);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        border: 3px solid #c9a84c;
     }
 
-    .profile-photo-placeholder {
-        width: 120px;
-        height: 120px;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.2);
-        border: 4px solid rgba(255,255,255,0.3);
+    .reviewer-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3rem;
-        font-weight: bold;
         color: white;
-    }
-
-    .profile-name {
-        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: white;
+        font-size: 2.5rem;
+        border: 3px solid #c9a84c;
     }
 
-    .profile-email {
-        font-size: 1.125rem;
-        opacity: 0.95;
+    .reviewer-info h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .reviewer-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        padding: 0.375rem 0.875rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .reviewer-id-badge {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 0.375rem 0.875rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 600;
+        font-family: 'Courier New', monospace;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    .info-icon-box {
+        width: 48px;
+        height: 48px;
+        background: #fef3c7;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c9a84c;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .info-details h6 {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
         margin-bottom: 0.25rem;
     }
 
-    .profile-info {
-        font-size: 1rem;
-        opacity: 0.9;
-    }
-
-    .status-badge-large {
-        padding: 0.5rem 1.25rem;
-        border-radius: 8px;
+    .info-details p {
+        font-size: 0.938rem;
+        color: #1f2937;
         font-weight: 600;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(255,255,255,0.2);
-        border: 2px solid rgba(255,255,255,0.3);
+        margin: 0;
     }
 
     /* Stats Cards */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
     .stat-card {
         background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 1.5rem;
+        border: 1px solid #e5e7eb;
         text-align: center;
-        transition: all 0.3s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }
 
     .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
-    .stat-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        margin: 0 auto 1rem;
-    }
-
-    .stat-value {
-        font-size: 2rem;
+    .stat-number {
+        font-size: 2.5rem;
         font-weight: 700;
-        margin-bottom: 0.25rem;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card.blue .stat-number {
+        color: #3b82f6;
+    }
+
+    .stat-card.orange .stat-number {
+        color: #f97316;
+    }
+
+    .stat-card.green .stat-number {
+        color: #10b981;
+    }
+
+    .stat-card.red .stat-number {
+        color: #ef4444;
     }
 
     .stat-label {
         font-size: 0.875rem;
         color: #6b7280;
-        font-weight: 500;
+        font-weight: 600;
     }
 
-    /* Info Card */
-    .info-card {
+    /* Content Section */
+    .content-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .sidebar-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .section-card {
         background: white;
+        border-radius: 10px;
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden;
         margin-bottom: 1.5rem;
     }
 
-    .info-card-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1.25rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #f3f4f6;
+    .section-header {
+        background: #f9fafb;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
     }
 
-    .info-card-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        border-radius: 10px;
+    .section-header h3 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: white;
+        gap: 0.5rem;
+    }
+
+    .section-header h3 i {
+        color: #c9a84c;
         font-size: 1.25rem;
     }
 
-    .info-card-title {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: #065f46;
-        margin: 0;
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .info-row:last-child {
-        border-bottom: none;
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #6b7280;
-        font-size: 0.9375rem;
-    }
-
-    .info-value {
-        font-weight: 600;
-        color: #1f2937;
-        font-size: 0.9375rem;
-    }
-
-    /* Applications Card */
-    .applications-card {
-        background: white;
-        border: 1px solid #000;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-
-    .applications-card-header {
+    .section-body {
         padding: 1.5rem;
-        background: #f9fafb;
-        border-bottom: 1px solid #000;
     }
 
+    /* Applications Table */
     .applications-table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
+        border-collapse: collapse;
     }
 
     .applications-table thead {
@@ -205,103 +246,172 @@
     }
 
     .applications-table thead th {
-        padding: 1rem;
-        font-weight: 600;
-        color: #374151;
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        color: #000;
         font-size: 0.875rem;
         text-transform: uppercase;
-        letter-spacing: 0.025em;
-        border-bottom: 1px solid #000;
-        border-right: 1px solid #000;
+        letter-spacing: 0.5px;
+        border: 1px solid #000;
+        white-space: nowrap;
+        text-align: center;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
     }
 
-    .applications-table thead th:last-child {
-        border-right: none;
+    .applications-table thead th:first-child,
+    .applications-table tbody td:first-child {
+        width: 60px;
+    }
+
+    .applications-table thead th:last-child,
+    .applications-table tbody td:last-child {
+        width: 120px;
     }
 
     .applications-table tbody td {
-        padding: 1rem;
-        color: #1f2937;
-        border-bottom: 1px solid #000;
-        border-right: 1px solid #000;
+        padding: 1rem 1.25rem;
+        color: #000;
+        font-size: 0.875rem;
+        border: 1px solid #060606;
         vertical-align: middle;
+        text-align: left;
     }
 
+    .applications-table tbody td:first-child,
+    .applications-table tbody td:nth-child(6),
     .applications-table tbody td:last-child {
-        border-right: none;
-    }
-
-    .applications-table tbody tr:last-child td {
-        border-bottom: none;
+        text-align: center;
     }
 
     .applications-table tbody tr {
         transition: all 0.2s;
     }
 
-    .applications-table tr:hover {
-        background: #f9fafb;
+    .applications-table tbody tr:hover {
+        background: #f8fafc;
     }
 
-    /* Permissions List */
-    .permissions-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+    .app-status-badge {
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
     }
 
-    .permissions-list li {
-        padding: 0.75rem 0;
-        display: flex;
+    .app-status-pending {
+        background: #fed7aa;
+        color: #9a3412;
+    }
+
+    .app-status-approved {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .app-status-rejected {
+        background: #fecaca;
+        color: #991b1b;
+    }
+
+    .btn-view-sm {
+        display: inline-flex;
         align-items: center;
-        gap: 0.75rem;
-        border-bottom: 1px solid #f3f4f6;
-        font-size: 0.9375rem;
+        gap: 0.25rem;
+        padding: 0.5rem 1rem;
+        background: #c9a84c;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.813rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
     }
 
-    .permissions-list li:last-child {
+    .btn-view-sm:hover {
+        background: #a07828;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Account Info Table */
+    .info-table {
+        width: 100%;
+    }
+
+    .info-table tr {
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .info-table tr:last-child {
         border-bottom: none;
     }
 
-    .permission-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #d1fae5;
-        color: #065f46;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.875rem;
+    .info-table td {
+        padding: 0.875rem 0;
+    }
+
+    .info-table .table-label {
+        font-size: 0.813rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        width: 40%;
+    }
+
+    .info-table .table-value {
+        font-size: 0.938rem;
+        color: #1f2937;
+        font-weight: 500;
     }
 
     /* Action Buttons */
-    .action-btn-group {
-        display: flex;
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
-        flex-wrap: wrap;
+        /* margin-top: 1.5rem; */
     }
 
     .action-btn {
-        padding: 0.625rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        border: none;
-        transition: all 0.2s;
-        display: inline-flex;
+        display: flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .action-btn-primary {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: #c9a84c;
         color: white;
     }
 
-    .action-btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    .action-btn-warning {
+        background: #f97316;
+        color: white;
+    }
+
+    .action-btn-success {
+        background: #10b981;
+        color: white;
+    }
+
+    .action-btn-danger {
+        background: #ef4444;
         color: white;
     }
 
@@ -311,348 +421,357 @@
         padding: 3rem 1rem;
     }
 
-    .empty-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1rem;
-        background: #f3f4f6;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .empty-state i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h5 {
+        font-size: 1.125rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
         color: #9ca3af;
-        font-size: 2.5rem;
+        font-size: 0.938rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .sidebar-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .app-details {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
+@endsection
 
-<div class="container-fluid px-4 py-4">
-
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #10b981;">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.reviewers.index') }}" style="color: #10b981;">Reviewers</a></li>
-            <li class="breadcrumb-item active">Profile</li>
-        </ol>
-    </nav>
-
+@section('content')
+<div class="container-fluid">
     <!-- Success/Error Messages -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i><strong>Success!</strong> {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    <!-- Profile Header Card -->
-    <div class="profile-header-card">
-        <div class="row align-items-center">
-            <div class="col-auto">
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <div class="profile-header-section">
+            <div>
                 @if($reviewer->photo)
-                    <img src="{{ asset('storage/' . $reviewer->photo) }}" 
-                         alt="{{ $reviewer->name }}" 
-                         class="profile-photo">
+                    <img src="{{ asset('storage/' . $reviewer->photo) }}" alt="{{ $reviewer->name }}" class="reviewer-photo">
                 @else
-                    <div class="profile-photo-placeholder">
+                    <div class="reviewer-avatar-placeholder">
                         {{ strtoupper(substr($reviewer->name, 0, 1)) }}
                     </div>
                 @endif
             </div>
-            <div class="col">
-                <h1 class="profile-name">{{ $reviewer->name }}</h1>
-                <div class="profile-email">
-                    <i class="bi bi-envelope me-2"></i>{{ $reviewer->email }}
-                </div>
-                @if($reviewer->phone)
-                    <div class="profile-info">
-                        <i class="bi bi-telephone me-2"></i>{{ $reviewer->phone }}
-                    </div>
-                @endif
-                @if($reviewer->department || $reviewer->designation)
-                    <div class="profile-info mt-2">
-                        @if($reviewer->designation)
-                            <i class="bi bi-briefcase me-2"></i>{{ $reviewer->designation }}
-                        @endif
-                        @if($reviewer->department)
-                            <span class="ms-3"><i class="bi bi-building me-2"></i>{{ $reviewer->department }}</span>
-                        @endif
-                    </div>
-                @endif
-                <div class="mt-3">
-                    <span class="status-badge-large">
-                        <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+
+            <div class="reviewer-info flex-grow-1">
+                <h2>{{ $reviewer->name }}</h2>
+                <div class="reviewer-meta">
+                    <span class="status-badge {{ $reviewer->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                        <i class="bi bi-{{ $reviewer->status === 'active' ? 'check-circle-fill' : 'x-circle-fill' }} me-1"></i>
                         {{ ucfirst($reviewer->status) }}
                     </span>
+                    <!-- <span class="reviewer-id-badge">
+                        <i class="bi bi-hash"></i>{{ str_pad($reviewer->id, 4, '0', STR_PAD_LEFT) }}
+                    </span> -->
                 </div>
             </div>
-            <div class="col-auto">
-                <div class="action-btn-group">
-                    <a href="{{ route('admin.reviewers.edit', $reviewer->id) }}" class="btn action-btn action-btn-primary">
-                        <i class="bi bi-pencil"></i>Edit Profile
-                    </a>
-                    <div class="dropdown">
-                        <button class="btn action-btn action-btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            {{-- <i class="bi bi-three-dots-vertical"></i> --}}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
-                                    <i class="bi bi-key me-2"></i>Reset Password
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#toggleStatusModal">
-                                    <i class="bi bi-arrow-repeat me-2"></i>Change Status
-                                </button>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <button type="button" class="dropdown-item text-danger" onclick="deleteReviewer()">
-                                    <i class="bi bi-trash me-2"></i>Delete Account
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
+
+            <!-- Back Button -->
+            <div>
+                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Reviewers
+                </a>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>Email Address</h6>
+                    <p>{{ $reviewer->email }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>Phone Number</h6>
+                    <p>{{ $reviewer->phone ?? 'Not provided' }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="info-details">
+                    <h6>Department</h6>
+                    <p>{{ $reviewer->department ?? 'Not assigned' }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>Designation</h6>
+                    <p>{{ $reviewer->designation ?? 'Not specified' }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                    <i class="bi bi-clipboard-check-fill"></i>
-                </div>
-                <div class="stat-value" style="color: #065f46;">{{ $stats['total_assigned'] }}</div>
-                <div class="stat-label">Total Assigned</div>
-            </div>
+    <!-- Statistics -->
+    <div class="stats-row">
+        <div class="stat-card blue">
+            <div class="stat-number">{{ $stats['total'] }}</div>
+            <div class="stat-label">Total Applications</div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
-                    <i class="bi bi-clock-fill"></i>
-                </div>
-                <div class="stat-value" style="color: #d97706;">{{ $stats['pending_review'] }}</div>
-                <div class="stat-label">Pending Review</div>
-            </div>
+
+        <div class="stat-card orange">
+            <div class="stat-number">{{ $stats['pending'] }}</div>
+            <div class="stat-label">Pending Review</div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-                <div class="stat-value" style="color: #2563eb;">{{ $stats['reviewed'] }}</div>
-                <div class="stat-label">Reviewed</div>
-            </div>
+
+        <div class="stat-card green">
+            <div class="stat-number">{{ $stats['reviewed'] }}</div>
+            <div class="stat-label">Reviewed</div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-                <div class="stat-value" style="color: #059669;">{{ $stats['approved'] }}</div>
-                <div class="stat-label">Approved</div>
-            </div>
+
+        <div class="stat-card red">
+            <div class="stat-number">{{ $stats['rejected'] }}</div>
+            <div class="stat-label">Rejected</div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Recent Applications -->
-        <div class="col-lg-8">
-            <div class="applications-card">
-                <div class="applications-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold" style="color: #065f46;">
-                            <i class="bi bi-file-earmark-text me-2"></i>Recent Applications
-                        </h5>
-                        <span class="badge bg-success">{{ $recentApplications->count() }} Applications</span>
-                    </div>
-                </div>
-                @if($recentApplications->count() > 0)
-                    <table class="applications-table" style="table-layout: fixed; width: 100%;">
+    <!-- Recent Applications - Full Width -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3>
+                <i class="bi bi-clock-history"></i>
+                Recent Applications ({{ $recentApplications->count() }})
+            </h3>
+        </div>
+        <div class="section-body p-0">
+            @if($recentApplications->count() > 0)
+                <div class="table-responsive">
+                    <table class="applications-table">
                         <thead>
                             <tr>
-                                <th class="text-center text-uppercase" style="width: 25%;">Candidate</th>
-                                <th class="text-center text-uppercase" style="width: 30%;">Vacancy Position</th>
-                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Status</th>
-                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Applied</th>
-                                <th class="text-center text-uppercase" style="width: 15%; white-space: nowrap;">Actions</th>
+                                <th>S.N</th>
+                                <th>Vacancy Title</th>
+                                <th>Candidate Name</th>
+                                <th>Email</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recentApplications as $application)
+                            @foreach($recentApplications as $index => $application)
                                 <tr>
-                                    <td class="text-center">
-                                        <div class="fw-semibold" style="color: #065f46;">{{ $application->name_english }}</div>
-                                        <small class="text-muted">{{ $application->email }}</small>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $application->vacancy->title ?? 'N/A' }}</td>
+                                    <td>{{ $application->name_english }}</td>
+                                    <td>{{ $application->email }}</td>
+                                    <td>
+                                        <div class="nepali-date-bs" data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
+                                            <i class="bi bi-hourglass-split"></i> Converting...
+                                        </div>
+                                        <small style="color: #718096;">{{ $application->created_at->format('M d, Y') }}</small>
                                     </td>
-                                    <td class="text-center">
-                                        <div class="fw-semibold">{{ $application->vacancy->title }}</div>
-                                        <small class="text-muted">{{ $application->vacancy->advertisement_no }}</small>
-                                    </td>
-                                    <td class="text-center" style="white-space: nowrap;">
-                                        <span class="badge
-                                            @if($application->status == 'pending') bg-warning
-                                            @elseif($application->status == 'approved') bg-success
-                                            @elseif($application->status == 'rejected') bg-danger
-                                            @else bg-secondary
-                                            @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                                    <td>
+                                        @php
+                                            $statusClass = match($application->status) {
+                                                'approved' => 'app-status-approved',
+                                                'rejected' => 'app-status-rejected',
+                                                default => 'app-status-pending'
+                                            };
+                                        @endphp
+                                        <span class="app-status-badge {{ $statusClass }}">
+                                            {{ ucfirst($application->status) }}
                                         </span>
                                     </td>
-                                    <td class="text-center" style="white-space: nowrap;">
-                                        <small>{{ $application->created_at->format('M d, Y') }}</small>
-                                    </td>
-                                    <td class="text-center" style="white-space: nowrap;">
-                                        <div class="d-flex gap-2 justify-content-center">
-                                            <a href="{{ route('admin.applications.show', $application->id) }}" class="btn btn-sm btn-outline-success" title="View Details">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteApplication({{ $application->id }})" title="Delete Application">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                                    <td>
+                                        <a href="{{ route('admin.applications.show', $application->id) }}" class="btn-view-sm">
+                                            <i class="bi bi-eye-fill"></i>
+                                            View
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                @else
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="bi bi-clipboard-x"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2" style="color: #6b7280;">No Applications Assigned</h5>
-                        <p class="text-muted mb-0">This reviewer hasn't been assigned any applications yet</p>
-                    </div>
-                @endif
+                </div>
+            @else
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <h5>No Applications Yet</h5>
+                    <p>This reviewer hasn't been assigned any applications.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Account Information & Actions Row -->
+    <div class="sidebar-row">
+        <!-- Account Information -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-person-vcard"></i>
+                    Account Information
+                </h3>
+            </div>
+            <div class="section-body">
+                <table class="info-table">
+                    <tr>
+                        <td class="table-label">Full Name</td>
+                        <td class="table-value">{{ $reviewer->name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Email</td>
+                        <td class="table-value">{{ $reviewer->email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Phone</td>
+                        <td class="table-value">{{ $reviewer->phone ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Department</td>
+                        <td class="table-value">{{ $reviewer->department ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Designation</td>
+                        <td class="table-value">{{ $reviewer->designation ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Status</td>
+                        <td class="table-value">
+                            <span class="status-badge {{ $reviewer->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                                {{ ucfirst($reviewer->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Joined</td>
+                        <td class="table-value">{{ $reviewer->created_at->format('F d, Y') }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Account Information -->
-            <div class="info-card">
-                <div class="info-card-header">
-                    <div class="info-card-icon">
-                        <i class="bi bi-info-circle"></i>
-                    </div>
-                    <h6 class="info-card-title">Account Information</h6>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Reviewer ID</span>
-                    <span class="info-value">#{{ $reviewer->id }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Status</span>
-                    <span class="badge {{ $reviewer->status == 'active' ? 'bg-success' : 'bg-secondary' }}">
-                        {{ ucfirst($reviewer->status) }}
-                    </span>
-                </div>
-                @if($reviewer->department)
-                    <div class="info-row">
-                        <span class="info-label">Department</span>
-                        <span class="info-value">{{ $reviewer->department }}</span>
-                    </div>
-                @endif
-                @if($reviewer->designation)
-                    <div class="info-row">
-                        <span class="info-label">Designation</span>
-                        <span class="info-value">{{ $reviewer->designation }}</span>
-                    </div>
-                @endif
-                <div class="info-row">
-                    <span class="info-label">Created</span>
-                    <span class="info-value">{{ $reviewer->created_at->format('M d, Y') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Last Updated</span>
-                    <span class="info-value">{{ $reviewer->updated_at->format('M d, Y') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Member Since</span>
-                    <span class="info-value">{{ $reviewer->created_at->diffForHumans() }}</span>
-                </div>
+        <!-- Actions Card -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-gear-fill"></i>
+                    Actions
+                </h3>
             </div>
+            <div class="section-body">
+                <div class="action-buttons">
+                    <a href="{{ route('admin.reviewers.edit', $reviewer->id) }}" class="action-btn action-btn-primary">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Profile
+                    </a>
 
-            <!-- Permissions -->
-            <div class="info-card">
-                <div class="info-card-header">
-                    <div class="info-card-icon">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
-                    <h6 class="info-card-title">Permissions</h6>
+                    <button type="button" class="action-btn action-btn-warning" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                        <i class="bi bi-key-fill"></i>
+                        Reset Password
+                    </button>
+
+                    <button type="button" class="action-btn {{ $reviewer->status === 'active' ? 'action-btn-warning' : 'action-btn-success' }}"
+                        data-bs-toggle="modal" data-bs-target="#toggleStatusModal">
+                        <i class="bi bi-{{ $reviewer->status === 'active' ? 'pause-circle-fill' : 'play-circle-fill' }}"></i>
+                        {{ $reviewer->status === 'active' ? 'Deactivate' : 'Activate' }}
+                    </button>
+
+                    <button type="button" class="action-btn action-btn-danger" onclick="confirmDelete()">
+                        <i class="bi bi-trash-fill"></i>
+                        Delete Account
+                    </button>
                 </div>
-                <ul class="permissions-list">
-                    <li>
-                        <div class="permission-icon">
-                            <i class="bi bi-check"></i>
-                        </div>
-                        <span>View Assigned Applications</span>
-                    </li>
-                    <li>
-                        <div class="permission-icon">
-                            <i class="bi bi-check"></i>
-                        </div>
-                        <span>Review Documents</span>
-                    </li>
-                    <li>
-                        <div class="permission-icon">
-                            <i class="bi bi-check"></i>
-                        </div>
-                        <span>Update Application Status</span>
-                    </li>
-                    <li>
-                        <div class="permission-icon">
-                            <i class="bi bi-check"></i>
-                        </div>
-                        <span>Add Review Comments</span>
-                    </li>
-                    <li>
-                        <div class="permission-icon">
-                            <i class="bi bi-check"></i>
-                        </div>
-                        <span>Approve/Reject Applications</span>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
+    <!-- End sidebar-row -->
 </div>
 
 <!-- Reset Password Modal -->
 <div class="modal fade" id="resetPasswordModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reset Reviewer Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <form action="{{ route('admin.reviewers.reset-password', $reviewer->id) }}" method="POST">
                 @csrf
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold" style="color: #065f46;">
-                        <i class="bi bi-key me-2"></i>Reset Reviewer Password
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
+                <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">New Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="password" class="form-control" required minlength="8">
                         <small class="text-muted">Minimum 8 characters with letters and numbers</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Confirm Password</label>
+                        <label class="form-label">Confirm Password</label>
                         <input type="password" name="password_confirmation" class="form-control" required>
                     </div>
-                    <div class="alert alert-warning mb-0">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        <small>The reviewer will need to use this new password to log in.</small>
-                    </div>
                 </div>
-                <div class="modal-footer border-top">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle me-2"></i>Reset Password
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-key-fill me-1"></i> Reset Password
                     </button>
                 </div>
             </form>
@@ -663,26 +782,26 @@
 <!-- Toggle Status Modal -->
 <div class="modal fade" id="toggleStatusModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Reviewer Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <form action="{{ route('admin.reviewers.toggle-status', $reviewer->id) }}" method="POST">
                 @csrf
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold" style="color: #065f46;">
-                        <i class="bi bi-arrow-repeat me-2"></i>Change Reviewer Status
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>{{ $reviewer->status === 'active' ? 'deactivate' : 'activate' }}</strong> {{ $reviewer->name }}?</p>
+                    @if($reviewer->status === 'active')
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            This reviewer will not be able to log in once deactivated.
+                        </div>
+                    @endif
                 </div>
-                <div class="modal-body p-4">
-                    <p class="mb-0">
-                        Are you sure you want to {{ $reviewer->status == 'active' ? 'deactivate' : 'activate' }} 
-                        <strong>{{ $reviewer->name }}</strong>?
-                    </p>
-                </div>
-                <div class="modal-footer border-top">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-{{ $reviewer->status == 'active' ? 'warning' : 'success' }}">
-                        <i class="bi bi-check-circle me-2"></i>
-                        {{ $reviewer->status == 'active' ? 'Deactivate' : 'Activate' }}
+                    <button type="submit" class="btn btn-{{ $reviewer->status === 'active' ? 'warning' : 'success' }}">
+                        {{ $reviewer->status === 'active' ? 'Deactivate' : 'Activate' }}
                     </button>
                 </div>
             </form>
@@ -696,36 +815,75 @@
     @method('DELETE')
 </form>
 
-<!-- Delete Application Forms -->
-@foreach($recentApplications as $application)
-    <form id="deleteApplicationForm{{ $application->id }}" action="{{ route('admin.applications.destroy', $application->id) }}" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
-@endforeach
-
 @endsection
 
 @section('scripts')
 <script>
-    function deleteReviewer() {
-        if (confirm('⚠️ Are you sure you want to delete this reviewer?\n\nThis action cannot be undone and will remove all associated data.')) {
+    function confirmDelete() {
+        if (confirm('⚠️ Are you sure you want to delete this reviewer?\n\nThis action cannot be undone.')) {
             document.getElementById('deleteForm').submit();
         }
     }
 
-    function deleteApplication(id) {
-        if (confirm('⚠️ Are you sure you want to delete this application?\n\nThis action cannot be undone and will remove all application data.')) {
-            document.getElementById('deleteApplicationForm' + id).submit();
-        }
+    // Convert English numerals to Nepali numerals
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+        return str.replace(/[0-9]/g, d => map[d]);
     }
 
-    // Auto-dismiss alerts
-    setTimeout(() => {
-        document.querySelectorAll('.alert-dismissible').forEach(alert => {
-            const bsAlert = bootstrap.Alert.getInstance(alert) || new bootstrap.Alert(alert);
-            if (bsAlert) bsAlert.close();
-        });
-    }, 5000);
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('🔧 Initializing Nepali date conversion for applications table...');
+
+        // Wait for converter to be ready
+        function waitForConverter() {
+            if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+                setTimeout(waitForConverter, 100);
+                return;
+            }
+
+            console.log('✅ Converter ready, converting all dates...');
+            convertAllDates();
+        }
+
+        function convertAllDates() {
+            // Find all elements with Nepali date class
+            const dateElements = document.querySelectorAll('.nepali-date-bs');
+
+            console.log(`📅 Found ${dateElements.length} dates to convert`);
+
+            dateElements.forEach((element, index) => {
+                const adDate = element.getAttribute('data-ad-date');
+
+                if (adDate) {
+                    try {
+                        // Convert AD to BS (returns English numerals like 2082-11-05)
+                        const bsDate = window.adToBS(adDate);
+
+                        if (bsDate) {
+                            // Convert to Nepali numerals (२०८२-११-०५)
+                            const bsNepali = englishToNepali(bsDate);
+
+                            // Update the element with Nepali numeral date
+                            element.innerHTML = `${bsNepali}`;
+                            console.log(`✅ Row ${index + 1}: ${adDate} → ${bsDate} → ${bsNepali}`);
+                        } else {
+                            element.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                            element.style.color = '#f56565';
+                        }
+                    } catch (error) {
+                        console.error(`❌ Error converting date ${adDate}:`, error);
+                        element.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+                        element.style.color = '#f56565';
+                    }
+                }
+            });
+
+            console.log('✅ All dates converted successfully!');
+        }
+
+        // Start the conversion process
+        waitForConverter();
+    });
 </script>
 @endsection

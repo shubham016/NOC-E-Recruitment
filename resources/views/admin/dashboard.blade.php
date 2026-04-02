@@ -401,6 +401,15 @@
             gap: 10px;
         }
 
+        /* Collapsible Widget */
+        .widget-header[data-bs-toggle="collapse"]:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
         .widget-body {
             padding: 16px 20px;
         }
@@ -708,7 +717,48 @@
     <div class="content-layout">
         <!-- Main Content -->
         <div>
-            <!-- Recent Applications -->
+            <!-- Applications per Vacancy -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
+                        Applications per Vacancy
+                    </h3>
+                    <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
+                </div>
+                <div>
+                    @forelse($topJobs as $vacancy)
+                        <div class="job-card">
+                            <div class="job-info">
+                                <h4 class="job-title">{{ $vacancy->title }}</h4>
+                                <p class="job-meta">
+                                    <span>
+                                        <i class="bi bi-building"></i>
+                                        {{ $vacancy->department }}
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-geo-alt"></i>
+                                        {{ $vacancy->location }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="job-count-box">
+                                <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
+                                <div class="job-count-label">Applications</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="bi bi-briefcase"></i>
+                            </div>
+                            <h4 class="empty-title">No Vacancy Posted</h4>
+                            <p class="empty-text">Create your first vacancy posting</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
             <!-- Recent Applications -->
             <div class="card">
                 <div class="card-header">
@@ -756,57 +806,15 @@
                     @endforelse
                 </div>
             </div>
-
-            <!-- Top Jobs -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <!-- <i class="bi bi-trophy-fill text-warning"></i> -->
-                        Applications per Vacancy
-                    </h3>
-                    <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
-                </div>
-                <div>
-                    @forelse($topJobs as $vacancy)
-                        <div class="job-card">
-                            <div class="job-info">
-                                <h4 class="job-title">{{ $vacancy->title }}</h4>
-                                <p class="job-meta">
-                                    <span>
-                                        <i class="bi bi-building"></i>
-                                        {{ $vacancy->department }}
-                                    </span>
-                                    <span>
-                                        <i class="bi bi-geo-alt"></i>
-                                        {{ $vacancy->location }}
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="job-count-box">
-                                <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
-                                <div class="job-count-label">Applications</div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="bi bi-briefcase"></i>
-                            </div>
-                            <h4 class="empty-title">No Vacancy Posted</h4>
-                            <p class="empty-text">Create your first vacancy posting</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
         </div>
 
         <!-- Sidebar -->
         <div>
             <!-- Quick Actions -->
-            <div class="widget">
+            <!-- <div class="widget">
                 <div class="widget-header">
                     <h3 class="widget-title">
-                        <!-- <i class="bi bi-lightning-fill text-warning"></i> -->
+                        
                         Quick Actions
                     </h3>
                 </div>
@@ -828,17 +836,18 @@
                         Export Report
                     </button>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Active Reviewers -->
             <div class="widget">
-                <div class="widget-header">
+                <div class="widget-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#reviewerContent" aria-expanded="true">
                     <h3 class="widget-title">
                         <i class="bi bi-person-badge text-success"></i>
                         Active Reviewers
                     </h3>
+                    <i class="bi bi-chevron-down toggle-icon" style="color: #64748b; font-size: 16px; transition: transform 0.3s ease;"></i>
                 </div>
-                <div>
+                <div class="collapse show" id="reviewerContent">
                     @forelse($reviewerStats as $reviewer)
                         <div class="reviewer-item">
                             <div class="reviewer-row">
@@ -875,6 +884,57 @@
                             </div>
                             <h4 class="empty-title" style="font-size: 14px;">No Active Reviewers</h4>
                             <p class="empty-text" style="font-size: 13px;">Add reviewers to start</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Active Approvers -->
+            <div class="widget">
+                <div class="widget-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#approverContent" aria-expanded="true">
+                    <h3 class="widget-title">
+                        <i class="bi bi-person-check text-primary"></i>
+                        Active Approvers
+                    </h3>
+                    <i class="bi bi-chevron-down toggle-icon" style="color: #64748b; font-size: 16px; transition: transform 0.3s ease;"></i>
+                </div>
+                <div class="collapse show" id="approverContent">
+                    @forelse($approverStats ?? [] as $approver)
+                        <div class="reviewer-item">
+                            <div class="reviewer-row">
+                                @if($approver->photo ?? false)
+                                    <img src="{{ asset('storage/' . $approver->photo) }}"
+                                         alt="{{ $approver->name }}"
+                                         class="reviewer-avatar"
+                                         style="object-fit: cover;">
+                                @else
+                                    <div class="reviewer-avatar bg-primary bg-opacity-10 text-primary">
+                                        {{ strtoupper(substr($approver->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div class="reviewer-info">
+                                    <h4 class="reviewer-name">{{ $approver->name }}</h4>
+                                    <p class="reviewer-email">{{ $approver->email }}</p>
+                                </div>
+                            </div>
+                            <div class="reviewer-stats">
+                                <span class="stat-item text-success">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    {{ $approver->approved_count ?? 0 }} approved
+                                </span>
+                                <span class="stat-item text-danger">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    {{ $approver->rejected_count ?? 0 }} rejected
+                                </span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state" style="padding: 40px 20px;">
+                            <div class="empty-icon" style="width: 48px; height: 48px; font-size: 20px; margin-bottom: 12px;">
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                            <h4 class="empty-title" style="font-size: 14px;">No Active Approvers</h4>
+                            <p class="empty-text" style="font-size: 13px;">Add approvers to start</p>
                         </div>
                     @endforelse
                 </div>
@@ -919,5 +979,35 @@
 @section('scripts')
     <script>
         console.log('✅ Perfect Dashboard Loaded!');
+
+        // Handle collapse toggle for widget icons
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewerContent = document.getElementById('reviewerContent');
+            const approverContent = document.getElementById('approverContent');
+
+            if (reviewerContent) {
+                reviewerContent.addEventListener('show.bs.collapse', function() {
+                    const icon = document.querySelector('[data-bs-target="#reviewerContent"] .toggle-icon');
+                    if (icon) icon.classList.remove('collapsed');
+                });
+
+                reviewerContent.addEventListener('hide.bs.collapse', function() {
+                    const icon = document.querySelector('[data-bs-target="#reviewerContent"] .toggle-icon');
+                    if (icon) icon.classList.add('collapsed');
+                });
+            }
+
+            if (approverContent) {
+                approverContent.addEventListener('show.bs.collapse', function() {
+                    const icon = document.querySelector('[data-bs-target="#approverContent"] .toggle-icon');
+                    if (icon) icon.classList.remove('collapsed');
+                });
+
+                approverContent.addEventListener('hide.bs.collapse', function() {
+                    const icon = document.querySelector('[data-bs-target="#approverContent"] .toggle-icon');
+                    if (icon) icon.classList.add('collapsed');
+                });
+            }
+        });
     </script>
 @endsection

@@ -46,6 +46,25 @@
         </div>
 
         <div class="card-body">
+            {{-- Status Alerts --}}
+            @if($applicationform->status === 'edit')
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Correction Required!</strong>
+                    Your application has been sent back for corrections. Please review the admin/reviewer notes below, make necessary changes, and resubmit.
+                    @if($applicationform->admin_notes || $applicationform->reviewer_notes)
+                        <hr>
+                        @if($applicationform->admin_notes)
+                            <p class="mb-1"><strong>Admin Notes:</strong> {{ $applicationform->admin_notes }}</p>
+                        @endif
+                        @if($applicationform->reviewer_notes)
+                            <p class="mb-0"><strong>Reviewer Notes:</strong> {{ $applicationform->reviewer_notes }}</p>
+                        @endif
+                    @endif
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             {{-- SECTION 1: Personal Information --}}
             <div class="mb-4">
                 <h5 class="text-dark border-bottom pb-2 mb-3">
@@ -638,6 +657,13 @@
                 <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
+                <div>
+                    @if($applicationform->canEdit())
+                        <a href="{{ route('candidate.applications.edit', $applicationform->id) }}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Edit Application
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

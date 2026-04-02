@@ -10,27 +10,20 @@ class Candidate extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'candidate_registration';
+
     protected $fillable = [
-        'first_name',
-        'middle_name',
-        'last_name',
-        'username',
-        'email',
-        'mobile_number',
-        'password',
-        'city',
-        'state',
-        'country',
-        'resume',
-        'status',
-        'email_verified_at',
+        'name',
         'gender',
         'date_of_birth_bs',
         'citizenship_number',
-        'citizenship_issue_district',
+        'citizenship_issue_distric',
         'citizenship_issue_date_bs',
-        'notification_settings',
-        'privacy_settings',
+        'password',
+        'email',
+        'email_verified_at',
+        'phone',
+        'age',
     ];
 
     protected $hidden = [
@@ -44,15 +37,6 @@ class Candidate extends Authenticatable
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Get the candidate's full name (computed from first, middle, last name)
-     */
-    public function getNameAttribute(): string
-    {
-        $parts = array_filter([$this->first_name, $this->middle_name, $this->last_name]);
-        return implode(' ', $parts);
     }
 
     /**

@@ -21,6 +21,19 @@ class JobManagementController extends Controller
     {
         $query = JobPosting::query()->with('postedBy')->withCount('applications');
 
+        // Handle export
+        if ($request->filled('export') && $request->filled('ids')) {
+            $ids = explode(',', $request->ids);
+            $jobs = JobPosting::whereIn('id', $ids)->get();
+            $type = $request->export;
+
+            if ($type === 'csv') {
+                return $this->exportToExcel($jobs);
+            } elseif ($type === 'pdf') {
+                return $this->exportToPdf($jobs);
+            }
+        }
+
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
@@ -80,7 +93,7 @@ class JobManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive,internal',
+            'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
@@ -153,7 +166,7 @@ class JobManagementController extends Controller
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
-            'category' => 'required|in:open,inclusive,internal',
+            'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
             'inclusive_type' => 'required_if:category,inclusive|nullable|string',
             'number_of_posts' => 'required|integer|min:1',
@@ -236,5 +249,90 @@ class JobManagementController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Vacancy status updated successfully!');
+    }
+
+    /**
+     * Export vacancies to Excel
+     */
+    private function exportToExcel($jobs)
+    {
+        $filename = 'vacancies_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($jobs) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header row
+            fputcsv($file, [
+                'S.N',
+                'Advertisement No.',
+                'Position',
+                'Service/Group',
+                'Category',
+                'Type',
+                'Demand',
+                'Minimum Qualification',
+                'Applications',
+                'Application Fee',
+                'Double Dastur Fee',
+                'Deadline',
+                'Status',
+                'Posted On'
+            ]);
+
+            // Data rows
+            foreach ($jobs as $index => $job) {
+                // Format category
+                $category = ucfirst($job->category);
+                if ($job->category == 'internal_appraisal') {
+                    $category = 'Internal Appraisal';
+                } elseif ($job->category == 'internal') {
+                    if ($job->internal_type == 'open') {
+                        $category = 'Internal/Open';
+                    } elseif ($job->internal_type == 'inclusive') {
+                        $category = 'Internal/Inclusive';
+                    }
+                } elseif ($job->category == 'inclusive' && $job->inclusive_type) {
+                    $category = 'Inclusive/' . ucfirst($job->inclusive_type);
+                }
+
+                fputcsv($file, [
+                    $index + 1,
+                    $job->advertisement_no,
+                    $job->position_level,
+                    $job->service_group ?: $job->department,
+                    $category,
+                    ucfirst($job->category),
+                    $job->number_of_posts,
+                    $job->minimum_qualification,
+                    $job->applications_count ?? 0,
+                    'NPR ' . number_format($job->application_fee, 2),
+                    'NPR ' . number_format($job->double_dastur_fee, 2),
+                    $job->deadline ? $job->deadline->format('Y-m-d') : '-',
+                    ucfirst($job->status),
+                    $job->created_at->format('Y-m-d')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export vacancies to PDF
+     */
+    private function exportToPdf($jobs)
+    {
+        $pdf = \PDF::loadView('admin.jobs.pdf.export', compact('jobs'));
+        return $pdf->download('vacancies_' . date('Y-m-d_His') . '.pdf');
     }
 }

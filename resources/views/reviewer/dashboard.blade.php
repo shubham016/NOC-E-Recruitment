@@ -171,7 +171,7 @@
                     <h5 class="mb-0 fw-bold">
                         <i class="bi text-primary me-2"></i>Today's Progress
                     </h5>
-                    <span class="badge bg-success">{{ $todaystatus['reviewed_today'] }} / {{ $todaystatus['daily_target'] }}</span>
+                    <span class="badge bg-success">{{ $todaystatus['total_reviewed'] }} / {{ $todaystatus['total_assigned'] }}</span>
                 </div>
 
                 <div class="progress mb-3" style="height: 25px;">

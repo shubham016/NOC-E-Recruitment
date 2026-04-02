@@ -96,7 +96,21 @@ class AdminDashboardController extends Controller
                 }
             ])
             ->orderBy('total_reviewed', 'desc')
-            ->limit(5)
+            ->limit(2)
+            ->get();
+
+        // Approver Statistics
+        $approverStats = Approver::where('status', 'active')
+            ->withCount([
+                'applicationForms as approved_count' => function ($query) {
+                    $query->where('status', 'approved');
+                },
+                'applicationForms as rejected_count' => function ($query) {
+                    $query->where('status', 'rejected');
+                }
+            ])
+            ->orderBy('approved_count', 'desc')
+            ->limit(2)
             ->get();
 
         // HR Administrator Performance
@@ -126,6 +140,7 @@ class AdminDashboardController extends Controller
             'topJobs',
             'recentApplications',
             'reviewerStats',
+            'approverStats',
             'hrAdminStats',
             'recentJobs'
         ));

@@ -620,17 +620,45 @@
                         $sidebarRole    = 'Applicant';
                         $sidebarPhoto   = null;
 
-                        if (Auth::guard('approver')->check()) {
+                        // Detect portal based on current route
+                        $currentRoute = request()->path();
+                        $isApproverPortal = str_starts_with($currentRoute, 'approver');
+                        $isReviewerPortal = str_starts_with($currentRoute, 'reviewer');
+                        $isCandidatePortal = str_starts_with($currentRoute, 'candidate');
+
+                        // Check guards based on the current portal
+                        if ($isApproverPortal && Auth::guard('approver')->check()) {
                             $approver       = Auth::guard('approver')->user();
                             $sidebarName    = $approver->name;
                             $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
                             $sidebarRole    = 'Approver';
-                        } elseif (Auth::guard('reviewer')->check()) {
+                        } elseif ($isReviewerPortal && Auth::guard('reviewer')->check()) {
                             $reviewer       = Auth::guard('reviewer')->user();
                             $sidebarName    = $reviewer->name;
                             $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
                             $sidebarRole    = 'Reviewer';
+                        } elseif ($isCandidatePortal && Auth::guard('candidate')->check()) {
+                            $candidate = Auth::guard('candidate')->user();
+
+                            if (!empty($candidate->name)) {
+                                $sidebarName    = $candidate->name;
+                                $sidebarInitial = strtoupper(substr($candidate->name, 0, 1));
+                            } elseif (!empty($candidate->email)) {
+                                $sidebarName    = explode('@', $candidate->email)[0];
+                                $sidebarInitial = strtoupper(substr($sidebarName, 0, 1));
+                            }
+
+                            $sidebarRole = 'Candidate';
+
+                            // Get photo from latest application if exists
+                            if (!empty($candidate->citizenship_number)) {
+                                $sidebarPhoto = \App\Models\ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+                                    ->whereNotNull('passport_size_photo')
+                                    ->orderBy('created_at', 'desc')
+                                    ->value('passport_size_photo');
+                            }
                         } elseif (session()->has('candidate_id')) {
+                            // Fallback for session-based authentication
                             $candidateId = session('candidate_id');
                             $candidate   = \DB::table('candidate_registration')
                                 ->where('id', $candidateId)->first();
