@@ -12,6 +12,7 @@ class JobPosting extends Model
     protected $table = 'job_postings';
 
     protected $fillable = [
+        'notice_no',
         'advertisement_no',
         'title',
         'position_level',
@@ -23,6 +24,14 @@ class JobPosting extends Model
         'category',
         'internal_type',
         'inclusive_type',
+        'has_open',
+        'has_inclusive',
+        'has_internal',
+        'has_internal_open',
+        'has_internal_inclusive',
+        'internal_inclusive_types',
+        'open_posts',
+        'inclusive_posts',
         'number_of_posts',
         'location',
         'deadline',
@@ -43,6 +52,14 @@ class JobPosting extends Model
         'application_fee' => 'float',
         'double_dastur_fee' => 'float',
         'number_of_posts' => 'integer',
+        'has_open' => 'boolean',
+        'has_inclusive' => 'boolean',
+        'has_internal' => 'boolean',
+        'has_internal_open' => 'boolean',
+        'has_internal_inclusive' => 'boolean',
+        'internal_inclusive_types' => 'array',
+        'open_posts' => 'integer',
+        'inclusive_posts' => 'integer',
         'min_age' => 'integer',
         'max_age' => 'integer',
     ];

@@ -82,6 +82,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         /*
+        | Profile Routes
+        */
+        Route::get('/profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'show'])->name('profile');
+        Route::get('/profile/edit', [App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('profile.update');
+        Route::get('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'showChangePasswordForm'])->name('change-password');
+        Route::post('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'changePassword'])->name('change-password.post');
+
+        /*
         | Job Management Routes
         */
         Route::prefix('jobs')->name('jobs.')->group(function () {
@@ -219,8 +228,10 @@ Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () 
             Route::get('/', [ProfileController::class, 'show'])->name('show');
             Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
             Route::put('/', [ProfileController::class, 'update'])->name('update');
-            Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password');
         });
+
+        Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('change-password');
+        Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.post');
 
         /*
         | Job Management Routes - Using HRVacancyController

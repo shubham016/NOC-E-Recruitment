@@ -451,6 +451,8 @@ class ApplicationFormController extends Controller
     private function draftValidationRules()
     {
         return [
+            // Category Selection
+            'applied_category' => 'nullable|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
             // Personal Information (extended)
             'name_english' => 'nullable|string|max:255',
             'name_nepali' => 'nullable|string|max:255',
@@ -549,6 +551,8 @@ class ApplicationFormController extends Controller
         $fileRule = $isUpdate ? 'nullable' : 'required';
 
         return [
+            // Category Selection
+            'applied_category' => 'required|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
             // Personal Information (extended)
             'name_english' => 'required|string|max:255',
             'name_nepali' => 'required|string|max:255',

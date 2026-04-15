@@ -96,9 +96,133 @@
                 <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
                 @endif
 
-<!-- STEP 1: Personal Info -->                  
+<!-- STEP 1: Personal Info -->
                 <div class="step" id="step1">
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
+
+                    {{-- Category Selection (if multiple categories available) --}}
+                    @if($job && ($job->category == 'internal_appraisal' || ($job->has_open && $job->has_inclusive) || ($job->has_open && !$job->has_inclusive) || (!$job->has_open && $job->has_inclusive)))
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-3">
+                            <i class="bi bi-info-circle-fill me-2"></i><strong>Select Application Category</strong>
+                            <span class="nepali-text ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
+                        </h6>
+                        <p class="small mb-3">
+                            This vacancy accepts applications from multiple categories. Please select the category under which you wish to apply.
+                            <br><span class="text-muted">यो रिक्त पदले धेरै श्रेणीहरूबाट आवेदनहरू स्वीकार गर्दछ। कृपया तपाईं आवेदन दिन चाहनुभएको श्रेणी छान्नुहोस्।</span>
+                        </p>
+
+                        @if($job->category == 'internal_appraisal')
+                            {{-- Internal Appraisal Only --}}
+                            <input type="hidden" name="applied_category" value="internal_appraisal">
+                            <div class="form-check form-check-inline border rounded p-3 bg-light">
+                                <input class="form-check-input" type="radio" name="applied_category_display" id="cat_internal_appraisal" value="internal_appraisal" checked disabled>
+                                <label class="form-check-label fw-bold" for="cat_internal_appraisal">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>Internal Appraisal (आन्तरिक बढुवा)
+                                    <br><small class="text-muted">Performance-based promotion</small>
+                                </label>
+                            </div>
+                        @else
+                            {{-- Open and/or Inclusive --}}
+                            <div class="d-flex flex-wrap gap-3">
+                                @if($job->has_open || $job->category == 'open')
+                                    <div class="form-check form-check-inline border rounded p-3">
+                                        <input class="form-check-input" type="radio" name="applied_category" id="cat_open" value="open"
+                                            {{ old('applied_category', $draftApplication->applied_category ?? '') == 'open' ? 'checked' : '' }} required>
+                                        <label class="form-check-label fw-bold" for="cat_open">
+                                            <i class="bi bi-check-circle-fill text-success me-1"></i>Open (खुल्ला)
+                                            <br><small class="text-muted">Open for all eligible candidates</small>
+                                        </label>
+                                    </div>
+                                @endif
+
+                                @if($job->has_inclusive || $job->category == 'inclusive')
+                                    @php
+                                        $inclusiveTypes = [];
+                                        if ($job->inclusive_type) {
+                                            $inclusiveTypes = [$job->inclusive_type];
+                                        }
+                                    @endphp
+
+                                    @if(count($inclusiveTypes) > 0)
+                                        @foreach($inclusiveTypes as $type)
+                                            <div class="form-check form-check-inline border rounded p-3">
+                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive_{{ $loop->index }}" value="inclusive"
+                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
+                                                <label class="form-check-label fw-bold" for="cat_inclusive_{{ $loop->index }}">
+                                                    <i class="bi bi-people-fill text-info me-1"></i>Inclusive - {{ $type }} (समावेशी - {{ $type }})
+                                                    <br><small class="text-muted">Reserved for inclusive category</small>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="form-check form-check-inline border rounded p-3">
+                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive" value="inclusive"
+                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive">
+                                                <i class="bi bi-people-fill text-info me-1"></i>Inclusive (समावेशी)
+                                                <br><small class="text-muted">Reserved for inclusive category</small>
+                                            </label>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                @if($job->has_internal || $job->category == 'internal')
+                                    {{-- Internal Open Sub-category --}}
+                                    @if($job->has_internal_open)
+                                        <div class="form-check form-check-inline border rounded p-3">
+                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_open" value="internal_open"
+                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_open' ? 'checked' : '' }} required>
+                                            <label class="form-check-label fw-bold" for="cat_internal_open">
+                                                <i class="bi bi-door-open-fill text-warning me-1"></i>Internal Open (All NOC Staff)
+                                                <br><small class="text-muted">आन्तरिक खुल्ला - सबै NOC कर्मचारीका लागि</small>
+                                            </label>
+                                        </div>
+                                    @endif
+
+                                    {{-- Internal Inclusive Sub-categories --}}
+                                    @if($job->has_internal_inclusive)
+                                        @php
+                                            $internalInclusiveTypes = [];
+                                            if (isset($job->internal_inclusive_types) && is_array($job->internal_inclusive_types)) {
+                                                $internalInclusiveTypes = $job->internal_inclusive_types;
+                                            }
+                                        @endphp
+
+                                        @if(count($internalInclusiveTypes) > 0)
+                                            @foreach($internalInclusiveTypes as $type)
+                                                <div class="form-check form-check-inline border rounded p-3">
+                                                    <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive_{{ $loop->index }}" value="internal_inclusive"
+                                                        data-inclusive-type="{{ $type }}"
+                                                        {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
+                                                    <label class="form-check-label fw-bold" for="cat_internal_inclusive_{{ $loop->index }}">
+                                                        <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive - {{ $type }}
+                                                        <br><small class="text-muted">आन्तरिक समावेशी - {{ $type }} (NOC only)</small>
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                            {{-- Hidden field to store the selected inclusive type --}}
+                                            <input type="hidden" name="applied_inclusive_type" id="applied_inclusive_type" value="{{ old('applied_inclusive_type', $draftApplication->applied_inclusive_type ?? '') }}">
+                                        @else
+                                            <div class="form-check form-check-inline border rounded p-3">
+                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive" value="internal_inclusive"
+                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
+                                                <label class="form-check-label fw-bold" for="cat_internal_inclusive">
+                                                    <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive
+                                                    <br><small class="text-muted">आन्तरिक समावेशी (NOC only)</small>
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endif
+                                @endif
+                            </div>
+
+                            @error('applied_category')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        @endif
+                    </div>
+                    @endif
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -893,7 +1017,23 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     console.log('=== DEBUG: Checking Save Draft Button ===');
-    
+
+    // Handle Internal Inclusive Type Selection
+    const internalInclusiveRadios = document.querySelectorAll('input[name="applied_category"][value="internal_inclusive"]');
+    const appliedInclusiveTypeInput = document.getElementById('applied_inclusive_type');
+
+    if (internalInclusiveRadios.length > 0 && appliedInclusiveTypeInput) {
+        internalInclusiveRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    const inclusiveType = this.getAttribute('data-inclusive-type');
+                    appliedInclusiveTypeInput.value = inclusiveType || '';
+                    console.log('Selected Internal Inclusive Type:', inclusiveType);
+                }
+            });
+        });
+    }
+
     // Save Draft Button Handler - ADD THIS
 setTimeout(() => {
     const saveDraftBtn = document.getElementById('saveDraftBtn');

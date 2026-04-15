@@ -17,9 +17,6 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        // DEBUG: Check if we're even getting here
-        dd('ProfileController show method called');
-
         $hrAdministrator = Auth::guard('hr_administrator')->user();
 
         // Get statistics
@@ -38,7 +35,7 @@ class ProfileController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.hr-administrators.show', compact('hrAdministrator', 'stats', 'recentJobs'));
+        return view('hr-administrator.profile.show', compact('hrAdministrator', 'stats', 'recentJobs'));
     }
 
     /**
@@ -77,6 +74,15 @@ class ProfileController extends Controller
 
         return redirect()->route('hr-administrator.profile.show')
             ->with('success', 'Profile updated successfully!');
+    }
+
+    /**
+     * Show change password form
+     */
+    public function showChangePasswordForm()
+    {
+        $hrAdministrator = Auth::guard('hr_administrator')->user();
+        return view('hr-administrator.profile.change-password', compact('hrAdministrator'));
     }
 
     /**

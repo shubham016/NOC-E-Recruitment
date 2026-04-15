@@ -15,8 +15,10 @@ class Candidate extends Authenticatable
     protected $fillable = [
         'name',
         'gender',
+        'noc_employee',
         'date_of_birth_bs',
         'citizenship_number',
+        'nid',
         'citizenship_issue_distric',
         'citizenship_issue_date_bs',
         'password',

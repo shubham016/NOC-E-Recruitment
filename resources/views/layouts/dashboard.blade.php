@@ -347,7 +347,9 @@
         .navbar-right-section {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 0.5rem;
+            margin: -3px 8px 0px 0px;
+            height: 40px;
         }
 
         .navbar-right-section .nav-link {
@@ -357,8 +359,10 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.9rem;
-            padding: 0.5rem 0;
+            padding: 0;
             transition: color 0.2s;
+            line-height: 1;
+            height: 40px;
         }
 
         .navbar-right-section .nav-link:hover {
@@ -367,20 +371,21 @@
 
         .navbar-right-section .nav-link i {
             font-size: 1rem;
+            line-height: 1;
         }
 
         /* Notification icon styling */
         .notification-link {
             display: inline-flex !important;
             align-items: center !important;
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
+            padding: 0 !important;
             position: relative;
+            height: 40px !important;
         }
 
         .notification-link .bi-bell {
             font-size: 1rem;
-            line-height: 1.5;
+            line-height: 1;
         }
 
         .notification-badge {
@@ -407,12 +412,89 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+        }
+
+        /* User Dropdown Styles */
+        #userDropdown {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0;
+            padding: 0 !important;
+            line-height: 1;
+            height: 40px !important;
+        }
+
+        #userDropdown .toggle-icon {
+            font-size: 0.875rem;
+            color: #1a2a4a;
+            transition: transform 0.2s ease;
+            line-height: 1;
+            position: relative;
+            top: 1px;
+            margin-left: 0.6rem;
+        }
+
+        #userDropdown[aria-expanded="true"] .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        #userDropdown .user-name {
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+        }
+
+        .dropdown-menu {
+            border: 1px solid #e8e2d4;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem 0;
+            min-width: 200px;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.65rem 1.25rem;
+            font-size: 0.9rem;
+            color: #444;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 1rem;
+            color: #a07828;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(201, 168, 76, 0.1);
+            color: #1a2a4a;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .dropdown-item.text-danger i {
+            color: #dc3545;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #e8e2d4;
         }
 
         .content-area {
@@ -633,18 +715,61 @@
                     </a>
                 @endif
 
-                <!-- Dashboard Link -->
-                <a class="nav-link" href="@yield('dashboard-route')">
-                    <i class="bi bi-speedometer2"></i> Dashboard
-                </a>
-
-                <!-- Logout -->
-                <form method="POST" action="@yield('logout-route')" class="d-inline">
-                    @csrf
-                    <button class="btn btn-link nav-link text-dark" type="submit" style="text-decoration: none; border: none; background: none; padding: 0.5rem 0;">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </button>
-                </form>
+                <!-- User Dropdown Menu -->
+                <div class="dropdown">
+                    <a class="nav-link d-flex align-items-center" href="#" id="userDropdown"
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- <div class="user-avatar me-2">
+                            @if(request()->is('admin/*'))
+                                {{ substr(Auth::guard('admin')->user()->name ?? 'A', 0, 1) }}
+                            @elseif(request()->is('hr-administrator/*'))
+                                {{ substr(Auth::guard('hr_administrator')->user()->name ?? 'H', 0, 1) }}
+                            @endif
+                        </div> -->
+                        <span class="user-name">
+                            @if(request()->is('admin/*'))
+                                {{ Auth::guard('admin')->user()->name ?? 'Admin' }}
+                            @elseif(request()->is('hr-administrator/*'))
+                                {{ Auth::guard('hr_administrator')->user()->name ?? 'HR Admin' }}
+                            @endif
+                        </span>
+                        <i class="bi bi-chevron-down toggle-icon ms-2"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                        @if(request()->is('admin/*'))
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.profile') }}">
+                                    <i class="bi bi-person me-2"></i> My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.change-password') }}">
+                                    <i class="bi bi-lock me-2"></i> Change Password
+                                </a>
+                            </li>
+                        @elseif(request()->is('hr-administrator/*'))
+                            <li>
+                                <a class="dropdown-item" href="{{ route('hr-administrator.profile.show') }}">
+                                    <i class="bi bi-person me-2"></i> My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('hr-administrator.change-password') }}">
+                                    <i class="bi bi-lock me-2"></i> Change Password
+                                </a>
+                            </li>
+                        @endif
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="@yield('logout-route')" class="d-inline w-100">
+                                @csrf
+                                <button class="dropdown-item text-danger" type="submit">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Log Out
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
 

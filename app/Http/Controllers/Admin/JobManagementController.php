@@ -88,14 +88,53 @@ class JobManagementController extends Controller
      */
     public function store(Request $request)
     {
+        // DEBUG: Log EVERYTHING in the request
+        \Log::info('===== JOB STORE REQUEST =====');
+        \Log::info('ALL REQUEST DATA:', $request->all());
+        \Log::info('has_open value:', ['value' => $request->input('has_open'), 'type' => gettype($request->input('has_open'))]);
+        \Log::info('has_inclusive value:', ['value' => $request->input('has_inclusive'), 'type' => gettype($request->input('has_inclusive'))]);
+        \Log::info('notice_no value:', ['value' => $request->input('notice_no'), 'type' => gettype($request->input('notice_no'))]);
+        \Log::info('===== END REQUEST =====');
+
+        // For Open category: Double Dastur Date and Fee are required
+        $isOpenCategory = $request->input('has_open') == '1'
+            && $request->input('is_internal_appraisal') != '1'
+            && $request->input('has_internal') != '1';
+
+        if ($isOpenCategory) {
+            if (empty($request->double_dastur_date)) {
+                return redirect()->back()
+                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open category.'])
+                    ->withInput();
+            }
+            if (empty($request->double_dastur_fee) || floatval($request->double_dastur_fee) <= 0) {
+                return redirect()->back()
+                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open category and must be greater than 0.'])
+                    ->withInput();
+            }
+        }
+
         $validated = $request->validate([
+            'notice_no' => 'required|string|max:50|unique:job_postings,notice_no',
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
-            'inclusive_type' => 'required_if:category,inclusive|nullable|string',
+            'inclusive_type' => 'nullable|string',
+            'has_open' => 'nullable|boolean',
+            'has_inclusive' => 'nullable|boolean',
+            'has_internal' => 'nullable|boolean',
+            'has_internal_open' => 'nullable|boolean',
+            'has_internal_inclusive' => 'nullable|boolean',
+            'is_internal_appraisal' => 'nullable|boolean',
+            'inclusive_types' => 'nullable|array',
+            'inclusive_types.*' => 'string|in:Women,A.J,Madhesi,Janajati,Apanga,Dalit,Pichadiyeko Chetra',
+            'internal_inclusive_types' => 'nullable|array',
+            'internal_inclusive_types.*' => 'string|in:Women,A.J,Madhesi,Janajati,Apanga,Dalit,Pichadiyeko Chetra',
+            'open_posts' => 'nullable|integer|min:0',
+            'inclusive_posts' => 'nullable|integer|min:0',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
@@ -106,8 +145,57 @@ class JobManagementController extends Controller
             'deadline_bs' => 'nullable|string',
             'double_dastur_date' => 'nullable|date',
             'double_dastur_bs' => 'nullable|string',
+            'double_dastur_fee' => 'nullable|numeric|min:0',
             'status' => 'required|in:draft,active,closed',
         ]);
+
+        // Convert checkbox values to boolean
+        $validated['has_open'] = $request->has('has_open') && $request->has_open == '1';
+        $validated['has_inclusive'] = $request->has('has_inclusive') && $request->has_inclusive == '1';
+        $validated['has_internal'] = $request->has('has_internal') && $request->has_internal == '1';
+        $validated['has_internal_open'] = $request->has('has_internal_open') && $request->has_internal_open == '1';
+        $validated['has_internal_inclusive'] = $request->has('has_internal_inclusive') && $request->has_internal_inclusive == '1';
+
+        // Handle internal appraisal (exclusive category)
+        if ($request->has('is_internal_appraisal') && $request->is_internal_appraisal == '1') {
+            $validated['category'] = 'internal_appraisal';
+            $validated['has_open'] = false;
+            $validated['has_inclusive'] = false;
+            $validated['has_internal'] = false;
+            $validated['has_internal_open'] = false;
+            $validated['has_internal_inclusive'] = false;
+        }
+
+        // Validate exactly one main category is selected
+        $categoriesSelected = 0;
+        if ($validated['has_open']) $categoriesSelected++;
+        if ($validated['has_internal']) $categoriesSelected++;
+        if ($validated['category'] === 'internal_appraisal') $categoriesSelected++;
+
+        if ($categoriesSelected === 0) {
+            return redirect()->back()
+                ->withErrors(['categories' => 'Please select one main category (Open, Internal, or Internal Appraisal).'])
+                ->withInput();
+        }
+
+        if ($categoriesSelected > 1) {
+            return redirect()->back()
+                ->withErrors(['categories' => 'Please select only ONE main category. Open, Internal, and Internal Appraisal are mutually exclusive.'])
+                ->withInput();
+        }
+
+        // Set double_dastur_fee to 0 for Internal and Internal Appraisal (not applicable)
+        if ($validated['has_internal'] || $validated['category'] === 'internal_appraisal') {
+            $validated['double_dastur_fee'] = 0;
+            $validated['double_dastur_date'] = null;
+            $validated['double_dastur_bs'] = null;
+        }
+
+        // Handle inclusive types array - convert to JSON for storage
+        if ($request->has('inclusive_types') && is_array($request->inclusive_types)) {
+            // Store first one in inclusive_type for backward compatibility
+            $validated['inclusive_type'] = $request->inclusive_types[0] ?? null;
+        }
 
         // Set department from service_group
         $validated['department'] = $validated['service_group'];
@@ -115,13 +203,19 @@ class JobManagementController extends Controller
         // Set posted_by to current admin
         $validated['posted_by'] = Auth::guard('admin')->id();
 
-        $validated['posted_by'] = Auth::guard('admin')->id();
+        // CRITICAL DEBUG: Dump validated data before save
+        \Log::info('ABOUT TO CREATE JOB:', $validated);
+        \Log::info('CRITICAL FIELDS:', [
+            'notice_no' => $validated['notice_no'] ?? 'NOT SET',
+            'has_open' => $validated['has_open'] ?? 'NOT SET',
+            'has_inclusive' => $validated['has_inclusive'] ?? 'NOT SET',
+        ]);
 
         $job = JobPosting::create($validated);
 
         return redirect()
             ->route('admin.jobs.index')
-            ->with('success', 'Vacancy posted successfully!');
+            ->with('success', 'Vacancy posted successfully! Candidates can now apply under the selected categories.');
     }
 
     /**
@@ -159,16 +253,56 @@ class JobManagementController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // DEBUG: Log EVERYTHING in the request
+        \Log::info('===== JOB UPDATE REQUEST =====');
+        \Log::info('Job ID:', ['id' => $id]);
+        \Log::info('ALL REQUEST DATA:', $request->all());
+        \Log::info('has_open value:', ['value' => $request->input('has_open'), 'type' => gettype($request->input('has_open'))]);
+        \Log::info('has_inclusive value:', ['value' => $request->input('has_inclusive'), 'type' => gettype($request->input('has_inclusive'))]);
+        \Log::info('notice_no value:', ['value' => $request->input('notice_no'), 'type' => gettype($request->input('notice_no'))]);
+        \Log::info('===== END REQUEST =====');
+
         $job = JobPosting::findOrFail($id);
 
+        // For Open category: Double Dastur Date and Fee are required
+        $isOpenCategory = $request->input('has_open') == '1'
+            && $request->input('is_internal_appraisal') != '1'
+            && $request->input('has_internal') != '1';
+
+        if ($isOpenCategory) {
+            if (empty($request->double_dastur_date)) {
+                return redirect()->back()
+                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open category.'])
+                    ->withInput();
+            }
+            if (empty($request->double_dastur_fee) || floatval($request->double_dastur_fee) <= 0) {
+                return redirect()->back()
+                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open category and must be greater than 0.'])
+                    ->withInput();
+            }
+        }
+
         $validated = $request->validate([
+            'notice_no' => 'required|string|max:50|unique:job_postings,notice_no,' . $id,
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
             'position_level' => 'required|string|max:100',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
-            'inclusive_type' => 'required_if:category,inclusive|nullable|string',
+            'inclusive_type' => 'nullable|string',
+            'has_open' => 'nullable|boolean',
+            'has_inclusive' => 'nullable|boolean',
+            'has_internal' => 'nullable|boolean',
+            'has_internal_open' => 'nullable|boolean',
+            'has_internal_inclusive' => 'nullable|boolean',
+            'is_internal_appraisal' => 'nullable|boolean',
+            'inclusive_types' => 'nullable|array',
+            'inclusive_types.*' => 'string|in:Women,A.J,Madhesi,Janajati,Apanga,Dalit,Pichadiyeko Chetra',
+            'internal_inclusive_types' => 'nullable|array',
+            'internal_inclusive_types.*' => 'string|in:Women,A.J,Madhesi,Janajati,Apanga,Dalit,Pichadiyeko Chetra',
+            'open_posts' => 'nullable|integer|min:0',
+            'inclusive_posts' => 'nullable|integer|min:0',
             'number_of_posts' => 'required|integer|min:1',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
@@ -179,8 +313,49 @@ class JobManagementController extends Controller
             'deadline_bs' => 'nullable|string',
             'double_dastur_date' => 'nullable|date',
             'double_dastur_bs' => 'nullable|string',
+            'double_dastur_fee' => 'nullable|numeric|min:0',
             'status' => 'required|in:draft,active,closed',
         ]);
+
+        // Convert checkbox values to boolean
+        $validated['has_open'] = $request->has('has_open') && $request->has_open == '1';
+        $validated['has_inclusive'] = $request->has('has_inclusive') && $request->has_inclusive == '1';
+        $validated['has_internal'] = $request->has('has_internal') && $request->has_internal == '1';
+        $validated['has_internal_open'] = $request->has('has_internal_open') && $request->has_internal_open == '1';
+        $validated['has_internal_inclusive'] = $request->has('has_internal_inclusive') && $request->has_internal_inclusive == '1';
+
+        // Handle internal appraisal (exclusive category)
+        if ($request->has('is_internal_appraisal') && $request->is_internal_appraisal == '1') {
+            $validated['category'] = 'internal_appraisal';
+            $validated['has_open'] = false;
+            $validated['has_inclusive'] = false;
+            $validated['has_internal'] = false;
+            $validated['has_internal_open'] = false;
+            $validated['has_internal_inclusive'] = false;
+        }
+
+        // Validate exactly one main category is selected
+        $categoriesSelected = 0;
+        if ($validated['has_open']) $categoriesSelected++;
+        if ($validated['has_internal']) $categoriesSelected++;
+        if ($validated['category'] === 'internal_appraisal') $categoriesSelected++;
+
+        if ($categoriesSelected === 0) {
+            return redirect()->back()
+                ->withErrors(['categories' => 'Please select one main category (Open, Internal, or Internal Appraisal).'])
+                ->withInput();
+        }
+
+        if ($categoriesSelected > 1) {
+            return redirect()->back()
+                ->withErrors(['categories' => 'Please select only ONE main category. Open, Internal, and Internal Appraisal are mutually exclusive.'])
+                ->withInput();
+        }
+
+        // Handle inclusive types array
+        if ($request->has('inclusive_types') && is_array($request->inclusive_types)) {
+            $validated['inclusive_type'] = $request->inclusive_types[0] ?? null;
+        }
 
         // Set department from service_group
         $validated['department'] = $validated['service_group'];

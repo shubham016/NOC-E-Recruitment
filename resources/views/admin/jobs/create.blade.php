@@ -251,11 +251,13 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <div class="govt-badge">
-                    <i class="bi bi-building-fill"></i>
+                    <!-- <i class="bi bi-building-fill"></i> -->
                     <span>नेपाल सरकार | Government of Nepal</span>
                 </div>
                 <h3 class="fw-bold mb-2">
-                    <i class="bi bi-file-earmark-post-fill me-2"></i>Post New Vacancy
+                    <!-- <i class="bi bi-file-earmark-post-fill me-2"> -->
+
+                    </i>Post New Vacancy
                 </h3>
                 <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
@@ -304,8 +306,28 @@
             <div class="col-lg-8">
                 <div class="form-card">
                     <h5 class="fw-bold mb-4 text-danger">
-                        <i class="bi bi-pencil-square me-2"></i>Vacancy Details
+                        <!-- <i class="bi bi-pencil-square me-2"></i> -->
+                        Vacancy Details
                     </h5>
+
+                    <!-- Notice Number -->
+                    <div class="mb-4">
+                        <label for="notice_no" class="form-label">
+                            <span>Notice No. <span class="required">*</span></span>
+                            <span class="nepali-text">सूचना नं.</span>
+                        </label>
+                        <input type="text"
+                            class="form-control form-control-lg @error('notice_no') is-invalid @enderror"
+                            id="notice_no" name="notice_no" value="{{ old('notice_no') }}"
+                            placeholder="e.g., 36/2082-83"
+                            required>
+                        @error('notice_no')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <!-- <small class="form-text">
+                            <i class="bi bi-lightbulb me-1"></i>Internal notice reference number (must be unique)
+                        </small> -->
+                    </div>
 
                     <!-- Advertisement Number -->
                     <div class="mb-4">
@@ -316,13 +338,13 @@
                         <input type="text"
                             class="form-control form-control-lg @error('advertisement_no') is-invalid @enderror"
                             id="advertisement_no" name="advertisement_no" value="{{ old('advertisement_no') }}"
-                            placeholder="e.g., 01/2081-82" required>
+                            placeholder="e.g., 01/2082-83" required>
                         @error('advertisement_no')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text">
+                        <!-- <small class="form-text">
                             <i class="bi bi-lightbulb me-1"></i>Format: Number/Fiscal Year (e.g., 01/2081-82)
-                        </small>
+                        </small> -->
                     </div>
 
                     <div class="section-divider"></div>
@@ -339,6 +361,8 @@
                             <optgroup label="Officer Level (अधिकृत तह)">
                                 <option value="Officer Level - 10th (अधिकृत तह - १०)" {{ old('position_level') == 'Officer Level - 10th (अधिकृत तह - १०)' ? 'selected' : '' }}>Officer Level - 10th (अधिकृत तह -
                                     १०)</option>
+                                <option value="Officer Level - 9th (अधिकृत तह - ९)" {{ old('position_level') == 'Officer Level - 9th (अधिकृत तह - ९)' ? 'selected' : '' }}>Officer Level - 9th (अधिकृत तह -
+                                    ९)</option>
                                 <option value="Officer Level - 8th (अधिकृत तह - ८)" {{ old('position_level') == 'Officer Level - 8th (अधिकृत तह - ८)' ? 'selected' : '' }}>Officer Level - 8th (अधिकृत तह - ८)</option>
                                 <option value="Officer Level - 7th (अधिकृत तह - ७)" {{ old('position_level') == 'Officer Level - 7th (अधिकृत तह - ७)' ? 'selected' : '' }}>Officer Level - 7th (अधिकृत तह - ७)</option>
                                 <option value="Officer Level - 6th (अधिकृत तह - ६)" {{ old('position_level') == 'Officer Level - 6th (अधिकृत तह - ६)' ? 'selected' : '' }}>Officer Level - 6th (अधिकृत तह - ६)</option>
@@ -356,9 +380,9 @@
                         @error('position_level')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text">
+                        <!-- <small class="form-text">
                             <i class="bi bi-lightbulb me-1"></i>Select the government position level from the dropdown
-                        </small>
+                        </small> -->
                     </div>
 
                     <!-- Service / Group -->
@@ -367,24 +391,12 @@
                             <span>Service / Group <span class="required">*</span></span>
                             <span class="nepali-text">सेवा / समूह</span>
                         </label>
-                        <select class="form-select form-select-lg @error('service_group') is-invalid @enderror"
-                            id="service_group" name="service_group" required>
-                            <option value="">-- Select Service / Group --</option>
-                            <option value="Administration" {{ old('service_group') == 'Administration' ? 'selected' : '' }}>
-                                Non-Technical / Administration (प्रशासन)</option>
-                            <option value="Accounting" {{ old('service_group') == 'Accounting' ? 'selected' : '' }}>
-                                Non-Technical / Accounting (लेखा)</option>
-                            <option value="Engineering" {{ old('service_group') == 'Engineering' ? 'selected' : '' }}>
-                                Technical / Engineering (ईन्जिनियरिङ्ग)</option>
-                            <option value="Computer" {{ old('service_group') == 'Computer' ? 'selected' : '' }}>Technical /
-                                (Computer / IT) (प्राविधिक / विविध / आइ.टी)</option>
-                            <option value="Lab" {{ old('service_group') == 'Lab' ? 'selected' : '' }}>Technical / Lab
-                                (प्राविधिक / ल्याव)</option>
-                            <option value="TahaBinaako" {{ old('service_group') == 'TahaBinaako' ? 'selected' : '' }}>
-                                Technical / Taha Binaako (प्राविधिक / तहविहिन)</option>
-                            <option value="Operator" {{ old('service_group') == 'Operator' ? 'selected' : '' }}>Browser
-                                Operator / Taha Binaako (बाउजर अपरेटर / तहविहिन)</option>
-                        </select>
+                        <input type="text"
+                            class="form-control form-control-lg @error('service_group') is-invalid @enderror"
+                            id="service_group" name="service_group"
+                            value="{{ old('service_group') }}"
+                            placeholder="e.g. Non-Technical / Administration"
+                            required>
                         @error('service_group')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -392,71 +404,305 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Category Dropdown -->
+                    <!-- Category Checkboxes - Hierarchical Structure -->
                     <div class="mb-4">
-                        <label for="category" class="form-label">
-                            <span>Category <span class="required">*</span></span>
-                            <span class="nepali-text">श्रेणी</span>
+                        <label class="form-label">
+                            <span>Category / Type <span class="required">*</span></span>
+                            <span class="nepali-text">श्रेणी / प्रकार</span>
                         </label>
-                        <select class="form-select form-select-lg @error('category') is-invalid @enderror"
-                            id="category" name="category" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="open" {{ old('category', 'open') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
-                            <option value="inclusive" {{ old('category') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
-                            <option value="internal" {{ old('category') == 'internal' ? 'selected' : '' }}>Internal (आन्तरिक)</option>
-                            <option value="internal_appraisal" {{ old('category') == 'internal_appraisal' ? 'selected' : '' }}>Internal Appraisal (आन्तरिक बढुवा)</option>
-                        </select>
-                        @error('category')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Select the vacancy category type
-                        </small>
-                    </div>
 
-                    <!-- Internal Sub-Category (Conditional) -->
-                    <div class="inclusive-subcategory mb-4" id="internalSubCategory">
-                        <label for="internal_type" class="form-label">
-                            <span>Internal Type <span class="required">*</span></span>
-                            <span class="nepali-text">आन्तरिक प्रकार</span>
-                        </label>
-                        <select class="form-select form-select-lg @error('internal_type') is-invalid @enderror"
-                            id="internal_type" name="internal_type">
-                            <option value="">-- Select Internal Type --</option>
-                            <option value="open" {{ old('internal_type') == 'open' ? 'selected' : '' }}>Open (खुल्ला)</option>
-                            <option value="inclusive" {{ old('internal_type') == 'inclusive' ? 'selected' : '' }}>Inclusive (समावेशी)</option>
-                        </select>
-                        @error('internal_type')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Select if internal vacancy is open or inclusive
-                        </small>
-                    </div>
+                        <div class="border rounded p-3 bg-light">
+                            <!-- Open Category (Main) -->
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input category-checkbox"
+                                           type="checkbox"
+                                           id="has_open"
+                                           value="1"
+                                           {{ old('has_open') == '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="has_open">
+                                        Open (खुल्ला)
+                                    </label>
+                                </div>
 
-                    <!-- Inclusive Type (Conditional - for both Inclusive and Internal-Inclusive) -->
-                    <div class="inclusive-subcategory mb-4" id="inclusiveSubCategory">
-                        <label for="inclusive_type" class="form-label">
-                            <span>Inclusive Type <span class="required">*</span></span>
-                            <span class="nepali-text">समावेशी प्रकार</span>
-                        </label>
-                        <select class="form-select form-select-lg @error('inclusive_type') is-invalid @enderror"
-                            id="inclusive_type" name="inclusive_type">
-                            <option value="">-- Select Inclusive Type --</option>
-                            <option value="Women" {{ old('inclusive_type') == 'Women' ? 'selected' : '' }}>Women (महिला)</option>
-                            <option value="A.J" {{ old('inclusive_type') == 'A.J' ? 'selected' : '' }}>A.J (आ.ज / आदिवासी जनजाति)</option>
-                            <option value="Madhesi" {{ old('inclusive_type') == 'Madhesi' ? 'selected' : '' }}>Madhesi (मधेसी)</option>
-                            <option value="Janajati" {{ old('inclusive_type') == 'Janajati' ? 'selected' : '' }}>Janajati (जनजाति)</option>
-                            <option value="Apanga" {{ old('inclusive_type') == 'Apanga' ? 'selected' : '' }}>Apanga (अपाङ्ग)</option>
-                            <option value="Dalit" {{ old('inclusive_type') == 'Dalit' ? 'selected' : '' }}>Dalit (दलित)</option>
-                            <option value="Pichadiyeko Chetra" {{ old('inclusive_type') == 'Pichadiyeko Chetra' ? 'selected' : '' }}>Pichadiyeko Chetra (पिचडिएको क्षेत्र)</option>
-                        </select>
-                        @error('inclusive_type')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <!-- Inclusive Types Checkbox (shown when Open is checked) -->
+                                <div id="inclusiveTypesToggle" style="display: none; margin-left: 30px; margin-top: 10px;">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="has_inclusive_toggle"
+                                               value="1"
+                                               {{ old('has_inclusive_toggle') == '1' ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="has_inclusive_toggle">
+                                            Inclusive Types:
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Individual Inclusive Type Checkboxes (shown when Inclusive Types is checked) -->
+                                <div id="inclusiveTypesSection" style="display: none; margin-left: 60px; margin-top: 10px;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_women"
+                                                       name="inclusive_types[]"
+                                                       value="Women"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Women', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_women">
+                                                    Women (महिला)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_aj"
+                                                       name="inclusive_types[]"
+                                                       value="A.J"
+                                                       {{ is_array(old('inclusive_types')) && in_array('A.J', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_aj">
+                                                    A.J (आ.ज / आदिवासी जनजाति)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_madhesi"
+                                                       name="inclusive_types[]"
+                                                       value="Madhesi"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Madhesi', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_madhesi">
+                                                    Madhesi (मधेसी)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_janajati"
+                                                       name="inclusive_types[]"
+                                                       value="Janajati"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Janajati', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_janajati">
+                                                    Janajati (जनजाति)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_apanga"
+                                                       name="inclusive_types[]"
+                                                       value="Apanga"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Apanga', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_apanga">
+                                                    Apanga (अपाङ्ग)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_dalit"
+                                                       name="inclusive_types[]"
+                                                       value="Dalit"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Dalit', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_dalit">
+                                                    Dalit (दलित)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="incl_pichadiyeko"
+                                                       name="inclusive_types[]"
+                                                       value="Pichadiyeko Chetra"
+                                                       {{ is_array(old('inclusive_types')) && in_array('Pichadiyeko Chetra', old('inclusive_types')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="incl_pichadiyeko">
+                                                    Pichadiyeko Chetra (पिचडिएको क्षेत्र)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @error('inclusive_types')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Internal Category with Sub-categories -->
+                            <div class="mb-3">
+                                <!-- Level 1: Internal -->
+                                <div class="form-check">
+                                    <input class="form-check-input category-checkbox"
+                                           type="checkbox"
+                                           id="has_internal"
+                                           value="1"
+                                           {{ old('has_internal') == '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="has_internal">
+                                        Internal (आन्तरिक परीक्षा)
+                                    </label>
+                                    <small class="d-block text-muted ms-4">For NOC employees only</small>
+                                </div>
+
+                                <!-- Level 2: Internal Open -->
+                                <div id="internalOpenToggle" style="display: none; margin-left: 30px; margin-top: 10px;">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input internal-subcategory-checkbox"
+                                               type="checkbox"
+                                               id="has_internal_open"
+                                               name="has_internal_open"
+                                               value="1"
+                                               {{ old('has_internal_open') == '1' ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="has_internal_open">
+                                            Internal Open (All NOC Staff)
+                                        </label>
+                                        <small class="d-block text-muted">Open for all NOC employees</small>
+                                    </div>
+                                </div>
+
+                                <!-- Level 2: Internal Inclusive Types Toggle -->
+                                <div id="internalInclusiveToggle" style="display: none; margin-left: 30px; margin-top: 10px;">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input internal-subcategory-checkbox"
+                                               type="checkbox"
+                                               id="has_internal_inclusive_toggle"
+                                               value="1"
+                                               {{ old('has_internal_inclusive') == '1' ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="has_internal_inclusive_toggle">
+                                            Internal Inclusive Types:
+                                        </label>
+                                        <small class="d-block text-muted">For NOC employees from inclusive categories</small>
+                                    </div>
+                                </div>
+
+                                <!-- Level 3: Internal Inclusive Individual Types -->
+                                <div id="internalInclusiveTypesSection" style="display: none; margin-left: 60px; margin-top: 10px;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_women"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Women"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Women', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_women">
+                                                    Women (महिला)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_aj"
+                                                       name="internal_inclusive_types[]"
+                                                       value="A.J"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('A.J', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_aj">
+                                                    A.J (आ.ज / आदिवासी जनजाति)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_madhesi"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Madhesi"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Madhesi', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_madhesi">
+                                                    Madhesi (मधेसी)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_janajati"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Janajati"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Janajati', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_janajati">
+                                                    Janajati (जनजाति)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_apanga"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Apanga"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Apanga', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_apanga">
+                                                    Apanga (अपाङ्ग)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_dalit"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Dalit"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Dalit', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_dalit">
+                                                    Dalit (दलित)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input internal-inclusive-type-checkbox"
+                                                       type="checkbox"
+                                                       id="internal_incl_pichadiyeko"
+                                                       name="internal_inclusive_types[]"
+                                                       value="Pichadiyeko Chetra"
+                                                       {{ (is_array(old('internal_inclusive_types')) && in_array('Pichadiyeko Chetra', old('internal_inclusive_types'))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="internal_incl_pichadiyeko">
+                                                    Pichadiyeko Chetra (पिचडिएको क्षेत्र)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Internal Appraisal Category (Exclusive) -->
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="is_internal_appraisal"
+                                           name="is_internal_appraisal"
+                                           value="1"
+                                           {{ old('is_internal_appraisal') == '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="is_internal_appraisal">
+                                        Internal Appraisal (आन्तरिक बढुवा)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        @error('categories')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Select the specific inclusive category
-                        </small>
+
+                        <!-- <small class="form-text">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            Open is selected by default. Check inclusive types if specific groups can apply. Internal Appraisal is exclusive.
+                        </small> -->
+
+                        <!-- Hidden fields for backward compatibility -->
+                        <input type="hidden" name="category" id="hidden_category" value="{{ old('category', 'open') }}">
+                        <input type="hidden" name="has_open" id="hidden_has_open" value="0">
+                        <input type="hidden" name="has_inclusive" id="has_inclusive" value="0">
+                        <input type="hidden" name="has_internal" id="hidden_has_internal" value="0">
+                        <input type="hidden" name="inclusive_type" id="hidden_inclusive_type" value="{{ old('inclusive_type') }}">
+                        <input type="hidden" name="has_internal_inclusive" id="has_internal_inclusive" value="0">
                     </div>
 
                     <!-- Demand Post (Number of Posts) -->
@@ -472,9 +718,9 @@
                         @error('number_of_posts')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text">
+                        <!-- <small class="form-text">
                             <i class="bi bi-lightbulb me-1"></i>Total number of vacant positions available
-                        </small>
+                        </small> -->
                     </div>
 
                     <div class="section-divider"></div>
@@ -492,10 +738,10 @@
                         @error('minimum_qualification')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text">
+                        <!-- <small class="form-text">
                             <i class="bi bi-lightbulb me-1"></i>Describe the minimum education, certificates, or degrees
                             required for this position
-                        </small>
+                        </small> -->
                     </div>
 
                     <div class="section-divider"></div>
@@ -511,7 +757,8 @@
                             <!-- Nepali Date (BS) Picker -->
                             <div class="col-md-6">
                                 <label for="deadline_bs" class="form-label small fw-bold text-primary">
-                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                    <!-- <i class="bi bi-calendar3 me-1"></i> -->
+                                    Nepali Date (BS) / नेपाली मिति
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg"
@@ -520,14 +767,16 @@
                                     autocomplete="off">
                                 <input type="hidden" name="deadline_bs" id="deadline_bs_hidden">
                                 <small class="form-text text-primary">
-                                    <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Click to open Nepali calendar
                                 </small>
                             </div>
 
                             <!-- English Date (AD) - Database Field -->
                             <div class="col-md-6">
                                 <label for="deadline_ad" class="form-label small fw-bold">
-                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD) <span class="text-danger">*</span>
+                                    <!-- <i class="bi bi-calendar-date me-1"></i> -->
+                                    English Date (AD) <span class="text-danger">*</span>
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg @error('deadline') is-invalid @enderror"
@@ -555,7 +804,7 @@
                     </div>
 
                     <!-- Double Dastur Date - Dual Date Pickers -->
-                    <div class="mb-4">
+                    <div class="mb-4" id="doubleDasturDateSection">
                         <label class="form-label">
                             <span>Double Dastur Date</span>
                             <span class="nepali-text">दोहोरो दस्तुर मिति</span>
@@ -565,7 +814,8 @@
                             <!-- Nepali Date (BS) Picker -->
                             <div class="col-md-6">
                                 <label for="double_dastur_bs" class="form-label small fw-bold text-success">
-                                    <i class="bi bi-calendar3 me-1"></i>Nepali Date (BS) / नेपाली मिति
+                                    <!-- <i class="bi bi-calendar3 me-1"></i> -->
+                                    Nepali Date (BS) / नेपाली मिति
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg"
@@ -581,7 +831,8 @@
                             <!-- English Date (AD) - Database Field -->
                             <div class="col-md-6">
                                 <label for="double_dastur_ad" class="form-label small fw-bold text-success">
-                                    <i class="bi bi-calendar-date me-1"></i>English Date (AD)
+                                    <!-- <i class="bi bi-calendar-date me-1"></i> -->
+                                    English Date (AD)
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg @error('double_dastur_date') is-invalid @enderror"
@@ -635,7 +886,7 @@
                         </div>
 
                         <!-- Double Dastur Fee -->
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="doubleDasturFeeSection">
                             <label class="form-label">
                                 <span>Double Dastur Fee<span class="text-danger">*</span></span>
                                 <span class="nepali-text">दोहोरो दस्तुर</span>
@@ -647,8 +898,7 @@
                                    value="{{ old('double_dastur_fee') }}"
                                    placeholder="Enter Double Dastur Fee"
                                    min="0"
-                                   step="0.01"
-                                   required>
+                                   step="0.01">
                             @error('double_dastur_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -684,6 +934,10 @@
                                 <th>Sr. No.</th>
                                 <td class="text-muted"><em>Auto-generated</em></td>
                             </tr>
+                            <tr id="preview-notice-row">
+                                <th>Notice No.</th>
+                                <td id="preview-notice-no" class="fw-semibold">-</td>
+                            </tr>
                             <tr>
                                 <th>Advertisement No.</th>
                                 <td id="preview-adv-no" class="fw-semibold">-</td>
@@ -700,13 +954,13 @@
                                 <th>Category</th>
                                 <td id="preview-category" class="fw-semibold">-</td>
                             </tr>
-                            <tr id="preview-internal-row" style="display: none;">
-                                <th>Internal Type</th>
-                                <td id="preview-internal-type" class="fw-semibold">-</td>
-                            </tr>
                             <tr id="preview-inclusive-row" style="display: none;">
                                 <th>Inclusive Type</th>
                                 <td id="preview-inclusive-type" class="fw-semibold">-</td>
+                            </tr>
+                            <tr id="preview-internal-subcategory-row" style="display: none;">
+                                <th>Internal Type</th>
+                                <td id="preview-internal-subcategory" class="fw-semibold">-</td>
                             </tr>
                             <tr>
                                 <th>Demand Post</th>
@@ -1100,81 +1354,11 @@
         // ============================================
         // REST OF FORM - Live Preview for other fields
         // ============================================
-
-        const categorySelect = document.getElementById('category');
-        const internalSubCategory = document.getElementById('internalSubCategory');
-        const internalTypeSelect = document.getElementById('internal_type');
-        const inclusiveSubCategory = document.getElementById('inclusiveSubCategory');
-        const inclusiveTypeSelect = document.getElementById('inclusive_type');
-        const previewInternalRow = document.getElementById('preview-internal-row');
-        const previewInternalType = document.getElementById('preview-internal-type');
-        const previewInclusiveRow = document.getElementById('preview-inclusive-row');
-        const previewInclusiveType = document.getElementById('preview-inclusive-type');
-
-        function toggleSubCategories() {
-            const categoryValue = categorySelect ? categorySelect.value : '';
-            const internalTypeValue = internalTypeSelect ? internalTypeSelect.value : '';
-
-            // Hide all sub-categories first
-            if (internalSubCategory) {
-                internalSubCategory.classList.remove('show');
-                internalTypeSelect.removeAttribute('required');
-            }
-            if (inclusiveSubCategory) {
-                inclusiveSubCategory.classList.remove('show');
-                inclusiveTypeSelect.removeAttribute('required');
-            }
-            if (previewInternalRow) previewInternalRow.style.display = 'none';
-            if (previewInclusiveRow) previewInclusiveRow.style.display = 'none';
-
-            // Show appropriate fields based on category
-            if (categoryValue === 'internal') {
-                // Show Internal Type dropdown
-                internalSubCategory.classList.add('show');
-                internalTypeSelect.setAttribute('required', 'required');
-                if (previewInternalRow) previewInternalRow.style.display = '';
-                if (previewInternalType) {
-                    previewInternalType.textContent = internalTypeValue ?
-                        (internalTypeValue === 'open' ? 'खुल्ला (Open)' : 'समावेशी (Inclusive)') : '-';
-                }
-
-                // If Internal-Inclusive, show Inclusive Type
-                if (internalTypeValue === 'inclusive') {
-                    inclusiveSubCategory.classList.add('show');
-                    inclusiveTypeSelect.setAttribute('required', 'required');
-                    if (previewInclusiveRow) previewInclusiveRow.style.display = '';
-                    if (previewInclusiveType && inclusiveTypeSelect.value) {
-                        previewInclusiveType.textContent = inclusiveTypeSelect.value;
-                    }
-                }
-            } else if (categoryValue === 'inclusive') {
-                // Show Inclusive Type dropdown directly
-                inclusiveSubCategory.classList.add('show');
-                inclusiveTypeSelect.setAttribute('required', 'required');
-                if (previewInclusiveRow) previewInclusiveRow.style.display = '';
-                if (previewInclusiveType && inclusiveTypeSelect.value) {
-                    previewInclusiveType.textContent = inclusiveTypeSelect.value;
-                }
-            }
-        }
-
-        if (categorySelect) {
-            categorySelect.addEventListener('change', toggleSubCategories);
-        }
-        if (internalTypeSelect) {
-            internalTypeSelect.addEventListener('change', toggleSubCategories);
-        }
-        if (inclusiveTypeSelect) {
-            inclusiveTypeSelect.addEventListener('change', function() {
-                if (previewInclusiveType) {
-                    previewInclusiveType.textContent = this.value || '-';
-                }
-            });
-        }
-
-        toggleSubCategories();
+        // NOTE: Category checkbox logic has been moved outside initializeForm()
+        // to run independently of Nepali date libraries (see initializeCategoryCheckboxes function)
 
         const previewMappings = {
+            'notice_no': { preview: 'preview-notice-no', default: '-' },
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
             'position_level': { preview: 'preview-position', default: '-' },
             'service_group': { preview: 'preview-service', default: '-' },
@@ -1190,7 +1374,7 @@
 
             if (input && preview) {
                 const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
-                
+
                 input.addEventListener(eventType, function() {
                     const value = this.value.trim();
                     if (fieldId === 'minimum_qualification') {
@@ -1206,71 +1390,507 @@
                         } else {
                             preview.textContent = 'NPR';
                         }
+                    } else if (fieldId === 'notice_no') {
+                        // Update notice_no preview content
+                        preview.textContent = value || '-';
                     } else {
                         preview.textContent = value || previewMappings[fieldId].default;
                     }
                 });
-                
+
                 input.dispatchEvent(new Event(eventType));
             }
         });
 
-        const categoryPreview = document.getElementById('preview-category');
-        if (categoryPreview && categorySelect) {
-            function updateCategoryPreview() {
-                if (categorySelect.value === 'open') {
-                    categoryPreview.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
-                } else if (categorySelect.value === 'inclusive') {
-                    categoryPreview.innerHTML = '<span class="badge bg-info">समावेशी (Inclusive)</span>';
-                } else if (categorySelect.value === 'internal') {
-                    categoryPreview.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
-                } else if (categorySelect.value === 'internal_appraisal') {
-                    categoryPreview.innerHTML = '<span class="badge bg-purple text-white" style="background-color: #8b5cf6;">आन्तरिक बढुवा (Internal Appraisal)</span>';
-                } else {
-                    categoryPreview.textContent = '-';
-                }
-            }
-
-            categorySelect.addEventListener('change', updateCategoryPreview);
-
-            // Trigger on page load
-            if (categorySelect.value) {
-                updateCategoryPreview();
-            }
-        }
-
-        // FORM SUBMIT
-        const form = document.getElementById('vacancyForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const positionLevel = document.getElementById('position_level').value;
-                document.getElementById('hidden_title').value = positionLevel;
-
-                let descriptionText = 'Position: ' + positionLevel + '\n' +
-                    'Service/Group: ' + document.getElementById('service_group').value + '\n' +
-                    'Category: ' + document.getElementById('category').value.toUpperCase();
-
-                const internalType = document.getElementById('internal_type').value;
-                if (internalType) {
-                    descriptionText += ' - ' + internalType.toUpperCase();
-                }
-
-                const inclusiveType = document.getElementById('inclusive_type').value;
-                if (inclusiveType) {
-                    descriptionText += ' (' + inclusiveType + ')';
-                }
-                descriptionText += '\nNumber of Posts: ' + document.getElementById('number_of_posts').value;
-
-                document.getElementById('hidden_description').value = descriptionText;
-                document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
-            });
-        }
+        // NOTE: Form submit handler has been moved to initializeCategoryCheckboxes()
+        // which runs independently of Nepali date libraries
 
         console.log('✅ === ALL COMPLETE ===');
     }
 
+    // CRITICAL FIX: Initialize category checkboxes immediately, don't wait for Nepali libraries
+    // Date conversion waits for libraries, but category logic should work independently
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeCategoryCheckboxes);
+    } else {
+        initializeCategoryCheckboxes();
+    }
+
     waitForConverter();
 })();
+
+// Initialize Category Checkboxes IMMEDIATELY (independent of date libraries)
+function initializeCategoryCheckboxes() {
+    console.log('✅ Initializing category checkboxes...');
+
+    // NEW CHECKBOX-BASED CATEGORY LOGIC (Three-level hierarchy)
+    const hasOpenCheckbox = document.getElementById('has_open');
+    const hasInternalCheckbox = document.getElementById('has_internal');
+    const isInternalAppraisalCheckbox = document.getElementById('is_internal_appraisal');
+    const inclusiveTypesToggle = document.getElementById('inclusiveTypesToggle');
+    const hasInclusiveToggleCheckbox = document.getElementById('has_inclusive_toggle');
+    const inclusiveTypesSection = document.getElementById('inclusiveTypesSection');
+    const inclusiveTypeCheckboxes = document.querySelectorAll('.inclusive-type-checkbox');
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    const previewInclusiveRow = document.getElementById('preview-inclusive-row');
+    const previewInclusiveType = document.getElementById('preview-inclusive-type');
+    const previewCategory = document.getElementById('preview-category');
+    const hasInclusiveHidden = document.getElementById('has_inclusive');
+
+    // Internal sub-category elements
+    const internalOpenToggle = document.getElementById('internalOpenToggle');
+    const hasInternalOpenCheckbox = document.getElementById('has_internal_open');
+    const internalInclusiveToggle = document.getElementById('internalInclusiveToggle');
+    const hasInternalInclusiveToggleCheckbox = document.getElementById('has_internal_inclusive_toggle');
+    const internalInclusiveTypesSection = document.getElementById('internalInclusiveTypesSection');
+    const internalInclusiveTypeCheckboxes = document.querySelectorAll('.internal-inclusive-type-checkbox');
+    const hasInternalInclusiveHidden = document.getElementById('has_internal_inclusive');
+
+    // Double Dastur elements (not applicable for Internal categories)
+    const doubleDasturDateSection = document.getElementById('doubleDasturDateSection');
+    const doubleDasturFeeSection = document.getElementById('doubleDasturFeeSection');
+    const doubleDasturFeeInput = document.getElementById('double_dastur_fee');
+
+    // Handle Mutual Exclusivity of Main Categories (Open, Internal, Internal Appraisal)
+    function disableOtherMainCategories(activeCheckbox) {
+        const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
+        allMain.forEach(function(cb) {
+            if (cb && cb !== activeCheckbox) {
+                cb.disabled = true;
+                cb.closest('.form-check').style.opacity = '0.45';
+                cb.closest('.form-check').style.cursor  = 'not-allowed';
+            }
+        });
+    }
+
+    function enableAllMainCategories() {
+        const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
+        allMain.forEach(function(cb) {
+            if (cb) {
+                cb.disabled = false;
+                cb.closest('.form-check').style.opacity = '';
+                cb.closest('.form-check').style.cursor  = '';
+            }
+        });
+    }
+
+    function handleCategoryExclusivity(selectedCheckbox) {
+        if (selectedCheckbox.checked) {
+            // Uncheck and disable the other two main category checkboxes
+            if (selectedCheckbox === hasOpenCheckbox) {
+                if (hasInternalCheckbox)        hasInternalCheckbox.checked        = false;
+                if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                hideInternalSections();
+                toggleInclusiveTypesToggle();
+                showDoubleDasturSections();
+            } else if (selectedCheckbox === hasInternalCheckbox) {
+                if (hasOpenCheckbox)            hasOpenCheckbox.checked            = false;
+                if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                hideOpenSections();
+                toggleInternalSubcategories();
+                hideDoubleDasturSections();
+            } else if (selectedCheckbox === isInternalAppraisalCheckbox) {
+                if (hasOpenCheckbox)     hasOpenCheckbox.checked     = false;
+                if (hasInternalCheckbox) hasInternalCheckbox.checked = false;
+                hideOpenSections();
+                hideInternalSections();
+                hideDoubleDasturSections();
+            }
+            disableOtherMainCategories(selectedCheckbox);
+        } else {
+            // Unchecked — restore all + reset sections
+            enableAllMainCategories();
+            if (selectedCheckbox === hasOpenCheckbox) {
+                hideOpenSections();
+            } else if (selectedCheckbox === hasInternalCheckbox) {
+                hideInternalSections();
+            }
+            showDoubleDasturSections();
+        }
+        updateCategoryDisplay();
+    }
+
+    // Hide Open sub-sections
+    function hideOpenSections() {
+        if (inclusiveTypesToggle) {
+            inclusiveTypesToggle.style.display = 'none';
+        }
+        if (inclusiveTypesSection) {
+            inclusiveTypesSection.style.display = 'none';
+        }
+        if (hasInclusiveToggleCheckbox) {
+            hasInclusiveToggleCheckbox.checked = false;
+        }
+        inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+    }
+
+    // Hide Internal sub-sections
+    function hideInternalSections() {
+        if (internalOpenToggle) {
+            internalOpenToggle.style.display = 'none';
+        }
+        if (internalInclusiveToggle) {
+            internalInclusiveToggle.style.display = 'none';
+        }
+        if (internalInclusiveTypesSection) {
+            internalInclusiveTypesSection.style.display = 'none';
+        }
+        if (hasInternalOpenCheckbox) {
+            hasInternalOpenCheckbox.checked = false;
+        }
+        if (hasInternalInclusiveToggleCheckbox) {
+            hasInternalInclusiveToggleCheckbox.checked = false;
+        }
+        internalInclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+    }
+
+    // Show Double Dastur sections (for Open category)
+    function showDoubleDasturSections() {
+        if (doubleDasturDateSection) {
+            doubleDasturDateSection.style.display = 'block';
+        }
+        if (doubleDasturFeeSection) {
+            doubleDasturFeeSection.style.display = 'block';
+        }
+        if (doubleDasturFeeInput) {
+            doubleDasturFeeInput.removeAttribute('disabled');
+        }
+    }
+
+    // Hide Double Dastur sections (for Internal and Internal Appraisal)
+    function hideDoubleDasturSections() {
+        if (doubleDasturDateSection) {
+            doubleDasturDateSection.style.display = 'none';
+        }
+        if (doubleDasturFeeSection) {
+            doubleDasturFeeSection.style.display = 'none';
+        }
+        if (doubleDasturFeeInput) {
+            doubleDasturFeeInput.value = '0'; // Set to 0 for internal categories
+            doubleDasturFeeInput.disabled = true;
+        }
+    }
+
+    // Show/Hide Inclusive Types Toggle (when Open is checked)
+    function toggleInclusiveTypesToggle() {
+        if (hasOpenCheckbox && hasOpenCheckbox.checked &&
+            !(isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked)) {
+            inclusiveTypesToggle.style.display = 'block';
+        } else {
+            inclusiveTypesToggle.style.display = 'none';
+            inclusiveTypesSection.style.display = 'none';
+            if (hasInclusiveToggleCheckbox) {
+                hasInclusiveToggleCheckbox.checked = false;
+            }
+        }
+    }
+
+    // Show/Hide Individual Inclusive Types (when Inclusive Types checkbox is checked)
+    function toggleInclusiveTypesSection() {
+        if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
+            inclusiveTypesSection.style.display = 'block';
+        } else {
+            inclusiveTypesSection.style.display = 'none';
+        }
+    }
+
+    // Show/Hide Internal Sub-categories (when Internal is checked)
+    function toggleInternalSubcategories() {
+        if (hasInternalCheckbox && hasInternalCheckbox.checked &&
+            !(isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked)) {
+            internalOpenToggle.style.display = 'block';
+            internalInclusiveToggle.style.display = 'block';
+        } else {
+            internalOpenToggle.style.display = 'none';
+            internalInclusiveToggle.style.display = 'none';
+            internalInclusiveTypesSection.style.display = 'none';
+            if (hasInternalOpenCheckbox) {
+                hasInternalOpenCheckbox.checked = false;
+            }
+            if (hasInternalInclusiveToggleCheckbox) {
+                hasInternalInclusiveToggleCheckbox.checked = false;
+            }
+            // Uncheck all internal inclusive types
+            internalInclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+        }
+        updateHasInternalInclusiveHidden();
+    }
+
+    // Show/Hide Internal Inclusive Individual Types (when Internal Inclusive Types checkbox is checked)
+    function toggleInternalInclusiveTypesSection() {
+        if (hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked) {
+            internalInclusiveTypesSection.style.display = 'block';
+        } else {
+            internalInclusiveTypesSection.style.display = 'none';
+            // Uncheck all types when hiding
+            internalInclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+        }
+        updateHasInternalInclusiveHidden();
+    }
+
+    // Update has_internal_inclusive hidden field
+    function updateHasInternalInclusiveHidden() {
+        if (hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked) {
+            hasInternalInclusiveHidden.value = '1';
+        } else {
+            hasInternalInclusiveHidden.value = '0';
+        }
+    }
+
+    // Update Category Preview
+    function updateCategoryDisplay() {
+        if (!previewCategory) return;
+
+        const categories = [];
+
+        if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
+            categories.push('<span class="badge bg-danger">(Internal Appraisal)</span>');
+        } else {
+            if (hasOpenCheckbox && hasOpenCheckbox.checked) {
+                categories.push('<span class="badge bg-success">खुल्ला (Open)</span>');
+            }
+            if (hasInternalCheckbox && hasInternalCheckbox.checked) {
+                categories.push('<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>');
+            }
+        }
+
+        previewCategory.innerHTML = categories.length > 0 ? categories.join(' ') : '-';
+
+        // Update inclusive types preview
+        updateInclusiveTypesPreview();
+        // Update internal sub-categories preview
+        updateInternalSubcategoriesPreview();
+    }
+
+    // Update Inclusive Types Preview
+    function updateInclusiveTypesPreview() {
+        if (!previewInclusiveType || !previewInclusiveRow) return;
+
+        const checkedTypes = Array.from(inclusiveTypeCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        if (hasOpenCheckbox && hasOpenCheckbox.checked &&
+            hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked &&
+            checkedTypes.length > 0) {
+            previewInclusiveType.textContent = checkedTypes.join(', ');
+            previewInclusiveRow.style.display = '';
+            // Set has_inclusive hidden field to 1 if any inclusive type is selected
+            if (hasInclusiveHidden) {
+                hasInclusiveHidden.value = '1';
+            }
+        } else {
+            previewInclusiveRow.style.display = 'none';
+            if (hasInclusiveHidden) {
+                hasInclusiveHidden.value = '0';
+            }
+        }
+    }
+
+    // Update Internal Sub-categories Preview
+    function updateInternalSubcategoriesPreview() {
+        const previewInternalSubcategoryRow = document.getElementById('preview-internal-subcategory-row');
+        const previewInternalSubcategory = document.getElementById('preview-internal-subcategory');
+
+        if (!previewInternalSubcategory || !previewInternalSubcategoryRow) return;
+
+        const subcategories = [];
+
+        if (hasInternalCheckbox && hasInternalCheckbox.checked) {
+            if (hasInternalOpenCheckbox && hasInternalOpenCheckbox.checked) {
+                subcategories.push('Internal Open (All NOC Staff)');
+            }
+
+            if (hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked) {
+                const checkedTypes = Array.from(internalInclusiveTypeCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (checkedTypes.length > 0) {
+                    subcategories.push('Internal Inclusive (' + checkedTypes.join(', ') + ')');
+                }
+            }
+        }
+
+        if (subcategories.length > 0) {
+            previewInternalSubcategory.textContent = subcategories.join(' | ');
+            previewInternalSubcategoryRow.style.display = '';
+        } else {
+            previewInternalSubcategoryRow.style.display = 'none';
+        }
+    }
+
+    // Validate at least one category is selected (and only one main category)
+    function validateCategories() {
+        const isOpen = hasOpenCheckbox && hasOpenCheckbox.checked;
+        const isInternal = hasInternalCheckbox && hasInternalCheckbox.checked;
+        const isAppraisal = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
+
+        // Must select exactly one main category
+        if (!isOpen && !isInternal && !isAppraisal) {
+            alert('कृपया एक मुख्य श्रेणी छान्नुहोस्!\nPlease select one main category (Open, Internal, or Internal Appraisal)!');
+            return false;
+        }
+
+        // Open category: Double Dastur Date and Fee are required
+        if (isOpen) {
+            const ddBS = document.getElementById('double_dastur_bs_hidden');
+            if (!ddBS || !ddBS.value) {
+                alert('Double Dastur Date (Nepali BS) is required for Open category.\nकृपया दोहोरो दस्तुर मिति (नेपाली) भर्नुहोस्!');
+                document.getElementById('double_dastur_bs').focus();
+                return false;
+            }
+            const ddFee = document.getElementById('double_dastur_fee');
+            if (!ddFee || !ddFee.value || parseFloat(ddFee.value) <= 0) {
+                alert('Double Dastur Fee is required for Open category and must be greater than 0.\nकृपया दोहोरो दस्तुर शुल्क भर्नुहोस्!');
+                ddFee && ddFee.focus();
+                return false;
+            }
+        }
+
+        // If Inclusive Types toggle is checked, at least one type must be selected
+        if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
+            const anyInclusiveTypeChecked = Array.from(inclusiveTypeCheckboxes).some(cb => cb.checked);
+            if (!anyInclusiveTypeChecked) {
+                alert('कृपया कम्तिमा एक समावेशी प्रकार छान्नुहोस्!\nPlease select at least one inclusive type!');
+                return false;
+            }
+        }
+
+        // If Internal is checked, at least one sub-category must be selected
+        if (hasInternalCheckbox && hasInternalCheckbox.checked) {
+            const hasInternalOpen = hasInternalOpenCheckbox && hasInternalOpenCheckbox.checked;
+            const hasInternalInclusive = hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked;
+
+            if (!hasInternalOpen && !hasInternalInclusive) {
+                alert('कृपया आन्तरिक श्रेणीको लागि कम्तिमा एक उप-श्रेणी छान्नुहोस्!\nPlease select at least one sub-category for Internal!');
+                return false;
+            }
+
+            // If Internal Inclusive Types toggle is checked, at least one type must be selected
+            if (hasInternalInclusive) {
+                const anyInternalInclusiveTypeChecked = Array.from(internalInclusiveTypeCheckboxes).some(cb => cb.checked);
+                if (!anyInternalInclusiveTypeChecked) {
+                    alert('कृपया कम्तिमा एक आन्तरिक समावेशी प्रकार छान्नुहोस्!\nPlease select at least one internal inclusive type!');
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // Event Listeners for Main Categories (Mutually Exclusive)
+    if (hasOpenCheckbox) {
+        hasOpenCheckbox.addEventListener('change', function() {
+            handleCategoryExclusivity(this);
+        });
+    }
+
+    if (hasInternalCheckbox) {
+        hasInternalCheckbox.addEventListener('change', function() {
+            handleCategoryExclusivity(this);
+        });
+    }
+
+    if (isInternalAppraisalCheckbox) {
+        isInternalAppraisalCheckbox.addEventListener('change', function() {
+            handleCategoryExclusivity(this);
+        });
+    }
+
+    // Event Listeners for Sub-categories
+    if (hasInclusiveToggleCheckbox) {
+        hasInclusiveToggleCheckbox.addEventListener('change', function() {
+            toggleInclusiveTypesSection();
+            updateInclusiveTypesPreview();
+        });
+    }
+
+    // Internal sub-category checkboxes
+    if (hasInternalOpenCheckbox) {
+        hasInternalOpenCheckbox.addEventListener('change', updateCategoryDisplay);
+    }
+
+    if (hasInternalInclusiveToggleCheckbox) {
+        hasInternalInclusiveToggleCheckbox.addEventListener('change', function() {
+            toggleInternalInclusiveTypesSection();
+            updateInternalSubcategoriesPreview();
+        });
+    }
+
+    // Internal inclusive type checkboxes
+    internalInclusiveTypeCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            updateHasInternalInclusiveHidden();
+            updateInternalSubcategoriesPreview();
+        });
+    });
+
+    // Inclusive type checkboxes
+    inclusiveTypeCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateInclusiveTypesPreview);
+    });
+
+    // Initialize on page load
+    // Check which main category is selected and set up accordingly
+    if (hasOpenCheckbox && hasOpenCheckbox.checked) {
+        handleCategoryExclusivity(hasOpenCheckbox);
+    } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
+        handleCategoryExclusivity(hasInternalCheckbox);
+    } else if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
+        handleCategoryExclusivity(isInternalAppraisalCheckbox);
+    } else {
+        // No category selected - all enabled
+        toggleInclusiveTypesToggle();
+        toggleInclusiveTypesSection();
+        toggleInternalSubcategories();
+        toggleInternalInclusiveTypesSection();
+    }
+    updateCategoryDisplay();
+
+    // FORM SUBMIT - Updated for hierarchical categories (Inclusive under Open)
+    const form = document.getElementById('vacancyForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('📋 FORM SUBMIT - Checkbox States:');
+            console.log('has_open checked:', hasOpenCheckbox?.checked);
+            console.log('has_inclusive_toggle checked:', hasInclusiveToggleCheckbox?.checked);
+
+            // Validate categories
+            if (!validateCategories()) {
+                e.preventDefault();
+                return false;
+            }
+
+            // CRITICAL: Update ALL hidden fields before submission
+            document.getElementById('hidden_has_open').value = (hasOpenCheckbox && hasOpenCheckbox.checked) ? '1' : '0';
+            document.getElementById('hidden_has_internal').value = (hasInternalCheckbox && hasInternalCheckbox.checked) ? '1' : '0';
+            const hasIncTypes = Array.from(inclusiveTypeCheckboxes).some(cb => cb.checked);
+            document.getElementById('has_inclusive').value = (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked && hasIncTypes) ? '1' : '0';
+
+            // Update title, description, requirements
+            const positionLevel = document.getElementById('position_level').value;
+            document.getElementById('hidden_title').value = positionLevel;
+            document.getElementById('hidden_description').value = 'Position: ' + positionLevel + '\nPosts: ' + document.getElementById('number_of_posts').value;
+            document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
+
+            // Update category
+            if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
+                document.getElementById('hidden_category').value = 'internal_appraisal';
+            } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
+                document.getElementById('hidden_category').value = 'internal';
+            } else {
+                document.getElementById('hidden_category').value = 'open';
+            }
+
+            console.log('✅ ALL FIELDS SET - SUBMITTING');
+            return true;
+        });
+    }
+
+    console.log('✅ Category checkboxes initialized successfully!');
+}
 
 function confirmSaveDraft() {
     return confirm(

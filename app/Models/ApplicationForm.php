@@ -25,6 +25,7 @@ class ApplicationForm extends Model
         'reviewer_notes',
         'admin_notes',
         'job_posting_id',
+        'applied_category',
         // Personal Info
         'name_english',
         'name_nepali',
