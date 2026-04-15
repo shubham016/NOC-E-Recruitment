@@ -341,11 +341,7 @@ class ApplicationReviewController extends Controller
         } elseif ($request->status === 'edit') {
             $message = $updatedCount . ' applications sent back to candidates for correction!';
         } else {
-<<<<<<< HEAD
             $message = $updatedCount . ' applications rejected! Candidates will be notified.';
-=======
-            $message = $updatedCount . ' applications rejected! Candidates will be notified via SMS when integrated.';
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
         }
 
         return response()->json([

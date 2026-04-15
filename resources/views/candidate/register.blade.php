@@ -392,52 +392,8 @@
                             </div>
                         </div>
 
-<<<<<<< HEAD
-                        {{-- Email --}}
-                        <div class="noc-field">
-                            <label for="email">Email Address <span class="req">*</span></label>
-                            <div class="noc-input-group">
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value="{{ old('email') }}"
-                                    placeholder="Enter your email address"
-                                    class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                    required
-                                >
-                                <span class="noc-input-icon"><i class="bi bi-envelope"></i></span>
-                                @error('email')
-                                    <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- Phone -->
-                        <div class="noc-field">
-                            <label for="phone">Phone Number <span class="req">*</span></label>
-                            <div class="noc-input-group">
-                                <input
-                                    type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    value="{{ old('phone') }}"
-                                    placeholder="Enter your Mobile Number"
-                                    class="{{ $errors->has('phone') ? 'is-invalid' : '' }}"
-                                    required
-                                >
-                                <span class="noc-input-icon"><i class="bi bi-telephone"></i></span>
-                                @error('phone')
-                                    <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- Gender, DOB & NOC Employee (3 columns) --}}
-                        <div class="noc-row" style="grid-template-columns: 1fr 1fr 1fr;">
-=======
                         {{-- Gender, DOB & NOC Employee --}}
                         <div class="noc-row3">
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                             <div class="noc-field">
                                 <label for="gender">Gender <span class="req">*</span></label>
                                 <div class="noc-input-group">
@@ -471,19 +427,6 @@
                             </div>
 
                             <div class="noc-field">
-<<<<<<< HEAD
-                                <label for="noc_employee">NOC Employee <span class="req">*</span></label>
-                                <div class="noc-input-group">
-                                    <select
-                                        id="noc_employee"
-                                        name="noc_employee"
-                                        class="{{ $errors->has('noc_employee') ? 'is-invalid' : '' }}"
-                                        required
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="yes" {{ old('noc_employee') == 'yes' ? 'selected' : '' }}>Yes</option>
-                                        <option value="no"  {{ old('noc_employee') == 'no'  ? 'selected' : '' }}>No</option>
-=======
                                 <label for="noc_employee">NOC Employee <span class="text-danger">*</span></label>
                                 <div class="noc-input-group">
                                     <select id="noc_employee" name="noc_employee" required
@@ -491,7 +434,6 @@
                                         <option value="">Select</option>
                                         <option value="yes" {{ old('noc_employee', $candidate->noc_employee ?? '') == 'yes' ? 'selected' : '' }}>Yes</option>
                                         <option value="no" {{ old('noc_employee', $candidate->noc_employee ?? '') == 'no' ? 'selected' : '' }}>No</option>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                     </select>
                                     <span class="noc-input-icon"><i class="bi bi-person-badge"></i></span>
                                     @error('noc_employee')
@@ -501,30 +443,14 @@
                             </div>
                         </div>
 
-<<<<<<< HEAD
-                        {{-- Citizenship Number & NID --}}
-=======
                         {{-- Citizenship & NID --}}
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                         <div class="noc-row">
                             <div class="noc-field">
                                 <label for="citizenship_number">Citizenship Number <span class="req">*</span></label>
                                 <div class="noc-input-group">
-<<<<<<< HEAD
-                                    <input
-                                        type="text"
-                                        id="citizenship_number"
-                                        name="citizenship_number"
-                                        value="{{ old('citizenship_number') }}"
-                                        placeholder="Enter citizenship number"
-                                        class="{{ $errors->has('citizenship_number') ? 'is-invalid' : '' }}"
-                                        required
-                                    >
-=======
                                     <input type="text" id="citizenship_number" name="citizenship_number"
                                         value="{{ old('citizenship_number') }}" placeholder="Enter citizenship number"
                                         class="{{ $errors->has('citizenship_number') ? 'is-invalid' : '' }}" required>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                     <span class="noc-input-icon"><i class="bi bi-card-text"></i></span>
                                     @error('citizenship_number')
                                         <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
@@ -533,24 +459,11 @@
                             </div>
 
                             <div class="noc-field">
-<<<<<<< HEAD
-                                <label for="nid">National ID (NID)</label>
-                                <div class="noc-input-group">
-                                    <input
-                                        type="text"
-                                        id="nid"
-                                        name="nid"
-                                        value="{{ old('nid') }}"
-                                        placeholder="Enter national ID number"
-                                        class="{{ $errors->has('nid') ? 'is-invalid' : '' }}"
-                                    >
-=======
                                 <label for="nid">National ID Number</label>
                                 <div class="noc-input-group">
                                     <input type="text" id="nid" name="nid" value="{{ old('nid') }}"
                                         placeholder="Enter national ID number"
                                         class="{{ $errors->has('nid') ? 'is-invalid' : '' }}">
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                     <span class="noc-input-icon"><i class="bi bi-card-text"></i></span>
                                     @error('nid')
                                         <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>

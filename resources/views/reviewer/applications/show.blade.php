@@ -764,36 +764,20 @@
 
                 @if($application->passport_size_photo)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->passport_size_photo) }}" alt="Passport Photo">
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Passport Size Photo</p>
                         <p class="document-size">Candidate's passport photograph</p>
                     </div>
                     <a href="{{ Storage::url($application->passport_size_photo) }}" target="_blank" class="btn-view-doc">
-<<<<<<< HEAD
-                        <i class="bi bi-eye me-1"></i>View
-=======
                         <i class="me-1"></i>View
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </a>
                 </div>
                 @endif
 
                 @if($application->resume)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Resume / CV</p>
                         <p class="document-size">Detailed curriculum vitae</p>
@@ -806,30 +790,10 @@
 
                 @if($application->work_experience)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Work Experience</p>
-                        <p class="document-size">Work experience verification documents</p>
-                    </div>
-                    <a href="{{ Storage::url($application->work_experience) }}" target="_blank" class="btn-view-doc">
-                        <i class="bi bi-download me-1"></i>Download
-                    </a>
-                </div>
-                @endif
-
-                @if($application->citizenship_certificate || $application->citizenship_id_document)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->citizenship_certificate ?? $application->citizenship_id_document) }}" alt="Citizenship">
-=======
                     <div class="document-icon"><i class=""></i></div>
                     <div class="document-info">
                         <p class="document-name">Work Experience</p>
                         <p class="document-size">Work experience verification documents</p>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </div>
                     <a href="{{ Storage::url($application->work_experience) }}" target="_blank" class="btn-view-doc">
                         <i class="me-1"></i>Download
@@ -845,47 +809,27 @@
                         <p class="document-size">Nepali citizenship document</p>
                     </div>
                     <a href="{{ Storage::url($application->citizenship_certificate ?? $application->citizenship_id_document) }}" target="_blank" class="btn-view-doc">
-<<<<<<< HEAD
-                        <i class="bi bi-eye me-1"></i>View
-=======
                         <i class=" me-1"></i>View
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </a>
                 </div>
                 @endif
 
                 @if($application->educational_certificates || $application->transcript)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Educational Certificates</p>
                         <p class="document-size">Academic transcripts and degrees</p>
                     </div>
                     <a href="{{ Storage::url($application->educational_certificates ?? $application->transcript) }}" target="_blank" class="btn-view-doc">
-<<<<<<< HEAD
-                        <i class="bi bi-download me-1"></i>Download
-=======
                         <i class="me-1"></i>Download
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </a>
                 </div>
                 @endif
 
                 @if($application->experience_certificates)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Experience Certificates</p>
                         <p class="document-size">Work experience verification documents</p>
@@ -898,91 +842,26 @@
 
                 @if($application->character_certificate || $application->character)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->character_certificate ?? $application->character) }}" alt="Character Certificate">
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Character Certificate</p>
                         <p class="document-size">Good character verification</p>
                     </div>
                     <a href="{{ Storage::url($application->character_certificate ?? $application->character) }}" target="_blank" class="btn-view-doc">
-<<<<<<< HEAD
-                        <i class="bi bi-eye me-1"></i>View
-=======
                         <i class="me-1"></i>View
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </a>
                 </div>
                 @endif
 
                 @if($application->equivalency_certificate || $application->equivalent)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->equivalency_certificate ?? $application->equivalent) }}" alt="Equivalency Certificate">
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Equivalency Certificate</p>
                         <p class="document-size">Educational equivalency document</p>
                     </div>
                     <a href="{{ Storage::url($application->equivalency_certificate ?? $application->equivalent) }}" target="_blank" class="btn-view-doc">
-<<<<<<< HEAD
-                        <i class="bi bi-eye me-1"></i>View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->ethnic_certificate)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->ethnic_certificate) }}" alt="Ethnic Certificate">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Ethnic Certificate</p>
-                        <p class="document-size">Candidate's ethnicity proof</p>
-                    </div>
-                    <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class="bi bi-eye me-1"></i>View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->disability_certificate)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->disability_certificate) }}" alt="Disability Certificate">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Disability Certificate</p>
-                        <p class="document-size">Candidate's proof of disability</p>
-                    </div>
-                    <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class="bi bi-eye me-1"></i>View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->noc_id_card)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->noc_id_card) }}" alt="NOC ID Card">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">NOC Employee ID Card</p>
-                        <p class="document-size">Candidate's NOC ID Card</p>
-                    </div>
-                    <a href="{{ Storage::url($application->noc_id_card) }}" target="_blank" class="btn-view-doc">
-                        <i class="bi bi-eye me-1"></i>View
-=======
                         <i class=" me-1"></i>View
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     </a>
                 </div>
                 @endif
@@ -1028,13 +907,7 @@
 
                 @if($application->cover_letter_file)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Cover Letter (File)</p>
                         <p class="document-size">Uploaded cover letter document</p>
@@ -1047,13 +920,7 @@
 
                 @if($application->signature)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <img src="{{ Storage::url($application->signature) }}" alt="Signature">
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Signature</p>
                         <p class="document-size">Candidate's signature</p>
@@ -1066,13 +933,7 @@
 
                 @if($application->other_documents)
                 <div class="document-item">
-<<<<<<< HEAD
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-zip text-warning"></i>
-                    </div>
-=======
                     <div class="document-icon"><i class=""></i></div>
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="document-info">
                         <p class="document-name">Other Documents</p>
                         <p class="document-size">Additional supporting documents</p>

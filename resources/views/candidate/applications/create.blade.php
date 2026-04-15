@@ -136,13 +136,9 @@
                 <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
                 @endif
 
-<<<<<<< HEAD
-<!-- STEP 1: Personal Info -->
-=======
                 {{-- ══════════════════════════════════════════════════════
                      STEP 1 — Personal Information
                      ══════════════════════════════════════════════════════ --}}
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                 <div class="step" id="step1">
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
@@ -981,39 +977,6 @@
 // need to add that attribute to hook in new fields later.
 // ══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function () {
-<<<<<<< HEAD
-    console.log('=== DEBUG: Checking Save Draft Button ===');
-
-    // Handle Internal Inclusive Type Selection
-    const internalInclusiveRadios = document.querySelectorAll('input[name="applied_category"][value="internal_inclusive"]');
-    const appliedInclusiveTypeInput = document.getElementById('applied_inclusive_type');
-
-    if (internalInclusiveRadios.length > 0 && appliedInclusiveTypeInput) {
-        internalInclusiveRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    const inclusiveType = this.getAttribute('data-inclusive-type');
-                    appliedInclusiveTypeInput.value = inclusiveType || '';
-                    console.log('Selected Internal Inclusive Type:', inclusiveType);
-                }
-            });
-        });
-    }
-
-    // Save Draft Button Handler - ADD THIS
-setTimeout(() => {
-    const saveDraftBtn = document.getElementById('saveDraftBtn');
-    console.log('Attaching save draft handler...', saveDraftBtn);
-    
-    if (saveDraftBtn) {
-        saveDraftBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Save Draft button clicked!');
-            
-            // Validate all steps before saving
-=======
 
     /**
      * Initialise one Nepali date-picker on a single input element.
@@ -1245,7 +1208,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         saveDraftBtn.addEventListener('click', function (e) {
             e.preventDefault(); e.stopPropagation();
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
             let allValid = true;
             for (let i = 1; i <= 7; i++) {
                 if (!validateStep(i)) { allValid = false; showStep(i); showAutoSaveStatus('⚠ Please complete all required fields before saving', 'danger'); return; }

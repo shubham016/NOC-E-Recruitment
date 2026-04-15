@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Reviewer\MyProfileController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ReviewerAuthController;
 use App\Http\Controllers\Auth\CandidateAuthController;
@@ -38,7 +37,7 @@ use App\Http\Controllers\ApplicationFormController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\PaymentController as ShradhaPaymentController;
 use App\Http\Controllers\CandidateController;
-use App\Http\Controllers\Approver\MyProfileController;
+use App\Http\Controllers\Approver\MyProfileController as ApproverMyProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -314,9 +313,9 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
     Route::middleware('reviewer')->group(function () {
 
         Route::get('/dashboard', [ReviewerDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/my-profile', [MyProfileController::class, 'index'])->name('myprofile');
+        Route::get('/my-profile', [ReviewerMyProfileController::class, 'index'])->name('myprofile');
         // Change Password
-        Route::post('/change-password', [MyProfileController::class, 'changePassword'])->name('change.password');
+        Route::post('/change-password', [ReviewerMyProfileController::class, 'changePassword'])->name('change.password');
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [ReviewerNotificationController::class, 'index'])->name('index');
@@ -380,10 +379,10 @@ Route::prefix('approver')->name('approver.')->group(function () {
         Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('applications.updateStatus');
 
         // My Profile
-        Route::get('/my-profile', [MyProfileController::class, 'index'])->name('myprofile');
+        Route::get('/my-profile', [ApproverMyProfileController::class, 'index'])->name('myprofile');
 
         // Change Password for Approver
-        Route::post('/change-password', [MyProfileController::class, 'changePassword'])->name('change.password');
+        Route::post('/change-password', [ApproverMyProfileController::class, 'changePassword'])->name('change.password');
 
         // Export routes
         Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');

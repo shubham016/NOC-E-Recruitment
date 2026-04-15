@@ -42,8 +42,6 @@ class Candidate extends Authenticatable
     }
 
     /**
-<<<<<<< HEAD
-=======
      * Get the candidate's full name (computed from first, middle, last name)
      */
     public function getNameAttribute(): string
@@ -53,7 +51,6 @@ class Candidate extends Authenticatable
     }
 
     /**
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
      * Find candidate by email, username, or citizenship number (for login)
      */
     public static function findByCredential($identifier)

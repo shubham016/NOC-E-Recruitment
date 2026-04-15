@@ -15,11 +15,7 @@ class CandidateRegistrationController extends Controller
     {
         $validated = $request->validate([
             'name'                      => 'required|string|max:255',
-<<<<<<< HEAD
-            'email'                     => 'required|email|unique:candidate_registration,email',
-=======
             'email'                     => 'required|email|unique:candidates,email',
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
             'phone'                     => 'required|string|max:20',
             'gender'                    => 'required|in:Male,Female,Other',
             'date_of_birth_bs'          => 'required|string|max:20',
@@ -50,10 +46,6 @@ class CandidateRegistrationController extends Controller
         ]);
 
         try {
-<<<<<<< HEAD
-            Candidate::create([
-                'name'                       => $validated['name'],
-=======
             // Split full name into first / middle / last
             $nameParts  = explode(' ', trim($validated['name']), 3);
             $firstName  = $nameParts[0];
@@ -73,7 +65,6 @@ class CandidateRegistrationController extends Controller
                 'middle_name'                => $middleName,
                 'last_name'                  => $lastName,
                 'username'                   => $username,
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                 'email'                      => $validated['email'],
                 'phone'                      => $validated['phone'],
                 'gender'                     => $validated['gender'],

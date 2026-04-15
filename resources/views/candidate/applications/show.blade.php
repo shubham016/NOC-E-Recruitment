@@ -36,34 +36,6 @@
             <h3 class="mb-0 fw-bold">NOC | View Application Form</h3>
         </div>
 
-<<<<<<< HEAD
-        <div class="card-body">
-            {{-- Status Alerts --}}
-            @if($applicationform->status === 'edit')
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    <strong>Correction Required!</strong>
-                    Your application has been sent back for corrections. Please review the admin/reviewer notes below, make necessary changes, and resubmit.
-                    @if($applicationform->admin_notes || $applicationform->reviewer_notes)
-                        <hr>
-                        @if($applicationform->admin_notes)
-                            <p class="mb-1"><strong>Admin Notes:</strong> {{ $applicationform->admin_notes }}</p>
-                        @endif
-                        @if($applicationform->reviewer_notes)
-                            <p class="mb-0"><strong>Reviewer Notes:</strong> {{ $applicationform->reviewer_notes }}</p>
-                        @endif
-                    @endif
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            {{-- SECTION 1: Personal Information --}}
-            <div class="mb-4">
-                <h5 class="text-dark border-bottom pb-2 mb-3">
-                    <i class="fas fa-user"></i> Personal Information
-                </h5>
-                <div class="row">
-=======
         <div class="card-body px-5 pt-3 pb-5">
 
             {{-- Clickable Tabs Navigation --}}
@@ -105,7 +77,6 @@
                 <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                 <div class="row mb-3">
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                     <div class="col-md-6 mb-3">
                         <strong>Full Name (English):</strong>
                         <p class="mb-0">{{ $applicationform->name_english ?? '-' }}</p>
@@ -714,22 +685,6 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
-            {{-- Action Buttons --}}
-            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-                <a href="{{ route('candidate.applications.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
-                <div>
-                    @if($applicationform->canEdit())
-                        <a href="{{ route('candidate.applications.edit', $applicationform->id) }}" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i> Edit Application
-                        </a>
-                    @endif
-                </div>
-            </div>
-=======
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
         </div>
     </div>
 </div>

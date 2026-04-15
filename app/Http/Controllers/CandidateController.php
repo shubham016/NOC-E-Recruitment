@@ -125,15 +125,12 @@ class CandidateController extends Controller
             ->first();
 
         if ($candidate && Hash::check($request->password, $candidate->password)) {
-<<<<<<< HEAD
             // Clear all other guard sessions to prevent conflicts
             Auth::guard('admin')->logout();
             Auth::guard('hr_administrator')->logout();
             Auth::guard('reviewer')->logout();
             Auth::guard('approver')->logout();
 
-=======
->>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
             Session::put('candidate_id',         $candidate->id);
             Session::put('candidate_name',       $candidate->name);
             Session::put('candidate_email',      $candidate->email);
