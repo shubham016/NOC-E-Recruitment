@@ -306,10 +306,10 @@
 
             <!-- Buttons -->
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ url('/') }}" class="btn-gold">
+                <!-- <a href="{{ url('/') }}" class="btn-gold">
                     <i class="bi bi-house-door-fill"></i>
                     Go to Dashboard
-                </a>
+                </a> -->
                 <a href="javascript:history.back()" class="btn-outline-gold">
                     <i class="bi bi-arrow-left"></i>
                     Go Back
