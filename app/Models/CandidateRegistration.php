@@ -16,6 +16,7 @@ class CandidateRegistration extends Model
         'citizenship_number',
         'nid',
         'noc_employee',
+        'employee_id',
         'citizenship_issue_distric',
         'citizenship_issue_date_bs',
         'password',
