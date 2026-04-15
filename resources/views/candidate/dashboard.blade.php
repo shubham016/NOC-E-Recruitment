@@ -84,40 +84,45 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header mb-4">
-        <h1 class="page-title">Welcome back, {{ session('candidate_name') }}!</h1>
-        <!-- <p class="page-subtitle">Track your applications and discover new opportunities that match your skills.</p> -->
+        <h1 class="page-title">Welcome, {{ session('candidate_name') }}!</h1>
     </div>
 
     <!-- Stats Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-60 shadow-sm">
-                <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
-                <p class="text-muted mb-2">Total Live Advertisements</p>
-                <small class="text-danger">
-                    <i class="bi bi-info-circle me-1"></i>Currently Active
-                </small>
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+            <a href="{{ route('candidate.jobs.index') }}" class="text-decoration-none d-block">
+                <div class="card stat-card h-60 shadow-sm cursor-pointer">
+                    <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
+                    <p class="text-muted mb-2">Total Live Advertisements</p>
+                    <small class="text-danger">
+                        <i class="bi bi-info-circle me-1"></i>Currently Active
+                    </small>
+                </div>
+            </a>
             </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="{{ route('candidate.jobs.index') }}" class="text-decoration-none d-block">
+                <div class="card stat-card h-60 shadow-sm cursor-pointer">
+                    <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
+                    <p class="text-muted mb-2">Total Vacancy</p>
+                    <small class="text-warning">
+                        <i class="bi bi-clock me-1"></i>All time
+                    </small>
+                </div>
+            </a>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-60 shadow-sm">
-                <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
-                <p class="text-muted mb-2">Total Vacancy</p>
-                <small class="text-warning">
-                    <i class="bi bi-clock me-1"></i>All time
-                </small>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card h-60 shadow-sm">
+             <a href="{{ route('candidate.applications.index') }}" class="text-decoration-none d-block">
+            <div class="card stat-card h-60 shadow-sm cursor-pointer">
                 <h3 class="h2 fw-bold mb-1">{{ $applicationsCount ?? 0 }}</h3>
                 <p class="text-muted mb-2">My Applications</p>
                 <small class="text-success">
                     <i class="bi bi-check-circle me-1"></i>All Applications
                 </small>
             </div>
+             </a>
         </div>
     </div>
 @endsection

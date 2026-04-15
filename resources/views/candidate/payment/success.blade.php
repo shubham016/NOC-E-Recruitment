@@ -9,17 +9,35 @@
 <div class="container mt-5">
 
     <div class="card shadow">
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0">Payment Receipt</h4>
+        <div class="card-header  text-dark text-center">
+    
+            <div class="d-flex flex-column align-items-center">
+                
+                <!-- Logo -->
+                <img src="{{ asset('images/images.png') }}" 
+                    alt="Nepal Oil Corporation Logo" 
+                    style="height: 50px; margin-bottom: 5px;">
+
+                <!-- Title -->
+                <h4 class="mb-0">NEPAL OIL CORPORATION LTD.</h4>
+                <small>Babarmahal, Kathmandu</small>
+
+                <!-- Optional Subtitle
+                <small>Payment Receipt</small> -->
+
+            </div>
+
         </div>
 
         <div class="card-body">
 
-            <div class="alert alert-success">
+            <!-- <div class="alert alert-success">
                 <strong>✓ Payment Successful!</strong>
                 <br>
                 Your payment has been completed successfully.
-            </div>
+            </div> -->
+
+            <h5 class="mb-3 fw-bold text-center">Payment Receipt</h5>
 
             <h5 class="mb-3">Transaction Details</h5>
 
@@ -87,9 +105,9 @@
                 </tr>
             </table>
 
-            <div class="alert alert-info mt-3">
+            <!-- <div class="alert alert-info mt-3">
                 📌 Please take a screenshot of this page for your records.
-            </div>
+            </div> -->
 
             <div class="mt-4 d-flex justify-content-between">
                 <button onclick="window.print()" class="btn btn-secondary">

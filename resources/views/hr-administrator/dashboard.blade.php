@@ -143,7 +143,7 @@
         <div class="dashboard-header">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="h3 mb-2 fw-bold">Welcome back, {{ $hrAdmin->name ?? 'HR Administrator' }}!</h1>
+                    <h1 class="h3 mb-2 fw-bold">Welcome, {{ $hrAdmin->name ?? 'HR Administrator' }}!</h1>
                     <p class="mb-0 opacity-90">Manage recruitment activities and track application progress</p>
                 </div>
                 <div class="col-lg-4 text-end">

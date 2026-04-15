@@ -15,10 +15,6 @@
         <i class="bi bi-file-earmark-text"></i>
         <span>My Applications</span>
     </a>
-    <a href="{{ route('candidate.notifications.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-bell"></i>
-        <span>Notifications</span>
-    </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
@@ -90,7 +86,7 @@
         <div>
             <h2 class="mb-1">
                 Notifications
-                <span class="badge bg-primary" style="font-size: 0.6rem; vertical-align: middle;">CANDIDATE PORTAL</span>
+                <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">CANDIDATE PORTAL</span>
             </h2>
             <p class="text-muted mb-0">View and manage your notifications</p>
         </div>
@@ -160,7 +156,7 @@
                                     <div class="d-flex gap-2">
                                         @if($notification->related_type === 'application' && $notification->related_id)
                                             <a href="{{ route('candidate.applications.show', $notification->related_id) }}"
-                                               class="btn btn-sm btn-outline-primary">
+                                               class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-eye"></i> View Application
                                             </a>
                                         @endif
@@ -174,14 +170,14 @@
                                             </form>
                                         @endif
 
-                                        <form method="POST" action="{{ route('candidate.notifications.destroy', $notification->id) }}" class="d-inline"
+                                        <!-- <form method="POST" action="{{ route('candidate.notifications.destroy', $notification->id) }}" class="d-inline"
                                               onsubmit="return confirm('Are you sure you want to delete this notification?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </div>
                             </div>

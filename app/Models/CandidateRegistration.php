@@ -14,6 +14,8 @@ class CandidateRegistration extends Model
         'gender',
         'date_of_birth_bs',
         'citizenship_number',
+        'nid',
+        'noc_employee',
         'citizenship_issue_distric',
         'citizenship_issue_date_bs',
         'password',

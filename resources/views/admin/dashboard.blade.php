@@ -613,7 +613,7 @@
     <div class="page-header">
         <div class="header-row">
             <div>
-                <h1 class="header-title">Welcome back, {{ Auth::guard('admin')->user()->name }}!</h1>
+                <h1 class="header-title">Welcome, {{ Auth::guard('admin')->user()->name }}!</h1>
                 <p class="header-subtitle">Here's what's happening with your recruitment system today</p>
             </div>
             <div class="header-date">
