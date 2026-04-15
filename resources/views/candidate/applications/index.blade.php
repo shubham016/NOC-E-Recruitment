@@ -95,9 +95,16 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('candidate.admit-card.view', $form->id) }}" class="btn btn-dark" title="Admit Card">
-                                            <i class="fas bi-person-vcard"></i>
-                                        </a>
+                                        @if($form->admit_card_generated)
+                                            <a href="{{ route('candidate.admit-card.view', $form->id) }}" 
+                                            class="btn btn-dark" title="Admit Card">
+                                                <i class="fas bi-person-vcard"></i>
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary" title="Admit Card Not Generated" disabled>
+                                                <i class="fas bi-person-vcard"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

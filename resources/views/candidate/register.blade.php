@@ -441,6 +441,20 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="noc-field" id="employee_id_field" style="display: none;">
+                                <label for="employee_id">NOC Employee ID <span class="req">*</span></label>
+                                <div class="noc-input-group">
+                                    <input type="text" id="employee_id" name="employee_id" 
+                                        value="{{ old('employee_id') }}"
+                                        placeholder="Enter your NOC employee ID"
+                                        class="{{ $errors->has('employee_id') ? 'is-invalid' : '' }}">
+                                    <span class="noc-input-icon"><i class="bi bi-card-text"></i></span>
+                                    @error('employee_id')
+                                        <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         {{-- Citizenship & NID --}}
@@ -579,7 +593,27 @@
         }
     });
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const nocEmployeeSelect = document.getElementById('noc_employee');
+        const employeeIdField   = document.getElementById('employee_id_field');
+        const employeeIdInput   = document.getElementById('employee_id');
 
+        function toggleEmployeeId() {
+            const isYes = nocEmployeeSelect.value === 'yes';
+            employeeIdField.style.display = isYes ? 'block' : 'none';
+            employeeIdInput.required      = isYes;
+
+            // Clear value when hidden so it doesn't accidentally submit
+            if (!isYes) employeeIdInput.value = '';
+        }
+
+        // Run on page load (handles old() repopulation on validation failure)
+        toggleEmployeeId();
+
+        nocEmployeeSelect.addEventListener('change', toggleEmployeeId);
+    });
+</script>
 <!-- BS/AD Date Converter -->
 <script>
     // ============================================
