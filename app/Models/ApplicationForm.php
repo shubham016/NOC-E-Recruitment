@@ -97,8 +97,10 @@ class ApplicationForm extends Model
         // Education & Experience
         'education_level',
         'field_of_study',
-        'institution_name',           
+        'institution_name', 
+        'university',          
         'graduation_year',
+        'graduation_year_english',
         'has_work_experience',
         'years_of_experience',
         'previous_organization',

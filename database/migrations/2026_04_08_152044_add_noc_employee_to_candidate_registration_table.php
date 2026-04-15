@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('approvers', function (Blueprint $table) {
-            $table->rememberToken()->after('password');
+        Schema::table('candidate_registration', function (Blueprint $table) {
+            $table->string('noc_employee')->nullable()->after('name');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('approvers', function (Blueprint $table) {
-            $table->dropColumn('remember_token');
+        Schema::table('candidate_registration', function (Blueprint $table) {
+            $table->dropColumn('noc_employee');
         });
     }
 };

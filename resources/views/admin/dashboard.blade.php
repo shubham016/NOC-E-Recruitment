@@ -1058,6 +1058,7 @@
 
 @section('content')
     <!-- Page Header -->
+<<<<<<< HEAD
     <!-- <div class="page-header">
                 <div class="header-row">
                     <div>
@@ -1070,6 +1071,20 @@
                     </div>
                 </div>
             </div> -->
+=======
+    <div class="page-header">
+        <div class="header-row">
+            <div>
+                <h1 class="header-title">Welcome, {{ Auth::guard('admin')->user()->name }}!</h1>
+                <p class="header-subtitle">Here's what's happening with your recruitment system today</p>
+            </div>
+            <div class="header-date">
+                <div style="font-weight: 600; margin-bottom: 4px;">{{ now()->format('l') }}</div>
+                <div>{{ now()->format('F d, Y') }}</div>
+            </div>
+        </div>
+    </div>
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
 
     <!-- Stats Grid -->
     <div class="stats-grid">

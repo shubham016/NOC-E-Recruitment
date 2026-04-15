@@ -354,7 +354,7 @@
         }
 
         .stat-icon.blue {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #f63b3b 0%, #eb2525 100%);
         }
 
         .stat-icon.orange {
@@ -540,37 +540,6 @@
                         </li>
                     @endif
 
-                    <!-- Dashboard (Dynamic based on portal) -->
-                    <li class="nav-item">
-                        @if(request()->is('candidate/*'))
-                            <a class="nav-link text-dark" href="{{ route('candidate.dashboard') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        @elseif(request()->is('reviewer/*'))
-                            <a class="nav-link text-dark" href="{{ route('reviewer.dashboard') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        @elseif(request()->is('approver/*'))
-                            <a class="nav-link text-dark" href="{{ route('approver.dashboard') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        @elseif(request()->is('admin/*'))
-                            <a class="nav-link text-dark" href="{{ route('admin.dashboard') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        @endif
-                    </li>
-
-                    <!-- My Applications (Candidate Only) -->
-                    @if(request()->is('candidate/*'))
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="{{ route('candidate.applications.index') }}">
-                                <i class="bi bi-file-earmark-text"></i> My Applications
-                            </a>
-                        </li>
-                    @endif
-
-                    <!-- Logout (Dynamic based on portal) -->
                     <li class="nav-item">
                         @if(request()->is('candidate/*'))
                             <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">

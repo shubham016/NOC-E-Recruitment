@@ -281,6 +281,40 @@
                                 $daysRemaining = $application->jobPosting
                                     ? (int) now()->diffInDays($application->jobPosting->deadline, false)
                                     : 0;
+<<<<<<< HEAD
+=======
+
+                                if ($application->manual_priority) {
+                                    $priorityClass = 'priority-' . $application->manual_priority;
+                                    $priorityText  = ucfirst($application->manual_priority);
+                                    $priorityBadge = match($application->manual_priority) {
+                                        'critical' => 'bg-dark',
+                                        'high'     => 'bg-danger',
+                                        'medium'   => 'bg-warning',
+                                        'low'      => 'bg-success',
+                                        'normal'   => 'bg-secondary',
+                                        default    => 'bg-secondary'
+                                    };
+                                } else {
+                                    $priorityClass = '';
+                                    $priorityBadge = 'bg-secondary';
+                                    $priorityText  = 'Normal';
+
+                                    if ($daysRemaining <= 2) {
+                                        $priorityClass = 'priority-high';
+                                        $priorityBadge = 'bg-danger';
+                                        $priorityText  = 'High';
+                                    } elseif ($daysRemaining <= 5) {
+                                        $priorityClass = 'priority-medium';
+                                        $priorityBadge = 'bg-warning';
+                                        $priorityText  = 'Medium';
+                                    } elseif ($daysRemaining <= 10) {
+                                        $priorityClass = 'priority-low';
+                                        $priorityBadge = 'bg-success';
+                                        $priorityText  = 'Low';
+                                    }
+                                }
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
 
                                 $statusColors = [
                                     'pending'  => 'bg-warning text-dark',
@@ -291,7 +325,11 @@
                                 $statusColor = $statusColors[$application->status] ?? 'bg-secondary';
                             @endphp
 
+<<<<<<< HEAD
                             <tr class="application-card">
+=======
+                            <tr class="application-card {{ $priorityClass }}">
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                 <td class="text-center">
                                     <input type="checkbox"
                                            class="form-check-input application-checkbox"
@@ -354,21 +392,43 @@
                                     @endif
                                 </td>
 
+<<<<<<< HEAD
+=======
+                                <td class="nowrap">
+                                    <span class="badge {{ $priorityBadge }}">{{ $priorityText }}</span>
+                                    @if($application->manual_priority && $application->priority_note)
+                                        <br><small class="text-muted" title="{{ $application->priority_note }}">📌</small>
+                                    @elseif(!$application->manual_priority)
+                                        <br><small class="text-muted">(Auto)</small>
+                                    @endif
+                                </td>
+
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                 <td class="nowrap">
                                     <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>
                                 </td>
 
                                 <td class="nowrap">
                                     <a href="{{ route('reviewer.applications.show', $application->id) }}"
+<<<<<<< HEAD
                                        class="btn btn-sm {{ in_array($application->status, ['rejected', 'reviewed']) ? 'btn-danger' : 'btn-warning' }}">
                                         <i class="bi {{ in_array($application->status, ['rejected', 'reviewed']) ? 'bi-check-circle' : 'bi-eye' }} me-1"></i>
                                         {{ in_array($application->status, ['rejected', 'reviewed']) ? 'View' : 'Review' }}
+=======
+                                       class="btn btn-sm {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'btn-danger' : 'btn-warning' }}">
+                                        <i class="bi {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'bi-check-circle' : 'bi-eye' }} me-1"></i>
+                                        {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'View' : 'Review' }}
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
+<<<<<<< HEAD
                                 <td colspan="13" class="text-center py-5">
+=======
+                                <td colspan="14" class="text-center py-5">
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Applications Found</h5>
                                     <p class="text-secondary">No applications match your criteria.</p>

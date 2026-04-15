@@ -39,6 +39,8 @@ class CandidateController extends Controller
             'gender'                     => 'required|in:Male,Female,Other',
             'date_of_birth_bs'           => 'required|string',
             'citizenship_number'         => 'required|string|unique:candidate_registration,citizenship_number',
+            'nid'                        => 'required|string|unique:candidate_registration,nid',
+            'noc_employee'               => 'required|string|in:yes,no',
             'citizenship_issue_distric'  => 'required|string|max:255',
             'citizenship_issue_date_bs'  => 'required|string',
             'password'                   => 'required|min:8|confirmed',
@@ -60,6 +62,8 @@ class CandidateController extends Controller
                 'citizenship_number'        => $request->citizenship_number,
                 'citizenship_issue_distric' => $request->citizenship_issue_distric,
                 'citizenship_issue_date_bs' => $request->citizenship_issue_date_bs,
+                'nid'                       => $request->nid,
+                'noc_employee'              => $request->noc_employee,
                 'password'                  => Hash::make($request->password),
                 'created_at'                => now(),
                 'updated_at'                => now(),
@@ -121,19 +125,22 @@ class CandidateController extends Controller
             ->first();
 
         if ($candidate && Hash::check($request->password, $candidate->password)) {
+<<<<<<< HEAD
             // Clear all other guard sessions to prevent conflicts
             Auth::guard('admin')->logout();
             Auth::guard('hr_administrator')->logout();
             Auth::guard('reviewer')->logout();
             Auth::guard('approver')->logout();
 
+=======
+>>>>>>> 55e8c2322fd9818955a408f1f667542e5cee9f98
             Session::put('candidate_id',         $candidate->id);
             Session::put('candidate_name',       $candidate->name);
             Session::put('candidate_email',      $candidate->email);
             Session::put('candidate_logged_in',  true);
 
             return redirect()->route('candidate.dashboard')
-                ->with('success', 'Welcome back, ' . $candidate->name . '!');
+                ->with('success', 'Welcome, ' . $candidate->name . '!');
         }
 
         return redirect()->back()
