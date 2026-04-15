@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\JobPosting;
+use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
@@ -11,46 +12,14 @@ use Illuminate\Support\Facades\DB;
 class JobBrowsingController extends Controller
 {
     /**
-     * Resolve the logged-in candidate from session.
-     */
-    private function getSessionCandidate()
-    {
-        if (!Session::has('candidate_logged_in')) {
-            return null;
-        }
-        return DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
-    }
-
-    /**
-     * Apply NOC visibility filter.
-     * NOC employees see all categories.
-     * General public see only Open / Open+Inclusive.
-     */
-    private function applyNocFilter($query, $candidate)
-    {
-        $isNoc = $candidate && $candidate->noc_employee === 'yes';
-
-        if (!$isNoc) {
-            $query->whereNotIn('category', ['internal', 'internal_appraisal']);
-        }
-
-        return $query;
-    }
-
-    /**
-     * Display all available jobs (filtered by NOC status).
+     * Display all available jobs
      */
     public function index(Request $request)
     {
-        $candidate = $this->getSessionCandidate();
-
         $query = JobPosting::where('status', 'active')
             ->where('deadline', '>=', now());
 
-        $this->applyNocFilter($query, $candidate);
-
+        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -61,39 +30,60 @@ class JobBrowsingController extends Controller
             });
         }
 
+        // Filter by department
         if ($request->filled('department')) {
             $query->where('department', $request->department);
         }
 
+        // Filter by location
         if ($request->filled('location')) {
             $query->where('location', $request->location);
         }
 
+        // Filter by position level
         if ($request->filled('position_level')) {
             $query->where('position_level', $request->position_level);
         }
 
-        $sortBy    = $request->get('sort_by', 'created_at');
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
+        // Get jobs with application count
         $jobs = $query->withCount('applications')->paginate(12)->withQueryString();
 
-        // Filter options — respect the same NOC filter
-        $baseQuery = JobPosting::where('status', 'active');
-        $this->applyNocFilter($baseQuery, $candidate);
+        // Get filter options
+        $departments = JobPosting::where('status', 'active')
+            ->distinct()
+            ->pluck('department')
+            ->filter();
 
-        $departments    = (clone $baseQuery)->distinct()->pluck('department')->filter();
-        $locations      = (clone $baseQuery)->distinct()->pluck('location')->filter();
-        $positionLevels = (clone $baseQuery)->distinct()->pluck('position_level')->filter();
+        $locations = JobPosting::where('status', 'active')
+            ->distinct()
+            ->pluck('location')
+            ->filter();
 
+        $positionLevels = JobPosting::where('status', 'active')
+            ->distinct()
+            ->pluck('position_level')
+            ->filter();
+
+        // Check which jobs candidate has already applied for
         $appliedJobIds = [];
-        if ($candidate) {
-            $appliedJobIds = DB::table('application_form')
-                ->where('citizenship_number', $candidate->citizenship_number)
-                ->whereNotNull('job_posting_id')
-                ->pluck('job_posting_id')
-                ->toArray();
+
+        if (Session::has('candidate_logged_in')) {
+            $candidate = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->first();
+            
+            if ($candidate) {
+                $appliedJobIds = DB::table('application_form')
+                    ->where('citizenship_number', $candidate->citizenship_number)
+                    ->whereNotNull('job_posting_id')
+                    ->pluck('job_posting_id')
+                    ->toArray();
+            }
         }
 
         return view('candidate.jobs.index', compact(
@@ -106,36 +96,38 @@ class JobBrowsingController extends Controller
     }
 
     /**
-     * Display job details (block Internal/Appraisal from non-NOC candidates).
+     * Display job details
      */
     public function show($id)
     {
-        $candidate = $this->getSessionCandidate();
-        $isNoc     = $candidate && $candidate->noc_employee === 'yes';
+        $job = JobPosting::where('status', 'active')
+            ->where('deadline', '>=', now())
+            ->withCount('applications')
+            ->findOrFail($id);
 
-        $query = JobPosting::where('status', 'active')
-            ->where('deadline', '>=', now());
-
-        if (!$isNoc) {
-            $query->whereNotIn('category', ['internal', 'internal_appraisal']);
-        }
-
-        $job = $query->withCount('applications')->findOrFail($id);
-
-        $hasApplied  = false;
+        // Check if candidate already applied
+        $hasApplied = false;
         $application = null;
 
-        if ($candidate) {
-            $hasApplied = DB::table('application_form')
-                ->where('citizenship_number', $candidate->citizenship_number)
-                ->where('job_posting_id', $id)
-                ->exists();
-
-            if ($hasApplied) {
-                $application = DB::table('application_form')
+        if (Session::has('candidate_logged_in')) {
+            $candidate = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->first();
+            
+            if ($candidate) {
+                // Check if candidate already applied using citizenship_number and job_posting_id
+                $hasApplied = DB::table('application_form')
                     ->where('citizenship_number', $candidate->citizenship_number)
                     ->where('job_posting_id', $id)
-                    ->first();
+                    ->exists();
+
+                // Get candidate's application if exists
+                if ($hasApplied) {
+                    $application = DB::table('application_form')
+                        ->where('citizenship_number', $candidate->citizenship_number)
+                        ->where('job_posting_id', $id)
+                        ->first();
+                }
             }
         }
 

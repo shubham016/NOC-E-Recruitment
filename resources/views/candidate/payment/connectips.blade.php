@@ -10,8 +10,6 @@
     <input type="hidden" name="REMARKS" value="{{ $remarks }}">
     <input type="hidden" name="PARTICULARS" value="{{ $particulars }}">
     <input type="hidden" name="TOKEN" value="{{ $token }}">
-    <input type="hidden" name="REDIRECTURL" value="{{ $successUrl }}">
-    <input type="hidden" name="ERRORURL" value="{{ $failureUrl }}">
 
     <button type="submit">Redirecting to ConnectIPS...</button>
 </form>

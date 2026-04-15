@@ -11,6 +11,10 @@ use Illuminate\Support\Str;
 
 class CandidateRegistrationController extends Controller
 {
+    /**
+     * Handle registration from Shradha's register form.
+     * Maps form fields (name, phone, gender=Male) to Candidate model fields.
+     */
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -19,9 +23,7 @@ class CandidateRegistrationController extends Controller
             'phone'                     => 'required|string|max:20',
             'gender'                    => 'required|in:Male,Female,Other',
             'date_of_birth_bs'          => 'required|string|max:20',
-            'noc_employee'              => 'required|in:yes,no',
-            'citizenship_number'        => 'required|string|unique:candidate_registration,citizenship_number',
-            'nid'                       => 'nullable|string|max:50',
+            'citizenship_number'        => 'required|string|unique:candidates,citizenship_number',
             'citizenship_issue_distric' => 'required|string|max:255',
             'citizenship_issue_date_bs' => 'required|string|max:20',
             'nid'                       => 'required|string|max:20',
@@ -34,8 +36,6 @@ class CandidateRegistrationController extends Controller
             'phone.required'                     => 'Phone Number is required.',
             'gender.required'                    => 'Gender is required.',
             'date_of_birth_bs.required'          => 'Date of Birth is required.',
-            'noc_employee.required'              => 'Please select if you are a NOC employee.',
-            'noc_employee.in'                    => 'Invalid value for NOC Employee field.',
             'citizenship_number.required'        => 'Citizenship Number is required.',
             'citizenship_number.unique'          => 'This citizenship number is already registered.',
             'citizenship_issue_distric.required' => 'Citizenship Issue District is required.',
@@ -66,15 +66,13 @@ class CandidateRegistrationController extends Controller
                 'last_name'                  => $lastName,
                 'username'                   => $username,
                 'email'                      => $validated['email'],
-                'phone'                      => $validated['phone'],
-                'gender'                     => $validated['gender'],
-                'date_of_birth_bs'           => $validated['date_of_birth_bs'],
-                'noc_employee'               => $validated['noc_employee'],
-                'citizenship_number'         => $validated['citizenship_number'],
-                'nid'                        => $validated['nid'] ?? null,
-                'citizenship_issue_distric'  => $validated['citizenship_issue_distric'],
-                'citizenship_issue_date_bs'  => $validated['citizenship_issue_date_bs'],
+                'mobile_number'              => $validated['phone'] ?? null,
                 'password'                   => Hash::make($validated['password']),
+                'gender'                     => strtolower($validated['gender']),
+                'date_of_birth_bs'           => $validated['date_of_birth_bs'],
+                'citizenship_number'         => $validated['citizenship_number'],
+                'citizenship_issue_district' => $validated['citizenship_issue_distric'],
+                'citizenship_issue_date_bs'  => $validated['citizenship_issue_date_bs'],
                 'status'                     => 'active',
                 'email_verified_at'          => now(),
             ]);
