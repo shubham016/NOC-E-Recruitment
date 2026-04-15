@@ -95,14 +95,14 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         @endif
-                                        @if($form->admit_card_generated)
+                                        @if($form->status === 'shortlisted' && !is_null($form->exam_date))
                                             <a href="{{ route('candidate.admit-card.view', $form->id) }}" 
                                             class="btn btn-dark" title="Admit Card">
                                                 <i class="fas bi-person-vcard"></i>
                                             </a>
                                         @else
                                             <button class="btn btn-secondary" title="Admit Card Not Generated" disabled>
-                                                <i class="fas bi-person-vcard"></i>
+                                                <i class="fas fa-id-card"></i>
                                             </button>
                                         @endif
                                     </div>
