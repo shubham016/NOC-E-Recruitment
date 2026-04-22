@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\VacanciesExport;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
@@ -11,6 +12,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VacancyManagementController extends Controller
 {
@@ -400,74 +402,13 @@ class VacancyManagementController extends Controller
 
     private function exportToExcel($jobs)
     {
-        $filename = 'vacancies_selected_' . date('Y-m-d_His') . '.csv';
-
-        $headers = [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        $callback = function () use ($jobs) {
-            $file = fopen('php://output', 'w');
-
-            // UTF-8 BOM for Excel compatibility
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            fputcsv($file, [
-                'S.N.',
-                'Advertisement No.',
-                'Position / Level',
-                'Service / Group',
-                'Category',
-                'Type',
-                'Demand',
-                'Minimum Qualification',
-                'Applications',
-                'Application Fee',
-                'Double Dastur Fee',
-                'Deadline',
-                'Status',
-                'Posted On',
-            ]);
-
-            foreach ($jobs as $index => $job) {
-                $category = match ($job->category) {
-                    'internal_appraisal' => 'Internal Appraisal',
-                    'internal'           => 'Internal' . ($job->internal_type ? '/' . ucfirst($job->internal_type) : ''),
-                    'inclusive'          => 'Inclusive' . ($job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : ''),
-                    default              => ucfirst($job->category),
-                };
-
-                fputcsv($file, [
-                    $index + 1,
-                    $job->advertisement_no,
-                    $job->position_level,
-                    $job->service_group ?: $job->department,
-                    $category,
-                    ucfirst($job->category),
-                    $job->number_of_posts,
-                    $job->minimum_qualification,
-                    $job->applications_count ?? 0,
-                    $job->application_fee ? 'NPR ' . number_format($job->application_fee, 2) : '-',
-                    $job->double_dastur_fee ? 'NPR ' . number_format($job->double_dastur_fee, 2) : '-',
-                    $job->deadline ? $job->deadline->format('Y-m-d') : '-',
-                    ucfirst($job->status),
-                    $job->created_at->format('Y-m-d'),
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        $filename = 'vacancies_selected_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new VacanciesExport($jobs), $filename);
     }
 
     private function exportToPdf($jobs)
     {
-        $pdf = \PDF::loadView('admin.jobs.pdf.export', compact('jobs'));
-        $pdf->setOption('isHtml5ParserEnabled', true);
-        $pdf->setOption('isRemoteEnabled', true);
-
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.jobs.pdf.export', compact('jobs'));
         return $pdf->download('vacancies_selected_' . date('Y-m-d_His') . '.pdf');
     }
 

@@ -67,8 +67,17 @@ class AdminProfileController extends Controller
 
         $admin->update($validated);
 
-        return redirect()->route('admin.profile')
+        return redirect()->route('admin.settings')
             ->with('success', 'Profile updated successfully!');
+    }
+
+    /**
+     * Show unified settings page (profile + change password tabs)
+     */
+    public function settings()
+    {
+        $admin = Auth::guard('admin')->user();
+        return view('admin.settings.index', compact('admin'));
     }
 
     /**
@@ -101,7 +110,7 @@ class AdminProfileController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('admin.profile')
+        return redirect()->route('admin.settings')
             ->with('success', 'Password changed successfully!');
     }
 }

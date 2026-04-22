@@ -80,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('profile.update');
         Route::get('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'showChangePasswordForm'])->name('change-password');
         Route::post('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'changePassword'])->name('change-password.post');
+        Route::get('/settings', [App\Http\Controllers\Admin\AdminProfileController::class, 'settings'])->name('settings');
 
         /*
         | Job Management Routes

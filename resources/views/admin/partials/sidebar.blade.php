@@ -55,7 +55,7 @@
     <span>Reports</span>
 </a>
 
-<a href="#" class="sidebar-menu-item">
+<a href="{{ route('admin.settings') }}" class="sidebar-menu-item {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
     <i class="bi bi-gear"></i>
     <span>Settings</span>
 </a>
