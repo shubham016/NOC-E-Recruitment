@@ -324,8 +324,13 @@
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Position / Level</div>
-                    <div class="detail-value">{{ $job->position_level }}</div>
+                    <div class="detail-label">Position</div>
+                    <div class="detail-value">{{ $job->position }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Level</div>
+                    <div class="detail-value">{{ $job->level ? $job->level : '-' }}</div>
                 </div>
 
                 <div class="detail-row">

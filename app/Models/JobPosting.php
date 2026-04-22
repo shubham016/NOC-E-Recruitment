@@ -15,7 +15,8 @@ class JobPosting extends Model
         'notice_no',
         'advertisement_no',
         'title',
-        'position_level',
+        'position',
+        'level',
         'description',
         'requirements',
         'minimum_qualification',
@@ -52,6 +53,7 @@ class JobPosting extends Model
         'application_fee' => 'float',
         'double_dastur_fee' => 'float',
         'number_of_posts' => 'integer',
+        'level' => 'integer',
         'has_open' => 'boolean',
         'has_inclusive' => 'boolean',
         'has_internal' => 'boolean',
@@ -81,37 +83,35 @@ class JobPosting extends Model
     }
 
     /**
-     * Polymorphic relationship - can be posted by Admin or HR Administrator
+     * Accessor: combine position + level for display in all views
+     */
+    public function getPositionLevelAttribute(): string
+    {
+        if ($this->level) {
+            return $this->position . ' - ' . $this->level;
+        }
+        return $this->position ?? '';
+    }
+
+    /**
+     * Relationship - posted by Admin
      */
     public function postedBy()
     {
-        if ($this->posted_by_type === 'hr_administrator') {
-            return $this->belongsTo(HRAdministrator::class, 'posted_by');
-        }
-
         return $this->belongsTo(Admin::class, 'posted_by');
     }
 
     /**
-     * Get the poster (Admin or HR Administrator)
+     * Get the poster (Admin)
      */
     public function getPosterAttribute()
     {
-        if ($this->posted_by_type === 'hr_administrator') {
-            return HRAdministrator::find($this->posted_by);
-        }
-
         return Admin::find($this->posted_by);
     }
 
     public function isPostedByAdmin()
     {
         return $this->posted_by_type === 'admin';
-    }
-
-    public function isPostedByHRAdmin()
-    {
-        return $this->posted_by_type === 'hr_administrator';
     }
 
     public function scopeActive($query)
@@ -127,11 +127,6 @@ class JobPosting extends Model
     public function scopePostedByAdmin($query)
     {
         return $query->where('posted_by_type', 'admin');
-    }
-
-    public function scopePostedByHRAdmin($query)
-    {
-        return $query->where('posted_by_type', 'hr_administrator');
     }
 
     public function scopePostedBy($query, $userType, $userId)

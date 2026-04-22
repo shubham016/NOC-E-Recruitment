@@ -771,6 +771,7 @@
                         <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
+                </div>{{-- closes #step4 --}}
 
 <!-- STEP 5: Work Experience -->
                 <div class="step d-none" id="step5">

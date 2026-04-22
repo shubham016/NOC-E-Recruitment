@@ -30,11 +30,6 @@ return [
             'provider' => 'admins',
         ],
 
-        'hr_administrator' => [
-            'driver' => 'session',
-            'provider' => 'hr_administrators',
-        ],
-
         'reviewer' => [
             'driver' => 'session',
             'provider' => 'reviewers',
@@ -66,11 +61,6 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
-        ],
-
-        'hr_administrators' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\HRAdministrator::class,
         ],
 
         'reviewers' => [
@@ -105,13 +95,6 @@ return [
 
         'admins' => [
             'provider' => 'admins',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-
-        'hr_administrators' => [
-            'provider' => 'hr_administrators',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

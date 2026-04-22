@@ -41,13 +41,6 @@
     @endif -->
 </a>
 
-<!-- <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.hr-administrators.*') ? 'active' : '' }}">
-    <i class="bi bi-person-gear"></i>
-    <span>HR Administrators</span>
-    @if(isset($stats['active_hr_admins']))
-        <span class="badge bg-success ms-auto">{{ $stats['active_hr_admins'] }}</span>
-    @endif
-</a> -->
 
 <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.approvers.*') ? 'active' : '' }}">
     <i class="bi bi-person-check"></i>

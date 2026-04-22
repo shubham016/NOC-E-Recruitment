@@ -40,9 +40,9 @@ class VacancyBrowsingController extends Controller
             $query->where('location', $request->location);
         }
 
-        // Filter by position level
+        // Filter by position
         if ($request->filled('position_level')) {
-            $query->where('position_level', $request->position_level);
+            $query->where('position', $request->position_level);
         }
 
         // Sort
@@ -66,7 +66,7 @@ class VacancyBrowsingController extends Controller
 
         $positionLevels = Vacancy::where('status', 'active')
             ->distinct()
-            ->pluck('position_level')
+            ->pluck('position')
             ->filter();
 
         // Check which vacancies candidate has already applied for

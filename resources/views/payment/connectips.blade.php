@@ -1,4 +1,4 @@
-<form action="{{ env('CONNECTIPS_TXN_URL') }}" method="POST">
+<form action="{{ $txnUrl }}" method="POST">
     <input type="hidden" name="MERCHANTID" value="{{ $merchantId }}">
     <input type="hidden" name="APPID" value="{{ $appId }}">
     <input type="hidden" name="APPNAME" value="{{ $appName }}">

@@ -7,7 +7,6 @@ use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use App\Models\Candidate;
 use App\Models\Reviewer;
-use App\Models\HRAdministrator;
 use App\Models\Approver;
 use Illuminate\Support\Facades\DB;
 
@@ -28,8 +27,6 @@ class AdminDashboardController extends Controller
             'total_candidates' => Candidate::count(),
             'total_reviewers' => Reviewer::count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
-            'total_hr_admins' => HRAdministrator::count(),
-            'active_hr_admins' => HRAdministrator::where('status', 'active')->count(),
             'total_approvers' => Approver::count(),
             'active_approvers' => Approver::where('status', 'active')->count(),
         ];
@@ -113,21 +110,6 @@ class AdminDashboardController extends Controller
             ->limit(2)
             ->get();
 
-        // HR Administrator Performance
-        // Using raw query to avoid the snake_case column name issue
-        $hrAdminStats = HRAdministrator::where('status', 'active')
-            ->select('hr_administrators.*')
-            ->selectSub(function ($query) {
-                $query->selectRaw('count(*)')
-                    ->from('job_postings')
-                    ->whereColumn('job_postings.posted_by', 'hr_administrators.id')
-                    ->whereMonth('job_postings.created_at', now()->month)
-                    ->whereYear('job_postings.created_at', now()->year);
-            }, 'jobs_posted')
-            ->orderBy('jobs_posted', 'desc')
-            ->limit(5)
-            ->get();
-
         // Recent Job Postings
         $recentJobs = JobPosting::latest()
             ->limit(5)
@@ -141,7 +123,6 @@ class AdminDashboardController extends Controller
             'recentApplications',
             'reviewerStats',
             'approverStats',
-            'hrAdminStats',
             'recentJobs'
         ));
     }

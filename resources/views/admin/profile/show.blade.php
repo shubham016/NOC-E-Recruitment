@@ -27,10 +27,6 @@
         <i class="bi bi-person-check"></i>
         <span>Reviewers</span>
     </a>
-    <a href="{{ route('admin.hr-administrators.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.hr-administrators.*') ? 'active' : '' }}">
-        <i class="bi bi-person-badge"></i>
-        <span>HR Administrators</span>
-    </a>
     <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.approvers.*') ? 'active' : '' }}">
         <i class="bi bi-person-check-fill"></i>
         <span>Approvers</span>

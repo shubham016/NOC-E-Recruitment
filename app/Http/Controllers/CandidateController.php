@@ -129,7 +129,6 @@ class CandidateController extends Controller
         if ($candidate && Hash::check($request->password, $candidate->password)) {
             // Clear all other guard sessions to prevent conflicts
             Auth::guard('admin')->logout();
-            Auth::guard('hr_administrator')->logout();
             Auth::guard('reviewer')->logout();
             Auth::guard('approver')->logout();
 

@@ -198,6 +198,26 @@
             box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
         }
 
+        /* Notice sub-section grouping */
+        .notice-sub-section {
+            border-radius: 0 8px 8px 0;
+            /* background: #fafafa; */
+            padding: 1.25rem 0 0.25rem 0;
+            margin-top: 1rem;
+        }
+
+        .notice-sub-section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #dc2626;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
         /* Inclusive sub-category animation */
         .inclusive-subcategory {
             max-height: 0;
@@ -331,6 +351,14 @@
                         </small> -->
                     </div>
 
+                    <div class="section-divider"></div>
+
+                    <!-- Fields grouped under Notice No. -->
+                    <div class="notice-sub-section">
+                        <div class="notice-sub-section-label">
+                            Under this Notice No.
+                        </div>
+
                     <!-- Advertisement Number -->
                     <div class="mb-4">
                         <label for="advertisement_no" class="form-label">
@@ -352,45 +380,47 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Position/Level (Dropdown) -->
+                    <!-- Position / Level (Text Inputs) -->
                     <div class="mb-4">
-                        <label for="position_level" class="form-label">
-                            <span>Position / Level <span class="required">*</span></span>
-                            <span class="nepali-text">पद / तह</span>
-                        </label>
-                        <select class="form-select form-select-lg @error('position_level') is-invalid @enderror"
-                            id="position_level" name="position_level" required>
-                            <option value="">-- Select Position/Level --</option>
-                            <optgroup label="Officer Level (अधिकृत तह)">
-                                <option value="Officer Level - 10th (अधिकृत तह - १०)" {{ old('position_level', $job->position_level) == 'Officer Level - 10th (अधिकृत तह - १०)' ? 'selected' : '' }}>
-                                    Officer Level - 10th (अधिकृत तह - १०)</option>
-                                <option value="Officer Level - 9th (अधिकृत तह - ९)" {{ old('position_level', $job->position_level) == 'Officer Level - 9th (अधिकृत तह - ९)' ? 'selected' : '' }}>
-                                    Officer Level - 9th (अधिकृत तह - ९)</option>
-                                <option value="Officer Level - 8th (अधिकृत तह - ८)" {{ old('position_level', $job->position_level) == 'Officer Level - 8th (अधिकृत तह - ८)' ? 'selected' : '' }}>
-                                    Officer Level - 8th (अधिकृत तह - ८)</option>
-                                <option value="Officer Level - 7th (अधिकृत तह - ७)" {{ old('position_level', $job->position_level) == 'Officer Level - 7th (अधिकृत तह - ७)' ? 'selected' : '' }}>
-                                    Officer Level - 7th (अधिकृत तह - ७)</option>
-                                <option value="Officer Level - 6th (अधिकृत तह - ६)" {{ old('position_level', $job->position_level) == 'Officer Level - 6th (अधिकृत तह - ६)' ? 'selected' : '' }}>
-                                    Officer Level - 6th (अधिकृत तह - ६)</option>
-                            </optgroup>
-                            <optgroup label="Assistant Level (सहायक तह)">
-                                <option value="Officer Level - 5th (अधिकृत तह - ५)" {{ old('position_level', $job->position_level) == 'Officer Level - 5th (अधिकृत तह - ५)' ? 'selected' : '' }}>
-                                    Officer Level - 5th (बरिष्ठ सहायक तह - ५)</option>
-                                <option value="Assistant Level - 4th (सहायक तह - ४)" {{ old('position_level', $job->position_level) == 'Assistant Level - 4th (सहायक तह - ४)' ? 'selected' : '' }}>
-                                    Assistant Level - 4th (सहायक तह - ४)</option>
-                            </optgroup>
-                            <optgroup label="Technician Level (सहयोगी)">
-                                <option value="Technician Level (सहयोगी)" {{ old('position_level', $job->position_level) == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>Technician
-                                    (टेक्निशियन)</option>
-                            </optgroup>
-                        </select>
-                        @error('position_level')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <!-- <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Select the government position level from the dropdown
-                        </small> -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="position_input" class="form-label">
+                                    <span>Position <span class="required">*</span></span>
+                                    <span class="nepali-text">पद</span>
+                                </label>
+                                <input type="text"
+                                    name="position"
+                                    class="form-control form-control-lg @error('position') is-invalid @enderror"
+                                    id="position_input"
+                                    placeholder="e.g. Officer, Director"
+                                    value="{{ old('position', $job->position) }}"
+                                    required>
+                                @error('position')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="level_input" class="form-label">
+                                    <span>Level <span class="required">*</span></span>
+                                    <span class="nepali-text">तह</span>
+                                </label>
+                                <input type="number"
+                                    name="level"
+                                    class="form-control form-control-lg @error('level') is-invalid @enderror"
+                                    id="level_input"
+                                    placeholder="e.g. 7"
+                                    value="{{ old('level', $job->level) }}"
+                                    min="1"
+                                    max="99"
+                                    required>
+                                @error('level')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="section-divider"></div>
 
                     <!-- Service/Group -->
                     <div class="mb-4">
@@ -967,6 +997,8 @@
                     })();
                     </script>
 
+                    <div class="section-divider"></div>
+
                     <!-- Demand Post (Number of Posts) -->
                     <div class="mb-4">
                         <label for="number_of_posts" class="form-label">
@@ -1055,6 +1087,8 @@
                             <br><small>हालको समय सीमा: {{ $job->deadline->format('Y-m-d') }} - आवश्यक भएमा अपडेट गर्न सक्नुहुन्छ।</small>
                         </div> -->
                     </div>
+
+                    <div class="section-divider"></div>
 
                     <!-- Double Dastur Date - Dual Date Pickers -->
                     <div class="mb-4" id="doubleDasturDateSection" style="display: {{ ($effectiveHasInternal || $effectiveIsAppraisal) ? 'none' : 'block' }};">
@@ -1163,6 +1197,8 @@
                         </div>
                     </div>
 
+                    </div>{{-- end .notice-sub-section --}}
+
                     <!-- Hidden fields -->
                     <input type="hidden" name="title" id="hidden_title" value="{{ $job->title }}">
                     <input type="hidden" name="location" value="Nepal">
@@ -1196,8 +1232,12 @@
                                 <td id="preview-adv-no" class="fw-semibold">{{ $job->advertisement_no }}</td>
                             </tr>
                             <tr>
-                                <th>Position/Level</th>
-                                <td id="preview-position" class="fw-semibold">{{ $job->position_level }}</td>
+                                <th>Position</th>
+                                <td id="preview-position" class="fw-semibold">{{ old('position', $job->position) ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Level</th>
+                                <td id="preview-level" class="fw-semibold">{{ old('level', $job->level) ?: '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Service/Group</th>
@@ -2077,7 +2117,6 @@
             const previewMappings = {
                 'notice_no': { preview: 'preview-notice-no', default: '-' },
                 'advertisement_no': { preview: 'preview-adv-no', default: '-' },
-                'position_level': { preview: 'preview-position', default: '-' },
                 'service_group': { preview: 'preview-service', default: '-' },
                 'number_of_posts': { preview: 'preview-posts', default: '-' },
                 'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' },
@@ -2095,7 +2134,6 @@
                     input.addEventListener(eventType, function () {
                         const value = this.value.trim();
 
-                        // Special handling for notice_no
                         if (fieldId === 'notice_no') {
                             preview.textContent = value || '-';
                         } else if (fieldId === 'minimum_qualification') {
@@ -2119,6 +2157,22 @@
                 }
             });
 
+            // Position + Level: update preview cells
+            function updatePositionLevel() {
+                const pos = (document.getElementById('position_input').value || '').trim();
+                const lvl = (document.getElementById('level_input').value || '').trim();
+                const previewPos = document.getElementById('preview-position');
+                const previewLvl = document.getElementById('preview-level');
+                if (previewPos) previewPos.textContent = pos || '-';
+                if (previewLvl) previewLvl.textContent = lvl || '-';
+            }
+
+            document.getElementById('position_input').addEventListener('input', updatePositionLevel);
+            document.getElementById('level_input').addEventListener('input', updatePositionLevel);
+
+            // Initialize preview from pre-filled values
+            updatePositionLevel();
+
             // ===========================================
             // FORM SUBMISSION
             // ===========================================
@@ -2138,7 +2192,9 @@
                 document.getElementById('has_inclusive').value = (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked && hasIncTypes) ? '1' : '0';
 
                 // Update title, description, requirements
-                const positionLevel = document.getElementById('position_level').value;
+                const pos = (document.getElementById('position_input').value || '').trim();
+                const lvl = (document.getElementById('level_input').value || '').trim();
+                const positionLevel = lvl ? pos + ' - ' + lvl : pos;
                 document.getElementById('hidden_title').value = positionLevel;
                 document.getElementById('hidden_description').value = 'Position: ' + positionLevel;
                 document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
@@ -2195,7 +2251,9 @@
                     hiddenInclusiveTypeField.value = firstInclusiveType.value;
                 }
 
-                const positionLevel = document.getElementById('position_level').value;
+                const posStr = (document.getElementById('position_input').value || '').trim();
+                const lvlStr = (document.getElementById('level_input').value || '').trim();
+                const positionLevel = lvlStr ? posStr + ' - ' + lvlStr : posStr;
                 document.getElementById('hidden_title').value = positionLevel;
 
                 let descriptionText = 'Position: ' + positionLevel + '\n' +

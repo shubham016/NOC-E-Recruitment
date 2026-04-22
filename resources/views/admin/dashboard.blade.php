@@ -363,9 +363,7 @@
         }
 
         .job-middle {
-            text-align: center;
             min-width: 0;
-            word-break: break-word;
         }
         .job-mid-level {
             font-size: 13px;
@@ -387,7 +385,9 @@
         }
 
         .item-middle {
+            min-width: 0;
             text-align: center;
+            padding-left: 52px;
         }
 
         .job-count-box {
@@ -558,12 +558,12 @@
             color: #991b1b;
         }
 
-        /* Job Cards — 3 equal columns: left | center | right */
+        /* Job Cards — 3 columns: left wider | center | right narrow */
         .job-card {
             padding: 18px 24px;
             border-bottom: 1px solid var(--gray-100);
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1.2fr 1fr 0.5fr;
             align-items: center;
             gap: 16px;
             transition: background 0.15s ease;
@@ -602,8 +602,9 @@
             min-width: 80px;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
+            margin-left: auto;
         }
 
         .job-count {
@@ -1186,20 +1187,23 @@
 
                         {{-- Middle: qualification + deadline BS --}}
                         <div class="job-middle">
-                            <div style="margin-bottom:5px;">
-                                <span style="display:inline-block; background:#f1f5f9; color:var(--gray-700); font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                    <i class="bi bi-mortarboard" style="color:#c9a84c; margin-right:3px;"></i>{{ $vacancy->minimum_qualification ?? 'N/A' }}
-                                </span>
+                            <div>
+                                <div style="font-size:11px; font-weight:600; color:var(--gray-700); margin-bottom:4px; overflow:hidden; text-overflow:ellipsis;">
+                                    <!-- <i class="bi bi-mortarboard" style="color:#c9a84c; margin-right:3px;"></i> -->
+                                    {{ $vacancy->minimum_qualification ?? 'N/A' }}
+                                </div>
+                                @if($vacancy->deadline_bs)
+                                    <div style="font-size:11px; color:var(--gray-400);">
+                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
+                                        {{ $vacancy->deadline_bs }}
+                                    </div>
+                                @elseif($vacancy->deadline)
+                                    <div style="font-size:11px; color:var(--gray-400);">
+                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
+                                        {{ \Carbon\Carbon::parse($vacancy->deadline)->format('M d, Y') }}
+                                    </div>
+                                @endif
                             </div>
-                            @if($vacancy->deadline_bs)
-                                <div style="font-size:12px; color:var(--gray-400);">
-                                    <i class="bi bi-calendar-event" style="margin-right:3px;"></i>{{ $vacancy->deadline_bs }}
-                                </div>
-                            @elseif($vacancy->deadline)
-                                <div style="font-size:12px; color:var(--gray-400);">
-                                    <i class="bi bi-calendar-event" style="margin-right:3px;"></i>{{ \Carbon\Carbon::parse($vacancy->deadline)->format('M d, Y') }}
-                                </div>
-                            @endif
                         </div>
 
                         {{-- Right: application count --}}
@@ -1254,13 +1258,13 @@
 
                         {{-- CENTER: submitted date + time ago --}}
                         <div class="item-middle">
-                            <div style="font-size:13px; color:var(--gray-700); font-weight:600;">
-                                <!-- <i class="bi bi-calendar3" style="color:var(--gray-400);"></i> -->
-                               Applied on: {{ $application->created_at->format('M d, Y') }}
-                            </div>
-                            <div style="font-size:12px; color:var(--gray-400); margin-top:3px;">
-                                <!-- <i class="bi bi-clock"></i> -->
-                                {{ $application->created_at->diffForHumans() }}
+                            <div style="display:inline-block; text-align:left;">
+                                <div style="font-size:13px; color:var(--gray-700); font-weight:600; line-height:1.4; margin-bottom:4px;">
+                                    Applied on: {{ $application->created_at->format('M d, Y') }}
+                                </div>
+                                <div style="font-size:12px; color:var(--gray-400);">
+                                    {{ $application->created_at->diffForHumans() }}
+                                </div>
                             </div>
                         </div>
 

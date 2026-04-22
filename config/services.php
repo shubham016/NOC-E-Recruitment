@@ -43,4 +43,20 @@ return [
         'failure_url' => env('ESEWA_FAILURE_URL'),
     ],
 
+    'khalti' => [
+        'secret_key' => env('KHALTI_SECRET_KEY'),
+        'base_url'   => env('KHALTI_BASE_URL', 'https://dev.khalti.com/api/v2'),
+    ],
+
+    'connectips' => [
+        'merchant_id'    => env('CONNECTIPS_MERCHANT_ID'),
+        'app_id'         => env('CONNECTIPS_APP_ID'),
+        'app_name'       => env('CONNECTIPS_APP_NAME'),
+        'app_password'   => env('CONNECTIPS_APP_PASSWORD'),
+        'pfx_password'   => env('CONNECTIPS_PFX_PASSWORD'),
+        'txn_url'        => env('CONNECTIPS_TXN_URL', 'https://uat.connectips.com/connectipswebgw/loginpage'),
+        'validate_url'   => env('CONNECTIPS_VALIDATE_URL', 'https://uat.connectips.com/connectipswebws/api/creditor/validatetxn'),
+        'detail_url'     => env('CONNECTIPS_DETAIL_URL', 'https://uat.connectips.com/connectipswebws/api/creditor/gettxndetail'),
+    ],
+
 ];

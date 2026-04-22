@@ -64,24 +64,28 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border: 1px solid #000;
+            border: 0.5px solid #e5e7eb !important;
             white-space: nowrap;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: #f9fafb;
             text-align: center;
         }
 
         .modern-table tbody td {
             color: #000;
-            border: 1px solid #060606;
+            border: 0.5px solid #e5e7eb;
             vertical-align: middle;
         }
 
         .modern-table tbody tr {
-            transition: all 0.2s;
+            background: #ffffff;
         }
 
-        .modern-table tbody tr:hover {
-            background: #f8fafc;
+        .modern-table tbody tr.row-hovered td:not(.notice-no-cell) {
+            background: #eff1f3;
+        }
+
+        .modern-table tbody td.notice-no-cell:hover {
+            background: #eff1f3;
         }
 
         .nepali-date-loading {
@@ -239,10 +243,11 @@
 
     <!-- Jobs Table -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
+        <div class="card-header bg-white py-3 ps-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <i class="bi bi-list-ul text-primary me-2"></i>Vacancy List
+                    <!-- <i class="bi bi-list-ul text-primary me-2"></i> -->
+                    Vacancy List
                 </h6>
                 <span class="badge bg-primary ms-2"> Total {{ $jobs->total() }}</span>
             </div>
@@ -276,30 +281,39 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 modern-table w-100"
-                    style="table-layout: auto; white-space: nowrap;">
+                <table class="table align-middle mb-0 modern-table w-100"
+                    style="table-layout: auto; white-space: nowrap; border: none;">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center text-uppercase" style="width: 50px;">
+                            <th class="text-center text-uppercase" style="border: none;">Notice No.</th>
+                            <th class="text-center text-uppercase" style="border: none; width: 50px;">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th class="text-center text-uppercase">S.N</th>
-                            <th class="text-center text-uppercase">Advertisement No.</th>
-                            <th class="text-center text-uppercase">Position</th>
-                            <th class="text-center text-uppercase">Service / Group</th>
-                            <th class="text-center text-uppercase">Type</th>
-                            <th class="text-center text-uppercase">Demand</th>
-                            <th class="text-center text-uppercase">Qualifications</th>
-                            <th class="text-center text-uppercase">Applications</th>
-                            <th class="text-center text-uppercase">Application Fee</th>
-                            <th class="text-center text-uppercase">Double Dastur Fee</th>
-                            <th class="text-center text-uppercase">Deadline</th>
-                            <th class="text-center text-uppercase">Status</th>
-                            <th class="text-center text-uppercase">Actions</th>
+                            <th class="text-center text-uppercase" style="border: none;">S.N</th>
+                            <th class="text-center text-uppercase" style="border: none;">Advertisement No.</th>
+                            <th class="text-center text-uppercase" style="border: none;">Position / Level</th>
+                            <th class="text-center text-uppercase" style="border: none;">Service / Group</th>
+                            <th class="text-center text-uppercase" style="border: none;">Type</th>
+                            <th class="text-center text-uppercase" style="border: none;">Demand</th>
+                            <th class="text-center text-uppercase" style="border: none;">Qualifications</th>
+                            <th class="text-center text-uppercase" style="border: none;">Applications</th>
+                            <th class="text-center text-uppercase" style="border: none;">Application Fee</th>
+                            <th class="text-center text-uppercase" style="border: none;">Double Dastur Fee</th>
+                            <th class="text-center text-uppercase" style="border: none;">Deadline</th>
+                            <th class="text-center text-uppercase" style="border: none;">Status</th>
+                            <th class="text-center text-uppercase" style="border: none;">Actions</th>
                         </tr>
                     </thead>
 
-                    <tbody class="text-center align-middle">
+                    <tbody class="text-center align-middle" style="border: none;">
+                        @php
+                            // Pre-calculate rowspan for each notice_no group
+                            $noticeGroups = [];
+                            foreach ($jobs as $j) {
+                                $noticeGroups[$j->notice_no] = ($noticeGroups[$j->notice_no] ?? 0) + 1;
+                            }
+                            $noticeRendered = [];
+                        @endphp
                         @forelse($jobs as $job)
                             @php
                                 $statusBadge = match ($job->status) {
@@ -311,14 +325,28 @@
 
                                 $daysRemaining = now()->diffInDays($job->deadline, false);
                                 $deadlineColor = $daysRemaining <= 7 ? 'text-danger' : ($daysRemaining <= 14 ? 'text-warning' : 'text-success');
+
+                                $isFirstInGroup = !isset($noticeRendered[$job->notice_no]);
+                                if ($isFirstInGroup) {
+                                    $noticeRendered[$job->notice_no] = true;
+                                }
                             @endphp
+
                             <tr class="job-row {{ $job->status }}">
+                                @if($isFirstInGroup)
+                                    <td rowspan="{{ $noticeGroups[$job->notice_no] }}"
+                                        class="notice-no-cell align-middle text-center px-3"
+                                        style="font-size:0.85rem; font-weight:600; color:#000; text-transform:uppercase; letter-spacing:0.5px; border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        {{ $job->notice_no }}
+                                    </td>
+                                @endif
                                 <td class="text-center">
-                                    <input type="checkbox" name="job_ids[]" value="{{ $job->id }}" class="form-check-input job-checkbox">
+                                    <input type="checkbox" name="job_ids[]" value="{{ $job->id }}"
+                                        class="form-check-input job-checkbox">
                                 </td>
                                 <td>{{ $jobs->firstItem() + $loop->index }}</td>
                                 <td>{{ $job->advertisement_no }}</td>
-                                <td>{{ $job->position_level }}</td>
+                                <td>{{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}</td>
                                 <td>{{ $job->service_group ?: $job->department }}</td>
 
                                 <td>
@@ -380,15 +408,16 @@
 
                                 <td>
                                     <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST"
-                                          class="status-change-form d-inline">
+                                        class="status-change-form d-inline">
                                         @csrf
-                                        <select name="status"
-                                                class="form-select form-select-sm border"
-                                                onchange="this.form.submit()"
-                                                style="font-weight: 600; cursor: pointer; width: auto; padding-right: 2rem;">
+                                        <select name="status" class="form-select form-select-sm border"
+                                            onchange="this.form.submit()"
+                                            style="font-weight: 600; cursor: pointer; width: auto; padding-right: 2rem;">
                                             <option value="draft" {{ $job->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                            <option value="active" {{ $job->status == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="closed" {{ $job->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                                            <option value="active" {{ $job->status == 'active' ? 'selected' : '' }}>Active
+                                            </option>
+                                            <option value="closed" {{ $job->status == 'closed' ? 'selected' : '' }}>Closed
+                                            </option>
                                         </select>
                                     </form>
                                 </td>
@@ -412,7 +441,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="text-center py-5">
+                                <td colspan="15" class="text-center py-5">
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Vacancy Found</h5>
                                     <p class="text-muted">Start by posting your first Vacancy!</p>
@@ -478,6 +507,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.job-row').forEach(function(row) {
+                row.addEventListener('mouseover', function(e) {
+                    if (e.target.closest('.notice-no-cell')) {
+                        this.classList.remove('row-hovered');
+                    } else {
+                        this.classList.add('row-hovered');
+                    }
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.classList.remove('row-hovered');
+                });
+            });
             console.log('🔧 Initializing Nepali date conversion for table...');
 
             // Wait for converter to be ready
@@ -537,7 +578,7 @@
         // ============================================
 
         // Select All Checkbox
-        document.getElementById('selectAll')?.addEventListener('change', function() {
+        document.getElementById('selectAll')?.addEventListener('change', function () {
             const checkboxes = document.querySelectorAll('.job-checkbox');
             checkboxes.forEach(checkbox => checkbox.checked = this.checked);
             updateSelectedCount();
@@ -545,10 +586,10 @@
 
         // Individual Checkbox
         document.querySelectorAll('.job-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
+            checkbox.addEventListener('change', function () {
                 updateSelectedCount();
                 const allChecked = document.querySelectorAll('.job-checkbox:checked').length ===
-                                  document.querySelectorAll('.job-checkbox').length;
+                    document.querySelectorAll('.job-checkbox').length;
                 if (document.getElementById('selectAll')) {
                     document.getElementById('selectAll').checked = allChecked;
                 }

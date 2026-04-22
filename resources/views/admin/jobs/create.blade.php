@@ -185,6 +185,26 @@
             box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
         }
 
+        /* Notice sub-section grouping */
+        .notice-sub-section {
+            margin-top: 1rem;
+            /* background: #fafafa; */
+            border-radius: 0 8px 8px 0;
+            padding: 1.25rem 0 0.25rem 0;
+        }
+
+        .notice-sub-section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #dc2626;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
         /* Inclusive sub-category animation */
         .inclusive-subcategory {
             max-height: 0;
@@ -318,17 +338,34 @@
                         </label>
                         <input type="text"
                             class="form-control form-control-lg @error('notice_no') is-invalid @enderror"
-                            id="notice_no" name="notice_no" value="{{ old('notice_no') }}"
+                            id="notice_no" name="notice_no"
+                            value="{{ old('notice_no', $prefillNoticeNo ?? '') }}"
                             placeholder="e.g., 36/2082-83"
                             required>
                         @error('notice_no')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <!-- <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Internal notice reference number (must be unique)
-                        </small> -->
                     </div>
 
+                    <div class="section-divider"></div>
+
+                    <!-- Fields grouped under Notice No. -->
+                    <div class="notice-sub-section">
+                        <div class="notice-sub-section-label">
+                            Advertisement under this Notice No.
+                            @if(!empty($prefillNoticeNo))
+                                <span class="ms-2 badge bg-danger">{{ $prefillNoticeNo }}</span>
+                            @endif
+                        </div>
+
+                        @if(!empty($prefillNoticeNo))
+                            <div class="alert alert-warning py-2 px-3 mb-3" style="font-size:0.85rem;">
+                                Adding another advertisement under <strong>Notice No. {{ $prefillNoticeNo }}</strong>.
+                                Fill in the details for this new advertisement.
+                            </div>
+                        @endif
+
+                        
                     <!-- Advertisement Number -->
                     <div class="mb-4">
                         <label for="advertisement_no" class="form-label">
@@ -342,48 +379,50 @@
                         @error('advertisement_no')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <!-- <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Format: Number/Fiscal Year (e.g., 01/2081-82)
-                        </small> -->
                     </div>
 
                     <div class="section-divider"></div>
 
-                    <!-- Position/Level (Dropdown) -->
+                    <!-- Position / Level (Text Inputs) -->
                     <div class="mb-4">
-                        <label for="position_level" class="form-label">
-                            <span>Position <span class="required">*</span></span>
-                            <span class="nepali-text">पद / तह</span>
-                        </label>
-                        <select class="form-select form-select-lg @error('position_level') is-invalid @enderror"
-                            id="position_level" name="position_level" required>
-                            <option value="">-- Select Position/Level --</option>
-                            <optgroup label="Officer Level (अधिकृत तह)">
-                                <option value="Officer Level - 10th (अधिकृत तह - १०)" {{ old('position_level') == 'Officer Level - 10th (अधिकृत तह - १०)' ? 'selected' : '' }}>Officer Level - 10th (अधिकृत तह -
-                                    १०)</option>
-                                <option value="Officer Level - 9th (अधिकृत तह - ९)" {{ old('position_level') == 'Officer Level - 9th (अधिकृत तह - ९)' ? 'selected' : '' }}>Officer Level - 9th (अधिकृत तह -
-                                    ९)</option>
-                                <option value="Officer Level - 8th (अधिकृत तह - ८)" {{ old('position_level') == 'Officer Level - 8th (अधिकृत तह - ८)' ? 'selected' : '' }}>Officer Level - 8th (अधिकृत तह - ८)</option>
-                                <option value="Officer Level - 7th (अधिकृत तह - ७)" {{ old('position_level') == 'Officer Level - 7th (अधिकृत तह - ७)' ? 'selected' : '' }}>Officer Level - 7th (अधिकृत तह - ७)</option>
-                                <option value="Officer Level - 6th (अधिकृत तह - ६)" {{ old('position_level') == 'Officer Level - 6th (अधिकृत तह - ६)' ? 'selected' : '' }}>Officer Level - 6th (अधिकृत तह - ६)</option>
-                            </optgroup>
-                            <optgroup label="Assistant Level (सहायक तह)">
-                                <option value="Officer Level - 5th (अधिकृत तह - ५)" {{ old('position_level') == 'Officer Level - 5th (अधिकृत तह - ५)' ? 'selected' : '' }}>Officer Level - 5th (बरिष्ठ सहायक तह - ५)
-                                </option>
-                                <option value="Assistant Level - 4th (सहायक तह - ४)" {{ old('position_level') == 'Assistant Level - 4th (सहायक तह - ४)' ? 'selected' : '' }}>Assistant Level - 4th (सहायक तह - ४)
-                                </option>
-                            </optgroup>
-                            <optgroup label="Technician Level (सहयोगी)">
-                                <option value="Technician Level (सहयोगी)" {{ old('position_level') == 'Technician Level (सहयोगी)' ? 'selected' : '' }}>Technician (टेक्निशियन)</option>
-                            </optgroup>
-                        </select>
-                        @error('position_level')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <!-- <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Select the government position level from the dropdown
-                        </small> -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="position_input" class="form-label">
+                                    <span>Position <span class="required">*</span></span>
+                                    <span class="nepali-text">पद</span>
+                                </label>
+                                <input type="text"
+                                    class="form-control form-control-lg @error('position') is-invalid @enderror"
+                                    id="position_input"
+                                    name="position"
+                                    placeholder="e.g. Deputy Manager"
+                                    value="{{ old('position') }}"
+                                    required>
+                                @error('position')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="level_input" class="form-label">
+                                    <span>Level <span class="required">*</span></span>
+                                    <span class="nepali-text">तह</span>
+                                </label>
+                                <input type="number"
+                                    class="form-control form-control-lg @error('level') is-invalid @enderror"
+                                    id="level_input"
+                                    name="level"
+                                    placeholder="e.g. 7"
+                                    value="{{ old('level') }}"
+                                    min="1" max="99"
+                                    required>
+                                @error('level')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="section-divider"></div>
 
                     <!-- Service / Group -->
                     <div class="mb-4">
@@ -395,7 +434,7 @@
                             class="form-control form-control-lg @error('service_group') is-invalid @enderror"
                             id="service_group" name="service_group"
                             value="{{ old('service_group') }}"
-                            placeholder="e.g. Non-Technical / Administration"
+                            placeholder="e.g. Deputy Manager / Administration"
                             required>
                         @error('service_group')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -705,6 +744,8 @@
                         <input type="hidden" name="has_internal_inclusive" id="has_internal_inclusive" value="0">
                     </div>
 
+                    <div class="section-divider"></div>
+
                     <!-- Demand Post (Number of Posts) -->
                     <div class="mb-4">
                         <label for="number_of_posts" class="form-label">
@@ -858,6 +899,8 @@
                             </div> -->
                     </div>
 
+                    <div class="section-divider"></div>
+
                     <!-- Application Fee & Double Dastur Fee Row -->
                     <div class="row mb-4">
                         <!-- Application Fee -->
@@ -910,6 +953,8 @@
                         </div>
                     </div>
 
+                    </div>{{-- end .notice-sub-section --}}
+
                     <!-- Hidden fields for required database columns -->
                     <input type="hidden" name="title" id="hidden_title" value="">
                     <input type="hidden" name="location" value="Nepal">
@@ -943,8 +988,12 @@
                                 <td id="preview-adv-no" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Position/Level</th>
+                                <th>Position</th>
                                 <td id="preview-position" class="fw-semibold">-</td>
+                            </tr>
+                            <tr>
+                                <th>Level</th>
+                                <td id="preview-level" class="fw-semibold">-</td>
                             </tr>
                             <tr>
                                 <th>Department</th>
@@ -1023,15 +1072,13 @@
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body py-3">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <!-- <i class="bi bi-x-circle me-2"></i> -->
                                 Cancel
                             </a>
-                            <div class="d-flex gap-3">
+                            <div class="d-flex gap-2 flex-wrap">
                                 <button type="submit" class="btn btn-warning btn-lg btn-action px-5"
                                     onclick="return confirmSaveDraft()">
-                                    <!-- <i class="bi bi-save-fill me-2"></i> -->
                                     Save as Draft
                                 </button>
                             </div>
@@ -1360,7 +1407,6 @@
         const previewMappings = {
             'notice_no': { preview: 'preview-notice-no', default: '-' },
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
-            'position_level': { preview: 'preview-position', default: '-' },
             'service_group': { preview: 'preview-service', default: '-' },
             'number_of_posts': { preview: 'preview-posts', default: '-' },
             'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' },
@@ -1391,7 +1437,6 @@
                             preview.textContent = 'NPR';
                         }
                     } else if (fieldId === 'notice_no') {
-                        // Update notice_no preview content
                         preview.textContent = value || '-';
                     } else {
                         preview.textContent = value || previewMappings[fieldId].default;
@@ -1401,6 +1446,20 @@
                 input.dispatchEvent(new Event(eventType));
             }
         });
+
+        // Position + Level: update live preview on input
+        function updatePositionLevel() {
+            const pos = (document.getElementById('position_input').value || '').trim();
+            const lvl = (document.getElementById('level_input').value || '').trim();
+            const previewPos = document.getElementById('preview-position');
+            const previewLvl = document.getElementById('preview-level');
+            if (previewPos) previewPos.textContent = pos || '-';
+            if (previewLvl) previewLvl.textContent = lvl || '-';
+        }
+
+        document.getElementById('position_input').addEventListener('input', updatePositionLevel);
+        document.getElementById('level_input').addEventListener('input', updatePositionLevel);
+        updatePositionLevel();
 
         // NOTE: Form submit handler has been moved to initializeCategoryCheckboxes()
         // which runs independently of Nepali date libraries
@@ -1870,7 +1929,9 @@ function initializeCategoryCheckboxes() {
             document.getElementById('has_inclusive').value = (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked && hasIncTypes) ? '1' : '0';
 
             // Update title, description, requirements
-            const positionLevel = document.getElementById('position_level').value;
+            const pos = (document.getElementById('position_input').value || '').trim();
+            const lvl = (document.getElementById('level_input').value || '').trim();
+            const positionLevel = lvl ? pos + ' - ' + lvl : pos;
             document.getElementById('hidden_title').value = positionLevel;
             document.getElementById('hidden_description').value = 'Position: ' + positionLevel + '\nPosts: ' + document.getElementById('number_of_posts').value;
             document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
@@ -1894,11 +1955,11 @@ function initializeCategoryCheckboxes() {
 
 function confirmSaveDraft() {
     return confirm(
-        '💾 Save this vacancy as draft?\n\n' +
-        'यो रिक्त पद ड्राफ्टमा सुरक्षित गर्नुहोस्?\n\n' +
+        'Save this advertisement as draft?\n\n' +
         'The vacancy will be saved as draft and will NOT be visible to candidates until you change the status to "Active".'
     );
 }
+
 
 // Scroll to Top Button - Zero Delays
 (function() {

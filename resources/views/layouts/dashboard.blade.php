@@ -694,44 +694,14 @@
                             }
                         @endphp
                     </a>
-                @elseif(request()->is('hr-administrator/*'))
-                    <a class="nav-link notification-link" href="{{ route('hr-administrator.notifications.index') }}" title="Notifications">
-                        <i class="bi bi-bell"></i>
-                        @php
-                            try {
-                                if (Auth::guard('hr_administrator')->check()) {
-                                    $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('hr_administrator')->id())
-                                        ->where('user_type', 'hr_administrator')
-                                        ->where('is_read', false)
-                                        ->count();
-                                    if ($unreadCount > 0) {
-                                        echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
-                                    }
-                                }
-                            } catch (\Exception $e) {
-                                // Silently fail if there's an error
-                            }
-                        @endphp
-                    </a>
                 @endif
 
                 <!-- User Dropdown Menu -->
                 <div class="dropdown">
                     <a class="nav-link d-flex align-items-center" href="#" id="userDropdown"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <!-- <div class="user-avatar me-2">
-                            @if(request()->is('admin/*'))
-                                {{ substr(Auth::guard('admin')->user()->name ?? 'A', 0, 1) }}
-                            @elseif(request()->is('hr-administrator/*'))
-                                {{ substr(Auth::guard('hr_administrator')->user()->name ?? 'H', 0, 1) }}
-                            @endif
-                        </div> -->
                         <span class="user-name">
-                            @if(request()->is('admin/*'))
-                                {{ Auth::guard('admin')->user()->name ?? 'Admin' }}
-                            @elseif(request()->is('hr-administrator/*'))
-                                {{ Auth::guard('hr_administrator')->user()->name ?? 'HR Admin' }}
-                            @endif
+                            {{ Auth::guard('admin')->user()->name ?? 'Admin' }}
                         </span>
                         <i class="bi bi-chevron-down toggle-icon ms-2"></i>
                     </a>
@@ -744,17 +714,6 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('admin.change-password') }}">
-                                    <i class="bi bi-lock me-2"></i> Change Password
-                                </a>
-                            </li>
-                        @elseif(request()->is('hr-administrator/*'))
-                            <li>
-                                <a class="dropdown-item" href="{{ route('hr-administrator.profile.show') }}">
-                                    <i class="bi bi-person me-2"></i> My Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('hr-administrator.change-password') }}">
                                     <i class="bi bi-lock me-2"></i> Change Password
                                 </a>
                             </li>

@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ReviewerAuthController;
 use App\Http\Controllers\Auth\CandidateAuthController;
-use App\Http\Controllers\Auth\HRAdministratorAuthController;
 use App\Http\Controllers\Reviewer\ReviewerDashboardController;
 use App\Http\Controllers\Reviewer\ApplicationReviewController;
 use App\Http\Controllers\Reviewer\NotificationController as ReviewerNotificationController;
@@ -13,16 +12,8 @@ use App\Http\Controllers\Admin\AdminApplicationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\VacancyManagementController;
 use App\Http\Controllers\Admin\CandidateManagementController;
-use App\Http\Controllers\Admin\HRAdministratorController;
 use App\Http\Controllers\Admin\ApproverController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
-use App\Http\Controllers\HRAdministrator\ProfileController;
-use App\Http\Controllers\HRAdministrator\HRAdministratorDashboardController;
-use App\Http\Controllers\HRAdministrator\HRVacancyController;
-use App\Http\Controllers\HRAdministrator\HRApplicationController;
-use App\Http\Controllers\HRAdministrator\HRCandidateController;
-use App\Http\Controllers\HRAdministrator\HRReviewerController;
-use App\Http\Controllers\HRAdministrator\NotificationController as HRNotificationController;
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\VacancyBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationFormController as CandidateApplicationController;
@@ -150,21 +141,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         /*
-        | HR Administrator Management Routes
-        */
-        Route::prefix('hr-administrators')->name('hr-administrators.')->group(function () {
-            Route::get('/', [HRAdministratorController::class, 'index'])->name('index');
-            Route::get('/create', [HRAdministratorController::class, 'create'])->name('create');
-            Route::post('/', [HRAdministratorController::class, 'store'])->name('store');
-            Route::get('/{id}', [HRAdministratorController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [HRAdministratorController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HRAdministratorController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HRAdministratorController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/toggle-status', [HRAdministratorController::class, 'toggleStatus'])->name('toggle-status');
-            Route::post('/{id}/reset-password', [HRAdministratorController::class, 'resetPassword'])->name('reset-password');
-        });
-
-        /*
         | Approver Routes
         */
         Route::prefix('approvers')->name('approvers.')->group(function () {
@@ -188,113 +164,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{id}/mark-as-read', [AdminNotificationController::class, 'markAsRead'])->name('markAsRead');
             Route::post('/mark-all-as-read', [AdminNotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
             Route::delete('/{id}', [AdminNotificationController::class, 'destroy'])->name('destroy');
-        });
-    });
-});
-
-/*
-|--------------------------------------------------------------------------
-| HR Administrator Routes
-|--------------------------------------------------------------------------
-| IMPORTANT: These routes use SEPARATE controllers from Admin routes
-| to avoid authentication conflicts
-|--------------------------------------------------------------------------
-*/
-Route::prefix('hr-administrator')->name('hr-administrator.')->group(function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | HR Administrator Authentication Routes (Public - No Middleware)
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/login', [HRAdministratorAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [HRAdministratorAuthController::class, 'login'])->name('login.post');
-    Route::post('/logout', [HRAdministratorAuthController::class, 'logout'])->name('logout');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Protected HR Administrator Routes (Requires HR Administrator Authentication)
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware(['hr_administrator'])->group(function () {
-
-        // HR Administrator Dashboard
-        Route::get('/dashboard', [HRAdministratorDashboardController::class, 'index'])->name('dashboard');
-
-        /*
-        | Profile Routes
-        */
-        Route::prefix('profile')->name('profile.')->group(function () {
-            Route::get('/', [ProfileController::class, 'show'])->name('show');
-            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-            Route::put('/', [ProfileController::class, 'update'])->name('update');
-        });
-
-        Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('change-password');
-        Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.post');
-
-        /*
-        | Job Management Routes - Using HRVacancyController
-        */
-        Route::prefix('vacancies')->name('vacancies.')->group(function () {
-            Route::get('/', [HRVacancyController::class, 'index'])->name('index');
-            Route::get('/create', [HRVacancyController::class, 'create'])->name('create');
-            Route::post('/', [HRVacancyController::class, 'store'])->name('store');
-            Route::get('/{id}', [HRVacancyController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [HRVacancyController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HRVacancyController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HRVacancyController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/duplicate', [HRVacancyController::class, 'duplicate'])->name('duplicate');
-            Route::post('/{id}/status', [HRVacancyController::class, 'changeStatus'])->name('changeStatus');
-        });
-
-        /*
-        | Applications Management Routes - Using HRApplicationController
-        */
-        Route::prefix('applications')->name('applications.')->group(function () {
-            Route::get('/', [HRApplicationController::class, 'index'])->name('index');
-            Route::get('/{application}', [HRApplicationController::class, 'show'])->name('show');
-            Route::post('/{application}/update-status', [HRApplicationController::class, 'updateStatus'])->name('updateStatus');
-            Route::post('/{application}/assign-reviewer', [HRApplicationController::class, 'assignReviewer'])->name('assignReviewer');
-            Route::delete('/{application}', [HRApplicationController::class, 'destroy'])->name('destroy');
-            Route::post('/bulk-action', [HRApplicationController::class, 'bulkAction'])->name('bulkAction');
-        });
-
-        /*
-        | Candidate Management Routes - Using HRCandidateController
-        */
-        Route::prefix('candidates')->name('candidates.')->group(function () {
-            Route::get('/', [HRCandidateController::class, 'index'])->name('index');
-            Route::get('/{id}', [HRCandidateController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [HRCandidateController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HRCandidateController::class, 'update'])->name('update');
-            Route::post('/{id}/status', [HRCandidateController::class, 'updateStatus'])->name('updateStatus');
-            Route::delete('/{id}', [HRCandidateController::class, 'destroy'])->name('destroy');
-        });
-
-        /*
-        | Reviewer Management Routes - Using HRReviewerController
-        */
-        Route::prefix('reviewers')->name('reviewers.')->group(function () {
-            Route::get('/', [HRReviewerController::class, 'index'])->name('index');
-            Route::get('/create', [HRReviewerController::class, 'create'])->name('create');
-            Route::post('/', [HRReviewerController::class, 'store'])->name('store');
-            Route::get('/{id}', [HRReviewerController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [HRReviewerController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HRReviewerController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HRReviewerController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/toggle-status', [HRReviewerController::class, 'toggleStatus'])->name('toggle-status');
-            Route::post('/{id}/reset-password', [HRReviewerController::class, 'resetPassword'])->name('reset-password');
-        });
-
-        /*
-        | Notification Routes
-        */
-        Route::prefix('notifications')->name('notifications.')->group(function () {
-            Route::get('/', [HRNotificationController::class, 'index'])->name('index');
-            Route::post('/{id}/mark-as-read', [HRNotificationController::class, 'markAsRead'])->name('markAsRead');
-            Route::post('/mark-all-as-read', [HRNotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
-            Route::delete('/{id}', [HRNotificationController::class, 'destroy'])->name('destroy');
         });
     });
 });

@@ -16,16 +16,37 @@ class VacancyManagementController extends Controller
 {
     public function index(Request $request)
     {
+        // Handle bulk export
+        if ($request->filled('export') && $request->filled('ids')) {
+            $ids = explode(',', $request->ids);
+            $jobs = JobPosting::whereIn('id', $ids)->withCount('applications')->get();
+            $type = $request->export;
+
+            if ($type === 'csv') {
+                return $this->exportToExcel($jobs);
+            } elseif ($type === 'pdf') {
+                return $this->exportToPdf($jobs);
+            }
+        }
+
         $query = JobPosting::query()->with('postedBy')->withCount('applications');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
+                $q->where('notice_no', 'like', "%{$search}%")
                     ->orWhere('advertisement_no', 'like', "%{$search}%")
-                    ->orWhere('position_level', 'like', "%{$search}%")
+                    ->orWhere('position', 'like', "%{$search}%")
+                    ->orWhere('level', 'like', "%{$search}%")
+                    ->orWhere('service_group', 'like', "%{$search}%")
                     ->orWhere('department', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%");
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('internal_type', 'like', "%{$search}%")
+                    ->orWhere('inclusive_type', 'like', "%{$search}%")
+                    ->orWhere('number_of_posts', 'like', "%{$search}%")
+                    ->orWhere('minimum_qualification', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%");
             });
         }
 
@@ -37,9 +58,9 @@ class VacancyManagementController extends Controller
             $query->where('job_type', $request->job_type);
         }
 
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        $sortBy = $request->get('sort_by', 'notice_no');
+        $sortOrder = $request->get('sort_order', 'asc');
+        $query->orderBy($sortBy, $sortOrder)->orderBy('created_at', 'asc');
 
         $jobs = $query->paginate(10)->withQueryString();
 
@@ -79,10 +100,11 @@ class VacancyManagementController extends Controller
         }
 
         $validated = $request->validate([
-            'notice_no' => 'nullable|string|max:50|unique:job_postings,notice_no',
+            'notice_no' => 'nullable|string|max:50',
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
             'title' => 'required|string|max:255',
-            'position_level' => 'required|string|max:100',
+            'position' => 'required|string|max:255',
+            'level' => 'required|integer|min:1|max:99',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
@@ -140,13 +162,7 @@ class VacancyManagementController extends Controller
         // Normalise notice_no: store null if empty
         $validated['notice_no'] = !empty($validated['notice_no']) ? $validated['notice_no'] : null;
 
-        if (Auth::guard('admin')->check()) {
-            $validated['posted_by'] = Auth::guard('admin')->id();
-        } elseif (Auth::guard('hr_administrator')->check()) {
-            $validated['posted_by'] = Auth::guard('hr_administrator')->id();
-        } else {
-            $validated['posted_by'] = Auth::guard('admin')->id();
-        }
+        $validated['posted_by'] = Auth::guard('admin')->id();
 
         // Keep department in sync with service_group
         $validated['department'] = $validated['service_group'];
@@ -211,10 +227,11 @@ class VacancyManagementController extends Controller
         }
 
         $validated = $request->validate([
-            'notice_no' => 'nullable|string|max:50|unique:job_postings,notice_no,' . $id,
+            'notice_no' => 'nullable|string|max:50',
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
-            'position_level' => 'required|string|max:100',
+            'position' => 'required|string|max:255',
+            'level' => 'required|integer|min:1|max:99',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
@@ -314,11 +331,7 @@ class VacancyManagementController extends Controller
         $newJob->advertisement_no = $job->advertisement_no . '-COPY';
         $newJob->status = 'draft';
 
-        if (Auth::guard('admin')->check()) {
-            $newJob->posted_by = Auth::guard('admin')->id();
-        } elseif (Auth::guard('hr_administrator')->check()) {
-            $newJob->posted_by = Auth::guard('hr_administrator')->id();
-        }
+        $newJob->posted_by = Auth::guard('admin')->id();
 
         $newJob->deadline = now()->addDays(30);
         $newJob->save();
@@ -383,6 +396,79 @@ class VacancyManagementController extends Controller
             : 'job-list-english-' . now()->format('Y-m-d') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    private function exportToExcel($jobs)
+    {
+        $filename = 'vacancies_selected_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($jobs) {
+            $file = fopen('php://output', 'w');
+
+            // UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, [
+                'S.N.',
+                'Advertisement No.',
+                'Position / Level',
+                'Service / Group',
+                'Category',
+                'Type',
+                'Demand',
+                'Minimum Qualification',
+                'Applications',
+                'Application Fee',
+                'Double Dastur Fee',
+                'Deadline',
+                'Status',
+                'Posted On',
+            ]);
+
+            foreach ($jobs as $index => $job) {
+                $category = match ($job->category) {
+                    'internal_appraisal' => 'Internal Appraisal',
+                    'internal'           => 'Internal' . ($job->internal_type ? '/' . ucfirst($job->internal_type) : ''),
+                    'inclusive'          => 'Inclusive' . ($job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : ''),
+                    default              => ucfirst($job->category),
+                };
+
+                fputcsv($file, [
+                    $index + 1,
+                    $job->advertisement_no,
+                    $job->position_level,
+                    $job->service_group ?: $job->department,
+                    $category,
+                    ucfirst($job->category),
+                    $job->number_of_posts,
+                    $job->minimum_qualification,
+                    $job->applications_count ?? 0,
+                    $job->application_fee ? 'NPR ' . number_format($job->application_fee, 2) : '-',
+                    $job->double_dastur_fee ? 'NPR ' . number_format($job->double_dastur_fee, 2) : '-',
+                    $job->deadline ? $job->deadline->format('Y-m-d') : '-',
+                    ucfirst($job->status),
+                    $job->created_at->format('Y-m-d'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function exportToPdf($jobs)
+    {
+        $pdf = \PDF::loadView('admin.jobs.pdf.export', compact('jobs'));
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        return $pdf->download('vacancies_selected_' . date('Y-m-d_His') . '.pdf');
     }
 
     public function downloadExcel()

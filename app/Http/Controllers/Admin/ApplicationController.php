@@ -33,7 +33,7 @@ class ApplicationController extends Controller
                 })
                     ->orWhereHas('vacancy', function ($q2) use ($search) {
                         $q2->where('advertisement_no', 'like', "%{$search}%")
-                            ->orWhere('position_level', 'like', "%{$search}%")
+                            ->orWhere('position', 'like', "%{$search}%")
                             ->orWhere('title', 'like', "%{$search}%");
                     });
             });
@@ -79,7 +79,7 @@ class ApplicationController extends Controller
         ];
 
         // Get vacancies for filter dropdown
-        $vacancies = JobPosting::select('id', 'advertisement_no', 'position_level', 'title')
+        $vacancies = JobPosting::select('id', 'advertisement_no', 'position', 'level', 'title')
             ->orderBy('created_at', 'desc')
             ->get();
 

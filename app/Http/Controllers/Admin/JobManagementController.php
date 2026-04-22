@@ -40,7 +40,7 @@ class JobManagementController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('advertisement_no', 'like', "%{$search}%")
-                    ->orWhere('position_level', 'like', "%{$search}%")
+                    ->orWhere('position', 'like', "%{$search}%")
                     ->orWhere('department', 'like', "%{$search}%")
                     ->orWhere('location', 'like', "%{$search}%");
             });
@@ -56,10 +56,10 @@ class JobManagementController extends Controller
             $query->where('job_type', $request->job_type);
         }
 
-        // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        // Sort by notice_no ascending (groups same notices together), oldest first within each group
+        $sortBy = $request->get('sort_by', 'notice_no');
+        $sortOrder = $request->get('sort_order', 'asc');
+        $query->orderBy($sortBy, $sortOrder)->orderBy('created_at', 'asc');
 
         // Paginate
         $jobs = $query->paginate(10)->withQueryString();
@@ -78,9 +78,11 @@ class JobManagementController extends Controller
     /**
      * Show the form for creating a new job
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.jobs.create');
+        // Pre-fill notice_no when adding another advertisement under the same notice
+        $prefillNoticeNo = $request->query('notice_no');
+        return view('admin.jobs.create', compact('prefillNoticeNo'));
     }
 
     /**
@@ -115,10 +117,11 @@ class JobManagementController extends Controller
         }
 
         $validated = $request->validate([
-            'notice_no' => 'required|string|max:50|unique:job_postings,notice_no',
+            'notice_no' => 'required|string|max:50',
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no',
             'title' => 'required|string|max:255',
-            'position_level' => 'required|string|max:100',
+            'position' => 'required|string|max:255',
+            'level' => 'required|integer|min:1|max:99',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',
@@ -283,10 +286,11 @@ class JobManagementController extends Controller
         }
 
         $validated = $request->validate([
-            'notice_no' => 'required|string|max:50|unique:job_postings,notice_no,' . $id,
+            'notice_no' => 'required|string|max:50',
             'advertisement_no' => 'required|string|max:50|unique:job_postings,advertisement_no,' . $id,
             'title' => 'required|string|max:255',
-            'position_level' => 'required|string|max:100',
+            'position' => 'required|string|max:255',
+            'level' => 'required|integer|min:1|max:99',
             'service_group' => 'required|string|max:100',
             'category' => 'required|in:open,inclusive,internal,internal_appraisal',
             'internal_type' => 'nullable|string',

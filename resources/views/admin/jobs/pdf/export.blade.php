@@ -75,7 +75,7 @@
                 <th style="width: 5%;">Posts</th>
                 <th style="width: 8%;">Apps</th>
                 <th style="width: 10%;">Deadline</th>
-                <th style="width: 8%;">Status</th>
+                <!-- <th style="width: 8%;">Status</th> -->
             </tr>
         </thead>
         <tbody>
