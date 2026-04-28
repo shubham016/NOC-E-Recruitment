@@ -95,10 +95,15 @@ class ApplicationForm extends Model
         'university',          
         'graduation_year',
         'graduation_year_english',
+
+        // Work Experiences
         'has_work_experience',
         'years_of_experience',
         'previous_organization',
         'previous_position',
+        'exp1_organization','exp1_position','exp1_start_date','exp1_end_date','exp1_years','exp1_document',
+        'exp2_organization','exp2_position','exp2_start_date','exp2_end_date','exp2_years','exp2_document',
+        'exp3_organization','exp3_position','exp3_start_date','exp3_end_date','exp3_years','exp3_document',
 
         // File Uploads
         'passport_size_photo',

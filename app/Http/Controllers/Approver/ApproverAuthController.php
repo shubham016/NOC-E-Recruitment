@@ -75,15 +75,21 @@ class ApproverAuthController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
-        // Get statistics for dashboard
         $stats = [
-            'pending_applications' => 0,
-            'approved_applications' => 0,
-            'rejected_applications' => 0,
-            'total_applications' => 0,
+            'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
+            'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
         ];
 
-        return view('approver.dashboard', compact('approver', 'stats'));
+        $recentApplications = \App\Models\ApplicationForm::with('jobPosting')
+            ->where('approver_id', $approver->id)
+            ->where('status', '!=', 'draft')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('approver.dashboard', compact('approver', 'stats', 'recentApplications'));
     }
 
     /**

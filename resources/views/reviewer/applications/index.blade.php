@@ -287,7 +287,7 @@
                             <th>Payment</th>
                             <th>Applied Date</th>
                             <th>Deadline</th>
-                            <th>Priority</th>
+                            <!-- <th>Priority</th> -->
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -403,14 +403,14 @@
                                     @endif
                                 </td>
 
-                                <td class="nowrap">
+                                <!-- <td class="nowrap">
                                     <span class="badge {{ $priorityBadge }}">{{ $priorityText }}</span>
                                     @if($application->manual_priority && $application->priority_note)
                                         <br><small class="text-muted" title="{{ $application->priority_note }}">📌</small>
                                     @elseif(!$application->manual_priority)
                                         <br><small class="text-muted">(Auto)</small>
                                     @endif
-                                </td>
+                                </td> -->
 
                                 <td class="nowrap">
                                     <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>

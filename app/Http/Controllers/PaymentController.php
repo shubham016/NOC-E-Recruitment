@@ -17,7 +17,9 @@ class PaymentController extends Controller
     // ESEWA START 
         public function startEsewa($draftId)
         {
-            $amount = 1000; // example
+            $application = ApplicationForm::findOrFail($draftId);
+            // $amount = 1000;
+            $amount = optional($application->jobPosting)->application_fee ?? 0;
             $tax_amount = 0;
             $total_amount = $amount + $tax_amount;
             $transaction_uuid = uniqid('txn_');
@@ -116,7 +118,9 @@ class PaymentController extends Controller
 
         public function startKhalti($draftId)
         {
-            $amount = 1000; // Rs 1000
+            $application = ApplicationForm::findOrFail($draftId);
+            // $amount = 1000; 
+            $amount = optional($application->jobPosting)->application_fee ?? 0;
             $amount_in_paisa = $amount * 100;
             $txRef = uniqid('khalti_');
 
@@ -208,7 +212,9 @@ class PaymentController extends Controller
 
         public function startConnectIps($draftId)
         {
-            $amount = 1000; // Rs
+            $application = ApplicationForm::findOrFail($draftId);
+            // $amount = 1000; 
+            $amount = optional($application->jobPosting)->application_fee ?? 0;
             $amountInPaisa = $amount * 100;; // Change if needed
 
             $txnId = uniqid('cips_');

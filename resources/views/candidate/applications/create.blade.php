@@ -142,6 +142,130 @@
                 <div class="step" id="step1">
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
+                    {{-- Category Selection (if multiple categories available) --}}
+                    @if($job && ($job->category == 'internal_appraisal' || ($job->has_open && $job->has_inclusive) || ($job->has_open && !$job->has_inclusive) || (!$job->has_open && $job->has_inclusive)))
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-3">
+                            <i class="bi bi-info-circle-fill me-2"></i><strong>Select Application Category</strong>
+                            <span class="nepali-text ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
+                        </h6>
+                        <p class="small mb-3">
+                            This vacancy accepts applications from multiple categories. Please select the category under which you wish to apply.
+                            <br><span class="text-muted">यो रिक्त पदले धेरै श्रेणीहरूबाट आवेदनहरू स्वीकार गर्दछ। कृपया तपाईं आवेदन दिन चाहनुभएको श्रेणी छान्नुहोस्।</span>
+                        </p>
+
+                        @if($job->category == 'internal_appraisal')
+                            {{-- Internal Appraisal Only --}}
+                            <input type="hidden" name="applied_category" value="internal_appraisal">
+                            <div class="form-check form-check-inline border rounded p-3 bg-light">
+                                <input class="form-check-input" type="radio" name="applied_category_display" id="cat_internal_appraisal" value="internal_appraisal" checked disabled>
+                                <label class="form-check-label fw-bold" for="cat_internal_appraisal">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>Internal Appraisal (आन्तरिक बढुवा)
+                                    <br><small class="text-muted">Performance-based promotion</small>
+                                </label>
+                            </div>
+                        @else
+                            {{-- Open and/or Inclusive --}}
+                            <div class="d-flex flex-wrap gap-3">
+                                @if($job->has_open || $job->category == 'open')
+                                    <div class="form-check form-check-inline border rounded p-3">
+                                        <input class="form-check-input" type="radio" name="applied_category" id="cat_open" value="open"
+                                            {{ old('applied_category', $draftApplication->applied_category ?? '') == 'open' ? 'checked' : '' }} required>
+                                        <label class="form-check-label fw-bold" for="cat_open">
+                                            <i class="bi bi-check-circle-fill text-success me-1"></i>Open (खुल्ला)
+                                            <br><small class="text-muted">Open for all eligible candidates</small>
+                                        </label>
+                                    </div>
+                                @endif
+
+                                @if($job->has_inclusive || $job->category == 'inclusive')
+                                    @php
+                                        $inclusiveTypes = [];
+                                        if ($job->inclusive_type) {
+                                            $inclusiveTypes = [$job->inclusive_type];
+                                        }
+                                    @endphp
+
+                                    @if(count($inclusiveTypes) > 0)
+                                        @foreach($inclusiveTypes as $type)
+                                            <div class="form-check form-check-inline border rounded p-3">
+                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive_{{ $loop->index }}" value="inclusive"
+                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
+                                                <label class="form-check-label fw-bold" for="cat_inclusive_{{ $loop->index }}">
+                                                    <i class="bi bi-people-fill text-info me-1"></i>Inclusive - {{ $type }} (समावेशी - {{ $type }})
+                                                    <br><small class="text-muted">Reserved for inclusive category</small>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="form-check form-check-inline border rounded p-3">
+                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive" value="inclusive"
+                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive">
+                                                <i class="bi bi-people-fill text-info me-1"></i>Inclusive (समावेशी)
+                                                <br><small class="text-muted">Reserved for inclusive category</small>
+                                            </label>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                @if($job->has_internal || $job->category == 'internal')
+                                    {{-- Internal Open Sub-category --}}
+                                    @if($job->has_internal_open)
+                                        <div class="form-check form-check-inline border rounded p-3">
+                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_open" value="internal_open"
+                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_open' ? 'checked' : '' }} required>
+                                            <label class="form-check-label fw-bold" for="cat_internal_open">
+                                                <i class="bi bi-door-open-fill text-warning me-1"></i>Internal Open (All NOC Staff)
+                                                <br><small class="text-muted">आन्तरिक खुल्ला - सबै NOC कर्मचारीका लागि</small>
+                                            </label>
+                                        </div>
+                                    @endif
+
+                                    {{-- Internal Inclusive Sub-categories --}}
+                                    @if($job->has_internal_inclusive)
+                                        @php
+                                            $internalInclusiveTypes = [];
+                                            if (isset($job->internal_inclusive_types) && is_array($job->internal_inclusive_types)) {
+                                                $internalInclusiveTypes = $job->internal_inclusive_types;
+                                            }
+                                        @endphp
+
+                                        @if(count($internalInclusiveTypes) > 0)
+                                            @foreach($internalInclusiveTypes as $type)
+                                                <div class="form-check form-check-inline border rounded p-3">
+                                                    <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive_{{ $loop->index }}" value="internal_inclusive"
+                                                        data-inclusive-type="{{ $type }}"
+                                                        {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
+                                                    <label class="form-check-label fw-bold" for="cat_internal_inclusive_{{ $loop->index }}">
+                                                        <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive - {{ $type }}
+                                                        <br><small class="text-muted">आन्तरिक समावेशी - {{ $type }} (NOC only)</small>
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                            {{-- Hidden field to store the selected inclusive type --}}
+                                            <input type="hidden" name="applied_inclusive_type" id="applied_inclusive_type" value="{{ old('applied_inclusive_type', $draftApplication->applied_inclusive_type ?? '') }}">
+                                        @else
+                                            <div class="form-check form-check-inline border rounded p-3">
+                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive" value="internal_inclusive"
+                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
+                                                <label class="form-check-label fw-bold" for="cat_internal_inclusive">
+                                                    <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive
+                                                    <br><small class="text-muted">आन्तरिक समावेशी (NOC only)</small>
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endif
+                                @endif
+                            </div>
+
+                            @error('applied_category')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        @endif
+                    </div>
+                    @endif
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="name_english" class="form-label">Full Name (English) <span class="text-danger">*</span> <small>(पुरा नाम अंग्रेजी)</small></label>
@@ -641,31 +765,110 @@
                                 <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5"
-                                value="{{ old('years_of_experience', $draftApplication->years_of_experience ?? '') }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control"
-                                value="{{ old('previous_organization', $draftApplication->previous_organization ?? '') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control"
-                                value="{{ old('previous_position', $draftApplication->previous_position ?? '') }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
-                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-                    </div>
+                    </div>  
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Organization</th>
+                                <th>Position</th>
+                                <th>Start Date (B.S)</th>
+                                <th>End Date (B.S.)</th>
+                                <th>Years</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" name="exp1_organization" class="form-control"
+                                    value="{{ old('exp1_organization', $draftApplication->{'exp1_organization'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp1_position" class="form-control"
+                                    value="{{ old('exp1_position', $draftApplication->{'exp1_position'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp1_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp1_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="number" step="0.5" name="exp1_years" class="form-control"
+                                    value="{{ old('exp1_years', $draftApplication->{'exp1_years'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="file" name="exp1_document" class="form-control">
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input type="text" name="exp2_organization" class="form-control"
+                                    value="{{ old('exp2_organization', $draftApplication->{'exp2_organization'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp2_position" class="form-control"
+                                    value="{{ old('exp2_position', $draftApplication->{'exp2_position'} ?? '') }}">
+                                </td>
+
+                               <td>
+                                    <input type="text" name="exp2_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp2_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="number" step="0.5" name="exp2_years" class="form-control"
+                                    value="{{ old('exp2_years', $draftApplication->{'exp2_years'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="file" name="exp2_document" class="form-control">
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input type="text" name="exp3_organization" class="form-control"
+                                    value="{{ old('exp3_organization', $draftApplication->{'exp3_organization'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp3_position" class="form-control"
+                                    value="{{ old('exp3_position', $draftApplication->{'exp3_position'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp3_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="exp3_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
+                                </td>
+
+                                <td>
+                                    <input type="number" step="0.5" name="exp3_years" class="form-control"
+                                    value="{{ old('exp3_years', $draftApplication->{'exp3_years'} ?? '') }}">
+                                </td>
+
+                                <td>
+                                    <input type="file" name="exp3_document" class="form-control">
+                                </td>
+                            </tr>
+                            
+
+                        </tbody>
+                    </table>
+
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-light next-btn">Next</button>
@@ -770,9 +973,7 @@
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
-                            <tr><th>Years of Experience</th><td id="p_years_of_experience"></td></tr>
-                            <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
-                            <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
+                            <tr><th>Experience Details</th><td><div id="experience_preview"></div></td></tr>
                         </table>
 
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
@@ -873,6 +1074,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, opts || {}));
     }
+
+     document.querySelectorAll('.nepali-date').forEach(function (el) {
+        initNDP(el);
+    });
 
     // ── Fields that always exist ──────────────────────────────
     initNDP(document.getElementById('birth_date_bs'));
@@ -1404,5 +1609,92 @@ document.addEventListener('DOMContentLoaded', function () {
         field.dispatchEvent(new Event('input', { bubbles: true }));
     });
 })();
+
+document.querySelectorAll('.nepali-date').forEach(function (input) {
+    input.addEventListener('change', function () {
+
+        const bsDate = this.value;
+        if (!bsDate) return;
+
+        try {
+            const adDate = window.bsToAD(bsDate);
+
+            const targetName = this.getAttribute('data-target');
+            if (!targetName) return;
+
+            const hidden = document.querySelector(`[name="${targetName}"]`);
+
+            if (hidden) {
+                hidden.value = adDate;
+            }
+
+        } catch (e) {
+            console.log("BS conversion failed:", bsDate, e);
+        }
+    });
+
+    // For Work Experience
+function populateExperiencePreview() {
+
+    let html = "";
+
+    for (let i = 1; i <= 3; i++) {
+
+        let org = document.querySelector(`[name="exp${i}_organization"]`)?.value;
+        let pos = document.querySelector(`[name="exp${i}_position"]`)?.value;
+        let start = document.querySelector(`[name="exp${i}_start_date"]`)?.value;
+        let end = document.querySelector(`[name="exp${i}_end_date"]`)?.value;
+        let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
+        let fileInput = document.querySelector(`[name="exp${i}_document"]`);
+
+        let file = fileInput?.files?.[0];
+
+        html += `
+        <div style="margin-bottom:20px; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            <h6>Experience ${i}</h6>
+
+            <b>Organization:</b> ${org || '-'} <br>
+            <b>Position:</b> ${pos || '-'} <br>
+            <b>Start:</b> ${start || '-'} <br>
+            <b>End:</b> ${end || '-'} <br>
+            <b>Years:</b> ${years || '-'} <br>
+        `;
+
+        // ================= FILE PREVIEW =================
+        if (file) {
+            let url = URL.createObjectURL(file);
+
+            if (file.type.includes("pdf")) {
+                html += `
+                    <div style="margin-top:10px;">
+                        <iframe src="${url}" 
+                            style="width:100%; height:400px; border:1px solid #ccc;">
+                        </iframe>
+                    </div>
+                `;
+            } else if (file.type.startsWith("image/")) {
+                html += `
+                    <div style="margin-top:10px;">
+                        <img src="${url}" style="max-width:200px; border:1px solid #ccc; padding:3px;">
+                    </div>
+                `;
+            } else {
+                html += `<div>File uploaded</div>`;
+            }
+        } else {
+            html += `<div class="text-muted">No document uploaded</div>`;
+        }
+
+        html += `</div>`;
+    }
+
+    document.getElementById("experience_preview").innerHTML =
+        html || "<span class='text-muted'>No experience added</span>";
+}
+document.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", populateExperiencePreview);
+});
+
+});
 </script>
 @endsection

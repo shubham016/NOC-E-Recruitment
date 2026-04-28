@@ -84,38 +84,38 @@
                     <table class="info-table">
                         <tr>
                             <td class="label">रोल नं.</td>
-                            <td class="value">: {{ $application->roll_number ?? $application->id }}</td>
+                            <td class="value">: <strong>{{ $application->roll_number ?? $application->id }}</td>
                         </tr>
                         <tr>
                             <td class="label">नाम, थर</td>
-                            <td class="value">: {{ $application->name_nepali ?? '' }}</td>
+                            <td class="value">: <strong>{{ $application->name_nepali ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">Name, Surname</td>
-                            <td class="value">: {{ $application->name_english ?? $candidate->name }}</td>
+                            <td class="value">: <strong>{{ $application->name_english ?? $candidate->name }}</td>
                         </tr>
                     </table>
 
                     <table class="info-table mt-2">
                         <tr>
                             <td class="label">विज्ञापन नं.</td>
-                            <td class="value">: {{ $application->advertisement_no ?? '' }}</td>
+                            <td class="value">: <strong>{{ $application->advertisement_no ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">पद / तह</td>
-                            <td class="value">: {{ $application->post_title ?? '' }} / {{ $application->level ?? '' }}</td>
+                            <td class="value">: <strong>{{ $application->post_title ?? '' }} / {{ $application->level ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">सेवा / समूह</td>
-                            <td class="value">: {{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
+                            <td class="value">: <strong>{{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="label">खुल्ला / समावेशी</td>
-                            <td class="value">: {{ $application->application_type ?? 'खुल्ला' }}</td>
+                            <td class="value">: <strong>{{ $application->application_type ?? 'खुल्ला' }}</td>
                         </tr>
                         <tr>
-                            <td class="label">नागरिता नं.</td>
-                            <td class="value">: {{ $application->citizenship_number ?? '' }}</td>
+                            <td class="label">नागरिकता नं.</td>
+                            <td class="value">: <strong>{{ $application->citizenship_number ?? '' }}</td>
                         </tr>
                     </table>
 
@@ -253,6 +253,24 @@ body {
     height: 80px;
 }
 
+.header-center .org-title {
+    font-size: 28px !important;
+    font-weight: 700;
+}
+
+.header-center .org-subtitle {
+    font-size: 18px !important;
+}
+
+.header-center .exam-type {
+    font-size: 14px !important;
+}
+
+.header-center .card-title {
+    font-size: 22px !important;
+    font-weight: 700;
+}
+
 .header-center {
     width: 65%;
     text-align: center;
@@ -270,13 +288,13 @@ body {
     font-size: 14px;
     font-weight: 500;
     margin: 0 0 3px 0;
-    color: #333;
+    color: #000000;
 }
 
 .exam-type {
     font-size: 11px;
     margin: 0 0 5px 0;
-    color: #555;
+    color: #000000;
 }
 
 .card-title {
@@ -293,7 +311,7 @@ body {
 .photo-wrapper {
     width: 120px;
     height: 140px;
-    border: 2px solid #000;
+    border: 1px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -417,8 +435,8 @@ body {
 /* Citizenship and Signature */
 .citizenship-wrapper {
     width: 100%;
-    height: 200px;
-    border: 2px solid #000;
+    height: 380px;
+    /* border: 1px solid #000;  */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -443,7 +461,7 @@ body {
 }
 
 .signature-section {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .signature-container {
@@ -453,7 +471,6 @@ body {
 .signature-box {
     width: 100%;
     height: 60px;
-    border: 1px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -495,6 +512,7 @@ body {
 .instructions-section {
     padding: 15px 20px;
     border-top: 1px solid #000;
+     margin-top: -20px;
 }
 
 .instructions-section h4 {
