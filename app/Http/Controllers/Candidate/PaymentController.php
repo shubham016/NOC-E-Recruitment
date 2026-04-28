@@ -43,6 +43,7 @@ class PaymentController extends Controller
         }
 
         $amount = config('services.esewa.amount', 500);
+        // $amount = $application->jobPosting->application_fee ?? 0;
         $txRef = 'TXN-' . strtoupper(Str::random(10)) . '-' . time();
 
         // Delete any pending payments and create a new one

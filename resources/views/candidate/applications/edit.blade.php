@@ -661,33 +661,32 @@
                             value="{{ old('institution_name', $applicationform->institution_name) }}"
                             required>
                     </div>
-
-                <div class="col-md-3">
-                    <label for="graduation_year" class="form-label">Passed Year in BS <span class="text-danger">*</span></label>
-                    <input type="text"
-                        name="graduation_year"
-                        id="graduation_year"
-                        class="form-control"
-                        placeholder="YYYY"
-                        inputmode="numeric"
-                        maxlength="4"
-                        autocomplete="off"
-                        value="{{ old('graduation_year', $applicationform->graduation_year) }}"
-                        required>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="graduation_year_english" class="form-label">Passed Year in AD <span class="text-danger">*</span></label>
-                    <input type="text"
-                        name="graduation_year_english"
-                        id="graduation_year_english"
-                        class="form-control"
-                        placeholder="YYYY"
-                        inputmode="numeric"
-                        maxlength="4"
-                        autocomplete="off"
-                        value="{{ old('graduation_year_english', $applicationform->graduation_year_english) }}"
-                        required>
+                    <div class="col-md-3">
+                        <label for="graduation_year" class="form-label">Passed Year in BS <span class="text-danger">*</span></label>
+                        <input type="text"
+                            name="graduation_year"
+                            id="graduation_year"
+                            class="form-control"
+                            placeholder="YYYY"
+                            inputmode="numeric"
+                            maxlength="4"
+                            autocomplete="off"
+                            value="{{ old('graduation_year', $applicationform->graduation_year) }}"
+                            required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="graduation_year_english" class="form-label">Passed Year in AD <span class="text-danger">*</span></label>
+                        <input type="text"
+                            name="graduation_year_english"
+                            id="graduation_year_english"
+                            class="form-control"
+                            placeholder="YYYY"
+                            inputmode="numeric"
+                            maxlength="4"
+                            autocomplete="off"
+                            value="{{ old('graduation_year_english', $applicationform->graduation_year_english) }}"
+                            required>
+                    </div>
                 </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -773,62 +772,166 @@
                 </div>
 
 <!-- STEP 5: Work Experience -->
-                <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
-                            <select name="has_work_experience" id="has_work_experience" class="form-select" required>
-                                <option value="">-- Select --</option>
-                                <option value="Yes" {{ old('has_work_experience', $applicationform->has_work_experience) == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('has_work_experience', $applicationform->has_work_experience) == 'No' ? 'selected' : '' }}>No</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $applicationform->years_of_experience) }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $applicationform->previous_organization) }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $applicationform->previous_position) }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
-                            @if($applicationform->work_experience)
-                                <div class="input-group" id="work_experience_current">
-                                    <a href="{{ asset('storage/' . $applicationform->work_experience) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('work_experience_wrapper').classList.remove('d-none'); document.getElementById('work_experience_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="work_experience_wrapper" class="d-none mt-1">
-                                    <input type="file" name="work_experience" id="work_experience"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-light next-btn">Next</button>
-                    </div>
-                </div>
+<div class="step d-none" id="step5">
+    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="has_work_experience" class="form-label">
+                Do you have work experience? <span class="text-danger">*</span>
+            </label>
+            <select name="has_work_experience" id="has_work_experience" class="form-select" required>
+                <option value="">-- Select --</option>
+                <option value="Yes" {{ old('has_work_experience', $applicationform->has_work_experience) == 'Yes' ? 'selected' : '' }}>Yes</option>
+                <option value="No" {{ old('has_work_experience', $applicationform->has_work_experience) == 'No' ? 'selected' : '' }}>No</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Organization</th>
+                <th>Position</th>
+                <th>Start Date (B.S)</th>
+                <th>End Date (B.S)</th>
+                <th>Years</th>
+                <th>Document</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {{-- ================= EXP 1 ================= --}}
+            <tr>
+                <td>
+                    <input type="text" name="exp1_organization" class="form-control"
+                        value="{{ old('exp1_organization', $applicationform->exp1_organization) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp1_position" class="form-control"
+                        value="{{ old('exp1_position', $applicationform->exp1_position) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp1_start_date_bs"
+                        class="form-control nepali-date"
+                        placeholder="YYYY-MM-DD"
+                        value="{{ old('exp1_start_date_bs', $applicationform->exp1_start_date) }}">
+                        
+
+                </td>
+
+                <td>
+                    <input type="text" name="exp1_end_date_bs"
+                        class="form-control nepali-date"
+                        value="{{ old('exp1_end_date_bs', $applicationform->exp1_end_date) }}">
+                </td>
+
+                <td>
+                    <input type="number" step="0.5" name="exp1_years" class="form-control"
+                        value="{{ old('exp1_years', $applicationform->exp1_years) }}">
+                </td>
+
+                <td>
+                    @if($applicationform->exp1_document)
+                        <a href="{{ asset('storage/' . $applicationform->exp1_document) }}" target="_blank">
+                            View
+                        </a>
+                    @endif
+                    <input type="file" name="exp1_document" class="form-control"
+    data-existing="{{ $applicationform->exp1_document ? asset('storage/'.$applicationform->exp1_document) : '' }}">
+                </td>
+            </tr>
+
+            {{-- ================= EXP 2 ================= --}}
+            <tr>
+                <td>
+                    <input type="text" name="exp2_organization" class="form-control"
+                        value="{{ old('exp2_organization', $applicationform->exp2_organization) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp2_position" class="form-control"
+                        value="{{ old('exp2_position', $applicationform->exp2_position) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp2_start_date_bs"
+                        class="form-control nepali-date"
+                        value="{{ old('exp2_start_date_bs', $applicationform->exp2_start_date) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp2_end_date_bs"
+                        class="form-control nepali-date"
+                        value="{{ old('exp2_end_date_bs', $applicationform->exp2_end_date) }}">
+                </td>
+
+                <td>
+                    <input type="number" step="0.5" name="exp2_years" class="form-control"
+                        value="{{ old('exp2_years', $applicationform->exp2_years) }}">
+                </td>
+
+                <td>
+                    @if($applicationform->exp2_document)
+                        <a href="{{ asset('storage/' . $applicationform->exp2_document) }}" target="_blank">
+                            View
+                        </a>
+                    @endif
+                    <input type="file" name="exp2_document" class="form-control"
+    data-existing="{{ $applicationform->exp2_document ? asset('storage/'.$applicationform->exp2_document) : '' }}">
+                </td>
+            </tr>
+
+            {{-- ================= EXP 3 ================= --}}
+            <tr>
+                <td>
+                    <input type="text" name="exp3_organization" class="form-control"
+                        value="{{ old('exp3_organization', $applicationform->exp3_organization) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp3_position" class="form-control"
+                        value="{{ old('exp3_position', $applicationform->exp3_position) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp3_start_date_bs"
+                        class="form-control nepali-date"
+                        value="{{ old('exp3_start_date_bs', $applicationform->exp3_start_date) }}">
+                </td>
+
+                <td>
+                    <input type="text" name="exp3_end_date_bs"
+                        class="form-control nepali-date"
+                        value="{{ old('exp3_end_date_bs', $applicationform->exp3_end_date) }}">
+                </td>
+
+                <td>
+                    <input type="number" step="0.5" name="exp3_years" class="form-control"
+                        value="{{ old('exp3_years', $applicationform->exp3_years) }}">
+                </td>
+
+                <td>
+                    @if($applicationform->exp3_document)
+                        <a href="{{ asset('storage/' . $applicationform->exp3_document) }}" target="_blank">
+                            View
+                        </a>
+                    @endif
+                    <input type="file" name="exp3_document" class="form-control"
+    data-existing="{{ $applicationform->exp3_document ? asset('storage/'.$applicationform->exp3_document) : '' }}">
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary prev-btn">Back</button>
+        <button type="button" class="btn btn-light next-btn">Next</button>
+    </div>
+</div>
 
 <!-- STEP 6: Upload Documents -->
                 <div class="step d-none" id="step6">
@@ -986,12 +1089,18 @@
                         </table>
 
                         <h6 class="text-secondary mt-4">Work Experience</h6>
-                        <table class="table table-bordered">
-                            <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
-                            <tr><th>Years of Experience</th><td id="p_years_of_experience"></td></tr>
-                            <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
-                            <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
-                        </table>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th width="30%">Has Experience</th>
+                                    <td id="p_has_work_experience"></td>
+                                </tr>
+                                <tr>
+                                    <th>Experience Details</th>
+                                    <td>
+                                        <div id="experience_preview"></div>
+                                    </td>
+                                </tr>
+                            </table>
 
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
@@ -1001,7 +1110,7 @@
                             <tr><th>Character</th><td id="p_character"></td></tr>
                             <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
                             <tr><th>Signature</th><td id="p_signature"></td></tr>
-                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
+                            <!-- <tr><th>Work Experience</th><td id="p_work_experience"></td></tr> -->
                         </table>
 
                         <div class="form-check mb-4">
@@ -1096,8 +1205,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Initialize date pickers
-    initNDP(document.getElementById('birth_date_bs'));
-    initNDP(document.getElementById('citizenship_issue_date_bs'));
+    
+    document.querySelectorAll('.nepali-date').forEach(initNDP);
+    // initNDP(document.getElementById('birth_date_bs'));
+    // initNDP(document.getElementById('citizenship_issue_date_bs'));
 });
 </script>
 
@@ -1359,7 +1470,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const el = document.getElementById('step' + step);
         if (el) { el.classList.remove('d-none'); el.classList.add('active'); }
         currentStep = step;
-        if (step === 7) populatePreview();
+        if (step === 7) {
+            populatePreview();
+            populateExperiencePreview();
+        }
         updateTabsAndProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1374,8 +1488,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         let isValid = true, firstInvalid = null;
         stepEl.querySelectorAll('input[required],select[required],textarea[required]').forEach(field => {
+            // Skip disabled fields (e.g. cascading district/municipality selects not yet populated)
+            if (field.disabled) return;
+            // Skip fields inside any hidden ancestor div (covers _wrapper divs and d-none parents)
+            const hiddenParent = field.parentElement?.closest('.d-none');
+            if (hiddenParent && hiddenParent !== stepEl) return;
             if (field.parentElement?.closest('.conditionally-hidden')) return;
             if (field.type === 'checkbox') {
+                // Skip terms_agree when validating a hidden step (handled separately on submit)
+                if (field.id === 'terms_agree' && wasHidden) return;
                 if (!field.checked) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'You must agree before continuing'); if (!firstInvalid) firstInvalid = field; } return;
             }
             if (field.type === 'file') {
@@ -1431,7 +1552,17 @@ document.addEventListener('DOMContentLoaded', function () {
     } else { showStep(1); }
 
     form.addEventListener('submit', e => {
+        let termsChecked = document.getElementById('terms_agree')?.checked;
         for (let i = 1; i <= totalSteps; i++) { if (!validateStep(i)) { showStep(i); e.preventDefault(); showAutoSaveStatus('⚠ Please complete all required fields', 'danger'); return; } }
+        // Re-verify terms_agree since validateStep on hidden step 7 may reset it
+        if (!termsChecked) {
+            showStep(7);
+            e.preventDefault();
+            const termsEl = document.getElementById('terms_agree');
+            if (termsEl) { termsEl.classList.add('is-invalid'); }
+            showAutoSaveStatus('⚠ Please agree to the declaration', 'danger');
+            return;
+        }
         showAutoSaveStatus('📤 Submitting...', 'light');
     });
 
@@ -1486,9 +1617,9 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_institution_name', val('institution_name'));
         set('p_graduation_year', val('graduation_year'));
         set('p_has_work_experience', val('has_work_experience'));
-        set('p_years_of_experience', val('years_of_experience'));
-        set('p_previous_organization', val('previous_organization'));
-        set('p_previous_position', val('previous_position'));
+        // set('p_years_of_experience', val('years_of_experience'));
+        // set('p_previous_organization', val('previous_organization'));
+        // set('p_previous_position', val('previous_position'));
 
         function previewFile(containerId, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`);
@@ -1585,9 +1716,11 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('input', function(e) {
         if (e.target.type === 'file') return;
         populatePreview();
+        populateExperiencePreview();
     });
     form.addEventListener('change', function(e) {
         populatePreview();
+        populateExperiencePreview();
     });
 
     console.log('✓ Edit form initialized');
@@ -1692,6 +1825,61 @@ document.addEventListener('DOMContentLoaded', function () {
         this.setSelectionRange(pos + cleaned.length, pos + cleaned.length);
         this.dispatchEvent(new Event('input', { bubbles: true }));
     });
-})();
+
+   })(); // close Devanagari IIFE
+
+// ── Work Experience Preview (global scope) ────────────────────
+window.populateExperiencePreview = function () {
+    let html = "";
+    for (let i = 1; i <= 3; i++) {
+        const org   = document.querySelector(`[name="exp${i}_organization"]`)?.value || '';
+        const pos   = document.querySelector(`[name="exp${i}_position"]`)?.value || '';
+        const start = document.querySelector(`[name="exp${i}_start_date_bs"]`)?.value || '';
+        const end   = document.querySelector(`[name="exp${i}_end_date_bs"]`)?.value || '';
+        const years = document.querySelector(`[name="exp${i}_years"]`)?.value || '';
+
+        const fileInput    = document.querySelector(`[name="exp${i}_document"]`);
+        const file         = fileInput?.files?.[0];
+        const existingFile = fileInput?.getAttribute("data-existing") || '';
+
+        // Skip completely empty rows
+        if (!org && !pos && !start && !end && !years && !file && !existingFile) continue;
+
+        html += `
+        <div style="margin-bottom:16px; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            <h6 class="mb-2">Experience ${i}</h6>
+            <table class="table table-sm table-borderless mb-1">
+                <tr><td width="120"><b>Organization:</b></td><td>${org || '-'}</td></tr>
+                <tr><td><b>Position:</b></td><td>${pos || '-'}</td></tr>
+                <tr><td><b>Start Date:</b></td><td>${start || '-'}</td></tr>
+                <tr><td><b>End Date:</b></td><td>${end || '-'}</td></tr>
+                <tr><td><b>Years:</b></td><td>${years || '-'}</td></tr>
+            </table>`;
+
+        if (file) {
+            const url = URL.createObjectURL(file);
+            if (file.type.includes("pdf")) {
+                html += `<iframe src="${url}" style="width:100%;height:250px;border:1px solid #ccc;"></iframe>`;
+            } else if (file.type.startsWith("image/")) {
+                html += `<img src="${url}" style="max-width:180px;border:1px solid #ccc;padding:3px;">`;
+            }
+        } else if (existingFile) {
+            html += `<div class="mt-1"><a href="${existingFile}" target="_blank">📄 View Uploaded Document</a></div>`;
+        } else {
+            html += `<div class="text-muted small">No document uploaded</div>`;
+        }
+
+        html += `</div>`;
+    }
+
+    const container = document.getElementById("experience_preview");
+    if (container) {
+        container.innerHTML = html || "<span class='text-muted'>No experience added</span>";
+    }
+
+    const hasExp = document.querySelector('[name="has_work_experience"]')?.value;
+    const hasExpEl = document.getElementById("p_has_work_experience");
+    if (hasExpEl) hasExpEl.innerText = hasExp || '-';
+};
 </script>
 @endsection

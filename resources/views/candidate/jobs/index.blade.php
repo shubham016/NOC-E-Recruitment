@@ -113,7 +113,7 @@
                             <th class="text-center">S.N.</th>
                             <th>Job Title</th>
                             <th>Department</th>
-                            <th>Category</th>
+                            <th>Type</th>
                             <th class="text-center">Vacancies</th>
                             <th>Position Level</th>
                             <th>Advertisement No.</th>

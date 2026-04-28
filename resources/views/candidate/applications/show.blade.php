@@ -442,31 +442,74 @@
                 </div>
             </div>
 
-            {{-- STEP 5: Experience --}}
+           {{-- STEP 5: Experience --}}
             <div class="step d-none" id="step5">
                 <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
 
-                <div class="row mb-3">
-                    <div class="col-md-6 mb-3">
-                        <strong>Has Work Experience:</strong>
-                        <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Years of Experience:</strong>
-                        <p class="mb-0">{{ $applicationform->years_of_experience ?? '-' }} {{ $applicationform->years_of_experience ? 'years' : '' }}</p>
-                    </div>
+                <div class="mb-3">
+                    <strong>Has Work Experience:</strong>
+                    <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6 mb-3">
-                        <strong>Previous Organization:</strong>
-                        <p class="mb-0">{{ $applicationform->previous_organization ?? '-' }}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Previous Position:</strong>
-                        <p class="mb-0">{{ $applicationform->previous_position ?? '-' }}</p>
-                    </div>
-                </div>
+                @for ($i = 1; $i <= 3; $i++)
+                    @php
+                        $org = "exp{$i}_organization";
+                        $pos = "exp{$i}_position";
+                        $start = "exp{$i}_start_date";
+                        $end = "exp{$i}_end_date";
+                        $years = "exp{$i}_years";
+                        $doc = "exp{$i}_document";
+                    @endphp
+
+                    @if(!empty($applicationform->$org) || !empty($applicationform->$pos))
+                        <div class="border rounded p-3 mb-3">
+                            <h6 class="text-primary">Experience {{ $i }}</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Organization:</strong>
+                                    <p>{{ $applicationform->$org ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Position:</strong>
+                                    <p>{{ $applicationform->$pos ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Start Date:</strong>
+                                    <p>{{ $applicationform->$start ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>End Date:</strong>
+                                    <p>{{ $applicationform->$end ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Years:</strong>
+                                    <p>{{ $applicationform->$years ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Document:</strong>
+                                    <p>
+                                        @if(!empty($applicationform->$doc))
+                                            <iframe 
+                                                src="{{ asset('storage/' . $applicationform->$doc) }}" 
+                                                width="100%" 
+                                                height="250px"
+                                                style="border:1px solid #ccc;">
+                                            </iframe>
+                                        @else
+                                            -
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endfor
 
                 <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-secondary prev-btn">Back</button>
