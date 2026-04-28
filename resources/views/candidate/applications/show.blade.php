@@ -435,6 +435,12 @@
                         <p class="mb-0">{{ $applicationform->graduation_year ?? '-' }}</p>
                     </div>
                 </div>
+<<<<<<< HEAD
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+=======
 
                 <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -442,6 +448,40 @@
                 </div>
             </div>
 
+            {{-- STEP 5: Experience --}}
+            <div class="step d-none" id="step5">
+                <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Has Work Experience:</strong>
+                        <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Years of Experience:</strong>
+                        <p class="mb-0">{{ $applicationform->years_of_experience ?? '-' }} {{ $applicationform->years_of_experience ? 'years' : '' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Previous Organization:</strong>
+                        <p class="mb-0">{{ $applicationform->previous_organization ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Previous Position:</strong>
+                        <p class="mb-0">{{ $applicationform->previous_position ?? '-' }}</p>
+                    </div>
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+<<<<<<< HEAD
            {{-- STEP 5: Experience --}}
             <div class="step d-none" id="step5">
                 <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
@@ -517,6 +557,8 @@
                 </div>
             </div>
 
+=======
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
             {{-- STEP 6: Documents --}}
             <div class="step d-none" id="step6">
                 <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>

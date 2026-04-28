@@ -403,14 +403,22 @@
                                     @endif
                                 </td>
 
+<<<<<<< HEAD
                                 <!-- <td class="nowrap">
+=======
+                                <td class="nowrap">
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                                     <span class="badge {{ $priorityBadge }}">{{ $priorityText }}</span>
                                     @if($application->manual_priority && $application->priority_note)
                                         <br><small class="text-muted" title="{{ $application->priority_note }}">📌</small>
                                     @elseif(!$application->manual_priority)
                                         <br><small class="text-muted">(Auto)</small>
                                     @endif
+<<<<<<< HEAD
                                 </td> -->
+=======
+                                </td>
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 
                                 <td class="nowrap">
                                     <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>

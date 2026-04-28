@@ -95,8 +95,11 @@ class ApplicationForm extends Model
         'university',          
         'graduation_year',
         'graduation_year_english',
+<<<<<<< HEAD
 
         // Work Experiences
+=======
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
         'has_work_experience',
         'years_of_experience',
         'previous_organization',
