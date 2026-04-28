@@ -24,7 +24,6 @@ class Approver extends Authenticatable
     protected $hidden = [
         'password'
     ];
-<<<<<<< HEAD
 
     protected $casts = [
         'password' => 'hashed',
@@ -67,6 +66,4 @@ class Approver extends Authenticatable
     {
         return $this->hasMany(ApplicationForm::class, 'approver_id');
     }
-=======
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 }
