@@ -98,7 +98,7 @@ class ApproverAuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('approver')->logout();
-        $request->session()->invalidate();
+        $request->session()->regenerate();
         $request->session()->regenerateToken();
         return redirect()->route('approver.login');
     }

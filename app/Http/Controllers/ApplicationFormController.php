@@ -63,12 +63,25 @@ class ApplicationFormController extends Controller
             ->first();
 
         $job = null;
+        $groupJobs = collect();
         if ($jobId) {
             $job = JobPosting::find($jobId);
-            
+
             if (!$job) {
                 return redirect()->route('candidate.jobs.index')
                     ->withErrors(['error' => 'Job posting not found']);
+            }
+
+            // Load all sibling jobs sharing the same position+level (same reference point)
+            $groupJobs = JobPosting::where('status', 'active')
+                ->where('deadline', '>=', now())
+                ->where('position', $job->position)
+                ->where('level', $job->level)
+                ->orderBy('advertisement_no', 'asc')
+                ->get();
+
+            if ($groupJobs->isEmpty()) {
+                $groupJobs = collect([$job]);
             }
         }
 
@@ -88,7 +101,7 @@ class ApplicationFormController extends Controller
                 ->first();
         }
 
-        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
+        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication', 'groupJobs'));
     }
 
     

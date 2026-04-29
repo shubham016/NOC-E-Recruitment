@@ -456,8 +456,7 @@
                             $storedInclusiveTypes = is_array($decoded) ? $decoded : [$job->inclusive_type];
                         }
                         $effectiveHasInclusive = $job->has_inclusive
-                            || ($noNewFlags && $job->category === 'inclusive')
-                            || count($storedInclusiveTypes) > 0;
+                            || ($noNewFlags && $job->category === 'inclusive');
                     @endphp
 
                     <!-- Category Selection - Multi-Category System -->
@@ -485,21 +484,21 @@
                                         Open (खुल्ला)
                                     </label>
                                 </div>
+                            </div>
 
-                                <!-- Level 2: Inclusive Types Toggle (shown when Open is checked) -->
-                                <div id="inclusiveTypesToggle" style="display: {{ old('has_open', $effectiveHasOpen) && !old('is_internal_appraisal', $effectiveIsAppraisal) ? 'block' : 'none' }}; margin-left: 30px; margin-top: 10px;">
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox"
-                                               id="has_inclusive_toggle" value="1"
-                                               {{ old('has_inclusive', $effectiveHasInclusive) || (old('inclusive_types') && count(old('inclusive_types')) > 0) ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-bold" for="has_inclusive_toggle">
-                                            Inclusive Types:
-                                        </label>
-                                    </div>
+                            <!-- Inclusive Types (standalone — always visible, independent of Open) -->
+                            <div class="mb-3" id="inclusiveTypesToggle">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="has_inclusive_toggle" value="1"
+                                           {{ old('has_inclusive', $effectiveHasInclusive) || (old('inclusive_types') && count(old('inclusive_types')) > 0) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="has_inclusive_toggle">
+                                        Inclusive Types: <small class="text-muted fw-normal">(समावेशी प्रकारहरू)</small>
+                                    </label>
                                 </div>
 
-                                <!-- Level 3: Individual Inclusive Types (shown when Inclusive Types is checked) -->
-                                <div id="inclusiveTypesSection" style="display: {{ old('has_inclusive', $effectiveHasInclusive) || (old('inclusive_types') && count(old('inclusive_types')) > 0) ? 'block' : 'none' }}; margin-left: 60px; margin-top: 10px;">
+                                <!-- Individual Inclusive Types (shown when Inclusive Types is checked) -->
+                                <div id="inclusiveTypesSection" style="display: {{ old('has_inclusive', $effectiveHasInclusive) || (old('inclusive_types') && count(old('inclusive_types')) > 0) ? 'block' : 'none' }}; margin-left: 30px; margin-top: 10px;">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-check mb-2">
@@ -607,33 +606,33 @@
                                         <div class="col-md-6">
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_women" name="internal_inclusive_types[]" value="Women"
+                                                       id="internal_incl_women" name="internal_inclusive_types[]" value="Women"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Women', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Women', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_women">
+                                                <label class="form-check-label" for="internal_incl_women">
                                                     Women (महिला)
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_aj" name="internal_inclusive_types[]" value="A.J"
+                                                       id="internal_incl_aj" name="internal_inclusive_types[]" value="A.J"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('A.J', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('A.J', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_aj">
+                                                <label class="form-check-label" for="internal_incl_aj">
                                                     A.J (आ.ज / आदिवासी जनजाति)
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_madhesi" name="internal_inclusive_types[]" value="Madhesi"
+                                                       id="internal_incl_madhesi" name="internal_inclusive_types[]" value="Madhesi"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Madhesi', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Madhesi', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_madhesi">
+                                                <label class="form-check-label" for="internal_incl_madhesi">
                                                     Madhesi (मधेसी)
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_janajati" name="internal_inclusive_types[]" value="Janajati"
+                                                       id="internal_incl_janajati" name="internal_inclusive_types[]" value="Janajati"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Janajati', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Janajati', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_janajati">
+                                                <label class="form-check-label" for="internal_incl_janajati">
                                                     Janajati (जनजाति)
                                                 </label>
                                             </div>
@@ -641,25 +640,25 @@
                                         <div class="col-md-6">
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_apanga" name="internal_inclusive_types[]" value="Apanga"
+                                                       id="internal_incl_apanga" name="internal_inclusive_types[]" value="Apanga"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Apanga', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Apanga', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_apanga">
+                                                <label class="form-check-label" for="internal_incl_apanga">
                                                     Apanga (अपाङ्ग)
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_dalit" name="internal_inclusive_types[]" value="Dalit"
+                                                       id="internal_incl_dalit" name="internal_inclusive_types[]" value="Dalit"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Dalit', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Dalit', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_dalit">
+                                                <label class="form-check-label" for="internal_incl_dalit">
                                                     Dalit (दलित)
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input internal-inclusive-type-checkbox" type="checkbox"
-                                                       id="int_incl_pichadiyeko" name="internal_inclusive_types[]" value="Pichadiyeko Chetra"
+                                                       id="internal_incl_pichadiyeko" name="internal_inclusive_types[]" value="Pichadiyeko Chetra"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Pichadiyeko Chetra', old('internal_inclusive_types'))) || (!old('internal_inclusive_types') && $job->internal_inclusive_types && is_array($job->internal_inclusive_types) && in_array('Pichadiyeko Chetra', $job->internal_inclusive_types)) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_incl_pichadiyeko">
+                                                <label class="form-check-label" for="internal_incl_pichadiyeko">
                                                     Pichadiyeko Chetra (पिचडिएको क्षेत्र)
                                                 </label>
                                             </div>
@@ -732,15 +731,11 @@
 
                         // --- Helpers ---
                         function hideOpenSections() {
-                            if (inclusiveTypesToggle) inclusiveTypesToggle.style.display = 'none';
-                            if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none';
-                            if (cbInclusiveToggle) cbInclusiveToggle.checked = false;
-                            inclusiveTypeCbs.forEach(function(c){ c.checked = false; });
-                            updatePreviewInclusiveTypes();
+                            // Inclusive Types is now independent of Open — nothing to hide here
                         }
 
                         function showOpenSections() {
-                            if (inclusiveTypesToggle) inclusiveTypesToggle.style.display = 'block';
+                            // no-op: inclusive is always visible
                         }
 
                         function hideInternalSections() {
@@ -788,18 +783,28 @@
                             if (_pvFee) _pvFee.style.display  = 'none';
                         }
 
-                        function setLock(activeCb) {
-                            var all = [cbOpen, cbInternal, cbAppraisal];
-                            var fcs = [fcOpen, fcInternal, fcAppraisal];
-                            all.forEach(function(cb, i) {
+                        // All 4 types are fully mutually exclusive — any one locks all others
+                        function setLock() {
+                            var isOpen      = cbOpen           && cbOpen.checked;
+                            var isInternal  = cbInternal       && cbInternal.checked;
+                            var isAppraisal = cbAppraisal      && cbAppraisal.checked;
+                            var isIncl      = cbInclusiveToggle && cbInclusiveToggle.checked;
+                            var anyChecked  = isOpen || isInternal || isAppraisal || isIncl;
+
+                            function applyLock(cb, fc, locked) {
                                 if (!cb) return;
-                                var lock = activeCb !== null && cb !== activeCb;
-                                cb.disabled = lock;
-                                if (fcs[i]) {
-                                    fcs[i].style.opacity = lock ? '0.45' : '';
-                                    fcs[i].style.cursor  = lock ? 'not-allowed' : '';
+                                cb.disabled = locked;
+                                if (fc) {
+                                    fc.style.opacity = locked ? '0.45' : '';
+                                    fc.style.cursor  = locked ? 'not-allowed' : '';
                                 }
-                            });
+                            }
+
+                            applyLock(cbOpen,      fcOpen,      anyChecked && !isOpen);
+                            applyLock(cbInternal,  fcInternal,  anyChecked && !isInternal);
+                            applyLock(cbAppraisal, fcAppraisal, anyChecked && !isAppraisal);
+                            var fcIncl = cbInclusiveToggle ? cbInclusiveToggle.closest('.form-check') : null;
+                            applyLock(cbInclusiveToggle, fcIncl, anyChecked && !isIncl);
                         }
 
                         // --- Live preview: Category badge ---
@@ -812,25 +817,26 @@
                                 el.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
                             } else if (cbOpen && cbOpen.checked) {
                                 el.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
+                            } else if (cbInclusiveToggle && cbInclusiveToggle.checked) {
+                                el.innerHTML = '<span class="badge bg-info text-dark">समावेशी (Inclusive)</span>';
                             } else {
                                 el.innerHTML = '-';
                             }
                         }
 
-                        // --- Live preview: Open → Inclusive Types row ---
+                        // --- Live preview: Inclusive Types row (independent of Open) ---
                         function updatePreviewInclusiveTypes() {
                             var row  = document.getElementById('preview-inclusive-row');
                             var cell = document.getElementById('preview-inclusive-type');
                             if (!row || !cell) return;
-                            var isOpenChecked      = cbOpen && cbOpen.checked;
-                            var isToggleChecked    = cbInclusiveToggle && cbInclusiveToggle.checked;
+                            var isToggleChecked = cbInclusiveToggle && cbInclusiveToggle.checked;
                             var checked = Array.prototype.filter.call(inclusiveTypeCbs, function(c){ return c.checked; });
                             var labels  = checked.map(function(c){ return c.value; });
-                            if (isOpenChecked && isToggleChecked && labels.length > 0) {
-                                cell.textContent    = labels.join(', ');
-                                row.style.display   = '';
+                            if (isToggleChecked && labels.length > 0) {
+                                cell.textContent  = labels.join(', ');
+                                row.style.display = '';
                             } else {
-                                row.style.display   = 'none';
+                                row.style.display = 'none';
                             }
                         }
 
@@ -862,35 +868,37 @@
                             }
                         }
 
-                        // --- Main handler ---
+                        // All 4 types are fully mutually exclusive
                         function handleChange(cb) {
                             if (cb.checked) {
                                 if (cb === cbOpen) {
-                                    if (cbInternal)  cbInternal.checked  = false;
-                                    if (cbAppraisal) cbAppraisal.checked = false;
+                                    if (cbInternal)       cbInternal.checked       = false;
+                                    if (cbAppraisal)      cbAppraisal.checked      = false;
+                                    if (cbInclusiveToggle){ cbInclusiveToggle.checked = false; if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none'; inclusiveTypeCbs.forEach(function(c){ c.checked = false; }); }
                                     hideInternalSections();
                                     showOpenSections();
                                     showDoubleDastur();
                                 } else if (cb === cbInternal) {
-                                    if (cbOpen)      cbOpen.checked      = false;
-                                    if (cbAppraisal) cbAppraisal.checked = false;
+                                    if (cbOpen)           cbOpen.checked           = false;
+                                    if (cbAppraisal)      cbAppraisal.checked      = false;
+                                    if (cbInclusiveToggle){ cbInclusiveToggle.checked = false; if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none'; inclusiveTypeCbs.forEach(function(c){ c.checked = false; }); }
                                     hideOpenSections();
                                     showInternalSections();
                                     hideDoubleDastur();
                                 } else if (cb === cbAppraisal) {
-                                    if (cbOpen)     cbOpen.checked     = false;
-                                    if (cbInternal) cbInternal.checked = false;
+                                    if (cbOpen)           cbOpen.checked           = false;
+                                    if (cbInternal)       cbInternal.checked       = false;
+                                    if (cbInclusiveToggle){ cbInclusiveToggle.checked = false; if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none'; inclusiveTypeCbs.forEach(function(c){ c.checked = false; }); }
                                     hideOpenSections();
                                     hideInternalSections();
                                     hideDoubleDastur();
                                 }
-                                setLock(cb);
                             } else {
                                 if (cb === cbOpen)     hideOpenSections();
                                 if (cb === cbInternal) hideInternalSections();
                                 showDoubleDastur();
-                                setLock(null);
                             }
+                            setLock();
                             updatePreviewCategory();
                             syncHiddenCategoryFields();
                         }
@@ -916,22 +924,42 @@
                             }
                         }
 
-                        // Sub-toggle: Open → Inclusive Types list
+                        // Helper: sync has_inclusive hidden field from current checkbox state
+                        function syncHasInclusiveHidden() {
+                            var el = document.getElementById('has_inclusive');
+                            if (!el) return;
+                            var toggleOn = cbInclusiveToggle && cbInclusiveToggle.checked;
+                            var anyTypeChecked = Array.prototype.some.call(inclusiveTypeCbs, function(c){ return c.checked; });
+                            el.value = (toggleOn && anyTypeChecked) ? '1' : '0';
+                        }
+
+                        // Inclusive Types toggle (fully mutually exclusive with all others)
                         if (cbInclusiveToggle) {
                             cbInclusiveToggle.addEventListener('change', function() {
+                                if (this.checked) {
+                                    // Uncheck and reset all other main categories
+                                    if (cbOpen)     { cbOpen.checked     = false; hideOpenSections();     showDoubleDastur(); }
+                                    if (cbInternal) { cbInternal.checked = false; hideInternalSections(); }
+                                    if (cbAppraisal){ cbAppraisal.checked = false; }
+                                    hideDoubleDastur();
+                                } else {
+                                    inclusiveTypeCbs.forEach(function(c){ c.checked = false; });
+                                    showDoubleDastur();
+                                }
                                 if (inclusiveTypesSection) {
                                     inclusiveTypesSection.style.display = this.checked ? 'block' : 'none';
                                 }
-                                if (!this.checked) {
-                                    inclusiveTypeCbs.forEach(function(c){ c.checked = false; });
-                                }
+                                syncHasInclusiveHidden();
                                 updatePreviewInclusiveTypes();
+                                setLock();
+                                updatePreviewCategory();
                             });
                         }
 
                         // Individual inclusive type checkboxes
                         inclusiveTypeCbs.forEach(function(c) {
                             c.addEventListener('change', function() {
+                                syncHasInclusiveHidden();
                                 updatePreviewInclusiveTypes();
                             });
                         });
@@ -970,22 +998,22 @@
 
                         // --- Init: lock + section show/hide (checkboxes are already in DOM here) ---
                         if (cbOpen && cbOpen.checked) {
-                            setLock(cbOpen);
                             showOpenSections();
                             if (cbInclusiveToggle && cbInclusiveToggle.checked && inclusiveTypesSection) {
                                 inclusiveTypesSection.style.display = 'block';
                             }
                         } else if (cbInternal && cbInternal.checked) {
-                            setLock(cbInternal);
                             showInternalSections();
                             if (cbInternalInclusiveToggle && cbInternalInclusiveToggle.checked && internalInclusiveTypesSection) {
                                 internalInclusiveTypesSection.style.display = 'block';
                             }
                         } else if (cbAppraisal && cbAppraisal.checked) {
-                            setLock(cbAppraisal);
-                        } else {
-                            setLock(null);
+                            // nothing extra
+                        } else if (cbInclusiveToggle && cbInclusiveToggle.checked) {
+                            // standalone inclusive — show the types section
+                            if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'block';
                         }
+                        setLock(); // state-based, handles all cases including standalone inclusive
 
                         // --- Preview rows are further down in the DOM (right column).
                         //     Defer until DOMContentLoaded so those elements exist. ---
@@ -999,20 +1027,168 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Demand Post (Number of Posts) -->
-                    <div class="mb-4">
-                        <label for="number_of_posts" class="form-label">
+                    <!-- Demand Post (Number of Posts) - Dynamic per-type -->
+                    <div class="mb-4" id="demand-posts-section">
+                        <label class="form-label">
                             <span>Demand Post (Number) <span class="required">*</span></span>
                             <span class="nepali-text">माग पद संख्या</span>
                         </label>
-                        <input type="number"
-                            class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
-                            id="number_of_posts" name="number_of_posts"
-                            value="{{ old('number_of_posts', $job->number_of_posts) }}" min="1" max="1000" required>
+                        <div id="demand-posts-container">
+                            {{-- Default single field (shown when no type is selected) --}}
+                            <div id="demand-default">
+                                <input type="number"
+                                    class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
+                                    id="number_of_posts_default"
+                                    placeholder="Enter number of posts"
+                                    value="{{ old('number_of_posts', $job->number_of_posts) }}"
+                                    min="1" max="1000">
+                            </div>
+                            {{-- Per-type demand rows are added here dynamically by JS --}}
+                        </div>
+                        {{-- Hidden field that gets submitted to the controller --}}
+                        <input type="hidden" name="number_of_posts" id="number_of_posts" value="{{ old('number_of_posts', $job->number_of_posts) }}">
                         @error('number_of_posts')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
+                    {{-- Existing per-type demand data for pre-fill on edit --}}
+                    @php
+                        $existingDemandPosts = old('demand_posts', $job->demand_posts ?? []);
+                    @endphp
+                    <script>
+                        window._editDemandPosts = @json($existingDemandPosts ?? []);
+                    </script>
+                    <script>
+                    // Demand Posts — Dynamic per-type fields (Edit page)
+                    (function() {
+                        var demandTypeMap = {
+                            'has_open':                'Open (खुल्ला)',
+                            'incl_women':              'Women (महिला)',
+                            'incl_aj':                 'A.J (आ.ज)',
+                            'incl_madhesi':            'Madhesi (मधेसी)',
+                            'incl_janajati':           'Janajati (जनजाति)',
+                            'incl_apanga':             'Apanga (अपाङ्ग)',
+                            'incl_dalit':              'Dalit (दलित)',
+                            'incl_pichadiyeko':        'Pichadiyeko Chetra (पिचडिएको क्षेत्र)',
+                            'has_internal_open':       'Internal Open',
+                            'internal_incl_women':     'Internal / Women (महिला)',
+                            'internal_incl_aj':        'Internal / A.J (आ.ज)',
+                            'internal_incl_madhesi':   'Internal / Madhesi (मधेसी)',
+                            'internal_incl_janajati':  'Internal / Janajati (जनजाति)',
+                            'internal_incl_apanga':    'Internal / Apanga (अपाङ्ग)',
+                            'internal_incl_dalit':     'Internal / Dalit (दलित)',
+                            'internal_incl_pichadiyeko': 'Internal / Pichadiyeko Chetra',
+                            'is_internal_appraisal':   'Internal Appraisal (आन्तरिक बढुवा)'
+                        };
+
+                        function getContainer()   { return document.getElementById('demand-posts-container'); }
+                        function getDefaultRow()  { return document.getElementById('demand-default'); }
+                        function getDefaultInput(){ return document.getElementById('number_of_posts_default'); }
+                        function getHiddenTotal() { return document.getElementById('number_of_posts'); }
+
+                        function updateDemandFields() {
+                            var container = getContainer();
+                            var defaultRow = getDefaultRow();
+                            if (!container || !defaultRow) return;
+
+                            var checkedTypes = Object.keys(demandTypeMap).filter(function(id) {
+                                var cb = document.getElementById(id);
+                                return cb && cb.checked;
+                            });
+
+                            if (checkedTypes.length === 0) {
+                                defaultRow.style.display = '';
+                                container.querySelectorAll('.demand-type-row').forEach(function(el) { el.remove(); });
+                                var defInput = getDefaultInput();
+                                var hidden = getHiddenTotal();
+                                if (hidden) hidden.value = defInput ? (parseInt(defInput.value) || 1) : 1;
+                            } else {
+                                defaultRow.style.display = 'none';
+                                container.querySelectorAll('.demand-type-row').forEach(function(row) {
+                                    if (!checkedTypes.includes(row.getAttribute('data-type-id'))) row.remove();
+                                });
+                                checkedTypes.forEach(function(typeId) {
+                                    if (!container.querySelector('[data-type-id="' + typeId + '"]')) {
+                                        var existingVal = (window._editDemandPosts && window._editDemandPosts[typeId]) ? window._editDemandPosts[typeId] : 1;
+                                        var label = demandTypeMap[typeId];
+                                        var row = document.createElement('div');
+                                        row.className = 'demand-type-row mb-2';
+                                        row.setAttribute('data-type-id', typeId);
+                                        row.innerHTML =
+                                            '<div class="input-group">' +
+                                            '<span class="input-group-text fw-semibold" style="min-width:220px;background:#f9fafb;font-size:0.875rem;">' + label + '</span>' +
+                                            '<input type="number" class="form-control form-control-lg demand-type-input" name="demand_posts[' + typeId + ']" value="' + existingVal + '" min="1" max="1000" placeholder="Posts">' +
+                                            '</div>';
+                                        container.appendChild(row);
+                                        row.querySelector('.demand-type-input').addEventListener('input', updateDemandTotal);
+                                    }
+                                });
+                                updateDemandTotal();
+                            }
+                            updateDemandPreview();
+                        }
+
+                        function updateDemandTotal() {
+                            var container = getContainer();
+                            var total = 0;
+                            if (container) {
+                                container.querySelectorAll('.demand-type-input').forEach(function(input) {
+                                    total += parseInt(input.value) || 0;
+                                });
+                            }
+                            var hidden = getHiddenTotal();
+                            if (hidden) hidden.value = total > 0 ? total : 1;
+                            updateDemandPreview();
+                        }
+
+                        function updateDemandPreview() {
+                            var previewPosts = document.getElementById('preview-posts');
+                            if (!previewPosts) return;
+                            var container = getContainer();
+                            var typeRows = container ? container.querySelectorAll('.demand-type-row') : [];
+                            if (typeRows.length === 0) {
+                                var defInput = getDefaultInput();
+                                previewPosts.textContent = defInput ? (defInput.value || '-') : '-';
+                            } else {
+                                var lines = [];
+                                typeRows.forEach(function(row) {
+                                    var typeId = row.getAttribute('data-type-id');
+                                    var val = row.querySelector('.demand-type-input').value || '0';
+                                    lines.push(demandTypeMap[typeId] + ': ' + val);
+                                });
+                                var hidden = getHiddenTotal();
+                                var total = parseInt(hidden ? hidden.value : 0) || 0;
+                                previewPosts.innerHTML = lines.join('<br>');
+                            }
+                        }
+
+                        // Hook into all relevant checkboxes
+                        var allCheckboxIds = Object.keys(demandTypeMap).concat([
+                            'has_inclusive_toggle', 'has_internal_inclusive_toggle'
+                        ]);
+                        allCheckboxIds.forEach(function(id) {
+                            var cb = document.getElementById(id);
+                            if (cb) cb.addEventListener('change', updateDemandFields);
+                        });
+
+                        // Default input: keep hidden field and preview in sync
+                        var defInput = document.getElementById('number_of_posts_default');
+                        if (defInput) {
+                            defInput.addEventListener('input', function() {
+                                var hidden = document.getElementById('number_of_posts');
+                                if (hidden) hidden.value = parseInt(this.value) || 1;
+                                updateDemandPreview();
+                            });
+                        }
+
+                        // Initialize on DOM ready
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', updateDemandFields);
+                        } else {
+                            updateDemandFields();
+                        }
+                    })();
+                    </script>
 
                     <div class="section-divider"></div>
 
@@ -1145,31 +1321,33 @@
                         </div> -->
                     </div>
 
-                    <!-- Application Fee & Double Dastur Fee Row -->
+                    <!-- Per-Category Fee Fields (dynamically rendered by JS) -->
+                    <div id="individual-fees" class="mb-3"></div>
+
+                    <!-- Total Application Fee & Double Dastur Fee -->
                     <div class="row mb-4">
-                        <!-- Application Fee -->
+                        <!-- Total Application Fee -->
                         <div class="col-md-6">
                             <label class="form-label">
-                                <span>Application Fee<span class="text-danger">*</span></span>
-                                <span class="nepali-text">आवेदन शुल्क</span>
+                                <span>Total Application Fee <span class="text-danger">*</span></span>
+                                <span class="nepali-text">कुल आवेदन शुल्क</span>
                             </label>
                             <input type="number"
                                    class="form-control form-control-lg @error('application_fee') is-invalid @enderror"
                                    id="application_fee"
                                    name="application_fee"
                                    value="{{ old('application_fee', $job->application_fee ? rtrim(rtrim(sprintf('%.2f', $job->application_fee), '0'), '.') : '') }}"
-                                   placeholder="Enter Application Fee"
+                                   placeholder="Select a category above to enter fees"
                                    min="0"
                                    step="0.01"
-                                   required>
+                                   required
+                                   {{ $effectiveIsAppraisal ? '' : 'readonly' }}>
                             @error('application_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <!-- <div class="alert alert-info mt-3 mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Note:</strong> Enter the application fee amount in Nepali Rupees (required field).
-                                <br><small>नोट: नेपाली रुपैयाँमा आवेदन शुल्क रकम प्रविष्ट गर्नुहोस् (अनिवार्य)।</small>
-                            </div> -->
+                            <small class="text-muted" id="fee-total-note">
+                                {{ $effectiveIsAppraisal ? 'Enter the application fee directly for Internal Appraisal.' : 'Auto-calculated from individual fees above.' }}
+                            </small>
                         </div>
 
                         <!-- Double Dastur Fee -->
@@ -1189,11 +1367,6 @@
                             @error('double_dastur_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <!-- <div class="alert alert-warning mt-3 mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Note:</strong> Fee for extended application period (required field).
-                                <br><small>नोट: विस्तारित आवेदन अवधिको लागि शुल्क (अनिवार्य)।</small>
-                            </div> -->
                         </div>
                     </div>
 
@@ -1300,7 +1473,7 @@
                                 </td>
                             </tr>
                             <tr id="preview-application-fee-row">
-                                <th>Application Fee</th>
+                                <th>Total Application Fee</th>
                                 <td id="preview-application-fee" class="fw-semibold text-primary">
                                     @if($job->application_fee)
                                         NPR {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}
@@ -1673,10 +1846,7 @@
             }
 
             function hideOpenSections() {
-                if (inclusiveTypesToggle) inclusiveTypesToggle.style.display = 'none';
-                if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none';
-                if (hasInclusiveToggleCheckbox) hasInclusiveToggleCheckbox.checked = false;
-                inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+                // Inclusive Types is independent of Open — nothing to hide here
             }
 
             function hideInternalSections() {
@@ -1692,54 +1862,59 @@
             // Mutual Exclusivity: Disable / Enable Helpers
             // ============================================
 
-            function disableOtherMainCategories(activeCheckbox) {
-                const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
-                allMain.forEach(function(cb) {
-                    if (cb && cb !== activeCheckbox) {
-                        const fc = cb.closest('.form-check');
-                        if (fc) fc.classList.add('cat-locked');
-                    }
-                });
-            }
+            // All 4 types are fully mutually exclusive — any one locks all others
+            function syncExclusivity() {
+                const openChecked      = hasOpenCheckbox             && hasOpenCheckbox.checked;
+                const internalChecked  = hasInternalCheckbox         && hasInternalCheckbox.checked;
+                const appraisalChecked = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
+                const inclChecked      = hasInclusiveToggleCheckbox  && hasInclusiveToggleCheckbox.checked;
+                const anyChecked       = openChecked || internalChecked || appraisalChecked || inclChecked;
 
-            function enableAllMainCategories() {
-                const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
-                allMain.forEach(function(cb) {
-                    if (cb) {
-                        const fc = cb.closest('.form-check');
+                function applyLock(cb, locked) {
+                    if (!cb) return;
+                    const fc = cb.closest('.form-check');
+                    if (locked) {
+                        if (fc) fc.classList.add('cat-locked');
+                    } else {
                         if (fc) fc.classList.remove('cat-locked');
                     }
-                });
+                }
+
+                applyLock(hasOpenCheckbox,             anyChecked && !openChecked);
+                applyLock(hasInternalCheckbox,         anyChecked && !internalChecked);
+                applyLock(isInternalAppraisalCheckbox, anyChecked && !appraisalChecked);
+                applyLock(hasInclusiveToggleCheckbox,  anyChecked && !inclChecked);
             }
 
             // ============================================
             // Mutual Exclusivity Handler
             // ============================================
 
+            // All 4 types fully mutually exclusive
             function handleCategoryExclusivity(selectedCheckbox) {
                 if (selectedCheckbox.checked) {
-                    // Uncheck the other two (locking handled by separate syncLock script)
                     if (selectedCheckbox === hasOpenCheckbox) {
                         if (hasInternalCheckbox)         hasInternalCheckbox.checked         = false;
                         if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                        if (hasInclusiveToggleCheckbox)  { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => cb.checked = false); toggleInclusiveTypesSection(); }
                         hideInternalSections();
-                        toggleInclusiveTypesToggle();
                         showDoubleDasturSections();
                     } else if (selectedCheckbox === hasInternalCheckbox) {
                         if (hasOpenCheckbox)             hasOpenCheckbox.checked             = false;
                         if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                        if (hasInclusiveToggleCheckbox)  { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => cb.checked = false); toggleInclusiveTypesSection(); }
                         hideOpenSections();
                         toggleInternalSubcategories();
                         hideDoubleDasturSections();
                     } else if (selectedCheckbox === isInternalAppraisalCheckbox) {
-                        if (hasOpenCheckbox)     hasOpenCheckbox.checked     = false;
-                        if (hasInternalCheckbox) hasInternalCheckbox.checked = false;
+                        if (hasOpenCheckbox)            hasOpenCheckbox.checked             = false;
+                        if (hasInternalCheckbox)        hasInternalCheckbox.checked         = false;
+                        if (hasInclusiveToggleCheckbox) { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => cb.checked = false); toggleInclusiveTypesSection(); }
                         hideOpenSections();
                         hideInternalSections();
                         hideDoubleDasturSections();
                     }
                 } else {
-                    // Unchecked — reset sections (unlocking handled by separate syncLock script)
                     if (selectedCheckbox === hasOpenCheckbox) {
                         hideOpenSections();
                     } else if (selectedCheckbox === hasInternalCheckbox) {
@@ -1747,6 +1922,7 @@
                     }
                     showDoubleDasturSections();
                 }
+                syncExclusivity();
                 updateCategoryDisplay();
                 updateHiddenFields();
             }
@@ -1773,6 +1949,8 @@
                     if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'block';
                 } else {
                     if (inclusiveTypesSection) inclusiveTypesSection.style.display = 'none';
+                    // Uncheck all individual types so they don't submit with the form
+                    inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
                 }
                 updateHiddenFields();
             }
@@ -2043,8 +2221,21 @@
 
             if (hasInclusiveToggleCheckbox) {
                 hasInclusiveToggleCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Inclusive is mutually exclusive with all others
+                        if (hasOpenCheckbox)             { hasOpenCheckbox.checked             = false; hideOpenSections(); }
+                        if (hasInternalCheckbox)         { hasInternalCheckbox.checked         = false; hideInternalSections(); }
+                        if (isInternalAppraisalCheckbox) { isInternalAppraisalCheckbox.checked = false; }
+                        hideDoubleDasturSections();
+                    } else {
+                        inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+                        showDoubleDasturSections();
+                    }
                     toggleInclusiveTypesSection();
                     updateInclusiveTypesPreview();
+                    syncExclusivity();
+                    updateCategoryDisplay();
+                    updateHiddenFields();
                 });
             }
 
@@ -2076,31 +2267,31 @@
                 });
             });
 
-            // Initialize on page load
-            // Check which main category is selected and set up accordingly
+            // Initialize on page load — all 4 types fully mutually exclusive
             if (hasOpenCheckbox && hasOpenCheckbox.checked) {
-                // Show Open sub-categories first
-                toggleInclusiveTypesToggle();
-                // Then show Inclusive Types section if it was previously selected
+                hideInternalSections();
                 toggleInclusiveTypesSection();
-                handleCategoryExclusivity(hasOpenCheckbox);
+                showDoubleDasturSections();
             } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
-                // Show Internal sub-categories first
+                hideOpenSections();
                 toggleInternalSubcategories();
-                // Then show Internal Inclusive Types if they were previously selected
                 toggleInternalInclusiveTypesSection();
-                handleCategoryExclusivity(hasInternalCheckbox);
+                hideDoubleDasturSections();
             } else if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
-                handleCategoryExclusivity(isInternalAppraisalCheckbox);
+                hideOpenSections();
+                hideInternalSections();
+                hideDoubleDasturSections();
+            } else if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
+                toggleInclusiveTypesSection();
+                hideDoubleDasturSections();
             } else {
-                // No category selected - all enabled
-                toggleInclusiveTypesToggle();
                 toggleInclusiveTypesSection();
                 toggleInternalSubcategories();
                 toggleInternalInclusiveTypesSection();
             }
+            syncExclusivity();
             updateHiddenFields();
-            updateCategoryDisplay(); // Initialize preview
+            updateCategoryDisplay();
 
             console.log('✅ Checkbox states AFTER initialization:', {
                 hasOpenChecked: hasOpenCheckbox?.checked,
@@ -2118,7 +2309,6 @@
                 'notice_no': { preview: 'preview-notice-no', default: '-' },
                 'advertisement_no': { preview: 'preview-adv-no', default: '-' },
                 'service_group': { preview: 'preview-service', default: '-' },
-                'number_of_posts': { preview: 'preview-posts', default: '-' },
                 'minimum_qualification': { preview: 'preview-qualification', default: 'Not entered...' },
                 'application_fee': { preview: 'preview-application-fee', default: '-' },
                 'double_dastur_fee': { preview: 'preview-double-dastur-fee', default: '-' }
@@ -2195,7 +2385,7 @@
                 const pos = (document.getElementById('position_input').value || '').trim();
                 const lvl = (document.getElementById('level_input').value || '').trim();
                 const positionLevel = lvl ? pos + ' - ' + lvl : pos;
-                document.getElementById('hidden_title').value = positionLevel;
+                document.getElementById('hidden_title').value = pos;
                 document.getElementById('hidden_description').value = 'Position: ' + positionLevel;
                 document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
 
@@ -2242,6 +2432,8 @@
                     hiddenCategoryField.value = 'internal';
                 } else if (hasOpenCheckbox && hasOpenCheckbox.checked) {
                     hiddenCategoryField.value = 'open';
+                } else {
+                    hiddenCategoryField.value = 'inclusive';
                 }
 
                 // Set inclusive_type (first checked inclusive type)
@@ -2254,7 +2446,7 @@
                 const posStr = (document.getElementById('position_input').value || '').trim();
                 const lvlStr = (document.getElementById('level_input').value || '').trim();
                 const positionLevel = lvlStr ? posStr + ' - ' + lvlStr : posStr;
-                document.getElementById('hidden_title').value = positionLevel;
+                document.getElementById('hidden_title').value = posStr;
 
                 let descriptionText = 'Position: ' + positionLevel + '\n' +
                     'Service/Group: ' + document.getElementById('service_group').value + '\n';
@@ -2299,7 +2491,8 @@
                 }
 
                 descriptionText += 'Categories: ' + (categories.length > 0 ? categories.join(', ') : 'N/A') + '\n';
-                descriptionText += 'Number of Posts: ' + document.getElementById('number_of_posts').value;
+                var npEl = document.getElementById('number_of_posts');
+                descriptionText += 'Number of Posts: ' + (npEl ? npEl.value : '');
 
                 document.getElementById('hidden_description').value = descriptionText;
                 document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
@@ -2605,5 +2798,186 @@ $(function () {
         }
     }, true); // capture phase — fires before other listeners
 });
+</script>
+
+{{-- Category Fee Management --}}
+<script>
+;(function () {
+    var existingFees = @json(old('category_fees', $job->category_fees ?? []));
+
+    var feeLabels = {
+        'open':                              { en: 'Open Application Fee',                    np: 'खुल्ला आवेदन शुल्क' },
+        'inclusive_Women':                   { en: 'Inclusive (Women) Fee',                   np: 'समावेशी (महिला) शुल्क' },
+        'inclusive_A.J':                     { en: 'Inclusive (A.J) Fee',                     np: 'समावेशी (आ.ज.) शुल्क' },
+        'inclusive_Madhesi':                 { en: 'Inclusive (Madhesi) Fee',                 np: 'समावेशी (मधेसी) शुल्क' },
+        'inclusive_Janajati':                { en: 'Inclusive (Janajati) Fee',                np: 'समावेशी (जनजाति) शुल्क' },
+        'inclusive_Apanga':                  { en: 'Inclusive (Apanga) Fee',                  np: 'समावेशी (अपांग) शुल्क' },
+        'inclusive_Dalit':                   { en: 'Inclusive (Dalit) Fee',                   np: 'समावेशी (दलित) शुल्क' },
+        'inclusive_Pichadiyeko_Chetra':      { en: 'Inclusive (Pichadiyeko Chetra) Fee',      np: 'समावेशी (पिछडिएको) शुल्क' },
+        'internal_open':                     { en: 'Internal Open Fee',                       np: 'आन्तरिक खुल्ला शुल्क' },
+        'internal_inclusive_Women':          { en: 'Internal Inclusive (Women) Fee',          np: 'आन्तरिक समावेशी (महिला) शुल्क' },
+        'internal_inclusive_A.J':            { en: 'Internal Inclusive (A.J) Fee',            np: 'आन्तरिक समावेशी (आ.ज.) शुल्क' },
+        'internal_inclusive_Madhesi':        { en: 'Internal Inclusive (Madhesi) Fee',        np: 'आन्तरिक समावेशी (मधेसी) शुल्क' },
+        'internal_inclusive_Janajati':       { en: 'Internal Inclusive (Janajati) Fee',       np: 'आन्तरिक समावेशी (जनजाति) शुल्क' },
+        'internal_inclusive_Apanga':         { en: 'Internal Inclusive (Apanga) Fee',         np: 'आन्तरिक समावेशी (अपांग) शुल्क' },
+        'internal_inclusive_Dalit':          { en: 'Internal Inclusive (Dalit) Fee',          np: 'आन्तरिक समावेशी (दलित) शुल्क' },
+        'internal_inclusive_Pichadiyeko_Chetra': { en: 'Internal Inclusive (Pichadiyeko Chetra) Fee', np: 'आन्तरिक समावेशी (पिछडिएको) शुल्क' },
+    };
+
+    function feeKey(prefix, value) {
+        return prefix + value.replace(/\s+/g, '_');
+    }
+
+    function getFeeKeys() {
+        var cbOpen          = document.getElementById('has_open');
+        var cbInternal      = document.getElementById('has_internal');
+        var cbAppraisal     = document.getElementById('is_internal_appraisal');
+        var cbInclToggle    = document.getElementById('has_inclusive_toggle');
+        var cbIntOpenCb     = document.getElementById('has_internal_open');
+        var cbIntInclToggle = document.getElementById('has_internal_inclusive_toggle');
+
+        var isOpen      = cbOpen      && cbOpen.checked;
+        var isInternal  = cbInternal  && cbInternal.checked;
+        var isAppraisal = cbAppraisal && cbAppraisal.checked;
+
+        if (isAppraisal) return null;
+
+        var keys = [];
+
+        if (isOpen) {
+            keys.push('open');
+        }
+
+        if (cbInclToggle && cbInclToggle.checked) {
+            document.querySelectorAll('.inclusive-type-checkbox:checked').forEach(function (cb) {
+                keys.push(feeKey('inclusive_', cb.value));
+            });
+        }
+
+        if (isInternal) {
+            if (cbIntOpenCb && cbIntOpenCb.checked) keys.push('internal_open');
+            if (cbIntInclToggle && cbIntInclToggle.checked) {
+                document.querySelectorAll('.internal-inclusive-type-checkbox:checked').forEach(function (cb) {
+                    keys.push(feeKey('internal_inclusive_', cb.value));
+                });
+            }
+        }
+
+        return keys;
+    }
+
+    function updateFeeFields() {
+        var container   = document.getElementById('individual-fees');
+        var totalInput  = document.getElementById('application_fee');
+        var note        = document.getElementById('fee-total-note');
+        var cbAppraisal = document.getElementById('is_internal_appraisal');
+        var isAppraisal = cbAppraisal && cbAppraisal.checked;
+
+        if (!container || !totalInput) return;
+
+        if (isAppraisal) {
+            container.innerHTML = '';
+            totalInput.readOnly = false;
+            totalInput.placeholder = 'Enter Application Fee';
+            if (note) note.textContent = 'Enter the application fee directly for Internal Appraisal.';
+            return;
+        }
+
+        var keys = getFeeKeys();
+
+        if (!keys || keys.length === 0) {
+            container.innerHTML = '';
+            totalInput.readOnly = true;
+            totalInput.value = '';
+            totalInput.placeholder = 'Select a category above to enter fees';
+            if (note) note.textContent = 'Select a category above to enter individual fees.';
+            return;
+        }
+
+        totalInput.readOnly = true;
+        if (note) note.textContent = 'Auto-calculated from individual fees above.';
+
+        var saved = {};
+        container.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            if (inp.value !== '') saved[inp.dataset.feeKey] = inp.value;
+        });
+
+        container.innerHTML = '';
+
+        keys.forEach(function (key) {
+            var info = feeLabels[key] || { en: key, np: '' };
+            var val  = saved[key] !== undefined ? saved[key]
+                     : (existingFees[key] !== undefined ? existingFees[key] : '');
+
+            var div = document.createElement('div');
+            div.className = 'fee-type-row mb-2';
+            div.innerHTML =
+                '<div class="input-group">' +
+                    '<span class="input-group-text fw-semibold" style="min-width:220px;background:#f9fafb;font-size:0.875rem;">' +
+                        info.en +
+                    '</span>' +
+                    '<input type="number" ' +
+                           'class="form-control form-control-lg category-fee-input" ' +
+                           'name="category_fees[' + key + ']" ' +
+                           'data-fee-key="' + key + '" ' +
+                           'value="' + val + '" ' +
+                           'placeholder="Enter amount (NPR)" ' +
+                           'min="0" step="0.01">' +
+                '</div>';
+            container.appendChild(div);
+        });
+
+        container.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            inp.addEventListener('input', recalculateTotal);
+        });
+
+        recalculateTotal();
+    }
+
+    function recalculateTotal() {
+        var totalInput = document.getElementById('application_fee');
+        if (!totalInput || !totalInput.readOnly) return;
+
+        var sum = 0;
+        document.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            sum += parseFloat(inp.value) || 0;
+        });
+
+        totalInput.value = sum > 0 ? sum : '';
+
+        var previewEl = document.getElementById('preview-application-fee');
+        if (previewEl) {
+            previewEl.textContent = sum > 0 ? 'NPR ' + sum.toLocaleString() : '-';
+        }
+    }
+
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.id === 'application_fee' && !e.target.readOnly) {
+            var previewEl = document.getElementById('preview-application-fee');
+            if (previewEl) {
+                var val = parseFloat(e.target.value) || 0;
+                previewEl.textContent = val > 0 ? 'NPR ' + val.toLocaleString() : '-';
+            }
+        }
+    });
+
+    var watchIds = ['has_open','has_internal','is_internal_appraisal',
+                    'has_inclusive_toggle','has_internal_open','has_internal_inclusive_toggle'];
+    var watchClasses = ['inclusive-type-checkbox','internal-inclusive-type-checkbox',
+                        'category-checkbox','internal-subcategory-checkbox'];
+
+    document.addEventListener('change', function (e) {
+        var el = e.target;
+        var relevant = watchIds.indexOf(el.id) !== -1 ||
+                       watchClasses.some(function (c) { return el.classList.contains(c); });
+        if (relevant) setTimeout(updateFeeFields, 60);
+    });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateFeeFields);
+    } else {
+        setTimeout(updateFeeFields, 200);
+    }
+})();
 </script>
 @endsection

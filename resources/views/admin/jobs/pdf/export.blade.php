@@ -80,7 +80,7 @@
                                 }
                             } else { $types[] = 'Inclusive'; }
                         }
-                        if ($job->has_internal)          { $types[] = 'Internal'; }
+                        if ($job->has_internal && !$job->has_internal_open && !$job->has_internal_inclusive) { $types[] = 'Internal'; }
                         if ($job->has_internal_open)     { $types[] = 'Internal/Open'; }
                         if ($job->has_internal_inclusive) {
                             $rawInt = $job->internal_inclusive_types;

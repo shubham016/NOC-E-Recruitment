@@ -82,11 +82,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'changePassword'])->name('change-password.post');
         Route::get('/settings', [App\Http\Controllers\Admin\AdminProfileController::class, 'settings'])->name('settings');
 
+        // Reports
+        Route::get('/reports', [App\Http\Controllers\Admin\AdminReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/preview/applications', [App\Http\Controllers\Admin\AdminReportController::class, 'previewApplications'])->name('reports.preview.applications');
+        Route::get('/reports/preview/candidates',   [App\Http\Controllers\Admin\AdminReportController::class, 'previewCandidates'])->name('reports.preview.candidates');
+        Route::get('/reports/preview/vacancies',    [App\Http\Controllers\Admin\AdminReportController::class, 'previewVacancies'])->name('reports.preview.vacancies');
+        Route::get('/reports/preview/reviewers',    [App\Http\Controllers\Admin\AdminReportController::class, 'previewReviewers'])->name('reports.preview.reviewers');
+        Route::get('/reports/preview/approvers',    [App\Http\Controllers\Admin\AdminReportController::class, 'previewApprovers'])->name('reports.preview.approvers');
+        Route::get('/reports/download/applications',[App\Http\Controllers\Admin\AdminReportController::class, 'downloadApplications'])->name('reports.download.applications');
+        Route::get('/reports/download/candidates',  [App\Http\Controllers\Admin\AdminReportController::class, 'downloadCandidates'])->name('reports.download.candidates');
+        Route::get('/reports/download/vacancies',   [App\Http\Controllers\Admin\AdminReportController::class, 'downloadVacancies'])->name('reports.download.vacancies');
+        Route::get('/reports/download/reviewers',   [App\Http\Controllers\Admin\AdminReportController::class, 'downloadReviewers'])->name('reports.download.reviewers');
+        Route::get('/reports/download/approvers',   [App\Http\Controllers\Admin\AdminReportController::class, 'downloadApprovers'])->name('reports.download.approvers');
+
         /*
         | Job Management Routes
         */
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [VacancyManagementController::class, 'index'])->name('index');
+            Route::get('/lookup-position', [VacancyManagementController::class, 'lookupByPosition'])->name('lookupPosition');
             Route::get('/create', [VacancyManagementController::class, 'create'])->name('create');
             Route::get('/download', [VacancyManagementController::class, 'downloadPDF'])->name('download');
             Route::get('/preview', [VacancyManagementController::class, 'previewPDF'])->name('preview');
@@ -109,6 +123,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{application}', [AdminApplicationController::class, 'show'])->name('show');
             Route::post('/{application}/update-status', [AdminApplicationController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{application}/assign-reviewer', [AdminApplicationController::class, 'assignReviewer'])->name('assignReviewer');
+            Route::post('/{application}/assign-approver', [AdminApplicationController::class, 'assignApprover'])->name('assignApprover');
             Route::delete('/{application}', [AdminApplicationController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-action', [AdminApplicationController::class, 'bulkAction'])->name('bulkAction');
             Route::delete('/{application}/reset-payment', [AdminApplicationController::class, 'resetPayment'])->name('resetPayment');
@@ -372,6 +387,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/connectips/start/{draftId}', [ShradhaPaymentController::class, 'startConnectIps'])->name('connectips.start');
             Route::get('/connectips/success', [ShradhaPaymentController::class, 'connectipsSuccess'])->name('connectips.success');
             Route::get('/connectips/failure', [ShradhaPaymentController::class, 'connectipsFailure'])->name('connectips.failure');
+
+            // Dev-only bypass (only works in local/development environment)
+            Route::post('/bypass/{draftId}', [PaymentController::class, 'bypass'])->name('bypass');
         });
 
         // Admit Card Routes

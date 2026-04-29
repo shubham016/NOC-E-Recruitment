@@ -142,129 +142,183 @@
                 <div class="step" id="step1">
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
-                    {{-- Category Selection (if multiple categories available) --}}
-                    @if($job && ($job->category == 'internal_appraisal' || ($job->has_open && $job->has_inclusive) || ($job->has_open && !$job->has_inclusive) || (!$job->has_open && $job->has_inclusive)))
+                    {{-- Category Selection --}}
+                    @if($job)
+                    @php
+                        $savedCategories = $draftApplication->applied_category ?? [];
+                        if (!is_array($savedCategories)) $savedCategories = [$savedCategories];
+                        $oldCategories   = old('applied_category', $savedCategories);
+                        $groupJobs       = $groupJobs ?? collect([$job]);
+                    @endphp
+
                     <div class="alert alert-info mb-4">
                         <h6 class="mb-3">
                             <i class="bi bi-info-circle-fill me-2"></i><strong>Select Application Category</strong>
                             <span class="nepali-text ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
                         </h6>
                         <p class="small mb-3">
-                            This vacancy accepts applications from multiple categories. Please select the category under which you wish to apply.
-                            <br><span class="text-muted">यो रिक्त पदले धेरै श्रेणीहरूबाट आवेदनहरू स्वीकार गर्दछ। कृपया तपाईं आवेदन दिन चाहनुभएको श्रेणी छान्नुहोस्।</span>
+                            Select one or more categories under which you wish to apply.
+                            <br><span class="text-muted">तपाईं आवेदन दिन चाहनुभएको एक वा बढी श्रेणीहरू छान्नुहोस्।</span>
                         </p>
 
                         @if($job->category == 'internal_appraisal')
-                            {{-- Internal Appraisal Only --}}
-                            <input type="hidden" name="applied_category" value="internal_appraisal">
-                            <div class="form-check form-check-inline border rounded p-3 bg-light">
-                                <input class="form-check-input" type="radio" name="applied_category_display" id="cat_internal_appraisal" value="internal_appraisal" checked disabled>
-                                <label class="form-check-label fw-bold" for="cat_internal_appraisal">
+                            {{-- Internal Appraisal: fixed, no choice needed --}}
+                            <input type="hidden" name="applied_category[]" value="internal_appraisal">
+                            <div class="border rounded p-3 bg-light d-inline-block">
+                                <span class="fw-bold">
                                     <i class="bi bi-star-fill text-warning me-1"></i>Internal Appraisal (आन्तरिक बढुवा)
-                                    <br><small class="text-muted">Performance-based promotion</small>
-                                </label>
+                                </span>
+                                <br><small class="text-muted">Performance-based promotion</small>
+                                <div class="mt-1 text-primary small fw-semibold">{{ $job->advertisement_no ?? '' }}</div>
                             </div>
                         @else
-                            {{-- Open and/or Inclusive --}}
-                            <div class="d-flex flex-wrap gap-3">
-                                @if($job->has_open || $job->category == 'open')
-                                    <div class="form-check form-check-inline border rounded p-3">
-                                        <input class="form-check-input" type="radio" name="applied_category" id="cat_open" value="open"
-                                            {{ old('applied_category', $draftApplication->applied_category ?? '') == 'open' ? 'checked' : '' }} required>
-                                        <label class="form-check-label fw-bold" for="cat_open">
-                                            <i class="bi bi-check-circle-fill text-success me-1"></i>Open (खुल्ला)
-                                            <br><small class="text-muted">Open for all eligible candidates</small>
-                                        </label>
+                            {{-- Loop over all sibling jobs sharing the same position+level (same reference point) --}}
+                            <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">
+
+                                @foreach($groupJobs as $gjIdx => $gJob)
+                                @php
+                                    $gAdvNo = $gJob->advertisement_no ?? '';
+                                    $gInclusiveTypes = [];
+                                    if ($gJob->has_inclusive || $gJob->category == 'inclusive') {
+                                        if ($gJob->inclusive_type) {
+                                            $gDecoded = json_decode($gJob->inclusive_type, true);
+                                            $gInclusiveTypes = is_array($gDecoded) ? $gDecoded : [$gJob->inclusive_type];
+                                        }
+                                    }
+                                    $gInternalInclusiveTypes = [];
+                                    if ($gJob->has_internal_inclusive && is_array($gJob->internal_inclusive_types)) {
+                                        $gInternalInclusiveTypes = $gJob->internal_inclusive_types;
+                                    }
+                                @endphp
+
+                                {{-- Open --}}
+                                @if($gJob->has_open || $gJob->category == 'open')
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_open_{{ $gjIdx }}" value="open"
+                                                   {{ in_array('open', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_open_{{ $gjIdx }}">
+                                                Open (खुल्ला)
+                                                <br><small class="text-muted fw-normal">Open for all eligible candidates</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
                                     </div>
                                 @endif
 
-                                @if($job->has_inclusive || $job->category == 'inclusive')
-                                    @php
-                                        $inclusiveTypes = [];
-                                        if ($job->inclusive_type) {
-                                            $inclusiveTypes = [$job->inclusive_type];
-                                        }
-                                    @endphp
-
-                                    @if(count($inclusiveTypes) > 0)
-                                        @foreach($inclusiveTypes as $type)
-                                            <div class="form-check form-check-inline border rounded p-3">
-                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive_{{ $loop->index }}" value="inclusive"
-                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
-                                                <label class="form-check-label fw-bold" for="cat_inclusive_{{ $loop->index }}">
-                                                    <i class="bi bi-people-fill text-info me-1"></i>Inclusive - {{ $type }} (समावेशी - {{ $type }})
-                                                    <br><small class="text-muted">Reserved for inclusive category</small>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div class="form-check form-check-inline border rounded p-3">
-                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_inclusive" value="inclusive"
-                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'inclusive' ? 'checked' : '' }} required>
-                                            <label class="form-check-label fw-bold" for="cat_inclusive">
-                                                <i class="bi bi-people-fill text-info me-1"></i>Inclusive (समावेशी)
-                                                <br><small class="text-muted">Reserved for inclusive category</small>
+                                {{-- Inclusive types (each as separate checkbox) --}}
+                                @foreach($gInclusiveTypes as $idx => $type)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}_{{ $idx }}" value="inclusive"
+                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}_{{ $idx }}">
+                                                Inclusive — {{ $type }}
+                                                <br><small class="text-muted fw-normal">समावेशी — {{ $type }}</small>
                                             </label>
                                         </div>
-                                    @endif
-                                @endif
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    </div>
+                                @endforeach
 
-                                @if($job->has_internal || $job->category == 'internal')
-                                    {{-- Internal Open Sub-category --}}
-                                    @if($job->has_internal_open)
-                                        <div class="form-check form-check-inline border rounded p-3">
-                                            <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_open" value="internal_open"
-                                                {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_open' ? 'checked' : '' }} required>
-                                            <label class="form-check-label fw-bold" for="cat_internal_open">
-                                                <i class="bi bi-door-open-fill text-warning me-1"></i>Internal Open (All NOC Staff)
-                                                <br><small class="text-muted">आन्तरिक खुल्ला - सबै NOC कर्मचारीका लागि</small>
+                                {{-- If inclusive but no types listed, show generic --}}
+                                @if(($gJob->has_inclusive || $gJob->category == 'inclusive') && count($gInclusiveTypes) === 0)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}" value="inclusive"
+                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}">
+                                                Inclusive (समावेशी)
+                                                <br><small class="text-muted fw-normal">Reserved for inclusive category</small>
                                             </label>
                                         </div>
-                                    @endif
-
-                                    {{-- Internal Inclusive Sub-categories --}}
-                                    @if($job->has_internal_inclusive)
-                                        @php
-                                            $internalInclusiveTypes = [];
-                                            if (isset($job->internal_inclusive_types) && is_array($job->internal_inclusive_types)) {
-                                                $internalInclusiveTypes = $job->internal_inclusive_types;
-                                            }
-                                        @endphp
-
-                                        @if(count($internalInclusiveTypes) > 0)
-                                            @foreach($internalInclusiveTypes as $type)
-                                                <div class="form-check form-check-inline border rounded p-3">
-                                                    <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive_{{ $loop->index }}" value="internal_inclusive"
-                                                        data-inclusive-type="{{ $type }}"
-                                                        {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold" for="cat_internal_inclusive_{{ $loop->index }}">
-                                                        <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive - {{ $type }}
-                                                        <br><small class="text-muted">आन्तरिक समावेशी - {{ $type }} (NOC only)</small>
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                            {{-- Hidden field to store the selected inclusive type --}}
-                                            <input type="hidden" name="applied_inclusive_type" id="applied_inclusive_type" value="{{ old('applied_inclusive_type', $draftApplication->applied_inclusive_type ?? '') }}">
-                                        @else
-                                            <div class="form-check form-check-inline border rounded p-3">
-                                                <input class="form-check-input" type="radio" name="applied_category" id="cat_internal_inclusive" value="internal_inclusive"
-                                                    {{ old('applied_category', $draftApplication->applied_category ?? '') == 'internal_inclusive' ? 'checked' : '' }} required>
-                                                <label class="form-check-label fw-bold" for="cat_internal_inclusive">
-                                                    <i class="bi bi-people-fill me-1" style="color: #d97706;"></i>Internal Inclusive
-                                                    <br><small class="text-muted">आन्तरिक समावेशी (NOC only)</small>
-                                                </label>
-                                            </div>
-                                        @endif
-                                    @endif
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    </div>
                                 @endif
+
+                                {{-- Internal Open --}}
+                                @if(($gJob->has_internal || $gJob->category == 'internal') && $gJob->has_internal_open)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_internal_open_{{ $gjIdx }}" value="internal_open"
+                                                   {{ in_array('internal_open', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_internal_open_{{ $gjIdx }}">
+                                                <i class="bi bi-door-open-fill text-warning me-1"></i>Internal Open
+                                                <br><small class="text-muted fw-normal">आन्तरिक खुल्ला — All NOC Staff</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    </div>
+                                @endif
+
+                                {{-- Internal Inclusive types --}}
+                                @foreach($gInternalInclusiveTypes as $idx => $type)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_int_incl_{{ $gjIdx }}_{{ $idx }}" value="internal_inclusive"
+                                                   {{ in_array('internal_inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_int_incl_{{ $gjIdx }}_{{ $idx }}">
+                                                <i class="bi bi-people-fill me-1" style="color:#d97706;"></i>Internal Inclusive — {{ $type }}
+                                                <br><small class="text-muted fw-normal">आन्तरिक समावेशी — {{ $type }} (NOC only)</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    </div>
+                                @endforeach
+
+                                @endforeach{{-- end $groupJobs loop --}}
+
+                            </div>{{-- end flex wrap --}}
+
+                            <div id="categoryError" class="text-danger small mt-2" style="display:none;">
+                                Please select at least one category.
                             </div>
-
                             @error('applied_category')
                                 <div class="text-danger small mt-2">{{ $message }}</div>
                             @enderror
                         @endif
                     </div>
                     @endif
+
+                    <script>
+                    // Show/hide advertisement number and update the advertisement_no field on category change
+                    document.addEventListener('DOMContentLoaded', function () {
+                        function updateAdvertisementNo() {
+                            var checked = document.querySelectorAll('.category-cb:checked');
+                            var adNos = [];
+                            var seen = {};
+                            checked.forEach(function(cb) {
+                                var option = cb.closest('.category-option');
+                                if (option) {
+                                    var adv = option.getAttribute('data-adv-no');
+                                    if (adv && !seen[adv]) {
+                                        seen[adv] = true;
+                                        adNos.push(adv);
+                                    }
+                                }
+                            });
+                            var field = document.getElementById('advertisement_no');
+                            if (field) field.value = adNos.join(', ');
+                        }
+
+                        document.querySelectorAll('.category-cb').forEach(function (cb) {
+                            var advDiv = cb.closest('.category-option').querySelector('.adv-no-display');
+                            if (cb.checked && advDiv) advDiv.style.display = '';
+                            cb.addEventListener('change', function () {
+                                if (advDiv) advDiv.style.display = this.checked ? '' : 'none';
+                                updateAdvertisementNo();
+                            });
+                        });
+
+                        // Initialize advertisement_no field on page load
+                        updateAdvertisementNo();
+                    });
+                    </script>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -317,7 +371,7 @@
                         <div class="col-md-4">
                             <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
                             <input type="text" name="advertisement_no" id="advertisement_no" class="form-control"
-                                value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? $job->advertisement_no ?? '') }}" readonly>
+                                value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
@@ -952,10 +1006,23 @@
                                     <div>Pay with ConnectIPS</div>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                                <button type="button" id="saveDraftBtn" class="btn btn-danger">Save Application and Pay Later</button>
+                        </div>
+
+                        @if(app()->environment('local', 'development'))
+                        <div class="alert alert-warning mt-3 text-start">
+                            <strong>Development Mode</strong> — Payment gateways require a public HTTPS URL and won't work on <code>localhost</code>.
+                            Use the bypass below to test the full application flow, or run <code>ngrok http 8000</code> and update <code>ESEWA_SUCCESS_URL</code> in <code>.env</code>.
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-warning" onclick="bypassPayment()">
+                                    Bypass Payment (Dev Only)
+                                </button>
                             </div>
+                        </div>
+                        @endif
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                            <button type="button" id="saveDraftBtn" class="btn btn-danger">Save Application and Pay Later</button>
                         </div>
                     </div>
                 </div>
@@ -1409,6 +1476,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Final submit validation
     form.addEventListener('submit', e => {
+        // Validate at least one category checkbox selected (skip for internal_appraisal hidden input)
+        const catCheckboxes = document.querySelectorAll('.category-cb');
+        if (catCheckboxes.length > 0) {
+            const anyChecked = Array.from(catCheckboxes).some(cb => cb.checked);
+            if (!anyChecked) {
+                e.preventDefault();
+                showStep(1);
+                const errDiv = document.getElementById('categoryError');
+                if (errDiv) errDiv.style.display = '';
+                showAutoSaveStatus('⚠ Please select at least one category', 'danger');
+                return;
+            } else {
+                const errDiv = document.getElementById('categoryError');
+                if (errDiv) errDiv.style.display = 'none';
+            }
+        }
         for (let i = 1; i <= totalSteps; i++) { if (!validateStep(i)) { showStep(i); e.preventDefault(); showAutoSaveStatus('⚠ Please complete all required fields', 'danger'); return; } }
         clearTimeout(autoSaveTimeout); showAutoSaveStatus('📤 Submitting...', 'light');
     });
@@ -1458,6 +1541,28 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!draftId) { alert('Application draft not found. Please complete the form properly.'); return; }
         const urls = { esewa: '/candidate/payment/esewa/start/', khalti: '/candidate/payment/khalti/start/', connectips: '/candidate/payment/connectips/start/' };
         if (urls[gateway]) window.location.href = urls[gateway] + draftId;
+    };
+
+    window.bypassPayment = function () {
+        const draftId = document.getElementById('draft_id')?.value;
+        if (!draftId) { alert('Save the draft first before bypassing payment.'); return; }
+        if (!confirm('Mark this application as submitted without payment? (Dev only)')) return;
+        fetch('/candidate/payment/bypass/' + draftId, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert('Bypass failed: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(() => alert('Network error during bypass.'));
     };
 });
 

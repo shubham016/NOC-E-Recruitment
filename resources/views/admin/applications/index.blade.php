@@ -124,10 +124,10 @@
                 <p class="gov-page-subtitle">Nepal Oil Corporation - E-Recruitment System</p>
             </div>
             <div style="position: relative; z-index: 10;">
-                <a href="{{ route('admin.dashboard') }}" class="btn"
-                   style="border: 2px solid white; color: white; padding: 0.5rem 1.5rem; font-weight: 600; border-radius: 6px; text-decoration: none; transition: all 0.2s; cursor: pointer; background: transparent;">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-                </a>
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#bulkActionModal"
+                   style="border: 2px solid white; color: white; padding: 0.5rem 1.5rem; font-weight: 600; border-radius: 6px; transition: all 0.2s; cursor: pointer; background: transparent;">
+                    <i class="bi bi-lightning-fill me-1"></i> Bulk Actions
+                </button>
             </div>
         </div>
     </div>
@@ -268,9 +268,6 @@
                     </button>
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="button" id="bulkActionButton" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#bulkActionModal">
-                        <i class="bi bi-lightning-fill me-1"></i>Bulk Actions
-                    </button>
                     <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
                         <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
                     </button>
@@ -307,6 +304,7 @@
                                 <th class="text-center text-uppercase compact-col-noc">NOC Employee</th>
                                 <th class="text-center text-uppercase compact-col-code">Employee Code</th>
                                 <th class="text-center text-uppercase">Assigned Reviewer</th>
+                                <th class="text-center text-uppercase">Assigned Approver</th>
                                 <th class="text-center text-uppercase">Status</th>
                                 <th class="text-center text-uppercase">Actions</th>
                             </tr>
@@ -393,6 +391,18 @@
                                             <span class="gov-badge gov-badge-secondary">Not Assigned</span>
                                         @endif
                                     </td>
+                                    <td>
+                                        @if($application->approver)
+                                            <div class="gov-font-semibold gov-text-sm" style="color: #1f2937;">
+                                                {{ $application->approver->name }}
+                                            </div>
+                                            <small class="gov-text-sm" style="color: #6b7280;">
+                                                {{ Str::limit($application->approver->email, 20) }}
+                                            </small>
+                                        @else
+                                            <span class="gov-badge gov-badge-secondary">Not Assigned</span>
+                                        @endif
+                                    </td>
                                     <td class="text-center">
                                         <div class="gov-font-semibold gov-text-sm" style="color: #1f2937; font-weight: 600;">
                                             {{ $application->status_label }}
@@ -411,6 +421,14 @@
                                                     data-bs-target="#assignModal{{ $application->id }}"
                                                     title="Assign Reviewer">
                                                 <i class="bi bi-person-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                    class="gov-action-btn"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#assignApproverModal{{ $application->id }}"
+                                                    title="Assign Approver"
+                                                    style="background-color: #7c3aed; color: #fff; border-color: #7c3aed;">
+                                                <i class="bi bi-person-check-fill"></i>
                                             </button>
                                             <button type="button"
                                                     class="gov-action-btn"
@@ -493,15 +511,47 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <!-- <div class="gov-alert gov-alert-info mb-0">
-                                                        <i class="bi bi-info-circle"></i>
-                                                        <small>Application status will automatically change to "Approved"</small>
-                                                    </div> -->
                                                 </div>
                                                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
                                                     <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                     <button type="submit" class="gov-btn gov-btn-primary">
                                                         <i class="bi bi-person-check"></i> Assign Reviewer
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Assign Approver Modal -->
+                                <div class="modal fade" id="assignApproverModal{{ $application->id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="border-radius: 14px; border: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                                            <form action="{{ route('admin.applications.assignApprover', $application) }}" method="POST">
+                                                @csrf
+                                                <div class="modal-header" style="background: linear-gradient(to bottom, white 0%, #f9fafb 100%); border-bottom: 2px solid #e5e7eb; padding: 1.5rem;">
+                                                    <h5 class="modal-title fw-bold" style="color: #1f2937;">
+                                                        <i class="bi bi-person-check-fill me-2" style="color: #7c3aed;"></i>Assign Approver
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <div class="mb-3">
+                                                        <label class="gov-form-label">Select Approver</label>
+                                                        <select name="approver_id" class="form-select gov-form-select" required style="height: 50px;">
+                                                            <option value="">-- Choose Approver --</option>
+                                                            @foreach($approvers as $approver)
+                                                                <option value="{{ $approver->id }}" {{ $application->approver_id == $approver->id ? 'selected' : '' }}>
+                                                                    {{ $approver->name }} ({{ $approver->email }})
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
+                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="gov-btn gov-btn-primary" style="background-color: #7c3aed; border-color: #7c3aed;">
+                                                        <i class="bi bi-person-check-fill"></i> Assign Approver
                                                     </button>
                                                 </div>
                                             </form>
@@ -584,7 +634,7 @@
                             <option value="">-- Choose Action --</option>
                             <option value="update_status">Update Status</option>
                             <option value="assign_reviewer">Assign Reviewer</option>
-                            <option value="delete">Delete Applications</option>
+                            <option value="assign_approver">Assign Approver</option>
                         </select>
                     </div>
 
@@ -602,14 +652,40 @@
                         <select name="reviewer_id" class="form-select gov-form-select">
                             <option value="">-- Select Reviewer --</option>
                             @foreach($reviewers as $reviewer)
-                                <option value="{{ $reviewer->id }}">{{ $reviewer->name }}</option>
+                                <option value="{{ $reviewer->id }}">{{ $reviewer->name }} ({{ $reviewer->email }})</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="gov-alert gov-alert-info mb-0">
+                    <div class="mb-3 d-none" id="approverSelection">
+                        <label class="gov-form-label">Assign to Approver</label>
+                        <select name="approver_id" class="form-select gov-form-select">
+                            <option value="">-- Select Approver --</option>
+                            @foreach($approvers as $approver)
+                                <option value="{{ $approver->id }}">{{ $approver->name }} ({{ $approver->email }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Advertisement Number assignment — shown when reviewer or approver is selected --}}
+                    <div class="mb-3 d-none" id="advertisementSelection">
+                        <hr class="my-3">
+                        <label class="gov-form-label fw-bold">Assign by Advertisement Number</label>
+                        <small class="d-block text-muted mb-2">Select an advertisement to assign <strong>all its applications</strong> to the person above.</small>
+                        <select name="job_posting_id" id="jobPostingSelect" class="form-select gov-form-select">
+                            <option value="">-- Select Advertisement Number --</option>
+                            @foreach($vacancies as $vacancy)
+                                <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->applications_count }}">
+                                    {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - Level ' . $vacancy->level : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted mt-1 d-block">Leave blank to use checkbox selection instead.</small>
+                    </div>
+
+                    <div class="gov-alert gov-alert-info mb-0" id="modalInfoAlert">
                         <i class="bi bi-info-circle"></i>
-                        <strong id="modalSelectedCount">0</strong> application(s) selected
+                        <span id="modalInfoText"><span id="modalSelectedCount">0</span> application(s) selected via checkboxes</span>
                     </div>
                 </div>
                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
@@ -701,103 +777,7 @@
             console.error('✗ Bulk Action Modal NOT found');
         }
 
-        // Add click listener to bulk action button for debugging
-        const bulkBtn = document.getElementById('bulkActionButton');
-        if (bulkBtn) {
-            console.log('✓ Bulk Action Button found via ID');
-            console.log('Button element:', bulkBtn);
-            console.log('Button computed style pointer-events:', window.getComputedStyle(bulkBtn).pointerEvents);
-            console.log('Button computed style z-index:', window.getComputedStyle(bulkBtn).zIndex);
 
-            // Mouse hover test
-            bulkBtn.addEventListener('mouseenter', function() {
-                console.log('✓ Mouse hovering over bulk button');
-            });
-
-            // Additional click event listener as backup
-            bulkBtn.addEventListener('click', function(e) {
-                console.log('✓✓ Event listener fired - button clicked!');
-                console.log('Event details:', e);
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Try to open modal
-                if (modalElement) {
-                    try {
-                        const modal = new bootstrap.Modal(modalElement);
-                        modal.show();
-                        console.log('✓ Modal opened via event listener');
-                    } catch (error) {
-                        console.error('✗ Error opening modal:', error);
-                    }
-                }
-            }, true); // Use capture phase
-        } else {
-            console.error('✗ Bulk Action Button NOT found');
-        }
-
-        // Check for overlapping elements
-        setTimeout(() => {
-            const btn = document.getElementById('bulkActionButton');
-            if (btn) {
-                const rect = btn.getBoundingClientRect();
-                const elementAtPoint = document.elementFromPoint(rect.left + rect.width/2, rect.top + rect.height/2);
-                console.log('Element at button center:', elementAtPoint);
-                console.log('Is it the button?', elementAtPoint === btn || btn.contains(elementAtPoint));
-
-                if (elementAtPoint !== btn && !btn.contains(elementAtPoint)) {
-                    console.warn('⚠️ WARNING: Another element is covering the button!');
-                    console.warn('Covering element:', elementAtPoint);
-                }
-            }
-        }, 500);
-    });
-
-    // Console test functions for debugging (user can call these in browser console)
-    window.testBulkModal = function() {
-        console.log('=== Manual Modal Test ===');
-        const modalElement = document.getElementById('bulkActionModal');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-            console.log('✓ Modal opened manually via testBulkModal()');
-            return true;
-        } else {
-            console.error('✗ Modal element not found');
-            return false;
-        }
-    };
-
-    window.checkButton = function() {
-        console.log('=== Button Diagnostic ===');
-        const btn = document.getElementById('bulkActionButton');
-        if (!btn) {
-            console.error('✗ Button not found');
-            return;
-        }
-
-        console.log('✓ Button found');
-        console.log('Button HTML:', btn.outerHTML);
-        const style = window.getComputedStyle(btn);
-        console.log('Computed styles:', {
-            display: style.display,
-            visibility: style.visibility,
-            pointerEvents: style.pointerEvents,
-            cursor: style.cursor,
-            zIndex: style.zIndex,
-            position: style.position
-        });
-
-        const rect = btn.getBoundingClientRect();
-        console.log('Button position:', rect);
-        console.log('Is in viewport:', rect.top >= 0 && rect.bottom <= window.innerHeight);
-
-        const elementAtCenter = document.elementFromPoint(rect.left + rect.width/2, rect.top + rect.height/2);
-        console.log('Element at button center:', elementAtCenter);
-        console.log('Is clickable:', elementAtCenter === btn || btn.contains(elementAtCenter));
-    };
-
-    console.log('ℹ️ Test functions available: testBulkModal(), checkButton()');
 
     // Select All Checkbox
     document.getElementById('selectAll')?.addEventListener('change', function() {
@@ -822,15 +802,19 @@
     function updateSelectedCount() {
         const count = document.querySelectorAll('.application-checkbox:checked').length;
         const countElement = document.getElementById('selectedCount');
-        const modalCountElement = document.getElementById('modalSelectedCount');
         const bulkActionsBar = document.getElementById('bulkActionsBar');
 
         if (countElement) {
             countElement.textContent = count;
         }
 
-        if (modalCountElement) {
-            modalCountElement.textContent = count;
+        // Only update modal info if no advertisement number is selected
+        const jobPostingSelect = document.getElementById('jobPostingSelect');
+        if (!jobPostingSelect || !jobPostingSelect.value) {
+            const infoText = document.getElementById('modalInfoText');
+            if (infoText) {
+                infoText.innerHTML = '<span id="modalSelectedCount">' + count + '</span> application(s) selected via checkboxes';
+            }
         }
 
         // Show/hide bulk actions bar based on selection
@@ -882,42 +866,104 @@
     const bulkActionSelect = document.getElementById('bulkAction');
     if (bulkActionSelect) {
         bulkActionSelect.addEventListener('change', function() {
-            const statusDiv = document.getElementById('statusSelection');
-            const reviewerDiv = document.getElementById('reviewerSelection');
+            const statusDiv      = document.getElementById('statusSelection');
+            const reviewerDiv    = document.getElementById('reviewerSelection');
+            const approverDiv    = document.getElementById('approverSelection');
+            const advertisementDiv = document.getElementById('advertisementSelection');
 
             // Hide all sections first
-            if (statusDiv) statusDiv.classList.add('d-none');
-            if (reviewerDiv) reviewerDiv.classList.add('d-none');
+            if (statusDiv)        statusDiv.classList.add('d-none');
+            if (reviewerDiv)      reviewerDiv.classList.add('d-none');
+            if (approverDiv)      approverDiv.classList.add('d-none');
+            if (advertisementDiv) advertisementDiv.classList.add('d-none');
 
-            // Show relevant sections based on action
-            if (this.value === 'update_status' && statusDiv) {
-                statusDiv.classList.remove('d-none');
+            // Reset advertisement dropdown and info text
+            const jobPostingSelect = document.getElementById('jobPostingSelect');
+            if (jobPostingSelect) jobPostingSelect.value = '';
+            updateModalInfoText();
+
+            // Show relevant section based on action
+            if (this.value === 'update_status') {
+                if (statusDiv) statusDiv.classList.remove('d-none');
             } else if (this.value === 'assign_reviewer') {
-                if (reviewerDiv) reviewerDiv.classList.remove('d-none');
+                if (reviewerDiv)      reviewerDiv.classList.remove('d-none');
+                if (advertisementDiv) advertisementDiv.classList.remove('d-none');
+            } else if (this.value === 'assign_approver') {
+                if (approverDiv)      approverDiv.classList.remove('d-none');
+                if (advertisementDiv) advertisementDiv.classList.remove('d-none');
             }
         });
     }
+
+    // Update the info alert based on advertisement selection vs checkbox selection
+    function updateModalInfoText() {
+        const jobPostingSelect   = document.getElementById('jobPostingSelect');
+        const infoText           = document.getElementById('modalInfoText');
+        const bulkActionVal      = document.getElementById('bulkAction')?.value;
+        if (!infoText) return;
+
+        const selectedOption = jobPostingSelect ? jobPostingSelect.options[jobPostingSelect.selectedIndex] : null;
+        const jobCount       = selectedOption && selectedOption.value ? parseInt(selectedOption.dataset.count || 0) : null;
+
+        // Get the selected reviewer or approver name
+        let assigneeName = '';
+        if (bulkActionVal === 'assign_reviewer') {
+            const reviewerSel = document.querySelector('#reviewerSelection select');
+            const reviewerOpt = reviewerSel ? reviewerSel.options[reviewerSel.selectedIndex] : null;
+            if (reviewerOpt && reviewerOpt.value) assigneeName = reviewerOpt.text;
+        } else if (bulkActionVal === 'assign_approver') {
+            const approverSel = document.querySelector('#approverSelection select');
+            const approverOpt = approverSel ? approverSel.options[approverSel.selectedIndex] : null;
+            if (approverOpt && approverOpt.value) assigneeName = approverOpt.text;
+        }
+
+        if (jobCount !== null) {
+            const advLabel = selectedOption.text.trim();
+            let msg = '<strong>' + jobCount + '</strong> applications will be assigned from advertisement <strong>' + advLabel + '</strong>';
+            if (assigneeName) msg += ' to <strong>' + assigneeName + '</strong>';
+            infoText.innerHTML = msg;
+        } else {
+            const checkboxCount = document.querySelectorAll('.application-checkbox:checked').length;
+            let msg = '<span id="modalSelectedCount">' + checkboxCount + '</span> applications selected via checkboxes';
+            if (assigneeName) msg += ' — will be assigned to <strong>' + assigneeName + '</strong>';
+            infoText.innerHTML = msg;
+        }
+    }
+
+    // Wire advertisement, reviewer, and approver dropdowns to update info text
+    document.getElementById('jobPostingSelect')?.addEventListener('change', updateModalInfoText);
+    document.querySelector('#reviewerSelection select')?.addEventListener('change', updateModalInfoText);
+    document.querySelector('#approverSelection select')?.addEventListener('change', updateModalInfoText);
 
     // Bulk Form Submit
     const bulkForm = document.getElementById('bulkActionForm');
     if (bulkForm) {
         bulkForm.addEventListener('submit', function(e) {
-            const selected = document.querySelectorAll('.application-checkbox:checked');
+            const action         = document.getElementById('bulkAction')?.value;
+            const jobPostingId   = document.getElementById('jobPostingSelect')?.value;
+            const selected       = document.querySelectorAll('.application-checkbox:checked');
 
-            if (selected.length === 0) {
-                e.preventDefault();
-                alert('Please select at least one application to perform this action.');
-                return false;
-            }
-
-            const action = document.getElementById('bulkAction')?.value;
-            if (action === 'delete') {
-                if (!confirm(`Are you sure you want to delete ${selected.length} application(s)? This action cannot be undone.`)) {
+            // For assign actions: either an advertisement number OR checkbox selection is required
+            if ((action === 'assign_reviewer' || action === 'assign_approver')) {
+                if (!jobPostingId && selected.length === 0) {
                     e.preventDefault();
+                    alert('Please select an advertisement number OR check at least one application.');
                     return false;
+                }
+                // If advertisement number chosen, no need to append checkbox IDs
+                if (jobPostingId) {
+                    return true; // job_posting_id is already in the form as a named select
                 }
             }
 
+            // For update_status: checkboxes required
+            if (action === 'update_status' && selected.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one application to update status.');
+                return false;
+            }
+
+            // Append checked checkbox IDs as hidden inputs
             selected.forEach(checkbox => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -1006,5 +1052,7 @@
         console.log('Form submitting with action:', document.getElementById('bulkAction')?.value);
         console.log('Selected applications:', document.querySelectorAll('.application-checkbox:checked').length);
     });
+
+    }); // end DOMContentLoaded
 </script>
 @endsection

@@ -62,7 +62,11 @@ class VacancyManagementController extends Controller
 
         $sortBy = $request->get('sort_by', 'notice_no');
         $sortOrder = $request->get('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder)->orderBy('created_at', 'asc');
+        // Primary: position+level+advertisement_no so same role groups together in order; Secondary: user-chosen sort
+        $query->orderBy('position', 'asc')
+              ->orderBy('level', 'asc')
+              ->orderBy('advertisement_no', 'asc')
+              ->orderBy($sortBy, $sortOrder);
 
         $jobs = $query->paginate(10)->withQueryString();
 
@@ -74,6 +78,64 @@ class VacancyManagementController extends Controller
         ];
 
         return view('admin.jobs.index', compact('jobs', 'stats'));
+    }
+
+    /**
+     * AJAX: return existing ads for a given position + level (for create form lookup)
+     */
+    public function lookupByPosition(Request $request)
+    {
+        $position = trim($request->get('position', ''));
+        $level    = trim($request->get('level', ''));
+
+        if ($position === '' && $level === '') {
+            return response()->json([]);
+        }
+
+        $query = JobPosting::query()
+            ->select(['id', 'advertisement_no', 'notice_no', 'position', 'level',
+                      'service_group', 'department', 'category', 'has_open',
+                      'has_inclusive', 'inclusive_type', 'has_internal',
+                      'has_internal_open', 'has_internal_inclusive', 'status'])
+            ->orderBy('advertisement_no', 'asc');
+
+        if ($position !== '') {
+            $query->where('position', 'like', "%{$position}%");
+        }
+        if ($level !== '') {
+            $query->where('level', $level);
+        }
+
+        $ads = $query->limit(20)->get()->map(function ($job) {
+            $types = [];
+            if ($job->category === 'internal_appraisal') {
+                $types[] = 'Internal Appraisal';
+            } else {
+                if ($job->has_open)             $types[] = 'Open';
+                if ($job->has_inclusive) {
+                    $decoded = $job->inclusive_type ? json_decode($job->inclusive_type, true) : null;
+                    if (is_array($decoded) && count($decoded)) {
+                        foreach ($decoded as $t) $types[] = ucfirst($t);
+                    } else {
+                        $types[] = 'Inclusive';
+                    }
+                }
+                if ($job->has_internal_open)    $types[] = 'Internal/Open';
+                if ($job->has_internal && !$job->has_internal_open && !$job->has_internal_inclusive) $types[] = 'Internal';
+            }
+            return [
+                'id'             => $job->id,
+                'advertisement_no' => $job->advertisement_no,
+                'notice_no'      => $job->notice_no,
+                'position'       => $job->position,
+                'level'          => $job->level,
+                'service_group'  => $job->service_group ?: $job->department,
+                'types'          => $types,
+                'status'         => $job->status,
+            ];
+        });
+
+        return response()->json($ads);
     }
 
     public function create()
@@ -117,11 +179,15 @@ class VacancyManagementController extends Controller
             'has_internal_open' => 'nullable|boolean',
             'has_internal_inclusive' => 'nullable',
             'number_of_posts' => 'required|integer|min:1',
+            'demand_posts' => 'nullable|array',
+            'demand_posts.*' => 'nullable|integer|min:0',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
             'application_fee' => 'required|numeric|min:0',
+            'category_fees' => 'nullable|array',
+            'category_fees.*' => 'nullable|numeric|min:0',
             'double_dastur_fee' => 'nullable|numeric|min:0',
             'deadline' => 'required|date|after:today',
             'deadline_bs' => 'nullable|string',
@@ -132,26 +198,31 @@ class VacancyManagementController extends Controller
 
         // Convert checkbox/hidden field values to booleans
         $validated['has_open'] = $request->input('has_open') == '1';
-        $validated['has_inclusive'] = $request->input('has_inclusive') == '1';
         $validated['has_internal'] = $request->input('has_internal') == '1';
         $validated['has_internal_open'] = $request->boolean('has_internal_open');
-        $validated['has_internal_inclusive'] = $request->input('has_internal_inclusive') == '1';
 
-        // Map inclusive_types[] array → inclusive_type (stored as JSON)
+        // Server-side truth: derive has_inclusive from actual submitted inclusive_types[] array
         $inclusiveTypes = $request->input('inclusive_types', []);
+        $inclusiveTypes = is_array($inclusiveTypes) ? array_filter($inclusiveTypes) : [];
+        $validated['has_inclusive'] = !empty($inclusiveTypes);
         $validated['inclusive_type'] = !empty($inclusiveTypes) ? json_encode(array_values($inclusiveTypes)) : null;
 
-        // Map internal_inclusive_types[] → internal_inclusive_types (JSON via model cast)
-        $validated['internal_inclusive_types'] = $request->input('internal_inclusive_types', null);
+        // Server-side truth: derive has_internal_inclusive from actual submitted internal_inclusive_types[]
+        $internalInclusiveTypes = $request->input('internal_inclusive_types', []);
+        $internalInclusiveTypes = is_array($internalInclusiveTypes) ? array_filter($internalInclusiveTypes) : [];
+        $validated['has_internal_inclusive'] = !empty($internalInclusiveTypes);
+        $validated['internal_inclusive_types'] = !empty($internalInclusiveTypes) ? $internalInclusiveTypes : null;
 
         // Handle Internal Appraisal
         if ($request->input('is_internal_appraisal') == '1') {
             $validated['category'] = 'internal_appraisal';
             $validated['has_open'] = false;
             $validated['has_inclusive'] = false;
+            $validated['inclusive_type'] = null;
             $validated['has_internal'] = false;
             $validated['has_internal_open'] = false;
             $validated['has_internal_inclusive'] = false;
+            $validated['internal_inclusive_types'] = null;
         }
 
         // Zero out double dastur for Internal / Internal Appraisal (not applicable)
@@ -159,6 +230,33 @@ class VacancyManagementController extends Controller
             $validated['double_dastur_fee'] = 0;
             $validated['double_dastur_date'] = null;
             $validated['double_dastur_bs'] = null;
+        }
+
+        // Process per-category fees; derive application_fee (total) from them
+        $rawCategoryFees = $request->input('category_fees', []);
+        if (is_array($rawCategoryFees) && !empty($rawCategoryFees)) {
+            $categoryFees = [];
+            foreach ($rawCategoryFees as $key => $val) {
+                if ($val !== null && $val !== '') {
+                    $categoryFees[$key] = (float) $val;
+                }
+            }
+            $validated['category_fees'] = !empty($categoryFees) ? $categoryFees : null;
+            $validated['application_fee'] = !empty($categoryFees) ? array_sum($categoryFees) : 0;
+        } else {
+            $validated['category_fees'] = null;
+            // application_fee from direct input (Internal Appraisal)
+        }
+
+        // Store per-type demand breakdown; also sync open_posts / inclusive_posts
+        $demandPosts = $request->input('demand_posts', []);
+        if (!empty($demandPosts)) {
+            $validated['demand_posts'] = array_map('intval', $demandPosts);
+            $validated['open_posts'] = (int) ($demandPosts['has_open'] ?? 0);
+            $inclusiveKeys = ['incl_women','incl_aj','incl_madhesi','incl_janajati','incl_apanga','incl_dalit','incl_pichadiyeko'];
+            $validated['inclusive_posts'] = array_sum(array_intersect_key($demandPosts, array_flip($inclusiveKeys)));
+        } else {
+            $validated['demand_posts'] = null;
         }
 
         // Normalise notice_no: store null if empty
@@ -244,11 +342,15 @@ class VacancyManagementController extends Controller
             'has_internal_open' => 'nullable|boolean',
             'has_internal_inclusive' => 'nullable',
             'number_of_posts' => 'required|integer|min:1',
+            'demand_posts' => 'nullable|array',
+            'demand_posts.*' => 'nullable|integer|min:0',
             'minimum_qualification' => 'required|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
             'application_fee' => 'required|numeric|min:0',
+            'category_fees' => 'nullable|array',
+            'category_fees.*' => 'nullable|numeric|min:0',
             'double_dastur_fee' => 'nullable|numeric|min:0',
             'deadline' => 'required|date',
             'deadline_bs' => 'nullable|string',
@@ -259,26 +361,31 @@ class VacancyManagementController extends Controller
 
         // Convert checkbox/hidden field values to booleans
         $validated['has_open'] = $request->input('has_open') == '1';
-        $validated['has_inclusive'] = $request->input('has_inclusive') == '1';
         $validated['has_internal'] = $request->input('has_internal') == '1';
         $validated['has_internal_open'] = $request->boolean('has_internal_open');
-        $validated['has_internal_inclusive'] = $request->input('has_internal_inclusive') == '1';
 
-        // Map inclusive_types[] array → inclusive_type (stored as JSON)
+        // Server-side truth: derive has_inclusive from actual submitted inclusive_types[] array
         $inclusiveTypes = $request->input('inclusive_types', []);
+        $inclusiveTypes = is_array($inclusiveTypes) ? array_filter($inclusiveTypes) : [];
+        $validated['has_inclusive'] = !empty($inclusiveTypes);
         $validated['inclusive_type'] = !empty($inclusiveTypes) ? json_encode(array_values($inclusiveTypes)) : null;
 
-        // Map internal_inclusive_types[] → internal_inclusive_types (JSON via model cast)
-        $validated['internal_inclusive_types'] = $request->input('internal_inclusive_types', null);
+        // Server-side truth: derive has_internal_inclusive from actual submitted internal_inclusive_types[]
+        $internalInclusiveTypes = $request->input('internal_inclusive_types', []);
+        $internalInclusiveTypes = is_array($internalInclusiveTypes) ? array_filter($internalInclusiveTypes) : [];
+        $validated['has_internal_inclusive'] = !empty($internalInclusiveTypes);
+        $validated['internal_inclusive_types'] = !empty($internalInclusiveTypes) ? $internalInclusiveTypes : null;
 
         // Handle Internal Appraisal
         if ($request->input('is_internal_appraisal') == '1') {
             $validated['category'] = 'internal_appraisal';
             $validated['has_open'] = false;
             $validated['has_inclusive'] = false;
+            $validated['inclusive_type'] = null;
             $validated['has_internal'] = false;
             $validated['has_internal_open'] = false;
             $validated['has_internal_inclusive'] = false;
+            $validated['internal_inclusive_types'] = null;
         }
 
         // Zero out double dastur for Internal / Internal Appraisal (not applicable)
@@ -286,6 +393,33 @@ class VacancyManagementController extends Controller
             $validated['double_dastur_fee'] = 0;
             $validated['double_dastur_date'] = null;
             $validated['double_dastur_bs'] = null;
+        }
+
+        // Process per-category fees; derive application_fee (total) from them
+        $rawCategoryFees = $request->input('category_fees', []);
+        if (is_array($rawCategoryFees) && !empty($rawCategoryFees)) {
+            $categoryFees = [];
+            foreach ($rawCategoryFees as $key => $val) {
+                if ($val !== null && $val !== '') {
+                    $categoryFees[$key] = (float) $val;
+                }
+            }
+            $validated['category_fees'] = !empty($categoryFees) ? $categoryFees : null;
+            $validated['application_fee'] = !empty($categoryFees) ? array_sum($categoryFees) : 0;
+        } else {
+            $validated['category_fees'] = null;
+            // application_fee from direct input (Internal Appraisal)
+        }
+
+        // Store per-type demand breakdown; also sync open_posts / inclusive_posts
+        $demandPosts = $request->input('demand_posts', []);
+        if (!empty($demandPosts)) {
+            $validated['demand_posts'] = array_map('intval', $demandPosts);
+            $validated['open_posts'] = (int) ($demandPosts['has_open'] ?? 0);
+            $inclusiveKeys = ['incl_women','incl_aj','incl_madhesi','incl_janajati','incl_apanga','incl_dalit','incl_pichadiyeko'];
+            $validated['inclusive_posts'] = array_sum(array_intersect_key($demandPosts, array_flip($inclusiveKeys)));
+        } else {
+            $validated['demand_posts'] = null;
         }
 
         // Normalise notice_no: store null if empty

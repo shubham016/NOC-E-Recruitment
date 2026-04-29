@@ -47,6 +47,7 @@
             background-color: #f8fafc;
         }
 
+
         /* Modern Table */
         .modern-table {
             width: 100%;
@@ -258,11 +259,7 @@
                 <div class="card border-0 shadow-sm" style="background: #f8f9fa;">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="fw-bold text-dark me-3">
-                                    <i class="bi bi-check-square me-2"></i>
-                                    <span id="selectedCount">0</span> vacancy(ies) selected
-                                </span>
+                            <div class="d-flex align-items-center gap-2">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
                                     <i class="bi bi-x-circle me-1"></i>Clear Selection
                                 </button>
@@ -296,8 +293,7 @@
                             <th class="text-center text-uppercase" style="border: none;">Type</th>
                             <th class="text-center text-uppercase" style="border: none;">Demand</th>
                             <th class="text-center text-uppercase" style="border: none;">Qualifications</th>
-                            <th class="text-center text-uppercase" style="border: none;">Applications</th>
-                            <th class="text-center text-uppercase" style="border: none;">Application Fee</th>
+                            <th class="text-center text-uppercase" style="border: none;">Total Fee</th>
                             <th class="text-center text-uppercase" style="border: none;">Double Dastur Fee</th>
                             <th class="text-center text-uppercase" style="border: none;">Deadline</th>
                             <th class="text-center text-uppercase" style="border: none;">Status</th>
@@ -307,33 +303,135 @@
 
                     <tbody class="text-center align-middle" style="border: none;">
                         @php
-                            // Pre-calculate rowspan for each notice_no group
+                            // Pre-calculate rowspan for notice_no groups
                             $noticeGroups = [];
                             foreach ($jobs as $j) {
                                 $noticeGroups[$j->notice_no] = ($noticeGroups[$j->notice_no] ?? 0) + 1;
                             }
                             $noticeRendered = [];
+
+                            // Pre-calculate rowspan for position+level groups (consecutive rows only)
+                            // Works because controller sorts by notice_no → position → level → advertisement_no
+                            $jobItems   = $jobs->items();
+                            $total      = count($jobItems);
+                            $posRowspan = array_fill(0, $total, 0); // 0 = skip cell (covered by rowspan)
+                            $i = 0;
+                            while ($i < $total) {
+                                $key   = ($jobItems[$i]->position ?? '') . '___' . ($jobItems[$i]->level ?? '');
+                                $count = 1;
+                                while ($i + $count < $total) {
+                                    $nk = ($jobItems[$i + $count]->position ?? '') . '___' . ($jobItems[$i + $count]->level ?? '');
+                                    if ($nk === $key) { $count++; } else { break; }
+                                }
+                                $posRowspan[$i] = $count; // first row in group gets the rowspan value
+                                $i += $count;
+                            }
+                            $rowIdx = 0;
                         @endphp
                         @forelse($jobs as $job)
                             @php
                                 $statusBadge = match ($job->status) {
                                     'active' => 'bg-success',
                                     'closed' => 'bg-danger',
-                                    'draft' => 'bg-secondary',
-                                    default => 'bg-secondary'
+                                    'draft'  => 'bg-secondary',
+                                    default  => 'bg-secondary'
                                 };
 
                                 $daysRemaining = now()->diffInDays($job->deadline, false);
                                 $deadlineColor = $daysRemaining <= 7 ? 'text-danger' : ($daysRemaining <= 14 ? 'text-warning' : 'text-success');
 
-                                $isFirstInGroup = !isset($noticeRendered[$job->notice_no]);
-                                if ($isFirstInGroup) {
+                                $isFirstInNoticeGroup = !isset($noticeRendered[$job->notice_no]);
+                                if ($isFirstInNoticeGroup) {
                                     $noticeRendered[$job->notice_no] = true;
+                                }
+
+                                $thisPosRowspan = $posRowspan[$rowIdx]; // > 0 = render cell; 0 = skip
+                                $rowIdx++;
+
+                                // ── Build types, demand, and fee arrays in one pass ──
+                                $types      = [];
+                                $demandVals = [];
+                                $feeVals    = [];
+                                $dp         = $job->demand_posts  ?? [];
+                                $fees       = $job->category_fees ?? [];
+
+                                $inclDemandMap = [
+                                    'Women' => 'incl_women', 'A.J' => 'incl_aj',
+                                    'Madhesi' => 'incl_madhesi', 'Janajati' => 'incl_janajati',
+                                    'Apanga' => 'incl_apanga', 'Dalit' => 'incl_dalit',
+                                    'Pichadiyeko Chetra' => 'incl_pichadiyeko',
+                                ];
+                                $intDemandMap = [
+                                    'Women' => 'internal_incl_women', 'A.J' => 'internal_incl_aj',
+                                    'Madhesi' => 'internal_incl_madhesi', 'Janajati' => 'internal_incl_janajati',
+                                    'Apanga' => 'internal_incl_apanga', 'Dalit' => 'internal_incl_dalit',
+                                    'Pichadiyeko Chetra' => 'internal_incl_pichadiyeko',
+                                ];
+
+                                if ($job->category === 'internal_appraisal') {
+                                    $types[]      = 'Internal Appraisal';
+                                    $demandVals[] = $dp['is_internal_appraisal'] ?? $job->number_of_posts;
+                                    $feeVals[]    = $job->application_fee;
+                                } else {
+                                    if ($job->has_open) {
+                                        $types[]      = 'Open';
+                                        $demandVals[] = $dp['has_open'] ?? $job->number_of_posts;
+                                        $feeVals[]    = $fees['open'] ?? null;
+                                    }
+                                    if ($job->has_inclusive) {
+                                        $raw     = $job->inclusive_type;
+                                        $decoded = $raw ? (is_array($raw) ? $raw : json_decode($raw, true)) : null;
+                                        if (is_array($decoded) && count($decoded)) {
+                                            foreach ($decoded as $t) {
+                                                $types[]      = ucfirst($t);
+                                                $dk           = $inclDemandMap[$t] ?? null;
+                                                $demandVals[] = ($dk && isset($dp[$dk])) ? $dp[$dk] : ($job->inclusive_posts ?? $job->number_of_posts);
+                                                $feeVals[]    = $fees['inclusive_' . str_replace(' ', '_', $t)] ?? null;
+                                            }
+                                        } else {
+                                            $types[]      = $raw ? ucfirst(is_string($raw) ? trim($raw, '"') : $raw) : 'Inclusive';
+                                            $demandVals[] = $job->inclusive_posts ?? $job->number_of_posts;
+                                            $feeVals[]    = null;
+                                        }
+                                    }
+                                    if ($job->has_internal && !$job->has_internal_open && !$job->has_internal_inclusive) {
+                                        $types[]      = 'Internal';
+                                        $demandVals[] = $dp['has_internal'] ?? $job->number_of_posts;
+                                        $feeVals[]    = $fees['internal'] ?? null;
+                                    }
+                                    if ($job->has_internal_open) {
+                                        $types[]      = 'Internal/Open';
+                                        $demandVals[] = $dp['has_internal_open'] ?? $job->number_of_posts;
+                                        $feeVals[]    = $fees['internal_open'] ?? null;
+                                    }
+                                    if ($job->has_internal_inclusive) {
+                                        $rawInt     = $job->internal_inclusive_types;
+                                        $decodedInt = $rawInt ? (is_array($rawInt) ? $rawInt : json_decode($rawInt, true)) : null;
+                                        if (is_array($decodedInt) && count($decodedInt)) {
+                                            foreach ($decodedInt as $t) {
+                                                $types[]      = 'Internal/' . ucfirst($t);
+                                                $dk           = $intDemandMap[$t] ?? null;
+                                                $demandVals[] = ($dk && isset($dp[$dk])) ? $dp[$dk] : $job->number_of_posts;
+                                                $feeVals[]    = $fees['internal_inclusive_' . str_replace(' ', '_', $t)] ?? null;
+                                            }
+                                        } else {
+                                            $types[]      = 'Internal/Inclusive';
+                                            $demandVals[] = $job->number_of_posts;
+                                            $feeVals[]    = null;
+                                        }
+                                    }
+                                    if (empty($types)) {
+                                        $types[]      = ucfirst(str_replace('_', ' ', $job->category));
+                                        $demandVals[] = $job->number_of_posts;
+                                        $feeVals[]    = $job->application_fee;
+                                    }
                                 }
                             @endphp
 
-                            <tr class="job-row {{ $job->status }}">
-                                @if($isFirstInGroup)
+                            <tr class="job-row {{ $job->status }}"
+                                data-pos-group="{{ $job->position }}_{{ $job->level }}"
+                                data-notice-group="{{ $job->notice_no }}">
+                                @if($isFirstInNoticeGroup)
                                     <td rowspan="{{ $noticeGroups[$job->notice_no] }}"
                                         class="notice-no-cell align-middle text-center px-3"
                                         style="font-size:0.85rem; font-weight:600; color:#000; text-transform:uppercase; letter-spacing:0.5px; border: 0.5px solid #e5e7eb; vertical-align:middle;">
@@ -346,65 +444,78 @@
                                 </td>
                                 <td>{{ $jobs->firstItem() + $loop->index }}</td>
                                 <td>{{ $job->advertisement_no }}</td>
-                                <td>{{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}</td>
-                                <td>{{ $job->service_group ?: $job->department }}</td>
+                                @if($thisPosRowspan > 0)
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
+                                    </td>
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        {{ $job->service_group ?: $job->department }}
+                                    </td>
+                                @endif
 
+                                {{-- Type --}}
                                 <td>
-                                    @if($job->category == 'open')
-                                        Open
-                                    @elseif($job->category == 'inclusive')
-                                        Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}
-                                    @elseif($job->category == 'internal')
-                                        @if($job->internal_type == 'open')
-                                            Internal/Open
-                                        @elseif($job->internal_type == 'inclusive')
-                                            Internal/Inclusive{{ $job->inclusive_type ? '/' . ucfirst($job->inclusive_type) : '' }}
-                                        @else
-                                            Internal
-                                        @endif
-                                    @elseif($job->category == 'internal_appraisal')
-                                        Internal Appraisal
-                                    @else
-                                        {{ ucfirst($job->category) }}
-                                    @endif
+                                    @foreach($types as $i => $type)
+                                        @if($i > 0)<div style="border-top:1px solid #e5e7eb;margin:4px -8px;"></div>@endif
+                                        <span style="white-space:nowrap;display:block;">{{ $type }}</span>
+                                    @endforeach
                                 </td>
 
-                                <td>{{ $job->number_of_posts }}</td>
-
-                                <td>{{ Str::limit($job->minimum_qualification, 50) }}</td>
-
+                                {{-- Demand --}}
                                 <td>
-                                    {{ $job->applications_count ?? 0 }}
+                                    @foreach($demandVals as $i => $val)
+                                        @if($i > 0)<div style="border-top:1px solid #e5e7eb;margin:4px -8px;"></div>@endif
+                                        <span style="white-space:nowrap;display:block;">{{ $val }}</span>
+                                    @endforeach
                                 </td>
+
+                                {{-- Qualifications — rowspan per position+level group (same qualification for same role) --}}
+                                @if($thisPosRowspan > 0)
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        {{ Str::limit($job->minimum_qualification, 50) }}
+                                    </td>
+                                @endif
+
+{{-- Total Fee — per-type fees stacked (aligned with Type column) --}}
                                 <td>
-                                    @if($job->application_fee)
-                                        NPR
-                                        {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}
-                                    @else
-                                        -
-                                    @endif
+                                    @foreach($feeVals as $i => $feeAmt)
+                                        @if($i > 0)<div style="border-top:1px solid #e5e7eb;margin:4px -8px;"></div>@endif
+                                        <span style="white-space:nowrap;display:block;">
+                                            @if($feeAmt !== null && $feeAmt > 0)
+                                                NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </span>
+                                    @endforeach
                                 </td>
 
                                 <td>
                                     @if($job->double_dastur_fee)
-                                        NPR
-                                        {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
+                                        NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
                                     @else
                                         -
                                     @endif
                                 </td>
 
-                                <td>
-                                    <div>
-                                        {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
+                                {{-- Deadline — rowspan per position+level group (same deadline for same ad batch) --}}
+                                @if($thisPosRowspan > 0)
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="{{ $deadlineColor }} align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
                                         <small class="d-block fw-semibold nepali-date-bs"
                                             data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
                                             <i class="bi bi-hourglass-split"></i> Converting...
                                         </small>
-                                        {{-- English Date (AD) --}}
                                         <small>{{ $job->deadline->format('Y-m-d') }}</small>
-                                    </div>
-                                </td>
+                                    </td>
+                                @endif
 
                                 <td>
                                     <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST"
@@ -441,7 +552,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="15" class="text-center py-5">
+                                <td colspan="14" class="text-center py-5">
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">No Vacancy Found</h5>
                                     <p class="text-muted">Start by posting your first Vacancy!</p>
@@ -508,15 +619,15 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.job-row').forEach(function(row) {
-                row.addEventListener('mouseover', function(e) {
-                    if (e.target.closest('.notice-no-cell')) {
-                        this.classList.remove('row-hovered');
-                    } else {
-                        this.classList.add('row-hovered');
-                    }
+                row.addEventListener('mouseover', function() {
+                    var group = this.dataset.posGroup;
+                    document.querySelectorAll('.job-row[data-pos-group="' + group + '"]')
+                        .forEach(function(r) { r.classList.add('row-hovered'); });
                 });
                 row.addEventListener('mouseleave', function() {
-                    this.classList.remove('row-hovered');
+                    var group = this.dataset.posGroup;
+                    document.querySelectorAll('.job-row[data-pos-group="' + group + '"]')
+                        .forEach(function(r) { r.classList.remove('row-hovered'); });
                 });
             });
             console.log('🔧 Initializing Nepali date conversion for table...');
@@ -598,22 +709,9 @@
 
         // Update Count and Show/Hide Bulk Actions Bar
         function updateSelectedCount() {
-            const count = document.querySelectorAll('.job-checkbox:checked').length;
-            const countElement = document.getElementById('selectedCount');
-            const bulkActionsBar = document.getElementById('bulkActionsBar');
-
-            if (countElement) {
-                countElement.textContent = count;
-            }
-
-            // Show/hide bulk actions bar based on selection
-            if (bulkActionsBar) {
-                if (count > 0) {
-                    bulkActionsBar.style.display = 'block';
-                } else {
-                    bulkActionsBar.style.display = 'none';
-                }
-            }
+            const count   = document.querySelectorAll('.job-checkbox:checked').length;
+            const bulkBar = document.getElementById('bulkActionsBar');
+            if (bulkBar) bulkBar.style.display = count > 0 ? 'block' : 'none';
         }
 
         // Clear Selection

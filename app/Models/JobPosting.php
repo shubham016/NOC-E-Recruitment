@@ -45,6 +45,8 @@ class JobPosting extends Model
         'posted_by',
         'min_age',
         'max_age',
+        'demand_posts',
+        'category_fees',
     ];
 
     protected $casts = [
@@ -64,6 +66,8 @@ class JobPosting extends Model
         'inclusive_posts' => 'integer',
         'min_age' => 'integer',
         'max_age' => 'integer',
+        'demand_posts' => 'array',
+        'category_fees' => 'array',
     ];
 
     /**

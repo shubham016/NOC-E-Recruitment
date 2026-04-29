@@ -39,7 +39,7 @@ class ReviewerAuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('reviewer')->logout();
-        $request->session()->invalidate();
+        $request->session()->regenerate();
         $request->session()->regenerateToken();
         return redirect()->route('reviewer.login');
     }

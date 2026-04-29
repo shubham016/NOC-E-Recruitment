@@ -75,8 +75,9 @@ class ApplicationFormController extends Controller
                 ->with('error', $eligibilityError);
         }
 
+        $job = $vacancy;
         $draftApplication = new ApplicationForm();
-        return view('candidate.applications.create', compact('vacancy', 'candidate', 'draftApplication'));
+        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
     }
 
     /**
@@ -112,6 +113,11 @@ class ApplicationFormController extends Controller
 
         // Convert same_as_permanent checkbox
         $validated['same_as_permanent'] = $request->has('same_as_permanent') ? 1 : 0;
+
+        // Serialize applied_category array to JSON for storage
+        if (isset($validated['applied_category']) && is_array($validated['applied_category'])) {
+            $validated['applied_category'] = json_encode(array_values(array_filter($validated['applied_category'])));
+        }
 
         // Prepare data
         $data = array_merge($validated, [
@@ -357,6 +363,10 @@ class ApplicationFormController extends Controller
             $validated = $this->handleFileUploads($request, $validated, $candidate->id);
             $validated['same_as_permanent'] = $request->has('same_as_permanent') ? 1 : 0;
 
+            if (isset($validated['applied_category']) && is_array($validated['applied_category'])) {
+                $validated['applied_category'] = json_encode(array_values(array_filter($validated['applied_category'])));
+            }
+
             $draftId = $request->input('draft_id');
             if ($draftId) {
                 $application = ApplicationForm::where('id', $draftId)
@@ -452,7 +462,8 @@ class ApplicationFormController extends Controller
     {
         return [
             // Category Selection
-            'applied_category' => 'nullable|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
+            'applied_category'   => 'nullable|array',
+            'applied_category.*' => 'nullable|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
             // Personal Information (extended)
             'name_english' => 'nullable|string|max:255',
             'name_nepali' => ['nullable', 'regex:/^[\x{0900}-\x{097F}\s\.\-]+$/u', 'max:255'],
@@ -554,7 +565,8 @@ class ApplicationFormController extends Controller
 
         return [
             // Category Selection
-            'applied_category' => 'required|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
+            'applied_category'   => 'required|array|min:1',
+            'applied_category.*' => 'required|in:open,inclusive,internal,internal_appraisal,internal_open,internal_inclusive',
             // Personal Information (extended)
             'name_english' => 'required|string|max:255',
             'name_nepali' => ['required', 'regex:/^[\x{0900}-\x{097F}\s\.\-]+$/u', 'max:255'],

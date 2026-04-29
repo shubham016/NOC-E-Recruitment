@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\Reviewer;
+use App\Models\Approver;
 use App\Models\JobPosting;
 use App\Models\Payment;
 use App\Models\Notification;
@@ -15,7 +16,7 @@ class AdminApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query
-        $query = ApplicationForm::with(['vacancy', 'reviewer'])
+        $query = ApplicationForm::with(['vacancy', 'reviewer', 'approver'])
             ->where('status', '!=', 'draft');
 
         // Search filter
@@ -62,12 +63,21 @@ class AdminApplicationController extends Controller
         // Paginate results
         $applications = $query->paginate(20)->withQueryString();
 
-        // Get all jobs for filter dropdown
-        $jobs = JobPosting::select('id', 'title', 'advertisement_no')->get();
+        // Get all jobs for filter dropdown, with application count per vacancy
+        $jobs = JobPosting::select('id', 'title', 'advertisement_no', 'level')
+            ->withCount(['applications' => function ($q) {
+                $q->where('status', '!=', 'draft');
+            }])
+            ->get();
         $vacancies = $jobs;
 
         // Get all active reviewers for filter dropdown
         $reviewers = Reviewer::select('id', 'name', 'email')
+            ->where('status', 'active')
+            ->get();
+
+        // Get all active approvers for filter dropdown
+        $approvers = Approver::select('id', 'name', 'email')
             ->where('status', 'active')
             ->get();
 
@@ -88,6 +98,7 @@ class AdminApplicationController extends Controller
             'jobs',
             'vacancies',
             'reviewers',
+            'approvers',
             'statuses',
             'stats'
         ));
@@ -340,6 +351,49 @@ class AdminApplicationController extends Controller
         return redirect()->back()->with('success', 'Reviewer assigned successfully!');
     }
 
+    public function assignApprover(Request $request, ApplicationForm $application)
+    {
+        $request->validate([
+            'approver_id' => 'required|exists:approvers,id'
+        ]);
+
+        $application->update([
+            'approver_id' => $request->approver_id,
+        ]);
+
+        $positionTitle = $application->applying_position ?? $application->advertisement_no ?? 'this position';
+
+        // Notification for approver
+        Notification::create([
+            'user_id'      => $request->approver_id,
+            'user_type'    => 'approver',
+            'type'         => 'application_assigned',
+            'title'        => 'New Application Assigned',
+            'message'      => 'An application for "' . $positionTitle . '" has been assigned to you for final approval.',
+            'related_id'   => $application->id,
+            'related_type' => 'application',
+        ]);
+
+        // Notification for candidate
+        $candidateRecord = \DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
+
+        if ($candidateRecord) {
+            Notification::create([
+                'user_id'      => $candidateRecord->id,
+                'user_type'    => 'candidate',
+                'type'         => 'approver_assigned',
+                'title'        => 'Approver Assigned',
+                'message'      => 'Your application for "' . $positionTitle . '" has been assigned to an approver for final decision.',
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Approver assigned successfully!');
+    }
+
     public function destroy(ApplicationForm $application)
     {
         $application->delete();
@@ -351,40 +405,125 @@ class AdminApplicationController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:delete,update_status,assign_reviewer',
-            'application_ids' => 'required|array|min:1',
+            'action'          => 'required|in:update_status,assign_reviewer,assign_approver',
+            'application_ids' => 'nullable|array',
             'application_ids.*' => 'exists:application_form,id',
-            'status' => 'required_if:action,update_status|in:pending,assigned,reviewed,edit,approved,rejected',
-            'reviewer_id' => 'required_if:action,assign_reviewer|exists:reviewers,id',
+            'job_posting_id'  => 'nullable|exists:job_postings,id',
+            'status'          => 'required_if:action,update_status|in:pending,assigned,reviewed,edit,approved,rejected',
+            'reviewer_id'     => 'nullable|required_if:action,assign_reviewer|exists:reviewers,id',
+            'approver_id'     => 'nullable|required_if:action,assign_approver|exists:approvers,id',
         ], [
-            'application_ids.required' => 'Please select at least one application.',
-            'application_ids.min' => 'Please select at least one application.',
             'reviewer_id.required_if' => 'Please select a reviewer.',
+            'approver_id.required_if' => 'Please select an approver.',
         ]);
 
-        $applicationIds = $request->application_ids;
+        // Resolve application IDs: by advertisement number (all apps) or by checkbox selection
+        if ($request->filled('job_posting_id')) {
+            $applicationIds = ApplicationForm::where('job_posting_id', $request->job_posting_id)
+                ->where('status', '!=', 'draft')
+                ->pluck('id')
+                ->toArray();
+
+            if (empty($applicationIds)) {
+                return redirect()->back()->with('error', 'No applications found for the selected advertisement number.');
+            }
+        } else {
+            $applicationIds = $request->application_ids ?? [];
+            if (empty($applicationIds)) {
+                return redirect()->back()->with('error', 'Please select an advertisement number or at least one application.');
+            }
+        }
 
         switch ($request->action) {
-            case 'delete':
-                ApplicationForm::whereIn('id', $applicationIds)->delete();
-                $message = 'Selected applications deleted successfully!';
-                break;
-
             case 'update_status':
                 ApplicationForm::whereIn('id', $applicationIds)->update([
                     'status' => $request->status,
                     'reviewed_at' => now(),
                 ]);
-                $message = 'Status updated for selected applications!';
+                $message = 'Status updated for ' . count($applicationIds) . ' application(s) successfully!';
                 break;
 
             case 'assign_reviewer':
                 ApplicationForm::whereIn('id', $applicationIds)->update([
                     'reviewer_id' => $request->reviewer_id,
-                    'status' => 'assigned'
+                    'status'      => 'assigned',
                 ]);
 
-                $message = 'Reviewer assigned to selected applications!';
+                $reviewer     = Reviewer::find($request->reviewer_id);
+                $applications = ApplicationForm::whereIn('id', $applicationIds)->get();
+
+                // One consolidated notification to the reviewer
+                Notification::create([
+                    'user_id'      => $reviewer->id,
+                    'user_type'    => 'reviewer',
+                    'type'         => 'application_assigned',
+                    'title'        => 'New Applications Assigned',
+                    'message'      => count($applicationIds) . ' application(s) have been assigned to you for review by the admin.',
+                    'related_id'   => $applications->first()?->id,
+                    'related_type' => 'application',
+                ]);
+
+                // Per-candidate notification
+                foreach ($applications as $app) {
+                    $positionTitle = $app->applying_position ?? $app->advertisement_no ?? 'this position';
+                    $candidateRecord = \DB::table('candidate_registration')
+                        ->where('citizenship_number', $app->citizenship_number)
+                        ->first();
+                    if ($candidateRecord) {
+                        Notification::create([
+                            'user_id'      => $candidateRecord->id,
+                            'user_type'    => 'candidate',
+                            'type'         => 'reviewer_assigned',
+                            'title'        => 'Reviewer Assigned',
+                            'message'      => 'Your application for "' . $positionTitle . '" has been assigned to a reviewer for evaluation.',
+                            'related_id'   => $app->id,
+                            'related_type' => 'application',
+                        ]);
+                    }
+                }
+
+                $message = 'Reviewer "' . ($reviewer->name ?? 'N/A') . '" assigned to ' . count($applicationIds) . ' application(s) successfully!';
+                break;
+
+            case 'assign_approver':
+                ApplicationForm::whereIn('id', $applicationIds)->update([
+                    'approver_id' => $request->approver_id,
+                ]);
+
+                $approver     = Approver::find($request->approver_id);
+                $applications = ApplicationForm::whereIn('id', $applicationIds)->get();
+
+                // One consolidated notification to the approver
+                Notification::create([
+                    'user_id'      => $approver->id,
+                    'user_type'    => 'approver',
+                    'type'         => 'application_assigned',
+                    'title'        => 'New Applications Assigned',
+                    'message'      => count($applicationIds) . ' application(s) have been assigned to you for final approval by the admin.',
+                    'related_id'   => $applications->first()?->id,
+                    'related_type' => 'application',
+                ]);
+
+                // Per-candidate notification
+                foreach ($applications as $app) {
+                    $positionTitle = $app->applying_position ?? $app->advertisement_no ?? 'this position';
+                    $candidateRecord = \DB::table('candidate_registration')
+                        ->where('citizenship_number', $app->citizenship_number)
+                        ->first();
+                    if ($candidateRecord) {
+                        Notification::create([
+                            'user_id'      => $candidateRecord->id,
+                            'user_type'    => 'candidate',
+                            'type'         => 'approver_assigned',
+                            'title'        => 'Approver Assigned',
+                            'message'      => 'Your application for "' . $positionTitle . '" has been assigned to an approver for final decision.',
+                            'related_id'   => $app->id,
+                            'related_type' => 'application',
+                        ]);
+                    }
+                }
+
+                $message = 'Approver "' . ($approver->name ?? 'N/A') . '" assigned to ' . count($applicationIds) . ' application(s) successfully!';
                 break;
 
             default:

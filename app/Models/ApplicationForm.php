@@ -177,6 +177,39 @@ class ApplicationForm extends Model
         );
     }
     /**
+     * Accessor/Mutator: applied_category — always returns array, supports both old string and new JSON format
+     */
+    protected function appliedCategory(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if (is_null($value)) return [];
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return $decoded;
+                }
+                return [$value]; // legacy plain-string format
+            },
+            set: function ($value) {
+                if (is_array($value)) {
+                    return json_encode(array_values(array_filter($value)));
+                }
+                return $value;
+            }
+        );
+    }
+
+    /**
+     * Helper: get applied_category as a readable string for display
+     */
+    public function getAppliedCategoryLabelAttribute(): string
+    {
+        $cats = $this->applied_category;
+        if (empty($cats)) return '-';
+        return implode(', ', array_map(fn($c) => ucfirst(str_replace('_', ' ', $c)), $cats));
+    }
+
+    /**
      * Relationship: Application belongs to a Job Posting
      */
     public function jobPosting()

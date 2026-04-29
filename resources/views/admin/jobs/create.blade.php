@@ -422,6 +422,14 @@
                         </div>
                     </div>
 
+                    <!-- Existing ads for this position/level -->
+                    <div id="existing-ads-panel" style="display:none;" class="mt-2 mb-3">
+                        <div class="alert alert-info py-2 px-3 mb-0" style="font-size:0.85rem;">
+                            <strong>Existing advertisements for this position/level:</strong>
+                            <div id="existing-ads-list" class="mt-1"></div>
+                        </div>
+                    </div>
+
                     <div class="section-divider"></div>
 
                     <!-- Service / Group -->
@@ -463,19 +471,19 @@
                                         Open (खुल्ला)
                                     </label>
                                 </div>
+                            </div>
 
-                                <!-- Inclusive Types Checkbox (shown when Open is checked) -->
-                                <div id="inclusiveTypesToggle" style="display: none; margin-left: 30px; margin-top: 10px;">
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="has_inclusive_toggle"
-                                               value="1"
-                                               {{ old('has_inclusive_toggle') == '1' ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-bold" for="has_inclusive_toggle">
-                                            Inclusive Types:
-                                        </label>
-                                    </div>
+                            <!-- Inclusive Types (standalone — always visible, independent of Open) -->
+                            <div class="mb-3" id="inclusiveTypesToggle">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="has_inclusive_toggle"
+                                           value="1"
+                                           {{ old('has_inclusive_toggle') == '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="has_inclusive_toggle">
+                                        Inclusive Types: <small class="text-muted fw-normal">(समावेशी प्रकारहरू)</small>
+                                    </label>
                                 </div>
 
                                 <!-- Individual Inclusive Type Checkboxes (shown when Inclusive Types is checked) -->
@@ -746,22 +754,29 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Demand Post (Number of Posts) -->
-                    <div class="mb-4">
-                        <label for="number_of_posts" class="form-label">
+                    <!-- Demand Post (Number of Posts) - Dynamic per-type -->
+                    <div class="mb-4" id="demand-posts-section">
+                        <label class="form-label">
                             <span>Demand Post (Number) <span class="required">*</span></span>
                             <span class="nepali-text">माग पद संख्या</span>
                         </label>
-                        <input type="number"
-                            class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
-                            id="number_of_posts" name="number_of_posts" value="{{ old('number_of_posts', 1) }}" min="1"
-                            max="1000" required>
+                        <div id="demand-posts-container">
+                            {{-- Default single field (shown when no type is selected) --}}
+                            <div id="demand-default">
+                                <input type="number"
+                                    class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
+                                    id="number_of_posts_default"
+                                    placeholder="Enter number of posts"
+                                    value="{{ old('number_of_posts', 1) }}"
+                                    min="1" max="1000">
+                            </div>
+                            {{-- Per-type demand rows are added here dynamically by JS --}}
+                        </div>
+                        {{-- Hidden field that gets submitted to the controller --}}
+                        <input type="hidden" name="number_of_posts" id="number_of_posts" value="{{ old('number_of_posts', 1) }}">
                         @error('number_of_posts')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <!-- <small class="form-text">
-                            <i class="bi bi-lightbulb me-1"></i>Total number of vacant positions available
-                        </small> -->
                     </div>
 
                     <div class="section-divider"></div>
@@ -901,31 +916,31 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Application Fee & Double Dastur Fee Row -->
+                    <!-- Per-Category Fee Fields (dynamically rendered by JS) -->
+                    <div id="individual-fees" class="mb-3"></div>
+
+                    <!-- Total Application Fee & Double Dastur Fee -->
                     <div class="row mb-4">
-                        <!-- Application Fee -->
+                        <!-- Total Application Fee -->
                         <div class="col-md-6">
                             <label class="form-label">
-                                <span>Application Fee <span class="text-danger">*</span></span>
-                                <span class="nepali-text">आवेदन शुल्क</span>
+                                <span>Total Application Fee <span class="text-danger">*</span></span>
+                                <span class="nepali-text">कुल आवेदन शुल्क</span>
                             </label>
                             <input type="number"
                                    class="form-control form-control-lg @error('application_fee') is-invalid @enderror"
                                    id="application_fee"
                                    name="application_fee"
                                    value="{{ old('application_fee') }}"
-                                   placeholder="Enter Application Fee"
+                                   placeholder="Total Application Fees"
                                    min="0"
                                    step="0.01"
-                                   required>
+                                   required
+                                   readonly>
                             @error('application_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <!-- <div class="alert alert-info mt-3 mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Note:</strong> Enter the application fee amount in Nepali Rupees (required field).
-                                <br><small>नोट: नेपाली रुपैयाँमा आवेदन शुल्क रकम प्रविष्ट गर्नुहोस् (अनिवार्य)।</small>
-                            </div> -->
+                            <small class="text-muted" id="fee-total-note">Select a category above to enter individual fees.</small>
                         </div>
 
                         <!-- Double Dastur Fee -->
@@ -945,11 +960,6 @@
                             @error('double_dastur_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <!-- <div class="alert alert-warning mt-3 mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Note:</strong> Fee for extended application period (required field).
-                                <br><small>नोट: विस्तारित आवेदन अवधिको लागि शुल्क (अनिवार्य)।</small>
-                            </div> -->
                         </div>
                     </div>
 
@@ -1032,10 +1042,10 @@
                                 <td id="preview-double-dastur-ad" class="fw-semibold text-success">-</td>
                             </tr>
                             <tr id="preview-application-fee-row">
-                                <th>Application Fee</th>
+                                <th>Total Application Fee</th>
                                 <td id="preview-application-fee" class="fw-semibold text-primary">NPR</td>
                             </tr>
-                            <tr id="preview-double-dastur-fee-row">
+                            <tr id="preview-double-dastur-fee-row" style="display: none;">
                                 <th>Double Dastur Fee</th>
                                 <td id="preview-double-dastur-fee" class="fw-semibold text-danger">NPR</td>
                             </tr>
@@ -1408,7 +1418,6 @@
             'notice_no': { preview: 'preview-notice-no', default: '-' },
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
             'service_group': { preview: 'preview-service', default: '-' },
-            'number_of_posts': { preview: 'preview-posts', default: '-' },
             'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' },
             'application_fee': { preview: 'preview-application-fee', default: '-' },
             'double_dastur_fee': { preview: 'preview-double-dastur-fee', default: '-' }
@@ -1461,6 +1470,53 @@
         document.getElementById('level_input').addEventListener('input', updatePositionLevel);
         updatePositionLevel();
 
+        // Existing ads lookup: show ads for same position+level
+        var posLookupTimer = null;
+        var lookupUrl = "{{ route('admin.jobs.lookupPosition') }}";
+
+        function lookupExistingAds() {
+            var pos = (document.getElementById('position_input').value || '').trim();
+            var lvl = (document.getElementById('level_input').value || '').trim();
+            var panel = document.getElementById('existing-ads-panel');
+            var list  = document.getElementById('existing-ads-list');
+
+            if (!pos && !lvl) { panel.style.display = 'none'; return; }
+
+            clearTimeout(posLookupTimer);
+            posLookupTimer = setTimeout(function () {
+                var params = new URLSearchParams();
+                if (pos) params.set('position', pos);
+                if (lvl) params.set('level', lvl);
+
+                fetch(lookupUrl + '?' + params.toString())
+                    .then(function (r) { return r.json(); })
+                    .then(function (ads) {
+                        if (!ads.length) { panel.style.display = 'none'; return; }
+                        var html = ads.map(function (ad) {
+                            var typesStr = ad.types.length ? ad.types.join(', ') : '-';
+                            var statusBadge = ad.status === 'active'
+                                ? '<span style="color:#059669;font-weight:600;">Active</span>'
+                                : ad.status === 'closed'
+                                    ? '<span style="color:#dc2626;">Closed</span>'
+                                    : '<span style="color:#6b7280;">Draft</span>';
+                            return '<div style="padding:2px 0;">'
+                                + '<strong>' + (ad.advertisement_no || '-') + '</strong>'
+                                + ' &mdash; ' + (ad.position || '-') + (ad.level ? ' / Level ' + ad.level : '')
+                                + (ad.service_group ? ' &mdash; ' + ad.service_group : '')
+                                + ' &mdash; ' + typesStr
+                                + ' &mdash; ' + statusBadge
+                                + '</div>';
+                        }).join('');
+                        list.innerHTML = html;
+                        panel.style.display = 'block';
+                    })
+                    .catch(function () { panel.style.display = 'none'; });
+            }, 400);
+        }
+
+        document.getElementById('position_input').addEventListener('input', lookupExistingAds);
+        document.getElementById('level_input').addEventListener('input', lookupExistingAds);
+
         // NOTE: Form submit handler has been moved to initializeCategoryCheckboxes()
         // which runs independently of Nepali date libraries
 
@@ -1510,55 +1566,55 @@ function initializeCategoryCheckboxes() {
     const doubleDasturFeeSection = document.getElementById('doubleDasturFeeSection');
     const doubleDasturFeeInput = document.getElementById('double_dastur_fee');
 
-    // Handle Mutual Exclusivity of Main Categories (Open, Internal, Internal Appraisal)
-    function disableOtherMainCategories(activeCheckbox) {
-        const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
-        allMain.forEach(function(cb) {
-            if (cb && cb !== activeCheckbox) {
-                cb.disabled = true;
-                cb.closest('.form-check').style.opacity = '0.45';
-                cb.closest('.form-check').style.cursor  = 'not-allowed';
-            }
-        });
-    }
+    // Unified exclusivity sync — all 4 types are fully mutually exclusive
+    function syncExclusivity() {
+        var openChecked      = hasOpenCheckbox             && hasOpenCheckbox.checked;
+        var internalChecked  = hasInternalCheckbox         && hasInternalCheckbox.checked;
+        var appraisalChecked = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
+        var inclChecked      = hasInclusiveToggleCheckbox  && hasInclusiveToggleCheckbox.checked;
+        var anyChecked       = openChecked || internalChecked || appraisalChecked || inclChecked;
 
-    function enableAllMainCategories() {
-        const allMain = [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox];
-        allMain.forEach(function(cb) {
-            if (cb) {
-                cb.disabled = false;
-                cb.closest('.form-check').style.opacity = '';
-                cb.closest('.form-check').style.cursor  = '';
+        function applyLock(cb, locked) {
+            if (!cb) return;
+            cb.disabled = locked;
+            var fc = cb.closest('.form-check');
+            if (fc) {
+                fc.style.opacity = locked ? '0.45' : '';
+                fc.style.cursor  = locked ? 'not-allowed' : '';
             }
-        });
+        }
+
+        applyLock(hasOpenCheckbox,             anyChecked && !openChecked);
+        applyLock(hasInternalCheckbox,         anyChecked && !internalChecked);
+        applyLock(isInternalAppraisalCheckbox, anyChecked && !appraisalChecked);
+        applyLock(hasInclusiveToggleCheckbox,  anyChecked && !inclChecked);
     }
 
     function handleCategoryExclusivity(selectedCheckbox) {
         if (selectedCheckbox.checked) {
-            // Uncheck and disable the other two main category checkboxes
+            // Uncheck all others and reset their sections
             if (selectedCheckbox === hasOpenCheckbox) {
-                if (hasInternalCheckbox)        hasInternalCheckbox.checked        = false;
+                if (hasInternalCheckbox)         hasInternalCheckbox.checked         = false;
                 if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                if (hasInclusiveToggleCheckbox)  { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; }); toggleInclusiveTypesSection(); }
                 hideInternalSections();
-                toggleInclusiveTypesToggle();
                 showDoubleDasturSections();
             } else if (selectedCheckbox === hasInternalCheckbox) {
-                if (hasOpenCheckbox)            hasOpenCheckbox.checked            = false;
+                if (hasOpenCheckbox)             hasOpenCheckbox.checked             = false;
                 if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
+                if (hasInclusiveToggleCheckbox)  { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; }); toggleInclusiveTypesSection(); }
                 hideOpenSections();
                 toggleInternalSubcategories();
                 hideDoubleDasturSections();
             } else if (selectedCheckbox === isInternalAppraisalCheckbox) {
-                if (hasOpenCheckbox)     hasOpenCheckbox.checked     = false;
-                if (hasInternalCheckbox) hasInternalCheckbox.checked = false;
+                if (hasOpenCheckbox)            hasOpenCheckbox.checked             = false;
+                if (hasInternalCheckbox)        hasInternalCheckbox.checked         = false;
+                if (hasInclusiveToggleCheckbox) { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; }); toggleInclusiveTypesSection(); }
                 hideOpenSections();
                 hideInternalSections();
                 hideDoubleDasturSections();
             }
-            disableOtherMainCategories(selectedCheckbox);
         } else {
-            // Unchecked — restore all + reset sections
-            enableAllMainCategories();
             if (selectedCheckbox === hasOpenCheckbox) {
                 hideOpenSections();
             } else if (selectedCheckbox === hasInternalCheckbox) {
@@ -1566,21 +1622,13 @@ function initializeCategoryCheckboxes() {
             }
             showDoubleDasturSections();
         }
+        syncExclusivity();
         updateCategoryDisplay();
     }
 
-    // Hide Open sub-sections
+    // Hide Open sub-sections (inclusive is now independent — do not hide it here)
     function hideOpenSections() {
-        if (inclusiveTypesToggle) {
-            inclusiveTypesToggle.style.display = 'none';
-        }
-        if (inclusiveTypesSection) {
-            inclusiveTypesSection.style.display = 'none';
-        }
-        if (hasInclusiveToggleCheckbox) {
-            hasInclusiveToggleCheckbox.checked = false;
-        }
-        inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
+        // Inclusive Types is now independent of Open — nothing to hide here
     }
 
     // Hide Internal sub-sections
@@ -1614,6 +1662,8 @@ function initializeCategoryCheckboxes() {
         if (doubleDasturFeeInput) {
             doubleDasturFeeInput.removeAttribute('disabled');
         }
+        var previewDDFeeRow = document.getElementById('preview-double-dastur-fee-row');
+        if (previewDDFeeRow) previewDDFeeRow.style.display = '';
     }
 
     // Hide Double Dastur sections (for Internal and Internal Appraisal)
@@ -1628,21 +1678,12 @@ function initializeCategoryCheckboxes() {
             doubleDasturFeeInput.value = '0'; // Set to 0 for internal categories
             doubleDasturFeeInput.disabled = true;
         }
+        var previewDDFeeRow = document.getElementById('preview-double-dastur-fee-row');
+        if (previewDDFeeRow) previewDDFeeRow.style.display = 'none';
     }
 
-    // Show/Hide Inclusive Types Toggle (when Open is checked)
-    function toggleInclusiveTypesToggle() {
-        if (hasOpenCheckbox && hasOpenCheckbox.checked &&
-            !(isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked)) {
-            inclusiveTypesToggle.style.display = 'block';
-        } else {
-            inclusiveTypesToggle.style.display = 'none';
-            inclusiveTypesSection.style.display = 'none';
-            if (hasInclusiveToggleCheckbox) {
-                hasInclusiveToggleCheckbox.checked = false;
-            }
-        }
-    }
+    // Inclusive Types toggle is now always visible — no toggling needed
+    function toggleInclusiveTypesToggle() { /* no-op: inclusive is always visible */ }
 
     // Show/Hide Individual Inclusive Types (when Inclusive Types checkbox is checked)
     function toggleInclusiveTypesSection() {
@@ -1650,6 +1691,8 @@ function initializeCategoryCheckboxes() {
             inclusiveTypesSection.style.display = 'block';
         } else {
             inclusiveTypesSection.style.display = 'none';
+            // Uncheck all individual types so they don't submit with the form
+            inclusiveTypeCheckboxes.forEach(cb => cb.checked = false);
         }
     }
 
@@ -1711,6 +1754,10 @@ function initializeCategoryCheckboxes() {
             if (hasInternalCheckbox && hasInternalCheckbox.checked) {
                 categories.push('<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>');
             }
+            if (!hasOpenCheckbox?.checked && !hasInternalCheckbox?.checked &&
+                hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
+                categories.push('<span class="badge bg-info text-dark">समावेशी (Inclusive)</span>');
+            }
         }
 
         previewCategory.innerHTML = categories.length > 0 ? categories.join(' ') : '-';
@@ -1729,20 +1776,14 @@ function initializeCategoryCheckboxes() {
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
-        if (hasOpenCheckbox && hasOpenCheckbox.checked &&
-            hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked &&
+        if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked &&
             checkedTypes.length > 0) {
             previewInclusiveType.textContent = checkedTypes.join(', ');
             previewInclusiveRow.style.display = '';
-            // Set has_inclusive hidden field to 1 if any inclusive type is selected
-            if (hasInclusiveHidden) {
-                hasInclusiveHidden.value = '1';
-            }
+            if (hasInclusiveHidden) hasInclusiveHidden.value = '1';
         } else {
             previewInclusiveRow.style.display = 'none';
-            if (hasInclusiveHidden) {
-                hasInclusiveHidden.value = '0';
-            }
+            if (hasInclusiveHidden) hasInclusiveHidden.value = '0';
         }
     }
 
@@ -1779,15 +1820,16 @@ function initializeCategoryCheckboxes() {
         }
     }
 
-    // Validate at least one category is selected (and only one main category)
+    // Validate at least one category is selected
     function validateCategories() {
-        const isOpen = hasOpenCheckbox && hasOpenCheckbox.checked;
-        const isInternal = hasInternalCheckbox && hasInternalCheckbox.checked;
+        const isOpen      = hasOpenCheckbox && hasOpenCheckbox.checked;
+        const isInclusive = hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked;
+        const isInternal  = hasInternalCheckbox && hasInternalCheckbox.checked;
         const isAppraisal = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
 
-        // Must select exactly one main category
-        if (!isOpen && !isInternal && !isAppraisal) {
-            alert('कृपया एक मुख्य श्रेणी छान्नुहोस्!\nPlease select one main category (Open, Internal, or Internal Appraisal)!');
+        // Must select at least one main category
+        if (!isOpen && !isInclusive && !isInternal && !isAppraisal) {
+            alert('कृपया कम्तिमा एक मुख्य श्रेणी छान्नुहोस्!\nPlease select at least one category (Open, Inclusive Types, Internal, or Internal Appraisal)!');
             return false;
         }
 
@@ -1861,8 +1903,20 @@ function initializeCategoryCheckboxes() {
     // Event Listeners for Sub-categories
     if (hasInclusiveToggleCheckbox) {
         hasInclusiveToggleCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Inclusive is mutually exclusive with all others — uncheck and reset them
+                if (hasOpenCheckbox)             { hasOpenCheckbox.checked             = false; hideOpenSections(); }
+                if (hasInternalCheckbox)         { hasInternalCheckbox.checked         = false; hideInternalSections(); }
+                if (isInternalAppraisalCheckbox) { isInternalAppraisalCheckbox.checked = false; }
+                hideDoubleDasturSections();
+            } else {
+                inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; });
+                showDoubleDasturSections();
+            }
             toggleInclusiveTypesSection();
             updateInclusiveTypesPreview();
+            syncExclusivity();
+            updateCategoryDisplay();
         });
     }
 
@@ -1892,20 +1946,28 @@ function initializeCategoryCheckboxes() {
     });
 
     // Initialize on page load
-    // Check which main category is selected and set up accordingly
     if (hasOpenCheckbox && hasOpenCheckbox.checked) {
-        handleCategoryExclusivity(hasOpenCheckbox);
+        hideInternalSections();
+        toggleInclusiveTypesSection();
+        showDoubleDasturSections();
     } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
-        handleCategoryExclusivity(hasInternalCheckbox);
+        hideOpenSections();
+        toggleInternalSubcategories();
+        toggleInternalInclusiveTypesSection();
+        hideDoubleDasturSections();
     } else if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
-        handleCategoryExclusivity(isInternalAppraisalCheckbox);
+        hideOpenSections();
+        hideInternalSections();
+        hideDoubleDasturSections();
+    } else if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
+        toggleInclusiveTypesSection();
+        hideDoubleDasturSections();
     } else {
-        // No category selected - all enabled
-        toggleInclusiveTypesToggle();
         toggleInclusiveTypesSection();
         toggleInternalSubcategories();
         toggleInternalInclusiveTypesSection();
     }
+    syncExclusivity();
     updateCategoryDisplay();
 
     // FORM SUBMIT - Updated for hierarchical categories (Inclusive under Open)
@@ -1922,6 +1984,9 @@ function initializeCategoryCheckboxes() {
                 return false;
             }
 
+            // Ensure number_of_posts hidden field reflects current state
+            if (typeof updateDemandTotal === 'function') updateDemandTotal();
+
             // CRITICAL: Update ALL hidden fields before submission
             document.getElementById('hidden_has_open').value = (hasOpenCheckbox && hasOpenCheckbox.checked) ? '1' : '0';
             document.getElementById('hidden_has_internal').value = (hasInternalCheckbox && hasInternalCheckbox.checked) ? '1' : '0';
@@ -1932,23 +1997,157 @@ function initializeCategoryCheckboxes() {
             const pos = (document.getElementById('position_input').value || '').trim();
             const lvl = (document.getElementById('level_input').value || '').trim();
             const positionLevel = lvl ? pos + ' - ' + lvl : pos;
-            document.getElementById('hidden_title').value = positionLevel;
+            document.getElementById('hidden_title').value = pos;
             document.getElementById('hidden_description').value = 'Position: ' + positionLevel + '\nPosts: ' + document.getElementById('number_of_posts').value;
             document.getElementById('hidden_requirements').value = document.getElementById('minimum_qualification').value;
 
-            // Update category
+            // Update category: appraisal → internal → open+inclusive → inclusive-only → open
             if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
                 document.getElementById('hidden_category').value = 'internal_appraisal';
             } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
                 document.getElementById('hidden_category').value = 'internal';
-            } else {
+            } else if (hasOpenCheckbox && hasOpenCheckbox.checked) {
                 document.getElementById('hidden_category').value = 'open';
+            } else {
+                // Inclusive-only vacancy
+                document.getElementById('hidden_category').value = 'inclusive';
             }
 
             console.log('✅ ALL FIELDS SET - SUBMITTING');
             return true;
         });
     }
+
+    // ============================================
+    // DEMAND POSTS — Dynamic per-type fields
+    // ============================================
+
+    var demandTypeMap = {
+        'has_open':                'Open (खुल्ला)',
+        'incl_women':              'Women (महिला)',
+        'incl_aj':                 'A.J (आ.ज)',
+        'incl_madhesi':            'Madhesi (मधेसी)',
+        'incl_janajati':           'Janajati (जनजाति)',
+        'incl_apanga':             'Apanga (अपाङ्ग)',
+        'incl_dalit':              'Dalit (दलित)',
+        'incl_pichadiyeko':        'Pichadiyeko Chetra (पिचडिएको क्षेत्र)',
+        'has_internal_open':       'Internal Open',
+        'internal_incl_women':     'Internal / Women (महिला)',
+        'internal_incl_aj':        'Internal / A.J (आ.ज)',
+        'internal_incl_madhesi':   'Internal / Madhesi (मधेसी)',
+        'internal_incl_janajati':  'Internal / Janajati (जनजाति)',
+        'internal_incl_apanga':    'Internal / Apanga (अपाङ्ग)',
+        'internal_incl_dalit':     'Internal / Dalit (दलित)',
+        'internal_incl_pichadiyeko': 'Internal / Pichadiyeko Chetra',
+        'is_internal_appraisal':   'Internal Appraisal (आन्तरिक बढुवा)'
+    };
+
+    var demandPostsContainer = document.getElementById('demand-posts-container');
+    var demandDefaultRow     = document.getElementById('demand-default');
+    var demandDefaultInput   = document.getElementById('number_of_posts_default');
+    var numberOfPostsHidden  = document.getElementById('number_of_posts');
+
+    function updateDemandFields() {
+        if (!demandPostsContainer || !demandDefaultRow) return;
+
+        // Collect checked type IDs in map order
+        var checkedTypes = Object.keys(demandTypeMap).filter(function(id) {
+            var cb = document.getElementById(id);
+            return cb && cb.checked;
+        });
+
+        if (checkedTypes.length === 0) {
+            // Show the generic single field
+            demandDefaultRow.style.display = '';
+            demandPostsContainer.querySelectorAll('.demand-type-row').forEach(function(el) { el.remove(); });
+            if (numberOfPostsHidden) {
+                numberOfPostsHidden.value = demandDefaultInput ? (parseInt(demandDefaultInput.value) || 1) : 1;
+            }
+        } else {
+            // Hide generic field, show per-type rows
+            demandDefaultRow.style.display = 'none';
+
+            // Remove rows for unchecked types
+            demandPostsContainer.querySelectorAll('.demand-type-row').forEach(function(row) {
+                if (!checkedTypes.includes(row.getAttribute('data-type-id'))) {
+                    row.remove();
+                }
+            });
+
+            // Add rows for newly checked types (preserving map order)
+            checkedTypes.forEach(function(typeId) {
+                if (!demandPostsContainer.querySelector('[data-type-id="' + typeId + '"]')) {
+                    var label = demandTypeMap[typeId];
+                    var row = document.createElement('div');
+                    row.className = 'demand-type-row mb-2';
+                    row.setAttribute('data-type-id', typeId);
+                    row.innerHTML =
+                        '<div class="input-group">' +
+                        '<span class="input-group-text fw-semibold" style="min-width:220px;background:#f9fafb;font-size:0.875rem;">' + label + '</span>' +
+                        '<input type="number" class="form-control form-control-lg demand-type-input" name="demand_posts[' + typeId + ']" value="1" min="1" max="1000" placeholder="Posts">' +
+                        '</div>';
+                    demandPostsContainer.appendChild(row);
+                    row.querySelector('.demand-type-input').addEventListener('input', updateDemandTotal);
+                }
+            });
+
+            updateDemandTotal();
+        }
+
+        _updateDemandPreview();
+    }
+
+    function updateDemandTotal() {
+        var total = 0;
+        demandPostsContainer.querySelectorAll('.demand-type-input').forEach(function(input) {
+            total += parseInt(input.value) || 0;
+        });
+        if (numberOfPostsHidden) {
+            numberOfPostsHidden.value = total > 0 ? total : 1;
+        }
+        _updateDemandPreview();
+    }
+
+    function _updateDemandPreview() {
+        var previewPosts = document.getElementById('preview-posts');
+        if (!previewPosts) return;
+
+        var typeRows = demandPostsContainer ? demandPostsContainer.querySelectorAll('.demand-type-row') : [];
+
+        if (typeRows.length === 0) {
+            previewPosts.textContent = demandDefaultInput ? (demandDefaultInput.value || '-') : '-';
+        } else {
+            var lines = [];
+            typeRows.forEach(function(row) {
+                var typeId = row.getAttribute('data-type-id');
+                var val = row.querySelector('.demand-type-input').value || '0';
+                lines.push(demandTypeMap[typeId] + ': ' + val);
+            });
+            var total = parseInt(numberOfPostsHidden ? numberOfPostsHidden.value : 0) || 0;
+            previewPosts.innerHTML = lines.join('<br>');
+        }
+    }
+
+    // Hook updateDemandFields into all relevant checkbox events
+    [hasOpenCheckbox, hasInternalCheckbox, isInternalAppraisalCheckbox].forEach(function(cb) {
+        if (cb) cb.addEventListener('change', updateDemandFields);
+    });
+    if (hasInclusiveToggleCheckbox)          hasInclusiveToggleCheckbox.addEventListener('change', updateDemandFields);
+    if (hasInternalOpenCheckbox)             hasInternalOpenCheckbox.addEventListener('change', updateDemandFields);
+    if (hasInternalInclusiveToggleCheckbox)  hasInternalInclusiveToggleCheckbox.addEventListener('change', updateDemandFields);
+    inclusiveTypeCheckboxes.forEach(function(cb) { cb.addEventListener('change', updateDemandFields); });
+    internalInclusiveTypeCheckboxes.forEach(function(cb) { cb.addEventListener('change', updateDemandFields); });
+
+    // Default input: keep hidden field and preview in sync
+    if (demandDefaultInput) {
+        demandDefaultInput.addEventListener('input', function() {
+            if (numberOfPostsHidden) numberOfPostsHidden.value = parseInt(this.value) || 1;
+            _updateDemandPreview();
+        });
+    }
+
+    // Initialize demand fields on page load
+    updateDemandFields();
 
     console.log('✅ Category checkboxes initialized successfully!');
 }
@@ -2055,6 +2254,189 @@ function confirmSaveDraft() {
 
     checkScroll();
 
+})();
+
+// ── Category Fee Management ──────────────────────────────────────────────────
+;(function () {
+    var existingFees = @json(old('category_fees', []));
+
+    var feeLabels = {
+        'open':                              { en: 'Open Application Fee',                    np: 'खुल्ला आवेदन शुल्क' },
+        'inclusive_Women':                   { en: 'Inclusive (Women) Fee',                   np: 'समावेशी (महिला) शुल्क' },
+        'inclusive_A.J':                     { en: 'Inclusive (A.J) Fee',                     np: 'समावेशी (आ.ज.) शुल्क' },
+        'inclusive_Madhesi':                 { en: 'Inclusive (Madhesi) Fee',                 np: 'समावेशी (मधेसी) शुल्क' },
+        'inclusive_Janajati':                { en: 'Inclusive (Janajati) Fee',                np: 'समावेशी (जनजाति) शुल्क' },
+        'inclusive_Apanga':                  { en: 'Inclusive (Apanga) Fee',                  np: 'समावेशी (अपांग) शुल्क' },
+        'inclusive_Dalit':                   { en: 'Inclusive (Dalit) Fee',                   np: 'समावेशी (दलित) शुल्क' },
+        'inclusive_Pichadiyeko_Chetra':      { en: 'Inclusive (Pichadiyeko Chetra) Fee',      np: 'समावेशी (पिछडिएको) शुल्क' },
+        'internal_open':                     { en: 'Internal Open Fee',                       np: 'आन्तरिक खुल्ला शुल्क' },
+        'internal_inclusive_Women':          { en: 'Internal Inclusive (Women) Fee',          np: 'आन्तरिक समावेशी (महिला) शुल्क' },
+        'internal_inclusive_A.J':            { en: 'Internal Inclusive (A.J) Fee',            np: 'आन्तरिक समावेशी (आ.ज.) शुल्क' },
+        'internal_inclusive_Madhesi':        { en: 'Internal Inclusive (Madhesi) Fee',        np: 'आन्तरिक समावेशी (मधेसी) शुल्क' },
+        'internal_inclusive_Janajati':       { en: 'Internal Inclusive (Janajati) Fee',       np: 'आन्तरिक समावेशी (जनजाति) शुल्क' },
+        'internal_inclusive_Apanga':         { en: 'Internal Inclusive (Apanga) Fee',         np: 'आन्तरिक समावेशी (अपांग) शुल्क' },
+        'internal_inclusive_Dalit':          { en: 'Internal Inclusive (Dalit) Fee',          np: 'आन्तरिक समावेशी (दलित) शुल्क' },
+        'internal_inclusive_Pichadiyeko_Chetra': { en: 'Internal Inclusive (Pichadiyeko Chetra) Fee', np: 'आन्तरिक समावेशी (पिछडिएको) शुल्क' },
+    };
+
+    function feeKey(prefix, value) {
+        return prefix + value.replace(/\s+/g, '_');
+    }
+
+    function getFeeKeys() {
+        var cbOpen      = document.getElementById('has_open');
+        var cbInternal  = document.getElementById('has_internal');
+        var cbAppraisal = document.getElementById('is_internal_appraisal');
+        var cbInclToggle     = document.getElementById('has_inclusive_toggle');
+        var cbIntOpenCb      = document.getElementById('has_internal_open');
+        var cbIntInclToggle  = document.getElementById('has_internal_inclusive_toggle');
+
+        var isOpen      = cbOpen      && cbOpen.checked;
+        var isInternal  = cbInternal  && cbInternal.checked;
+        var isAppraisal = cbAppraisal && cbAppraisal.checked;
+
+        if (isAppraisal) return null; // special: direct input
+
+        var keys = [];
+
+        if (isOpen) {
+            keys.push('open');
+        }
+
+        if (cbInclToggle && cbInclToggle.checked) {
+            document.querySelectorAll('.inclusive-type-checkbox:checked').forEach(function (cb) {
+                keys.push(feeKey('inclusive_', cb.value));
+            });
+        }
+
+        if (isInternal) {
+            if (cbIntOpenCb && cbIntOpenCb.checked) keys.push('internal_open');
+            if (cbIntInclToggle && cbIntInclToggle.checked) {
+                document.querySelectorAll('.internal-inclusive-type-checkbox:checked').forEach(function (cb) {
+                    keys.push(feeKey('internal_inclusive_', cb.value));
+                });
+            }
+        }
+
+        return keys;
+    }
+
+    function updateFeeFields() {
+        var container    = document.getElementById('individual-fees');
+        var totalInput   = document.getElementById('application_fee');
+        var note         = document.getElementById('fee-total-note');
+        var cbAppraisal  = document.getElementById('is_internal_appraisal');
+        var isAppraisal  = cbAppraisal && cbAppraisal.checked;
+
+        if (!container || !totalInput) return;
+
+        if (isAppraisal) {
+            container.innerHTML = '';
+            totalInput.readOnly = false;
+            totalInput.placeholder = 'Enter Application Fee';
+            if (note) note.textContent = 'Enter the application fee directly for Internal Appraisal.';
+            return;
+        }
+
+        var keys = getFeeKeys();
+
+        if (!keys || keys.length === 0) {
+            container.innerHTML = '';
+            totalInput.readOnly = true;
+            totalInput.value = '';
+            totalInput.placeholder = 'Total Application Fee';
+            if (note) note.textContent = 'Select a category above to enter individual fees.';
+            return;
+        }
+
+        totalInput.readOnly = true;
+        if (note) note.textContent = 'Auto-calculated from individual fees above.';
+
+        // Save current typed values before re-render
+        var saved = {};
+        container.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            if (inp.value !== '') saved[inp.dataset.feeKey] = inp.value;
+        });
+
+        container.innerHTML = '';
+
+        keys.forEach(function (key) {
+            var info = feeLabels[key] || { en: key, np: '' };
+            var val  = saved[key] !== undefined ? saved[key]
+                     : (existingFees[key] !== undefined ? existingFees[key] : '');
+
+            var div = document.createElement('div');
+            div.className = 'fee-type-row mb-2';
+            div.innerHTML =
+                '<div class="input-group">' +
+                    '<span class="input-group-text fw-semibold" style="min-width:220px;background:#f9fafb;font-size:0.875rem;">' +
+                        info.en +
+                    '</span>' +
+                    '<input type="number" ' +
+                           'class="form-control form-control-lg category-fee-input" ' +
+                           'name="category_fees[' + key + ']" ' +
+                           'data-fee-key="' + key + '" ' +
+                           'value="' + val + '" ' +
+                           'placeholder="Enter amount (NPR)" ' +
+                           'min="0" step="0.01">' +
+                '</div>';
+            container.appendChild(div);
+        });
+
+        container.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            inp.addEventListener('input', recalculateTotal);
+        });
+
+        recalculateTotal();
+    }
+
+    function recalculateTotal() {
+        var totalInput = document.getElementById('application_fee');
+        if (!totalInput || !totalInput.readOnly) return;
+
+        var sum = 0;
+        document.querySelectorAll('.category-fee-input').forEach(function (inp) {
+            sum += parseFloat(inp.value) || 0;
+        });
+
+        totalInput.value = sum > 0 ? sum : '';
+
+        var previewEl = document.getElementById('preview-application-fee');
+        if (previewEl) {
+            previewEl.textContent = sum > 0 ? 'NPR ' + sum.toLocaleString() : '-';
+        }
+    }
+
+    // Listen for Total Application Fee direct input (Internal Appraisal)
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.id === 'application_fee' && !e.target.readOnly) {
+            var previewEl = document.getElementById('preview-application-fee');
+            if (previewEl) {
+                var val = parseFloat(e.target.value) || 0;
+                previewEl.textContent = val > 0 ? 'NPR ' + val.toLocaleString() : '-';
+            }
+        }
+    });
+
+    // Trigger on any category/type checkbox change
+    var watchIds = ['has_open','has_internal','is_internal_appraisal',
+                    'has_inclusive_toggle','has_internal_open','has_internal_inclusive_toggle'];
+    var watchClasses = ['inclusive-type-checkbox','internal-inclusive-type-checkbox',
+                        'category-checkbox','internal-subcategory-checkbox'];
+
+    document.addEventListener('change', function (e) {
+        var el = e.target;
+        var relevant = watchIds.indexOf(el.id) !== -1 ||
+                       watchClasses.some(function (c) { return el.classList.contains(c); });
+        if (relevant) setTimeout(updateFeeFields, 60);
+    });
+
+    // Init on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateFeeFields);
+    } else {
+        setTimeout(updateFeeFields, 150);
+    }
 })();
 </script>
 @endsection

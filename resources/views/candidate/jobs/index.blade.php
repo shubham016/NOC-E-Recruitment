@@ -107,88 +107,223 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle">
+                <table class="table table-bordered align-middle vacancy-table">
                     <thead class="table-light">
                         <tr>
                             <th class="text-center">S.N.</th>
                             <th>Vacancy Title</th>
-                            <th>Department</th>
-                            <th>Category</th>
-                            <th class="text-center">Vacancies</th>
-                            <th>Position Level</th>
+                            <th>Service / Group</th>
+                            <th>Position / Level</th>
                             <th>Advertisement No.</th>
+                            <th>Type</th>
+                            <th class="text-center">Demand</th>
                             <th>Deadline</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($jobs as $index => $job)
                         @php
-                            $hasApplied = false;
-                            if(Session::has('candidate_logged_in')) {
+                            // Pre-calculate rowspan for position+level groups (consecutive rows)
+                            // Works because controller sorts by position → level → advertisement_no
+                            $jobItems   = $jobs->items();
+                            $total      = count($jobItems);
+                            $posRowspan = array_fill(0, $total, 0);
+                            $pi = 0;
+                            while ($pi < $total) {
+                                $key   = ($jobItems[$pi]->position ?? '') . '___' . ($jobItems[$pi]->level ?? '');
+                                $count = 1;
+                                while ($pi + $count < $total) {
+                                    $nk = ($jobItems[$pi + $count]->position ?? '') . '___' . ($jobItems[$pi + $count]->level ?? '');
+                                    if ($nk === $key) { $count++; } else { break; }
+                                }
+                                $posRowspan[$pi] = $count;
+                                $pi += $count;
+                            }
+                            $rowIdx = 0;
+
+                            // Pre-fetch hasApplied for all jobs in one query
+                            $appliedJobIds = [];
+                            if (Session::has('candidate_logged_in')) {
                                 $candidateCitizenship = DB::table('candidate_registration')
                                     ->where('id', Session::get('candidate_id'))
                                     ->value('citizenship_number');
-                                
-                                $hasApplied = DB::table('application_form')
-                                    ->where('job_posting_id', $job->id)
-                                    ->where('citizenship_number', $candidateCitizenship)
-                                    ->exists();
+                                if ($candidateCitizenship) {
+                                    $appliedJobIds = DB::table('application_form')
+                                        ->whereIn('job_posting_id', collect($jobItems)->pluck('id')->toArray())
+                                        ->where('citizenship_number', $candidateCitizenship)
+                                        ->pluck('job_posting_id')
+                                        ->toArray();
+                                }
+                            }
+
+                            // Pre-calculate group-level applied status (any job in group applied)
+                            $groupApplied = [];
+                            $gi = 0;
+                            while ($gi < $total) {
+                                $span = $posRowspan[$gi];
+                                $anyApplied = false;
+                                for ($j = $gi; $j < $gi + $span; $j++) {
+                                    if (in_array($jobItems[$j]->id, $appliedJobIds)) {
+                                        $anyApplied = true;
+                                        break;
+                                    }
+                                }
+                                $groupApplied[$gi] = $anyApplied;
+                                $gi += $span;
                             }
                         @endphp
-                        <tr>
-                            <td class="text-center">{{ $jobs->firstItem() + $index }}</td>
-                            <td>
-                                <strong class="text-dark">{{ $job->title }}</strong>
+                        @foreach($jobs as $index => $job)
+                        @php
+                            $hasApplied         = in_array($job->id, $appliedJobIds);
+                            $groupStartIdx      = $rowIdx;
+                            $thisPosRowspan     = $posRowspan[$rowIdx];
+                            $hasAppliedInGroup  = $groupApplied[$groupStartIdx] ?? false;
+                            $rowIdx++;
+
+                            // Build Types & Demand
+                            $types      = [];
+                            $demandVals = [];
+                            $dp         = is_array($job->demand_posts)
+                                            ? $job->demand_posts
+                                            : json_decode($job->demand_posts ?? '[]', true) ?? [];
+
+                            $inclKeyMap = [
+                                'Women' => 'incl_women', 'A.J' => 'incl_aj',
+                                'Madhesi' => 'incl_madhesi', 'Janajati' => 'incl_janajati',
+                                'Apanga' => 'incl_apanga', 'Dalit' => 'incl_dalit',
+                                'Pichadiyeko Chetra' => 'incl_pichadiyeko',
+                            ];
+                            $intKeyMap = [
+                                'Women' => 'internal_incl_women', 'A.J' => 'internal_incl_aj',
+                                'Madhesi' => 'internal_incl_madhesi', 'Janajati' => 'internal_incl_janajati',
+                                'Apanga' => 'internal_incl_apanga', 'Dalit' => 'internal_incl_dalit',
+                                'Pichadiyeko Chetra' => 'internal_incl_pichadiyeko',
+                            ];
+
+                            if ($job->category === 'internal_appraisal') {
+                                $types[]      = 'Internal Appraisal';
+                                $demandVals[] = $dp['is_internal_appraisal'] ?? $job->number_of_posts;
+                            } else {
+                                if ($job->has_open) {
+                                    $types[]      = 'Open';
+                                    $demandVals[] = $dp['has_open'] ?? $job->open_posts ?? $job->number_of_posts;
+                                }
+                                if ($job->has_inclusive) {
+                                    $raw     = $job->inclusive_type;
+                                    $decoded = $raw ? (is_array($raw) ? $raw : json_decode($raw, true)) : null;
+                                    if (is_array($decoded) && count($decoded)) {
+                                        foreach ($decoded as $t) {
+                                            $k            = $inclKeyMap[$t] ?? null;
+                                            $types[]      = ucfirst($t);
+                                            $demandVals[] = ($k && isset($dp[$k])) ? $dp[$k] : ($job->inclusive_posts ?? $job->number_of_posts);
+                                        }
+                                    } else {
+                                        $types[]      = 'Inclusive';
+                                        $demandVals[] = $job->inclusive_posts ?? $job->number_of_posts;
+                                    }
+                                }
+                                if ($job->has_internal && !$job->has_internal_open && !$job->has_internal_inclusive) {
+                                    $types[]      = 'Internal';
+                                    $demandVals[] = $dp['has_internal'] ?? $job->number_of_posts;
+                                }
+                                if ($job->has_internal_open) {
+                                    $types[]      = 'Internal/Open';
+                                    $demandVals[] = $dp['has_internal_open'] ?? $job->number_of_posts;
+                                }
+                                if ($job->has_internal_inclusive) {
+                                    $rawInt     = $job->internal_inclusive_types;
+                                    $decodedInt = $rawInt ? (is_array($rawInt) ? $rawInt : json_decode($rawInt, true)) : null;
+                                    if (is_array($decodedInt) && count($decodedInt)) {
+                                        foreach ($decodedInt as $t) {
+                                            $k            = $intKeyMap[$t] ?? null;
+                                            $types[]      = 'Internal/' . ucfirst($t);
+                                            $demandVals[] = ($k && isset($dp[$k])) ? $dp[$k] : $job->number_of_posts;
+                                        }
+                                    } else {
+                                        $types[]      = 'Internal/Inclusive';
+                                        $demandVals[] = $job->number_of_posts;
+                                    }
+                                }
+                                if (empty($types)) {
+                                    $types[]      = ucfirst(str_replace('_', ' ', $job->category ?? ''));
+                                    $demandVals[] = $job->number_of_posts;
+                                }
+                            }
+                        @endphp
+                        <tr data-pos-group="{{ $job->position }}_{{ $job->level }}">
+                            <td class="text-center align-middle">{{ $jobs->firstItem() + $index }}</td>
+
+                            {{-- Vacancy Title — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                                <td rowspan="{{ $thisPosRowspan }}" class="align-middle text-center">
+                                    {{ $job->position }}
+                                </td>
+                            @endif
+
+                            {{-- Service / Group — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                                <td rowspan="{{ $thisPosRowspan }}" class="align-middle text-center">
+                                    {{ $job->service_group ?: $job->department }}
+                                </td>
+                            @endif
+
+                            {{-- Position / Level — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                                <td rowspan="{{ $thisPosRowspan }}" class="align-middle text-center">
+                                    {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
+                                </td>
+                            @endif
+
+                            <td class="align-middle text-center">{{ $job->advertisement_no }}</td>
+
+                            {{-- Type --}}
+                            <td style="padding:0;text-align:center;">
+                                @foreach($types as $i => $type)
+                                    <div style="padding:8px 12px;white-space:nowrap;{{ $i > 0 ? 'border-top:1px solid #e5e7eb;' : '' }}min-height:38px;display:flex;align-items:center;justify-content:center;">{{ $type }}</div>
+                                @endforeach
                             </td>
-                            <td>{{ $job->service_group }}</td>
-                            <td>
-                                <span class="text-dark">
-                                    @if($job->category == 'internal_appraisal')
-                                        Internal Appraisal
-                                    @else
-                                        {{ ucfirst($job->category) }}
-                                    @endif
-                                </span>
+
+                            {{-- Vacancies --}}
+                            <td style="padding:0;text-align:center;">
+                                @foreach($demandVals as $i => $val)
+                                    <div style="padding:8px 12px;white-space:nowrap;{{ $i > 0 ? 'border-top:1px solid #e5e7eb;' : '' }}min-height:38px;display:flex;align-items:center;justify-content:center;">{{ $val }}</div>
+                                @endforeach
                             </td>
-                            <td class="text-center">
-                                <strong class="text-dark">{{ $job->number_of_posts }}</strong>
-                            </td>
-                            <td>{{ $job->position_level }}</td>
-                            <td>{{ $job->advertisement_no }}</td>
-                            <td>
-                                <div>
+
+                            {{-- Deadline — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                                <td rowspan="{{ $thisPosRowspan }}" class="align-middle text-center">
                                     <small class="text-danger d-block fw-semibold nepali-date-bs"
                                         data-ad-date="{{ \Carbon\Carbon::parse($job->deadline)->format('Y-m-d') }}">
                                         <i class="bi bi-hourglass-split"></i> ...
                                     </small>
                                     <small class="text-muted">{{ \Carbon\Carbon::parse($job->deadline)->format('M d, Y') }}</small>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                @if($hasApplied)
-                                    <span class="badge bg-secondary">
-                                        <i class="fas fa-check-circle"></i> Applied
-                                    </span>
+                                </td>
+                            @endif
+
+                            {{-- Status — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                            <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
+                                @if($hasAppliedInGroup)
+                                    <span class="badge bg-secondary"><i class="fas fa-check-circle"></i> Applied</span>
                                 @elseif($job->status === 'active')
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-circle-fill"></i> Active
-                                    </span>
+                                    <span class="badge bg-success"><i class="bi bi-circle-fill"></i> Active</span>
                                 @else
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-circle"></i> Closed
-                                    </span>
+                                    <span class="badge bg-secondary"><i class="bi bi-circle"></i> Closed</span>
                                 @endif
                             </td>
-                            <td class="text-center">
+                            @endif
+
+                            {{-- Action — rowspan per position+level group --}}
+                            @if($thisPosRowspan > 0)
+                            <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <a href="{{ route('candidate.jobs.show', $job->id) }}" 
-                                       class="btn btn-sm btn-outline-danger" 
-                                       title="View Details">
+                                    <a href="{{ route('candidate.jobs.show', $job->id) }}"
+                                       class="btn btn-sm btn-outline-danger" title="View Details">
                                         <i class="bi bi-eye"></i> Details
                                     </a>
-                                    @if(!$hasApplied && $job->status === 'active')
+                                    @if(!$hasAppliedInGroup && $job->status === 'active')
                                         <button onclick="checkEligibilityAndApply({{ $job->id }})"
                                             class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
                                             title="Apply Now">
@@ -197,6 +332,7 @@
                                     @endif
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
@@ -228,7 +364,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
-                    <i class="fas fa-exclamation-circle"></i> 
+                    <i class="fas fa-exclamation-circle"></i>
                     <span id="eligibilityModalTitle">Not Eligible</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -243,6 +379,19 @@
 
 @push('styles')
 <style>
+    .vacancy-table thead th {
+        text-align: center;
+        vertical-align: middle;
+        padding: 14px 16px;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+
+    .vacancy-table tbody td {
+        padding: 12px 16px;
+        vertical-align: middle;
+    }
+
     @media print {
         .sidebar, .navbar, footer, .btn, .page-subtitle {
             display: none !important;
@@ -255,7 +404,6 @@
             box-shadow: none !important;
             border: 1px solid #ddd !important;
         }
-        /* Hide the Action column when printing */
         th:last-child, td:last-child {
             display: none !important;
         }
@@ -265,11 +413,9 @@
 
 <script>
 function checkEligibilityAndApply(jobId) {
-    // Get the button that was clicked
     const button = document.querySelector(`.apply-btn-${jobId}`);
     const originalHtml = button.innerHTML;
-    
-    // Disable button and show loading state
+
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
@@ -277,10 +423,8 @@ function checkEligibilityAndApply(jobId) {
         .then(response => response.json())
         .then(data => {
             if (data.eligible) {
-                // Redirect immediately without changing button text
                 window.location.href = `/candidate/jobs/${jobId}/applications/create`;
             } else {
-                // Show error modal with reasons
                 let errorHtml = '<div class="alert alert-danger"><strong>You are not eligible for this position due to the following reasons:</strong></div>';
                 errorHtml += '<ul class="text-start mb-0">';
                 data.errors.forEach(error => {
@@ -290,7 +434,6 @@ function checkEligibilityAndApply(jobId) {
 
                 showEligibilityModal(errorHtml);
 
-                // Reset button state
                 button.disabled = false;
                 button.innerHTML = originalHtml;
             }
@@ -298,8 +441,6 @@ function checkEligibilityAndApply(jobId) {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while checking eligibility. Please try again.');
-            
-            // Reset button state on error
             button.disabled = false;
             button.innerHTML = originalHtml;
         });
@@ -311,12 +452,10 @@ function showEligibilityModal(content) {
     modal.show();
 }
 
-// Reset all button states when page loads/becomes visible
 function resetAllButtons() {
     document.querySelectorAll('[class*="apply-btn-"]').forEach(button => {
-        // Reset any stuck buttons
-        if (button.innerHTML.includes('Checking') || 
-            button.innerHTML.includes('Redirecting') || 
+        if (button.innerHTML.includes('Checking') ||
+            button.innerHTML.includes('Redirecting') ||
             button.innerHTML.includes('Eligible')) {
             button.disabled = false;
             button.innerHTML = '<i class="fas fa-paper-plane"></i> Apply';
@@ -324,17 +463,14 @@ function resetAllButtons() {
     });
 }
 
-// Run when page loads
 document.addEventListener('DOMContentLoaded', resetAllButtons);
 
-// Run when page becomes visible again (e.g., using back button)
 document.addEventListener('visibilitychange', function() {
     if (!document.hidden) {
         resetAllButtons();
     }
 });
 
-// Also run on page show event (Firefox back button fix)
 window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
         resetAllButtons();

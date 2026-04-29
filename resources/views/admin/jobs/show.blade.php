@@ -341,8 +341,47 @@
                 <div class="detail-row">
                     <div class="detail-label">Demand Post (Number)</div>
                     <div class="detail-value">
-                        <strong class="text-danger fs-5">{{ $job->number_of_posts }}</strong>
-                        <small class="text-muted ms-2">positions available</small>
+                        @php
+                            $demandTypeLabels = [
+                                'has_open'               => 'Open (खुल्ला)',
+                                'incl_women'             => 'Women (महिला)',
+                                'incl_aj'                => 'A.J (आ.ज)',
+                                'incl_madhesi'           => 'Madhesi (मधेसी)',
+                                'incl_janajati'          => 'Janajati (जनजाति)',
+                                'incl_apanga'            => 'Apanga (अपाङ्ग)',
+                                'incl_dalit'             => 'Dalit (दलित)',
+                                'incl_pichadiyeko'       => 'Pichadiyeko Chetra (पिचडिएको क्षेत्र)',
+                                'has_internal_open'      => 'Internal Open',
+                                'internal_incl_women'    => 'Internal / Women (महिला)',
+                                'internal_incl_aj'       => 'Internal / A.J (आ.ज)',
+                                'internal_incl_madhesi'  => 'Internal / Madhesi (मधेसी)',
+                                'internal_incl_janajati' => 'Internal / Janajati (जनजाति)',
+                                'internal_incl_apanga'   => 'Internal / Apanga (अपाङ्ग)',
+                                'internal_incl_dalit'    => 'Internal / Dalit (दलित)',
+                                'internal_incl_pichadiyeko' => 'Internal / Pichadiyeko Chetra',
+                                'is_internal_appraisal'  => 'Internal Appraisal (आन्तरिक बढुवा)',
+                            ];
+                            $demandPosts = $job->demand_posts ?? [];
+                        @endphp
+                        @if(!empty($demandPosts))
+                            @foreach($demandPosts as $key => $count)
+                                @if(isset($demandTypeLabels[$key]) && $count > 0)
+                                    <div class="d-flex justify-content-between" style="max-width:320px;">
+                                        <span class="text-muted" style="font-size:0.9rem;">{{ $demandTypeLabels[$key] }}</span>
+                                        <strong class="text-danger ms-3">{{ $count }}</strong>
+                                    </div>
+                                @endif
+                            @endforeach
+                            @if(count($demandPosts) > 1)
+                                <div class="d-flex justify-content-between mt-1 pt-1 border-top" style="max-width:320px;">
+                                    <span class="fw-semibold text-muted" style="font-size:0.9rem;">Total</span>
+                                    <strong class="text-danger ms-3 fs-5">{{ $job->number_of_posts }}</strong>
+                                </div>
+                            @endif
+                        @else
+                            <strong class="text-danger fs-5">{{ $job->number_of_posts }}</strong>
+                            <small class="text-muted ms-2">positions available</small>
+                        @endif
                     </div>
                 </div>
 
@@ -465,8 +504,39 @@
                     </div>
                 </div>
 
+                @if($job->category_fees && count($job->category_fees))
+                    @php
+                        $feeLabels = [
+                            'open'                              => 'Open Application Fee',
+                            'inclusive_Women'                   => 'Inclusive (Women) Fee',
+                            'inclusive_A.J'                     => 'Inclusive (A.J) Fee',
+                            'inclusive_Madhesi'                 => 'Inclusive (Madhesi) Fee',
+                            'inclusive_Janajati'                => 'Inclusive (Janajati) Fee',
+                            'inclusive_Apanga'                  => 'Inclusive (Apanga) Fee',
+                            'inclusive_Dalit'                   => 'Inclusive (Dalit) Fee',
+                            'inclusive_Pichadiyeko_Chetra'      => 'Inclusive (Pichadiyeko Chetra) Fee',
+                            'internal_open'                     => 'Internal Open Fee',
+                            'internal_inclusive_Women'          => 'Internal Inclusive (Women) Fee',
+                            'internal_inclusive_A.J'            => 'Internal Inclusive (A.J) Fee',
+                            'internal_inclusive_Madhesi'        => 'Internal Inclusive (Madhesi) Fee',
+                            'internal_inclusive_Janajati'       => 'Internal Inclusive (Janajati) Fee',
+                            'internal_inclusive_Apanga'         => 'Internal Inclusive (Apanga) Fee',
+                            'internal_inclusive_Dalit'          => 'Internal Inclusive (Dalit) Fee',
+                            'internal_inclusive_Pichadiyeko_Chetra' => 'Internal Inclusive (Pichadiyeko Chetra) Fee',
+                        ];
+                    @endphp
+                    @foreach($job->category_fees as $feeKey => $feeAmt)
+                        <div class="detail-row">
+                            <div class="detail-label">{{ $feeLabels[$feeKey] ?? ucwords(str_replace('_', ' ', $feeKey)) }}</div>
+                            <div class="detail-value">
+                                <i class="bi bi-cash-coin text-primary me-1"></i>
+                                <strong>NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}</strong>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
                 <div class="detail-row">
-                    <div class="detail-label">Application Fee</div>
+                    <div class="detail-label">Total Application Fee</div>
                     <div class="detail-value">
                         <i class="bi bi-cash-coin text-primary me-1"></i>
                         @if($job->application_fee)

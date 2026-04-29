@@ -45,10 +45,13 @@ class JobBrowsingController extends Controller
             $query->where('position', $request->position_level);
         }
 
-        // Sort
+        // Primary: position+level+advertisement_no so same role groups together in order; Secondary: user-chosen sort
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        $query->orderBy('position', 'asc')
+              ->orderBy('level', 'asc')
+              ->orderBy('advertisement_no', 'asc')
+              ->orderBy($sortBy, $sortOrder);
 
         // Get jobs with application count
         $jobs = $query->withCount('applications')->paginate(12)->withQueryString();
@@ -76,7 +79,7 @@ class JobBrowsingController extends Controller
             $candidate = DB::table('candidate_registration')
                 ->where('id', Session::get('candidate_id'))
                 ->first();
-            
+
             if ($candidate) {
                 $appliedJobIds = DB::table('application_form')
                     ->where('citizenship_number', $candidate->citizenship_number)
@@ -113,15 +116,13 @@ class JobBrowsingController extends Controller
             $candidate = DB::table('candidate_registration')
                 ->where('id', Session::get('candidate_id'))
                 ->first();
-            
+
             if ($candidate) {
-                // Check if candidate already applied using citizenship_number and job_posting_id
                 $hasApplied = DB::table('application_form')
                     ->where('citizenship_number', $candidate->citizenship_number)
                     ->where('job_posting_id', $id)
                     ->exists();
 
-                // Get candidate's application if exists
                 if ($hasApplied) {
                     $application = DB::table('application_form')
                         ->where('citizenship_number', $candidate->citizenship_number)

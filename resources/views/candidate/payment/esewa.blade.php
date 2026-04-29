@@ -1,7 +1,7 @@
 <html>
 <body onload="document.forms['esewaForm'].submit()">
 
-<form name="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+<form name="esewaForm" action="{{ $esewaUrl }}" method="POST">
     <input type="hidden" name="amount" value="{{ $amount }}">
     <input type="hidden" name="tax_amount" value="{{ $tax_amount }}">
     <input type="hidden" name="total_amount" value="{{ $total_amount }}">
