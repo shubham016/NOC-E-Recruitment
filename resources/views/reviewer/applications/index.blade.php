@@ -61,6 +61,21 @@
         transform: translateX(4px);
     }
 
+    .priority-high {
+        border-left-color: #ef4444 !important;
+        background: linear-gradient(to right, rgba(239, 68, 68, 0.02) 0%, white 100%);
+    }
+
+    .priority-medium {
+        border-left-color: #f59e0b !important;
+        background: linear-gradient(to right, rgba(245, 158, 11, 0.02) 0%, white 100%);
+    }
+
+    .priority-low {
+        border-left-color: #10b981 !important;
+        background: linear-gradient(to right, rgba(16, 185, 129, 0.02) 0%, white 100%);
+    }
+
     .modern-table {
         width: 100%;
         border-collapse: collapse;
@@ -194,6 +209,7 @@
                             <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>Assigned</option>
                             <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>Reviewed</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                             <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             <option value="edit" {{ request('status') == 'edit' ? 'selected' : '' }}>Edit</option>
                         </select>
@@ -271,6 +287,7 @@
                             <th>Payment</th>
                             <th>Applied Date</th>
                             <th>Deadline</th>
+                            <!-- <th>Priority</th> -->
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -317,6 +334,7 @@
                                     'pending'  => 'bg-warning text-dark',
                                     'assigned' => 'bg-info',
                                     'reviewed' => 'bg-success',
+                                    'approved' => 'bg-success',
                                     'rejected' => 'bg-danger',
                                 ];
                                 $statusColor = $statusColors[$application->status] ?? 'bg-secondary';
@@ -393,7 +411,6 @@
                                         <br><small class="text-muted">(Auto)</small>
                                     @endif
                                 </td>
-
 
                                 <td class="nowrap">
                                     <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>

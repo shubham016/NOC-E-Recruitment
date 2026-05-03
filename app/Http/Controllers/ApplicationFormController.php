@@ -23,6 +23,9 @@ class ApplicationFormController extends Controller
         'character'                => 'character-certificates',
         'equivalent'               => 'equivalency-certificates',
         'work_experience'          => 'work-experience-documents',
+        'exp1_document' => 'experience-documents',
+        'exp2_document' => 'experience-documents',
+        'exp3_document' => 'experience-documents',
     ];
 
     /**
@@ -391,7 +394,7 @@ class ApplicationFormController extends Controller
     }
 
     // ✅ Block editing after payment/submission
-    if (!in_array($applicationform->status, ['draft', 'edit'])) {
+    if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
         return redirect()->route('candidate.applications.index')
             ->with('error', 'This application has already been submitted and cannot be edited.');
     }
@@ -423,7 +426,8 @@ class ApplicationFormController extends Controller
             $this->validationMessages()
         );
 
-        $data = $request->except(array_keys($this->fileFields));
+        // Exclude status from request so it cannot overwrite our logic below
+        $data = $request->except(array_merge(array_keys($this->fileFields), ['status']));
         
         $uploadedFiles = $this->handleFileUploads($request, $applicationform, false);
 
@@ -431,6 +435,11 @@ class ApplicationFormController extends Controller
 
         if ($request->boolean('same_as_permanent')) {
             $data = array_merge($data, $this->copyPermanentToMailing($request));
+        }
+
+        // If the form is in a post-payment edit state, mark it as 'edited'
+        if (in_array($applicationform->status, ['edit', 'edited'])) {
+            $data['status'] = 'edited';
         }
 
         $applicationform->update($data);
