@@ -1155,75 +1155,6 @@
 
     <!-- Content Layout — side by side -->
     <div class="content-layout">
-        <!-- Applications per Vacancy -->
-        <div class="card" style="margin-bottom:0;">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <!-- <i class="bi bi-briefcase-fill text-primary" style="font-size:16px;"></i> -->
-                    Applications per Vacancy
-                </h3>
-                <a href="{{ route('admin.jobs.index') }}" class="card-link">View All →</a>
-            </div>
-            <div>
-                @forelse($topJobs as $vacancy)
-                    <div class="job-card">
-                        {{-- Left: title + meta --}}
-                        <div class="job-info">
-                            <h4 class="job-title">{{ $vacancy->title }}</h4>
-                            <p class="job-meta">
-                                @if($vacancy->position_level)
-                                    <!-- <span><i class="bi bi-person-badge"></i> 
-                                    </span> -->
-                                  <span>  {{ $vacancy->advertisement_no }} </span>
-                                @endif
-                                <!-- <span><i class="bi bi-building"></i> 
-                                
-                            </span> -->
-                            <span>{{ $vacancy->service_group ?? $vacancy->department }}</span>
-                            
-                                <!-- <span><i class="bi bi-geo-alt"></i> {{ $vacancy->location }}</span> -->
-                            </p>
-                        </div>
-
-                        {{-- Middle: qualification + deadline BS --}}
-                        <div class="job-middle">
-                            <div>
-                                <div style="font-size:11px; font-weight:600; color:var(--gray-700); margin-bottom:4px; overflow:hidden; text-overflow:ellipsis;">
-                                    <!-- <i class="bi bi-mortarboard" style="color:#c9a84c; margin-right:3px;"></i> -->
-                                    {{ $vacancy->minimum_qualification ?? 'N/A' }}
-                                </div>
-                                @if($vacancy->deadline_bs)
-                                    <div style="font-size:11px; color:var(--gray-400);">
-                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
-                                        {{ $vacancy->deadline_bs }}
-                                    </div>
-                                @elseif($vacancy->deadline)
-                                    <div style="font-size:11px; color:var(--gray-400);">
-                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
-                                        {{ \Carbon\Carbon::parse($vacancy->deadline)->format('M d, Y') }}
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- Right: application count --}}
-                        <div class="job-count-box">
-                            <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
-                            <div class="job-count-label">Applied</div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="bi bi-briefcase"></i></div>
-                        <h4 class="empty-title">No Vacancies Posted</h4>
-                        <p class="empty-text">
-                            <a href="{{ route('admin.jobs.create') }}" style="color:#1976d2;">Post your first vacancy</a>
-                        </p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
         <!-- Recent Applications -->
         <div class="card" style="margin-bottom:0;">
             <div class="card-header">
@@ -1280,6 +1211,75 @@
                         <div class="empty-icon"><i class="bi bi-inbox"></i></div>
                         <h4 class="empty-title">No Recent Applications</h4>
                         <p class="empty-text">New applications will appear here</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Applications per Vacancy -->
+        <div class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <!-- <i class="bi bi-briefcase-fill text-primary" style="font-size:16px;"></i> -->
+                    Applications per Vacancy
+                </h3>
+                <a href="{{ route('admin.jobs.index') }}" class="card-link">View All →</a>
+            </div>
+            <div>
+                @forelse($topJobs as $vacancy)
+                    <div class="job-card">
+                        {{-- Left: title + meta --}}
+                        <div class="job-info">
+                            <h4 class="job-title">{{ $vacancy->title }}</h4>
+                            <p class="job-meta">
+                                @if($vacancy->position_level)
+                                    <!-- <span><i class="bi bi-person-badge"></i>
+                                    </span> -->
+                                  <span>  {{ $vacancy->advertisement_no }} </span>
+                                @endif
+                                <!-- <span><i class="bi bi-building"></i>
+
+                            </span> -->
+                            <span>{{ $vacancy->service_group ?? $vacancy->department }}</span>
+
+                                <!-- <span><i class="bi bi-geo-alt"></i> {{ $vacancy->location }}</span> -->
+                            </p>
+                        </div>
+
+                        {{-- Middle: qualification + deadline BS --}}
+                        <div class="job-middle">
+                            <div>
+                                <div style="font-size:11px; font-weight:600; color:var(--gray-700); margin-bottom:4px; overflow:hidden; text-overflow:ellipsis;">
+                                    <!-- <i class="bi bi-mortarboard" style="color:#c9a84c; margin-right:3px;"></i> -->
+                                    {{ $vacancy->minimum_qualification ?? 'N/A' }}
+                                </div>
+                                @if($vacancy->deadline_bs)
+                                    <div style="font-size:11px; color:var(--gray-400);">
+                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
+                                        {{ $vacancy->deadline_bs }}
+                                    </div>
+                                @elseif($vacancy->deadline)
+                                    <div style="font-size:11px; color:var(--gray-400);">
+                                        <!-- <i class="bi bi-calendar-event" style="margin-right:3px;"></i> -->
+                                        {{ \Carbon\Carbon::parse($vacancy->deadline)->format('M d, Y') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Right: application count --}}
+                        <div class="job-count-box">
+                            <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
+                            <div class="job-count-label">Applied</div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="bi bi-briefcase"></i></div>
+                        <h4 class="empty-title">No Vacancies Posted</h4>
+                        <p class="empty-text">
+                            <a href="{{ route('admin.jobs.create') }}" style="color:#1976d2;">Post your first vacancy</a>
+                        </p>
                     </div>
                 @endforelse
             </div>

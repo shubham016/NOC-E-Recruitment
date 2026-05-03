@@ -1008,17 +1008,6 @@
                             </div>
                         </div>
 
-                        @if(app()->environment('local', 'development'))
-                        <div class="alert alert-warning mt-3 text-start">
-                            <strong>Development Mode</strong> — Payment gateways require a public HTTPS URL and won't work on <code>localhost</code>.
-                            Use the bypass below to test the full application flow, or run <code>ngrok http 8000</code> and update <code>ESEWA_SUCCESS_URL</code> in <code>.env</code>.
-                            <div class="mt-2">
-                                <button type="button" class="btn btn-sm btn-warning" onclick="bypassPayment()">
-                                    Bypass Payment (Dev Only)
-                                </button>
-                            </div>
-                        </div>
-                        @endif
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -1543,27 +1532,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (urls[gateway]) window.location.href = urls[gateway] + draftId;
     };
 
-    window.bypassPayment = function () {
-        const draftId = document.getElementById('draft_id')?.value;
-        if (!draftId) { alert('Save the draft first before bypassing payment.'); return; }
-        if (!confirm('Mark this application as submitted without payment? (Dev only)')) return;
-        fetch('/candidate/payment/bypass/' + draftId, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = data.redirect;
-            } else {
-                alert('Bypass failed: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(() => alert('Network error during bypass.'));
-    };
 });
 
 // ── BS → AD auto-fill & Age calculation ──────────────────────

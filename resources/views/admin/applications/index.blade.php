@@ -149,6 +149,7 @@
         </div>
     @endif
 
+
     <!-- Statistics Cards - Modern Design -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-lg-3 col-md-6">
@@ -415,21 +416,40 @@
                                                title="View Details">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <button type="button"
-                                                    class="gov-action-btn gov-action-btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#assignModal{{ $application->id }}"
-                                                    title="Assign Reviewer">
-                                                <i class="bi bi-person-plus"></i>
-                                            </button>
-                                            <button type="button"
-                                                    class="gov-action-btn"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#assignApproverModal{{ $application->id }}"
-                                                    title="Assign Approver"
-                                                    style="background-color: #7c3aed; color: #fff; border-color: #7c3aed;">
-                                                <i class="bi bi-person-check-fill"></i>
-                                            </button>
+                                            @if($application->reviewer_id)
+                                                <button type="button"
+                                                        class="gov-action-btn gov-action-btn-success"
+                                                        title="Reviewer already assigned: {{ $application->reviewer->name ?? 'N/A' }}"
+                                                        disabled style="opacity:0.45; cursor:not-allowed;">
+                                                    <i class="bi bi-person-check"></i>
+                                                </button>
+                                            @else
+                                                <button type="button"
+                                                        class="gov-action-btn gov-action-btn-success"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#assignModal{{ $application->id }}"
+                                                        title="Assign Reviewer">
+                                                    <i class="bi bi-person-plus"></i>
+                                                </button>
+                                            @endif
+
+                                            @if($application->approver_id)
+                                                <button type="button"
+                                                        class="gov-action-btn"
+                                                        title="Approver already assigned: {{ $application->approver->name ?? 'N/A' }}"
+                                                        disabled style="background-color:#7c3aed; color:#fff; border-color:#7c3aed; opacity:0.45; cursor:not-allowed;">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </button>
+                                            @else
+                                                <button type="button"
+                                                        class="gov-action-btn"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#assignApproverModal{{ $application->id }}"
+                                                        title="Assign Approver"
+                                                        style="background-color: #7c3aed; color: #fff; border-color: #7c3aed;">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </button>
+                                            @endif
                                             <button type="button"
                                                     class="gov-action-btn"
                                                     data-bs-toggle="modal"
@@ -675,7 +695,7 @@
                         <select name="job_posting_id" id="jobPostingSelect" class="form-select gov-form-select">
                             <option value="">-- Select Advertisement Number --</option>
                             @foreach($vacancies as $vacancy)
-                                <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->applications_count }}">
+                                <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->group_applications_count }}">
                                     {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - Level ' . $vacancy->level : '' }}
                                 </option>
                             @endforeach

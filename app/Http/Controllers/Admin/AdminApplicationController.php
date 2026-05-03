@@ -57,18 +57,31 @@ class AdminApplicationController extends Controller
 
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
         // Paginate results
         $applications = $query->paginate(20)->withQueryString();
 
         // Get all jobs for filter dropdown, with application count per vacancy
-        $jobs = JobPosting::select('id', 'title', 'advertisement_no', 'level')
+        $jobs = JobPosting::select('id', 'title', 'advertisement_no', 'level', 'position')
             ->withCount(['applications' => function ($q) {
                 $q->where('status', '!=', 'draft');
             }])
             ->get();
+
+        // Compute group-combined counts (siblings sharing same position+level reference point)
+        $groupCounts = [];
+        foreach ($jobs as $job) {
+            $key = ($job->position ?? '') . '|' . ($job->level ?? '');
+            if (!isset($groupCounts[$key])) $groupCounts[$key] = 0;
+            $groupCounts[$key] += $job->applications_count;
+        }
+        foreach ($jobs as $job) {
+            $key = ($job->position ?? '') . '|' . ($job->level ?? '');
+            $job->group_applications_count = $groupCounts[$key];
+        }
+
         $vacancies = $jobs;
 
         // Get all active reviewers for filter dropdown
@@ -310,6 +323,13 @@ class AdminApplicationController extends Controller
             'reviewer_id' => 'required|exists:reviewers,id'
         ]);
 
+        if ($application->reviewer_id) {
+            $existing = Reviewer::find($application->reviewer_id);
+            return redirect()->back()->with('error',
+                'Application #' . $application->id . ' is already assigned to reviewer "' . ($existing->name ?? 'N/A') . '" and cannot be reassigned.'
+            );
+        }
+
         $application->update([
             'reviewer_id' => $request->reviewer_id,
             'status' => 'assigned'
@@ -356,6 +376,13 @@ class AdminApplicationController extends Controller
         $request->validate([
             'approver_id' => 'required|exists:approvers,id'
         ]);
+
+        if ($application->approver_id) {
+            $existing = Approver::find($application->approver_id);
+            return redirect()->back()->with('error',
+                'Application #' . $application->id . ' is already assigned to approver "' . ($existing->name ?? 'N/A') . '" and cannot be reassigned.'
+            );
+        }
 
         $application->update([
             'approver_id' => $request->approver_id,
@@ -419,7 +446,17 @@ class AdminApplicationController extends Controller
 
         // Resolve application IDs: by advertisement number (all apps) or by checkbox selection
         if ($request->filled('job_posting_id')) {
-            $applicationIds = ApplicationForm::where('job_posting_id', $request->job_posting_id)
+            // Find sibling jobs sharing same position+level (reference point)
+            $selectedJob = JobPosting::find($request->job_posting_id);
+            $siblingIds  = [$request->job_posting_id];
+            if ($selectedJob && $selectedJob->position && $selectedJob->level) {
+                $siblingIds = JobPosting::where('position', $selectedJob->position)
+                    ->where('level', $selectedJob->level)
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            $applicationIds = ApplicationForm::whereIn('job_posting_id', $siblingIds)
                 ->where('status', '!=', 'draft')
                 ->pluck('id')
                 ->toArray();
@@ -444,13 +481,26 @@ class AdminApplicationController extends Controller
                 break;
 
             case 'assign_reviewer':
-                ApplicationForm::whereIn('id', $applicationIds)->update([
+                // Filter out applications already assigned to a reviewer
+                $eligibleIds = ApplicationForm::whereIn('id', $applicationIds)
+                    ->whereNull('reviewer_id')
+                    ->pluck('id')
+                    ->toArray();
+                $skipped = count($applicationIds) - count($eligibleIds);
+
+                if (empty($eligibleIds)) {
+                    return redirect()->back()->with('error',
+                        'All selected application(s) are already assigned to a reviewer and cannot be reassigned.'
+                    );
+                }
+
+                ApplicationForm::whereIn('id', $eligibleIds)->update([
                     'reviewer_id' => $request->reviewer_id,
                     'status'      => 'assigned',
                 ]);
 
                 $reviewer     = Reviewer::find($request->reviewer_id);
-                $applications = ApplicationForm::whereIn('id', $applicationIds)->get();
+                $applications = ApplicationForm::whereIn('id', $eligibleIds)->get();
 
                 // One consolidated notification to the reviewer
                 Notification::create([
@@ -458,7 +508,7 @@ class AdminApplicationController extends Controller
                     'user_type'    => 'reviewer',
                     'type'         => 'application_assigned',
                     'title'        => 'New Applications Assigned',
-                    'message'      => count($applicationIds) . ' application(s) have been assigned to you for review by the admin.',
+                    'message'      => count($eligibleIds) . ' application(s) have been assigned to you for review by the admin.',
                     'related_id'   => $applications->first()?->id,
                     'related_type' => 'application',
                 ]);
@@ -482,16 +532,30 @@ class AdminApplicationController extends Controller
                     }
                 }
 
-                $message = 'Reviewer "' . ($reviewer->name ?? 'N/A') . '" assigned to ' . count($applicationIds) . ' application(s) successfully!';
+                $message = 'Reviewer "' . ($reviewer->name ?? 'N/A') . '" assigned to ' . count($eligibleIds) . ' application(s) successfully!'
+                    . ($skipped > 0 ? ' ' . $skipped . ' application(s) skipped (already assigned).' : '');
                 break;
 
             case 'assign_approver':
-                ApplicationForm::whereIn('id', $applicationIds)->update([
+                // Filter out applications already assigned to an approver
+                $eligibleIds = ApplicationForm::whereIn('id', $applicationIds)
+                    ->whereNull('approver_id')
+                    ->pluck('id')
+                    ->toArray();
+                $skipped = count($applicationIds) - count($eligibleIds);
+
+                if (empty($eligibleIds)) {
+                    return redirect()->back()->with('error',
+                        'All selected application(s) are already assigned to an approver and cannot be reassigned.'
+                    );
+                }
+
+                ApplicationForm::whereIn('id', $eligibleIds)->update([
                     'approver_id' => $request->approver_id,
                 ]);
 
                 $approver     = Approver::find($request->approver_id);
-                $applications = ApplicationForm::whereIn('id', $applicationIds)->get();
+                $applications = ApplicationForm::whereIn('id', $eligibleIds)->get();
 
                 // One consolidated notification to the approver
                 Notification::create([
@@ -499,7 +563,7 @@ class AdminApplicationController extends Controller
                     'user_type'    => 'approver',
                     'type'         => 'application_assigned',
                     'title'        => 'New Applications Assigned',
-                    'message'      => count($applicationIds) . ' application(s) have been assigned to you for final approval by the admin.',
+                    'message'      => count($eligibleIds) . ' application(s) have been assigned to you for final approval by the admin.',
                     'related_id'   => $applications->first()?->id,
                     'related_type' => 'application',
                 ]);
@@ -523,7 +587,8 @@ class AdminApplicationController extends Controller
                     }
                 }
 
-                $message = 'Approver "' . ($approver->name ?? 'N/A') . '" assigned to ' . count($applicationIds) . ' application(s) successfully!';
+                $message = 'Approver "' . ($approver->name ?? 'N/A') . '" assigned to ' . count($eligibleIds) . ' application(s) successfully!'
+                    . ($skipped > 0 ? ' ' . $skipped . ' application(s) skipped (already assigned).' : '');
                 break;
 
             default:

@@ -27,6 +27,13 @@
             --secondary-gold: #a07828;
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 80px;
+            --sidebar-speed: 0.3s ease;
+        }
+
+        /* Suppress all transitions during initial page load to prevent flash */
+        .no-transition,
+        .no-transition * {
+            transition: none !important;
         }
 
         html, body {
@@ -54,7 +61,7 @@
             z-index: 1000;
             box-shadow: 2px 0 8px rgba(201, 168, 76, 0.08);
             overflow-y: auto;
-            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: width var(--sidebar-speed);
             display: flex;
             flex-direction: column;
         }
@@ -66,7 +73,7 @@
             align-items: center;
             gap: 1rem;
             border-bottom: 2px solid rgba(201, 168, 76, 0.3);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all var(--sidebar-speed);
         }
 
         .company-logo {
@@ -84,7 +91,7 @@
             flex: 1;
             min-width: 0;
             overflow: hidden;
-            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed), width var(--sidebar-speed);
         }
 
         .company-name {
@@ -97,7 +104,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed);
         }
 
         .company-location {
@@ -107,7 +114,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed);
         }
 
         .sidebar-collapsed .company-info {
@@ -162,7 +169,7 @@
 
         .hamburger-toggle i {
             color: #a07828;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform var(--sidebar-speed);
         }
 
         .sidebar-brand {
@@ -185,7 +192,7 @@
 
         .brand-text {
             white-space: nowrap;
-            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed), width var(--sidebar-speed);
         }
 
         .sidebar-collapsed .sidebar {
@@ -250,7 +257,7 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all var(--sidebar-speed);
             border-left: 3px solid transparent;
             font-size: 0.9rem;
             min-height: 44px;
@@ -275,15 +282,15 @@
             text-align: center;
             color: #a07828;
             flex-shrink: 0;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all var(--sidebar-speed);
         }
 
         .sidebar-menu-item span {
-            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed);
         }
 
         .sidebar-menu-item .badge {
-            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity var(--sidebar-speed);
         }
 
         .main-content {
@@ -291,7 +298,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: margin-left var(--sidebar-speed);
             overflow-x: hidden;
         }
 
@@ -307,7 +314,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: left var(--sidebar-speed);
         }
 
         .navbar-company-header {
@@ -640,7 +647,15 @@
     @stack('styles')
 </head>
 
-<body>
+<body class="sidebar-collapsed no-transition">
+<script>
+    // Runs synchronously before first paint — no flash, no animation on load
+    (function () {
+        if (sessionStorage.getItem('adminSidebarExpanded') === 'true') {
+            document.body.classList.remove('sidebar-collapsed');
+        }
+    })();
+</script>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -1030,24 +1045,22 @@
 
         // Sidebar Toggle
         document.addEventListener('DOMContentLoaded', function () {
-            const toggleBtn = document.getElementById('sidebarToggle');
             const body = document.body;
-            const isMobile = window.innerWidth <= 768;
 
-            if (!isMobile) {
-                const savedState = localStorage.getItem('sidebarCollapsed');
-                if (savedState === 'true') {
-                    body.classList.add('sidebar-collapsed');
-                }
-            }
+            // Re-enable transitions after first paint (no-transition was set on <body>)
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    body.classList.remove('no-transition');
+                });
+            });
 
+            const toggleBtn = document.getElementById('sidebarToggle');
             if (toggleBtn) {
                 toggleBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     body.classList.toggle('sidebar-collapsed');
-                    if (!isMobile) {
-                        localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
-                    }
+                    sessionStorage.setItem('adminSidebarExpanded',
+                        !body.classList.contains('sidebar-collapsed'));
                 });
             }
 
