@@ -71,6 +71,360 @@
         background: #f8fafc;
     }
 
+    /* =============================================
+       APPLICATION DETAIL MODAL — Professional
+       ============================================= */
+    .app-detail-modal .modal-dialog {
+        max-width: 860px;
+    }
+
+    .app-detail-modal .modal-content {
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 14px;
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    /* Glassy header — matches reviewers table thead gradient with glass overlay */
+    .app-detail-modal .modal-header {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: none;
+        border-top: 4px solid #c9a84c;
+        padding: 1.1rem 1.75rem;
+        position: relative;
+    }
+
+    .app-detail-modal .modal-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+    }
+
+    .app-detail-modal .modal-header .modal-title {
+        color: #1f2937;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .app-detail-modal .modal-header .btn-close {
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .app-detail-modal .modal-header .btn-close:hover {
+        opacity: 1;
+    }
+
+    /* Body — scrollable */
+    .app-detail-modal .modal-body {
+        padding: 0;
+        max-height: 72vh;
+        overflow-y: auto;
+        background: #fff;
+    }
+
+    .app-detail-modal .modal-body::-webkit-scrollbar { width: 5px; }
+    .app-detail-modal .modal-body::-webkit-scrollbar-track { background: #f3f4f6; }
+    .app-detail-modal .modal-body::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 4px; }
+
+    /* Profile Hero — centered */
+    .app-modal-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 2rem 1.5rem;
+        background: linear-gradient(160deg, #fefdf8 0%, #faf8f0 100%);
+        border-bottom: 1px solid #f0e8d0;
+        position: relative;
+    }
+
+    .app-modal-profile::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #c9a84c, #f0d080, #c9a84c);
+    }
+
+    .app-modal-avatar-wrap {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .app-modal-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 3px #c9a84c, 0 8px 24px rgba(160,120,40,0.2);
+    }
+
+    .app-modal-avatar-placeholder {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #c9a84c, #a07828);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.25rem;
+        font-weight: 700;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 3px #c9a84c, 0 8px 24px rgba(160,120,40,0.2);
+    }
+
+    .app-modal-appid {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        background: #c9a84c;
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+        border: 2px solid #fff;
+        white-space: nowrap;
+    }
+
+    .app-modal-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.2rem;
+        line-height: 1.2;
+    }
+
+    .app-modal-name-np {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+    }
+
+    .app-modal-meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1.25rem;
+        font-size: 0.82rem;
+        color: #6b7280;
+        margin-bottom: 0.85rem;
+    }
+
+    .app-modal-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .app-modal-badges {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+
+    .app-modal-status {
+        display: inline-block;
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .app-modal-status.pending    { background: #fef3c7; color: #92400e; }
+    .app-modal-status.submitted  { background: #dbeafe; color: #1e40af; }
+    .app-modal-status.assigned   { background: #e0e7ff; color: #3730a3; }
+    .app-modal-status.approved   { background: #d1fae5; color: #065f46; }
+    .app-modal-status.rejected   { background: #fee2e2; color: #991b1b; }
+    .app-modal-status.under_review { background: #dbeafe; color: #1e40af; }
+    .app-modal-status.edited     { background: #fef3c7; color: #92400e; }
+    .app-modal-status.edit       { background: #fef3c7; color: #92400e; }
+    .app-modal-status.reviewed   { background: #e0e7ff; color: #4338ca; }
+
+    .app-modal-cat-badge {
+        display: inline-block;
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(160,120,40,0.1));
+        color: #a07828;
+        border: 1px solid rgba(201,168,76,0.35);
+    }
+
+    /* Sections */
+    .app-modal-sections {
+        padding: 0 1.5rem 1rem;
+    }
+
+    .app-modal-section {
+        padding: 1.1rem 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .app-modal-section:last-child {
+        border-bottom: none;
+    }
+
+    .app-modal-section-title {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #a07828;
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .app-modal-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, #f0e2ba, transparent);
+    }
+
+    .app-modal-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem 1.5rem;
+    }
+
+    .app-modal-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .app-modal-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .app-modal-field-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 0.2rem;
+    }
+
+    .app-modal-field-value {
+        font-size: 0.875rem;
+        color: #1f2937;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    /* Documents grid */
+    .app-modal-docs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .app-modal-doc-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.2s;
+        background: #f9fafb;
+    }
+
+    .app-modal-doc-card:hover {
+        border-color: #c9a84c;
+        box-shadow: 0 4px 12px rgba(201,168,76,0.15);
+        transform: translateY(-2px);
+    }
+
+    .app-modal-doc-preview {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        display: block;
+        background: #e5e7eb;
+    }
+
+    .app-modal-doc-preview-icon {
+        width: 100%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        font-size: 2rem;
+        color: #9ca3af;
+    }
+
+    .app-modal-doc-label {
+        padding: 0.45rem 0.6rem;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .app-modal-doc-label a {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #374151;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .app-modal-doc-label a:hover {
+        color: #a07828;
+    }
+
+    /* Loading */
+    .app-modal-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+        gap: 0.75rem;
+    }
+
+    .app-modal-loading .spinner-border {
+        width: 2.5rem;
+        height: 2.5rem;
+        color: #c9a84c;
+    }
+
+    /* Footer */
+    .app-modal-footer {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-top: 1px solid #e5e7eb;
+        padding: 0.85rem 1.75rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .app-modal-grid { grid-template-columns: repeat(2, 1fr); }
+        .app-detail-modal .modal-dialog { max-width: 95%; margin: 0.5rem auto; }
+        .app-modal-docs-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    }
+
+    @media (max-width: 480px) {
+        .app-modal-grid { grid-template-columns: 1fr; }
+    }
+
     /* Compact columns for NOC Employee and Employee Code */
     .modern-table th.compact-col-noc {
         width: 90px;
@@ -411,11 +765,12 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('admin.applications.show', $application->id) }}"
+                                            <button type="button"
                                                class="gov-action-btn"
-                                               title="View Details">
+                                               title="View Details"
+                                               onclick="viewApplication({{ $application->id }})">
                                                 <i class="bi bi-eye"></i>
-                                            </a>
+                                            </button>
                                             @if($application->reviewer_id)
                                                 <button type="button"
                                                         class="gov-action-btn gov-action-btn-success"
@@ -715,6 +1070,27 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Application Detail Modal -->
+<div class="modal fade app-detail-modal" id="applicationDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Application Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="applicationDetailBody">
+                <div class="app-modal-loading">
+                    <div class="spinner-border" role="status"></div>
+                    <span>Loading application details...</span>
+                </div>
+            </div>
+            <div class="app-modal-footer">
+                <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1074,5 +1450,202 @@
     });
 
     }); // end DOMContentLoaded
+
+    // View Application in Modal
+    function viewApplication(id) {
+        const modal = new bootstrap.Modal(document.getElementById('applicationDetailModal'));
+        const body = document.getElementById('applicationDetailBody');
+
+        // Show loading
+        body.innerHTML = '<div class="app-modal-loading"><div class="spinner-border" role="status"></div><span>Loading application details...</span></div>';
+        modal.show();
+
+        fetch('/admin/applications/' + id, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(d => {
+            body.innerHTML = renderApplicationDetail(d);
+        })
+        .catch(() => {
+            body.innerHTML = '<div class="app-modal-loading"><i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#ef4444;"></i><span style="margin-top:0.5rem;">Failed to load application details.</span></div>';
+        });
+    }
+
+    function renderApplicationDetail(d) {
+        const na = `<span style="color:#c4c9d4;font-style:italic;">N/A</span>`;
+        const val = (v) => (v && String(v).trim()) ? String(v) : na;
+        const statusLabel = (d.status || 'pending').replace(/_/g, ' ');
+
+        // ── Category badges — resolved labels from server (vacancy DB + candidate DB) ──
+        let catBadges = '';
+        const cats = Array.isArray(d.category_labels) ? d.category_labels : [];
+        cats.forEach(label => {
+            catBadges += `<span class="app-modal-cat-badge">${label}</span>`;
+        });
+
+        // ── Documents grid with image previews ──
+        const imgExts = ['jpg','jpeg','png','gif','webp','bmp'];
+        const isImage = (url) => url && imgExts.some(ext => url.toLowerCase().split('?')[0].endsWith('.' + ext));
+
+        const docMap = [
+            ['passport_size_photo',    'Passport Photo'],
+            ['citizenship_id_document','Citizenship'],
+            ['noc_id_card',            'NOC ID Card'],
+            ['ethnic_certificate',     'Ethnic Certificate'],
+            ['disability_certificate', 'Disability Certificate'],
+            ['signature',              'Signature'],
+            ['transcript',             'Transcript'],
+            ['character',              'Character Certificate'],
+            ['exp1_document',          'Experience 1 Doc'],
+            ['exp2_document',          'Experience 2 Doc'],
+            ['exp3_document',          'Experience 3 Doc'],
+        ];
+
+        let docsHtml = '';
+        docMap.forEach(([key, label]) => {
+            if (!d[key]) return;
+            const url = d[key];
+            const preview = isImage(url)
+                ? `<img src="${url}" class="app-modal-doc-preview" alt="${label}" loading="lazy">`
+                : `<div class="app-modal-doc-preview-icon">PDF</div>`;
+            docsHtml += `
+                <div class="app-modal-doc-card">
+                    <a href="${url}" target="_blank">${preview}</a>
+                    <div class="app-modal-doc-label">
+                        <a href="${url}" target="_blank">${label}</a>
+                    </div>
+                </div>`;
+        });
+
+        // ── Work Experience ──
+        let expHtml = '';
+        const hasExp = d.has_work_experience === 'Yes' || d.exp1_organization || d.exp2_organization || d.exp3_organization;
+        if (hasExp) {
+            let expItems = '';
+            [
+                [d.exp1_organization, d.exp1_position, d.exp1_start_date, d.exp1_end_date, 'Experience 1'],
+                [d.exp2_organization, d.exp2_position, d.exp2_start_date, d.exp2_end_date, 'Experience 2'],
+                [d.exp3_organization, d.exp3_position, d.exp3_start_date, d.exp3_end_date, 'Experience 3'],
+            ].forEach(([org, pos, start, end, label]) => {
+                if (!org) return;
+                const period = [start, end || 'Present'].filter(Boolean).join(' – ');
+                expItems += `<div class="app-modal-field">
+                    <span class="app-modal-field-label">${label}</span>
+                    <span class="app-modal-field-value">${pos ? pos + ', ' : ''}${org}<br><small style="color:#9ca3af;">${period}</small></span>
+                </div>`;
+            });
+            if (expItems) {
+                expHtml = `<div class="app-modal-section">
+                    <div class="app-modal-section-title">Work Experience</div>
+                    <div class="app-modal-grid app-modal-grid-2">${expItems}</div>
+                </div>`;
+            }
+        }
+
+        // ── Address helpers ──
+        const permAddr = [d.permanent_tole, d.permanent_municipality, d.permanent_ward ? 'Ward-'+d.permanent_ward : '', d.permanent_district, d.permanent_province].filter(Boolean).join(', ');
+        const mailAddr = [d.mailing_tole, d.mailing_municipality, d.mailing_ward ? 'Ward-'+d.mailing_ward : '', d.mailing_district, d.mailing_province].filter(Boolean).join(', ');
+
+        return `
+        <div class="app-modal-profile">
+            <div class="app-modal-avatar-wrap">
+                ${d.passport_size_photo
+                    ? `<img src="${d.passport_size_photo}" class="app-modal-avatar" alt="Photo">`
+                    : `<div class="app-modal-avatar-placeholder">${(d.name_english || '?')[0].toUpperCase()}</div>`
+                }
+            </div>
+            <div class="app-modal-name">${val(d.name_english)}</div>
+            ${d.name_nepali ? `<div class="app-modal-name-np">${d.name_nepali}</div>` : ''}
+            <div class="app-modal-meta">
+                <span>ID : ${d.id}</span>
+                <span>${val(d.email)}</span>
+                <span>${val(d.phone)}</span>
+                ${d.gender ? `<span>${d.gender}</span>` : ''}
+                ${d.age    ? `<span>Age: ${d.age}</span>` : ''}
+            </div>
+            <div class="app-modal-badges">
+                <span class="app-modal-status ${d.status}">${statusLabel}</span>
+                ${catBadges}
+            </div>
+        </div>
+
+        <div class="app-modal-sections">
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Vacancy Information</div>
+                <div class="app-modal-grid">
+                    <div class="app-modal-field"><span class="app-modal-field-label">Position</span><span class="app-modal-field-value">${val(d.applying_position)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Advertisement No.</span><span class="app-modal-field-value">${val(d.advertisement_no)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Department</span><span class="app-modal-field-value">${val(d.vacancy_department)}</span></div>
+                </div>
+            </div>
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Personal Information</div>
+                <div class="app-modal-grid">
+                    <div class="app-modal-field"><span class="app-modal-field-label">DOB (BS)</span><span class="app-modal-field-value">${val(d.birth_date_bs)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">DOB (AD)</span><span class="app-modal-field-value">${val(d.birth_date_ad)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Marital Status</span><span class="app-modal-field-value">${val(d.marital_status)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Citizenship No.</span><span class="app-modal-field-value">${val(d.citizenship_number)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Issue District</span><span class="app-modal-field-value">${val(d.citizenship_issue_district)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Nationality</span><span class="app-modal-field-value">${val(d.nationality)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Religion</span><span class="app-modal-field-value">${val(d.religion)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Community</span><span class="app-modal-field-value">${val(d.community)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">NOC Employee</span><span class="app-modal-field-value">${val(d.noc_employee)}</span></div>
+                </div>
+            </div>
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Family Details</div>
+                <div class="app-modal-grid">
+                    <div class="app-modal-field"><span class="app-modal-field-label">Father</span><span class="app-modal-field-value">${val(d.father_name_english)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Mother</span><span class="app-modal-field-value">${val(d.mother_name_english)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Grandfather</span><span class="app-modal-field-value">${val(d.grandfather_name_english)}</span></div>
+                    ${d.spouse_name_english ? `<div class="app-modal-field"><span class="app-modal-field-label">Spouse</span><span class="app-modal-field-value">${d.spouse_name_english}</span></div>` : ''}
+                </div>
+            </div>
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Address</div>
+                <div class="app-modal-grid app-modal-grid-2">
+                    <div class="app-modal-field"><span class="app-modal-field-label">Permanent Address</span><span class="app-modal-field-value">${permAddr || na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Mailing Address</span><span class="app-modal-field-value">${mailAddr || na}</span></div>
+                </div>
+            </div>
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Education</div>
+                <div class="app-modal-grid">
+                    <div class="app-modal-field"><span class="app-modal-field-label">Level</span><span class="app-modal-field-value">${val(d.education_level)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Field of Study</span><span class="app-modal-field-value">${val(d.field_of_study)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Institution</span><span class="app-modal-field-value">${val(d.institution_name)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">University</span><span class="app-modal-field-value">${val(d.university)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Graduation Year</span><span class="app-modal-field-value">${val(d.graduation_year)}</span></div>
+                </div>
+            </div>
+
+            ${expHtml}
+
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Assignment & Timeline</div>
+                <div class="app-modal-grid">
+                    <div class="app-modal-field"><span class="app-modal-field-label">Reviewer</span><span class="app-modal-field-value">${d.reviewer_name ? `${d.reviewer_name}<br><small style="color:#9ca3af;">${d.reviewer_email||''}</small>` : na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Approver</span><span class="app-modal-field-value">${d.approver_name ? `${d.approver_name}<br><small style="color:#9ca3af;">${d.approver_email||''}</small>` : na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Applied On</span><span class="app-modal-field-value">${val(d.created_at)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">Last Updated</span><span class="app-modal-field-value">${val(d.updated_at)}</span></div>
+                </div>
+            </div>
+
+            ${docsHtml ? `
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Uploaded Documents</div>
+                <div class="app-modal-docs-grid">${docsHtml}</div>
+            </div>` : ''}
+
+        </div>`;
+    }
+
+    window.viewApplication = viewApplication;
 </script>
 @endsection

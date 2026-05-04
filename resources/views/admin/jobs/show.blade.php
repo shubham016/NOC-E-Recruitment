@@ -261,16 +261,15 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <div class="govt-badge">
-                    <i class="bi bi-building-fill"></i>
                     <span>नेपाल सरकार | Government of Nepal</span>
                 </div>
                 <h3 class="fw-bold mb-2">
-                    <i class="bi bi-file-text-fill me-2"></i>Vacancy Details
+                    Vacancy Details
                 </h3>
                 <p class="mb-0 opacity-90">विज्ञापन विवरण</p>
             </div>
             <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
-                <i class="bi bi-arrow-left me-2"></i>Back to List
+                Back to List
             </a>
         </div>
     </div>
@@ -278,14 +277,14 @@
     <!-- Success/Error Messages -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+            {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -298,7 +297,7 @@
                 <div class="detail-header">
                     <div class="d-flex justify-content-between align-items-start">
                         <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-info-circle-fill me-2"></i>Vacancy Information
+                            Vacancy Information
                         </h5>
                         <span
                             class="status-badge {{ $job->status == 'active' ? 'bg-success text-white' : ($job->status == 'draft' ? 'bg-warning text-dark' : 'bg-danger text-white') }}">
@@ -393,7 +392,7 @@
                 <div class="detail-row">
                     <div class="detail-label">Location</div>
                     <div class="detail-value">
-                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ $job->location }}
+                        {{ $job->location }}
                     </div>
                 </div>
 
@@ -402,90 +401,47 @@
                     <div class="detail-value">
                         <div class="d-flex flex-wrap gap-2">
                             @if($job->category == 'internal_appraisal')
-                                <!-- Internal Appraisal Only -->
                                 <span class="badge text-white" style="background-color: #8b5cf6; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                    <i class="bi bi-star-fill me-1"></i>Internal Appraisal (आन्तरिक बढुवा)
+                                    Internal Appraisal (आन्तरिक बढुवा)
                                 </span>
+                            @elseif($job->category == 'open')
+                                <span class="badge bg-success" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                    Open (खुल्ला)
+                                </span>
+                            @elseif($job->category == 'inclusive')
+                                @php
+                                    $inclusiveTypes = json_decode($job->inclusive_type ?? '[]', true) ?: [];
+                                @endphp
+                                @if(count($inclusiveTypes) > 0)
+                                    @foreach($inclusiveTypes as $type)
+                                        <span class="badge bg-info" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                            Inclusive - {{ $type }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    <span class="badge bg-info" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                        Inclusive (समावेशी)
+                                    </span>
+                                @endif
+                            @elseif($job->category == 'internal')
+                                <span class="badge bg-warning text-dark" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                    Internal (आन्तरिक परीक्षा)
+                                </span>
+                                @php
+                                    $internalInclusiveTypes = json_decode($job->internal_inclusive_types ?? '[]', true) ?: [];
+                                @endphp
+                                @foreach($internalInclusiveTypes as $type)
+                                    <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                        Internal Inclusive - {{ $type }}
+                                    </span>
+                                @endforeach
                             @else
-                                <!-- Open Category -->
-                                @if($job->has_open || $job->category == 'open')
-                                    <span class="badge bg-success" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                        <i class="bi bi-check-circle-fill me-1"></i>Open (खुल्ला)
-                                    </span>
-                                @endif
-
-                                <!-- Inclusive Categories -->
-                                @if($job->has_inclusive || $job->category == 'inclusive')
-                                    @php
-                                        // Get inclusive types - could be stored in inclusive_type or inclusive_types array
-                                        $inclusiveTypes = [];
-                                        if ($job->inclusive_type) {
-                                            $inclusiveTypes = [$job->inclusive_type];
-                                        }
-                                        // If inclusive_types field exists and is an array
-                                        if (isset($job->inclusive_types) && is_array($job->inclusive_types)) {
-                                            $inclusiveTypes = $job->inclusive_types;
-                                        }
-                                    @endphp
-
-                                    @if(count($inclusiveTypes) > 0)
-                                        @foreach($inclusiveTypes as $type)
-                                            <span class="badge bg-info text-white" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                                <i class="bi bi-people-fill me-1"></i>Inclusive - {{ $type }}
-                                            </span>
-                                        @endforeach
-                                    @else
-                                        <span class="badge bg-info text-white" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                            <i class="bi bi-people-fill me-1"></i>Inclusive (समावेशी)
-                                        </span>
-                                    @endif
-                                @endif
-
-                                <!-- Internal Category -->
-                                @if($job->has_internal || $job->category == 'internal')
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                        <i class="bi bi-building-fill me-1"></i>Internal (आन्तरिक परीक्षा)
-                                    </span>
-
-                                    {{-- Internal Open Sub-category --}}
-                                    @if($job->has_internal_open)
-                                        <span class="badge text-white" style="background-color: #f59e0b; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                            <i class="bi bi-door-open-fill me-1"></i>Internal Open (All NOC Staff)
-                                        </span>
-                                    @endif
-
-                                    {{-- Internal Inclusive Sub-categories --}}
-                                    @if($job->has_internal_inclusive)
-                                        @php
-                                            // Get internal inclusive types from array
-                                            $internalInclusiveTypes = [];
-                                            if (isset($job->internal_inclusive_types) && is_array($job->internal_inclusive_types)) {
-                                                $internalInclusiveTypes = $job->internal_inclusive_types;
-                                            }
-                                        @endphp
-
-                                        @if(count($internalInclusiveTypes) > 0)
-                                            @foreach($internalInclusiveTypes as $type)
-                                                <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                                    <i class="bi bi-people-fill me-1"></i>Internal Inclusive - {{ $type }}
-                                                </span>
-                                            @endforeach
-                                        @else
-                                            <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                                <i class="bi bi-people-fill me-1"></i>Internal Inclusive
-                                            </span>
-                                        @endif
-                                    @endif
-                                @endif
-                            @endif
-
-                            @if(!$job->has_open && !$job->has_inclusive && !$job->has_internal && $job->category != 'internal' && $job->category != 'internal_appraisal' && $job->category != 'open' && $job->category != 'inclusive')
-                                <span class="badge bg-secondary">{{ ucfirst($job->category) }}</span>
+                                <span class="badge bg-secondary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                    {{ ucfirst($job->category) }}
+                                </span>
                             @endif
                         </div>
-                        <small class="text-muted d-block mt-2">
-                            <i class="bi bi-info-circle me-1"></i>Candidates can apply under any of these categories
-                        </small>
+                        <small class="text-muted d-block mt-2">Candidates can apply under any of these categories</small>
                     </div>
                 </div>
 
@@ -496,7 +452,7 @@
                             {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
                             <strong class="d-block nepali-date-bs text-danger"
                                 data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
-                                <i class="bi bi-hourglass-split"></i> Converting...
+                                Converting...
                             </strong>
                             {{-- English Date (AD) --}}
                             <small class="text-muted">{{ $job->deadline->format('F d, Y') }} ({{ $job->deadline->diffForHumans() }})</small>
@@ -529,7 +485,6 @@
                         <div class="detail-row">
                             <div class="detail-label">{{ $feeLabels[$feeKey] ?? ucwords(str_replace('_', ' ', $feeKey)) }}</div>
                             <div class="detail-value">
-                                <i class="bi bi-cash-coin text-primary me-1"></i>
                                 <strong>NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}</strong>
                             </div>
                         </div>
@@ -538,7 +493,6 @@
                 <div class="detail-row">
                     <div class="detail-label">Total Application Fee</div>
                     <div class="detail-value">
-                        <i class="bi bi-cash-coin text-primary me-1"></i>
                         @if($job->application_fee)
                             <strong>NPR {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
                         @else
@@ -550,7 +504,6 @@
                 <div class="detail-row">
                     <div class="detail-label">Double Dastur Fee</div>
                     <div class="detail-value">
-                        <i class="bi bi-cash-stack text-danger me-1"></i>
                         @if($job->double_dastur_fee)
                             <strong>NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}</strong>
                         @else
@@ -571,7 +524,7 @@
                     <div class="detail-row">
                         <div class="detail-label">Posted By</div>
                         <div class="detail-value">
-                            <i class="bi bi-person-fill text-danger me-1"></i>{{ $job->postedBy->name }}
+                            {{ $job->postedBy->name }}
                         </div>
                     </div>
                 @endif
@@ -581,7 +534,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h5 class="fw-bold text-danger mb-0">
-                        <i class="bi bi-mortarboard-fill me-2"></i>Minimum Educational Qualification
+                        Minimum Educational Qualification
                     </h5>
                     <small class="text-muted">आवश्यक शिक्षक योग्यता</small>
                 </div>
@@ -620,7 +573,7 @@
                 <div class="detail-card">
                     <div class="detail-header">
                         <h5 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-file-text-fill me-2"></i>Description
+                            Description
                         </h5>
                     </div>
                     <div class="qualification-box">
@@ -634,7 +587,7 @@
                 <div class="detail-card">
                     <div class="detail-header">
                         <h5 class="fw-bold text-danger mb-0">
-                            <!-- <i class="bi bi-people-fill me-2"></i> -->
+                            <!-- -->
                             Recent Applications
                             <!-- <span class="badge bg-danger ms-2">{{ $job->applications_count }}</span> -->
                         </h5>
@@ -666,8 +619,7 @@
                                                 @else
                                                     <div class="bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2"
                                                          style="width: 55px; height: 55px; min-width: 55px;">
-                                                        <i class="bi bi-person-fill text-danger fs-4"></i>
-                                                    </div>
+                                                        </div>
                                                 @endif
                                                 <div class="text-start">
                                                     <div class="fw-bold">{{ $application->name_english ?? 'N/A' }}</div>
@@ -690,21 +642,18 @@
                                                 <a href="{{ route('admin.applications.show', $application->id) }}"
                                                    class="btn btn-outline-primary"
                                                    title="View">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
+                                                    </a>
                                                 <button type="button"
                                                         class="btn btn-outline-danger"
                                                         title="Delete"
                                                         onclick="confirmDelete({{ $application->id }})">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                    </button>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center text-muted py-4">
-                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                             No applications yet
                                         </td>
                                     </tr>
@@ -723,8 +672,7 @@
                         <div class="text-center mt-3">
                             <a href="#" class="btn btn-outline-danger">
                                 View All {{ $job->applications_count }} Applications
-                                <i class="bi bi-arrow-right ms-1"></i>
-                            </a>
+                                </a>
                         </div>
                     @endif
                 </div>
@@ -737,19 +685,19 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        <i class="bi bi-lightning-fill text-danger me-2"></i>Quick Actions
+                        Quick Actions
                     </h6>
                 </div>
 
                 <div class="d-grid gap-2">
                     <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-danger action-btn">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Vacancy
+                        Edit Vacancy
                     </a>
 
                     <form action="{{ route('admin.jobs.duplicate', $job->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-outline-secondary action-btn w-100">
-                            <i class="bi bi-files me-2"></i>Duplicate Vacancy
+                            Duplicate Vacancy
                         </button>
                     </form>
 
@@ -759,7 +707,7 @@
                             <input type="hidden" name="status" value="closed">
                             <button type="submit" class="btn btn-outline-warning action-btn w-100"
                                 onclick="return confirm('Close this vacancy?')">
-                                <i class="bi bi-lock-fill me-2"></i>Close Vacancy
+                                Close Vacancy
                             </button>
                         </form>
                     @elseif($job->status == 'closed')
@@ -768,7 +716,7 @@
                             <input type="hidden" name="status" value="active">
                             <button type="submit" class="btn btn-outline-success action-btn w-100"
                                 onclick="return confirm('Reopen this vacancy?')">
-                                <i class="bi bi-unlock-fill me-2"></i>Reopen Vacancy
+                                Reopen Vacancy
                             </button>
                         </form>
                     @endif
@@ -778,7 +726,7 @@
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger action-btn w-100"
                             onclick="return confirm('⚠️ Are you sure? This action cannot be undone!')">
-                            <i class="bi bi-trash-fill me-2"></i>Delete Vacancy
+                            Delete Vacancy
                         </button>
                     </form>
                 </div>
@@ -788,7 +736,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        <i class="bi bi-graph-up text-danger me-2"></i>Application Statistics
+                        Application Statistics
                     </h6>
                 </div>
 
@@ -836,7 +784,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        <i class="bi bi-clock-history text-danger me-2"></i>Recent Activities (Latest 5)
+                        Recent Activities (Latest 5)
                     </h6>
                 </div>
 
@@ -941,11 +889,11 @@
                                 dateElement.innerHTML = `${bsNepali}`;
                                 console.log(`✅ Date converted: ${adDate} → ${bsDate} → ${bsNepali}`);
                             } else {
-                                dateElement.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                                dateElement.innerHTML = 'Error';
                             }
                         } catch (error) {
                             console.error(`❌ Error converting date ${adDate}:`, error);
-                            dateElement.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+                            dateElement.innerHTML = 'Error';
                         }
                     }
                 });

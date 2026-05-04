@@ -221,7 +221,130 @@ class AdminApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['vacancy', 'reviewer']);
+        $application->load(['vacancy', 'reviewer', 'approver']);
+
+        // If AJAX request, return JSON for modal view
+        if (request()->ajax()) {
+            // Build category_labels: for each applied category, resolve its display label
+            // by looking up sibling vacancies (same position+level) and matching inclusive sub-types
+            $appliedCategories = $application->applied_category; // e.g. ['open','inclusive']
+            $categoryLabels = [];
+
+            if (!empty($appliedCategories)) {
+                // Load sibling job postings for this position+level
+                $siblingJobs = \App\Models\JobPosting::where('position', $application->vacancy->position ?? '')
+                    ->where('level', $application->vacancy->level ?? '')
+                    ->get(['id', 'category', 'inclusive_type', 'advertisement_no']);
+
+                // Map category → sibling job
+                $siblingByCategory = [];
+                foreach ($siblingJobs as $sj) {
+                    $siblingByCategory[$sj->category] = $sj;
+                }
+
+                foreach ($appliedCategories as $cat) {
+                    $label = ucfirst(str_replace('_', ' ', $cat));
+
+                    if ($cat === 'inclusive') {
+                        $siblingInclusive = $siblingByCategory['inclusive'] ?? null;
+                        if ($siblingInclusive) {
+                            $types = json_decode($siblingInclusive->inclusive_type ?? '[]', true) ?: [];
+                            if (!empty($types)) {
+                                $label = 'Inclusive (' . implode(', ', $types) . ')';
+                            }
+                        }
+                    }
+
+                    $categoryLabels[] = $label;
+                }
+            }
+
+            return response()->json([
+                'id' => $application->id,
+                'category_labels' => $categoryLabels,
+                'name_english' => $application->name_english,
+                'name_nepali' => $application->name_nepali,
+                'email' => $application->email,
+                'phone' => $application->phone,
+                'gender' => $application->gender,
+                'age' => $application->age,
+                'birth_date_bs' => $application->birth_date_bs,
+                'birth_date_ad' => $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : null,
+                'citizenship_number' => $application->citizenship_number,
+                'citizenship_issue_district' => $application->citizenship_issue_district,
+                'citizenship_issue_date_bs' => $application->citizenship_issue_date_bs,
+                'marital_status' => $application->marital_status,
+                'nationality' => $application->nationality,
+                'religion' => $application->religion,
+                'community' => $application->community,
+                'ethnic_group' => $application->ethnic_group,
+                'mother_tongue' => $application->mother_tongue,
+                'noc_employee' => $application->noc_employee,
+                'physical_disability' => $application->physical_disability,
+                // Family
+                'father_name_english' => $application->father_name_english,
+                'mother_name_english' => $application->mother_name_english,
+                'grandfather_name_english' => $application->grandfather_name_english,
+                'spouse_name_english' => $application->spouse_name_english,
+                // Address
+                'permanent_province' => $application->permanent_province,
+                'permanent_district' => $application->permanent_district,
+                'permanent_municipality' => $application->permanent_municipality,
+                'permanent_ward' => $application->permanent_ward,
+                'permanent_tole' => $application->permanent_tole,
+                'mailing_province' => $application->mailing_province,
+                'mailing_district' => $application->mailing_district,
+                'mailing_municipality' => $application->mailing_municipality,
+                'mailing_ward' => $application->mailing_ward,
+                'mailing_tole' => $application->mailing_tole,
+                // Education
+                'education_level' => $application->education_level,
+                'field_of_study' => $application->field_of_study,
+                'institution_name' => $application->institution_name,
+                'university' => $application->university,
+                'graduation_year' => $application->graduation_year,
+                // Experience
+                'has_work_experience' => $application->has_work_experience,
+                'years_of_experience' => $application->years_of_experience,
+                'exp1_organization' => $application->exp1_organization,
+                'exp1_position' => $application->exp1_position,
+                'exp1_start_date' => $application->exp1_start_date,
+                'exp1_end_date' => $application->exp1_end_date,
+                'exp2_organization' => $application->exp2_organization,
+                'exp2_position' => $application->exp2_position,
+                'exp2_start_date' => $application->exp2_start_date,
+                'exp2_end_date' => $application->exp2_end_date,
+                'exp3_organization' => $application->exp3_organization,
+                'exp3_position' => $application->exp3_position,
+                'exp3_start_date' => $application->exp3_start_date,
+                'exp3_end_date' => $application->exp3_end_date,
+                // Vacancy
+                'applying_position' => $application->applying_position,
+                'advertisement_no' => $application->advertisement_no,
+                'vacancy_title' => $application->vacancy->title ?? null,
+                'vacancy_department' => $application->vacancy->department ?? null,
+                // Status & Assignment
+                'status' => $application->status,
+                'reviewer_name' => $application->reviewer->name ?? null,
+                'reviewer_email' => $application->reviewer->email ?? null,
+                'approver_name' => $application->approver->name ?? null,
+                'approver_email' => $application->approver->email ?? null,
+                'created_at' => $application->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $application->updated_at->format('Y-m-d H:i:s'),
+                // Documents
+                'passport_size_photo' => $application->passport_size_photo ? asset('storage/' . $application->passport_size_photo) : null,
+                'citizenship_id_document' => $application->citizenship_id_document ? asset('storage/' . $application->citizenship_id_document) : null,
+                'noc_id_card' => $application->noc_id_card ? asset('storage/' . $application->noc_id_card) : null,
+                'ethnic_certificate' => $application->ethnic_certificate ? asset('storage/' . $application->ethnic_certificate) : null,
+                'disability_certificate' => $application->disability_certificate ? asset('storage/' . $application->disability_certificate) : null,
+                'signature' => $application->signature ? asset('storage/' . $application->signature) : null,
+                'transcript' => $application->transcript ? asset('storage/' . $application->transcript) : null,
+                'character' => $application->character ? asset('storage/' . $application->character) : null,
+                'exp1_document' => $application->exp1_document ? asset('storage/' . $application->exp1_document) : null,
+                'exp2_document' => $application->exp2_document ? asset('storage/' . $application->exp2_document) : null,
+                'exp3_document' => $application->exp3_document ? asset('storage/' . $application->exp3_document) : null,
+            ]);
+        }
 
         $reviewers = Reviewer::where('status', 'active')->get();
         $statuses = ['pending', 'assigned', 'reviewed', 'edit', 'approved', 'rejected'];
