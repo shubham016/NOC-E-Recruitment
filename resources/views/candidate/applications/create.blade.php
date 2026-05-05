@@ -132,6 +132,7 @@
             <form action="{{ route('candidate.jobs.applications.store', ['jobId' => $job->id]) }}" method="POST" enctype="multipart/form-data" id="applicationform">
                 @csrf
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $draftApplication->id ?? '' }}">
+                <input type="hidden" name="total_fee" id="total_fee" value="0">
                 @if($job)
                 <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
                 @endif
@@ -193,23 +194,32 @@
 
                                 {{-- Open --}}
                                 @if($gJob->has_open || $gJob->category == 'open')
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input category-cb" type="checkbox"
-                                                   name="applied_category[]" id="cat_open_{{ $gjIdx }}" value="open"
-                                                   {{ in_array('open', $oldCategories) ? 'checked' : '' }}>
-                                            <label class="form-check-label fw-bold" for="cat_open_{{ $gjIdx }}">
-                                                Open (खुल्ला)
-                                                <br><small class="text-muted fw-normal">Open for all eligible candidates</small>
-                                            </label>
-                                        </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                            name="applied_category[]" id="cat_open_{{ $gjIdx }}" value="open"
+                                            {{ in_array('open', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_open_{{ $gjIdx }}">
+                                            Open (खुल्ला)
+                                            <br><small class="text-muted fw-normal">Open for all eligible candidates</small>
+                                        </label>
                                     </div>
-                                @endif
+
+                                    <!-- Advertisement Number -->
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                        {{ $gAdvNo }}
+                                    </div>
+
+                                    <!-- Application Fee Display -->
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                    </div>
+                                </div>
+                            @endif
 
                                 {{-- Inclusive types (each as separate checkbox) --}}
                                 @foreach($gInclusiveTypes as $idx => $type)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
                                                    name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}_{{ $idx }}" value="inclusive"
@@ -219,13 +229,24 @@
                                                 <br><small class="text-muted fw-normal">समावेशी — {{ $type }}</small>
                                             </label>
                                         </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        
+
+                                        <!-- Advertisement Number -->
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                            {{ $gAdvNo }}
+                                        </div>
+
+                                        <!-- Application Fee Display -->
+                                        <div class="mt-1 text-success small fw-semibold">
+                                             Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
+
                                     </div>
                                 @endforeach
 
                                 {{-- If inclusive but no types listed, show generic --}}
                                 @if(($gJob->has_inclusive || $gJob->category == 'inclusive') && count($gInclusiveTypes) === 0)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
                                                    name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}" value="inclusive"
@@ -241,7 +262,7 @@
 
                                 {{-- Internal Open --}}
                                 @if(($gJob->has_internal || $gJob->category == 'internal') && $gJob->has_internal_open)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
                                                    name="applied_category[]" id="cat_internal_open_{{ $gjIdx }}" value="internal_open"
@@ -251,13 +272,21 @@
                                                 <br><small class="text-muted fw-normal">आन्तरिक खुल्ला — All NOC Staff</small>
                                             </label>
                                         </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        <!-- Advertisement Number -->
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                            {{ $gAdvNo }}
+                                        </div>
+
+                                        <!-- Application Fee Display -->
+                                        <div class="mt-1 text-success small fw-semibold">
+                                             Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
                                     </div>
                                 @endif
 
                                 {{-- Internal Inclusive types --}}
                                 @foreach($gInternalInclusiveTypes as $idx => $type)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}">
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
                                                    name="applied_category[]" id="cat_int_incl_{{ $gjIdx }}_{{ $idx }}" value="internal_inclusive"
@@ -267,13 +296,36 @@
                                                 <br><small class="text-muted fw-normal">आन्तरिक समावेशी — {{ $type }} (NOC only)</small>
                                             </label>
                                         </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        <!-- Advertisement Number -->
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                            {{ $gAdvNo }}
+                                        </div>
+
+                                        <!-- Application Fee Display -->
+                                        <div class="mt-1 text-success small fw-semibold">
+                                             Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
                                     </div>
                                 @endforeach
 
                                 @endforeach{{-- end $groupJobs loop --}}
 
                             </div>{{-- end flex wrap --}}
+
+                            {{-- Live fee summary --}}
+                            <div id="feeSummaryBar" class="mt-3 p-3 rounded border bg-white" style="display:none;">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="fw-bold">Selected Categories:</span>
+                                        <span id="selectedCategoryNames" class="ms-2 text-secondary small"></span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold fs-5 text-success">
+                                            Total Fee: Rs. <span id="totalFeeDisplay">0.00</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div id="categoryError" class="text-danger small mt-2" style="display:none;">
                                 Please select at least one category.
@@ -306,17 +358,69 @@
                             if (field) field.value = adNos.join(', ');
                         }
 
+                        // ── Live fee calculator ───────────────────────────────────
+function updateTotalFee() {
+    let total = 0;
+    const names = [];
+
+    document.querySelectorAll('.category-cb:checked').forEach(function (cb) {
+        const option = cb.closest('.category-option');
+        if (option) {
+            const fee = parseFloat(option.getAttribute('data-fee') || 0);
+            total += fee;
+
+            // Collect label text (first text node of the label)
+            const label = option.querySelector('.form-check-label');
+            if (label) {
+                const labelText = label.firstChild?.textContent?.trim()
+                    || label.textContent.split('\n')[0].trim();
+                if (labelText) names.push(labelText);
+            }
+        }
+    });
+
+    // Update hidden input
+    const totalFeeInput = document.getElementById('total_fee');
+    if (totalFeeInput) totalFeeInput.value = total.toFixed(2);
+
+    // Update Step 1 summary bar
+    const bar = document.getElementById('feeSummaryBar');
+    const display = document.getElementById('totalFeeDisplay');
+    const nameSpan = document.getElementById('selectedCategoryNames');
+    if (bar) bar.style.display = total > 0 ? '' : 'none';
+    if (display) display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    if (nameSpan) nameSpan.textContent = names.join(' + ') || '—';
+
+    // Update Step 8 summary
+    const step8Fee = document.getElementById('step8TotalFee');
+    const step8Names = document.getElementById('step8CategoryNames');
+    const step8Pos = document.getElementById('step8Position');
+    if (step8Fee) step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    if (step8Names) step8Names.textContent = names.join(' + ') || '—';
+    if (step8Pos) step8Pos.textContent = document.getElementById('applying_position')?.value || '—';
+}
+
+// Hook fee calculator onto every category checkbox
+document.querySelectorAll('.category-cb').forEach(function (cb) {
+    cb.addEventListener('change', updateTotalFee);
+});
+
+// Run on page load to restore saved state
+
+
                         document.querySelectorAll('.category-cb').forEach(function (cb) {
                             var advDiv = cb.closest('.category-option').querySelector('.adv-no-display');
                             if (cb.checked && advDiv) advDiv.style.display = '';
                             cb.addEventListener('change', function () {
                                 if (advDiv) advDiv.style.display = this.checked ? '' : 'none';
                                 updateAdvertisementNo();
+                                updateTotalFee();
                             });
                         });
 
                         // Initialize advertisement_no field on page load
                         updateAdvertisementNo();
+                        updateTotalFee();
                     });
                     </script>
 
@@ -819,31 +923,72 @@
                                 <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5"
-                                value="{{ old('years_of_experience', $draftApplication->years_of_experience ?? '') }}">
-                        </div>
                     </div>
-                    <div class="row mb-3">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Organization</th>
+                                <th>Position</th>
+                                <th>Start Date (B.S)</th>
+                                <th>End Date (B.S)</th>
+                                <th>Years</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{-- ================= EXP 1 ================= --}}
+                            <tr>
+                                <td><input type="text" name="exp1_organization" class="form-control"
+                                    value="{{ old('exp1_organization', $draftApplication->exp1_organization ?? '') }}"></td>
+                                <td><input type="text" name="exp1_position" class="form-control"
+                                    value="{{ old('exp1_position', $draftApplication->exp1_position ?? '') }}"></td>
+                                <td><input type="text" name="exp1_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp1_start_date', $draftApplication->exp1_start_date ?? '') }}"></td>
+                                <td><input type="text" name="exp1_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp1_end_date', $draftApplication->exp1_end_date ?? '') }}"></td>
+                                <td><input type="number" step="0.5" name="exp1_years" class="form-control"
+                                    value="{{ old('exp1_years', $draftApplication->exp1_years ?? '') }}"></td>
+                                <td><input type="file" name="exp1_document" class="form-control"></td>
+                            </tr>
+                            {{-- ================= EXP 2 ================= --}}
+                            <tr>
+                                <td><input type="text" name="exp2_organization" class="form-control"
+                                    value="{{ old('exp2_organization', $draftApplication->exp2_organization ?? '') }}"></td>
+                                <td><input type="text" name="exp2_position" class="form-control"
+                                    value="{{ old('exp2_position', $draftApplication->exp2_position ?? '') }}"></td>
+                                <td><input type="text" name="exp2_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp2_start_date', $draftApplication->exp2_start_date ?? '') }}"></td>
+                                <td><input type="text" name="exp2_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp2_end_date', $draftApplication->exp2_end_date ?? '') }}"></td>
+                                <td><input type="number" step="0.5" name="exp2_years" class="form-control"
+                                    value="{{ old('exp2_years', $draftApplication->exp2_years ?? '') }}"></td>
+                                <td><input type="file" name="exp2_document" class="form-control"></td>
+                            </tr>
+                            {{-- ================= EXP 3 ================= --}}
+                            <tr>
+                                <td><input type="text" name="exp3_organization" class="form-control"
+                                    value="{{ old('exp3_organization', $draftApplication->exp3_organization ?? '') }}"></td>
+                                <td><input type="text" name="exp3_position" class="form-control"
+                                    value="{{ old('exp3_position', $draftApplication->exp3_position ?? '') }}"></td>
+                                <td><input type="text" name="exp3_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp3_start_date', $draftApplication->exp3_start_date ?? '') }}"></td>
+                                <td><input type="text" name="exp3_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD"
+                                    value="{{ old('exp3_end_date', $draftApplication->exp3_end_date ?? '') }}"></td>
+                                <td><input type="number" step="0.5" name="exp3_years" class="form-control"
+                                    value="{{ old('exp3_years', $draftApplication->exp3_years ?? '') }}"></td>
+                                <td><input type="file" name="exp3_document" class="form-control"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control"
-                                value="{{ old('previous_organization', $draftApplication->previous_organization ?? '') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control"
-                                value="{{ old('previous_position', $draftApplication->previous_position ?? '') }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            <label for="work_experience" class="form-label">Work Experience Document (Overall)</label>
                             <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
                             <small class="text-muted d-block">Max Size: 700KB</small>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-light next-btn">Next</button>
@@ -948,9 +1093,7 @@
                         <h6 class="text-secondary mt-4">Work Experience</h6>
                         <table class="table table-bordered">
                             <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
-                            <tr><th>Years of Experience</th><td id="p_years_of_experience"></td></tr>
-                            <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
-                            <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
+                            <tr><th>Experience Details</th><td><div id="experience_preview"></div></td></tr>
                         </table>
 
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
@@ -983,6 +1126,31 @@
                 <div class="step d-none" id="step8">
                     <h5 class="mb-4 text-dark">Step 8 — Payment & Declaration</h5>
                     <div id="paymentSection">
+                        <div class="card border-success mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title text-success mb-3">
+                                    <i class="bi bi-receipt me-2"></i>Payment Summary
+                                </h6>
+                                <table class="table table-sm table-bordered mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th width="50%">Selected Categories</th>
+                                            <td id="step8CategoryNames" class="text-secondary">—</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Applying Position</th>
+                                            <td id="step8Position">—</td>
+                                        </tr>
+                                        <tr class="table-success">
+                                            <th class="fw-bold fs-5">Total Amount Payable</th>
+                                            <td class="fw-bold fs-5 text-success">
+                                                Rs. <span id="step8TotalFee">0.00</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         @if(isset($payment) && $payment->status == 'paid')
                             <div class="alert alert-success mb-3">✓ Payment already completed via {{ strtoupper($payment->gateway) }}</div>
                         @endif
@@ -1054,9 +1222,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }, opts || {}));
     }
 
-    // ── Fields that always exist ──────────────────────────────
+    // ── Fields initialized by ID (no nepali-date class) ──────
     initNDP(document.getElementById('birth_date_bs'));
     initNDP(document.getElementById('citizenship_issue_date_bs'));
+
+    // ── Fields initialized by class (exp date fields in Step 5) ──
+    document.querySelectorAll('.nepali-date').forEach(function(el) { initNDP(el); });
 });
 </script>
 
@@ -1504,7 +1675,8 @@ document.addEventListener('DOMContentLoaded', function () {
         s('p_permanent_address', v('permanent_province')+', '+v('permanent_district')+', '+v('permanent_municipality')+' - '+v('permanent_ward'));
         s('p_mailing_address',   v('mailing_province')  +', '+v('mailing_district')  +', '+v('mailing_municipality')  +' - '+v('mailing_ward'));
         s('p_education_level', v('education_level')); s('p_field_of_study', v('field_of_study')); s('p_institution_name', v('institution_name')); s('p_graduation_year', v('graduation_year'));
-        s('p_has_work_experience', v('has_work_experience')); s('p_years_of_experience', v('years_of_experience')); s('p_previous_organization', v('previous_organization')); s('p_previous_position', v('previous_position'));
+        s('p_has_work_experience', v('has_work_experience'));
+        populateExperiencePreview();
 
         function previewFile(containerId, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`);
@@ -1523,6 +1695,38 @@ document.addEventListener('DOMContentLoaded', function () {
         previewFile('p_work_experience','work_experience');  previewFile('p_noc_id_card', 'noc_id_card');
         previewFile('p_ethnic_certificate','ethnic_certificate'); previewFile('p_disability_certificate','disability_certificate');
     }
+
+    // ── Experience Preview ────────────────────────────────────
+    function populateExperiencePreview() {
+        let html = '';
+        for (let i = 1; i <= 3; i++) {
+            let org   = document.querySelector(`[name="exp${i}_organization"]`)?.value;
+            let pos   = document.querySelector(`[name="exp${i}_position"]`)?.value;
+            let start = document.querySelector(`[name="exp${i}_start_date"]`)?.value;
+            let end   = document.querySelector(`[name="exp${i}_end_date"]`)?.value;
+            let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
+            let fileInput = document.querySelector(`[name="exp${i}_document"]`);
+            let file  = fileInput?.files?.[0];
+            if (!org && !pos && !start && !end && !years && !file) continue;
+            html += `<div style="margin-bottom:12px; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                <strong>Experience ${i}</strong><br>
+                <b>Organization:</b> ${org || '-'} &nbsp; <b>Position:</b> ${pos || '-'}<br>
+                <b>Start:</b> ${start || '-'} &nbsp; <b>End:</b> ${end || '-'} &nbsp; <b>Years:</b> ${years || '-'}<br>`;
+            if (file) {
+                let url = URL.createObjectURL(file);
+                html += file.type.includes('pdf')
+                    ? `<iframe src="${url}" style="width:100%;height:200px;border:1px solid #ccc;" class="mt-1"></iframe>`
+                    : `<img src="${url}" style="max-width:180px;border:1px solid #ccc;padding:2px;" class="mt-1">`;
+            }
+            html += `</div>`;
+        }
+        const el = document.getElementById('experience_preview');
+        if (el) el.innerHTML = html || '<span class="text-muted">No experience added</span>';
+    }
+    document.querySelectorAll('[name^="exp"]').forEach(el => {
+        el.addEventListener('input', populateExperiencePreview);
+        el.addEventListener('change', populateExperiencePreview);
+    });
 
     // ── Payment ───────────────────────────────────────────────
     window.startPayment = function (gateway) {

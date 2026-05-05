@@ -124,17 +124,17 @@
                     </thead>
                     <tbody>
                         @php
-                            // Pre-calculate rowspan for position+level groups (consecutive rows)
-                            // Works because controller sorts by position → level → advertisement_no
+                            // Pre-calculate rowspan for position+level+service_group groups (consecutive rows)
+                            // Works because controller sorts by position → level → service_group → advertisement_no
                             $jobItems   = $jobs->items();
                             $total      = count($jobItems);
                             $posRowspan = array_fill(0, $total, 0);
                             $pi = 0;
                             while ($pi < $total) {
-                                $key   = ($jobItems[$pi]->position ?? '') . '___' . ($jobItems[$pi]->level ?? '');
+                                $key   = ($jobItems[$pi]->position ?? '') . '___' . ($jobItems[$pi]->level ?? '') . '___' . ($jobItems[$pi]->service_group ?? '');
                                 $count = 1;
                                 while ($pi + $count < $total) {
-                                    $nk = ($jobItems[$pi + $count]->position ?? '') . '___' . ($jobItems[$pi + $count]->level ?? '');
+                                    $nk = ($jobItems[$pi + $count]->position ?? '') . '___' . ($jobItems[$pi + $count]->level ?? '') . '___' . ($jobItems[$pi + $count]->service_group ?? '');
                                     if ($nk === $key) { $count++; } else { break; }
                                 }
                                 $posRowspan[$pi] = $count;
@@ -251,7 +251,7 @@
                                 }
                             }
                         @endphp
-                        <tr data-pos-group="{{ $job->position }}_{{ $job->level }}">
+                        <tr data-pos-group="{{ $job->position }}_{{ $job->level }}_{{ $job->service_group }}">
                             <td class="text-center align-middle">{{ $jobs->firstItem() + $index }}</td>
 
                             {{-- Vacancy Title — rowspan per position+level group --}}
@@ -302,7 +302,7 @@
                                 </td>
                             @endif
 
-                            {{-- Status — rowspan per position+level group --}}
+                            {{-- Status — rowspan per position+level+service_group group --}}
                             @if($thisPosRowspan > 0)
                             <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
                                 @if($hasAppliedInGroup)
@@ -315,7 +315,7 @@
                             </td>
                             @endif
 
-                            {{-- Action — rowspan per position+level group --}}
+                            {{-- Action — rowspan per position+level+service_group group --}}
                             @if($thisPosRowspan > 0)
                             <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
                                 <div class="d-flex gap-1 justify-content-center">

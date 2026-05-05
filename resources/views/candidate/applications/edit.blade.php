@@ -814,18 +814,18 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp1_start_date_bs"
+                    <input type="text" name="exp1_start_date"
                         class="form-control nepali-date"
                         placeholder="YYYY-MM-DD"
-                        value="{{ old('exp1_start_date_bs', $applicationform->exp1_start_date) }}">
+                        value="{{ old('exp1_start_date', $applicationform->exp1_start_date) }}">
                         
 
                 </td>
 
                 <td>
-                    <input type="text" name="exp1_end_date_bs"
+                    <input type="text" name="exp1_end_date"
                         class="form-control nepali-date"
-                        value="{{ old('exp1_end_date_bs', $applicationform->exp1_end_date) }}">
+                        value="{{ old('exp1_end_date', $applicationform->exp1_end_date) }}">
                 </td>
 
                 <td>
@@ -857,15 +857,15 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp2_start_date_bs"
+                    <input type="text" name="exp2_start_date"
                         class="form-control nepali-date"
-                        value="{{ old('exp2_start_date_bs', $applicationform->exp2_start_date) }}">
+                        value="{{ old('exp2_start_date', $applicationform->exp2_start_date) }}">
                 </td>
 
                 <td>
-                    <input type="text" name="exp2_end_date_bs"
+                    <input type="text" name="exp2_end_date"
                         class="form-control nepali-date"
-                        value="{{ old('exp2_end_date_bs', $applicationform->exp2_end_date) }}">
+                        value="{{ old('exp2_end_date', $applicationform->exp2_end_date) }}">
                 </td>
 
                 <td>
@@ -897,15 +897,15 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp3_start_date_bs"
+                    <input type="text" name="exp3_start_date"
                         class="form-control nepali-date"
-                        value="{{ old('exp3_start_date_bs', $applicationform->exp3_start_date) }}">
+                        value="{{ old('exp3_start_date', $applicationform->exp3_start_date) }}">
                 </td>
 
                 <td>
-                    <input type="text" name="exp3_end_date_bs"
+                    <input type="text" name="exp3_end_date"
                         class="form-control nepali-date"
-                        value="{{ old('exp3_end_date_bs', $applicationform->exp3_end_date) }}">
+                        value="{{ old('exp3_end_date', $applicationform->exp3_end_date) }}">
                 </td>
 
                 <td>

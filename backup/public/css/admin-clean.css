@@ -1,0 +1,397 @@
+/*
+ * Clean Government Dashboard Design
+ * Nepal Oil Corporation - E-Recruitment System
+ * Professional, Clean, Accessible Design
+ */
+
+:root {
+    /* Government Color Palette - Professional Blues and Grays */
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e3a8a;
+    --secondary: #64748b;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --white: #ffffff;
+}
+
+/* Base Styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.025em;
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 400;
+}
+
+/* Statistics Cards - Clean & Minimal */
+.stat-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.stat-card:hover {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+/* Cards */
+.card-clean {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.card-clean .card-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--gray-900);
+}
+
+.card-clean .card-body {
+    padding: 1.5rem;
+}
+
+/* Clean Table */
+.table-clean {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+}
+
+.table-clean thead th {
+    background: var(--gray-50);
+    color: var(--gray-700);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.875rem 1rem;
+    border-bottom: 2px solid var(--gray-200);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.table-clean tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    vertical-align: middle;
+}
+
+.table-clean tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-clean tbody tr:hover {
+    background-color: var(--gray-50);
+}
+
+/* Buttons - Professional */
+.btn-clean {
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-clean:hover {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary-clean {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-primary-clean:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-secondary-clean {
+    background: white;
+    border-color: var(--gray-300);
+    color: var(--gray-700);
+}
+
+.btn-secondary-clean:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+}
+
+.btn-sm-clean {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+/* Form Controls */
+.form-control-clean,
+.form-select-clean {
+    border-radius: 6px;
+    border: 1px solid var(--gray-300);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--gray-900);
+    background: var(--white);
+    transition: border-color 0.15s ease;
+}
+
+.form-control-clean:focus,
+.form-select-clean:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.form-label-clean {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Badges - Professional */
+.badge-clean {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.badge-primary { background: #dbeafe; color: #1e40af; }
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+.badge-info { background: #e0f2fe; color: #075985; }
+.badge-secondary { background: #f1f5f9; color: #475569; }
+
+/* Avatar */
+.avatar-clean {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--gray-200);
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* Action Buttons */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+}
+
+.action-btn:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+}
+
+.action-btn-primary:hover {
+    background: #eff6ff;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.action-btn-success:hover {
+    background: #f0fdf4;
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.action-btn-danger:hover {
+    background: #fef2f2;
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* Alerts */
+.alert-clean {
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-success-clean {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.alert-danger-clean {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--gray-500);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--gray-300);
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+/* Pagination */
+.pagination-clean {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.pagination-clean .page-link {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    background: white;
+    transition: all 0.15s ease;
+}
+
+.pagination-clean .page-link:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+}
+
+.pagination-clean .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 1.75rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* Utilities */
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.text-gray-600 { color: var(--gray-600); }
+.text-gray-700 { color: var(--gray-700); }
+.text-gray-900 { color: var(--gray-900); }

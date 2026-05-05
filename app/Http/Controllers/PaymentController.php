@@ -19,7 +19,8 @@ class PaymentController extends Controller
         {
             $application = ApplicationForm::findOrFail($draftId);
             // $amount = 1000;
-            $amount = optional($application->jobPosting)->application_fee ?? 0;
+            // $amount = optional($application->jobPosting)->application_fee ?? 0;
+            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
             $tax_amount = 0;
             $total_amount = $amount + $tax_amount;
             $transaction_uuid = uniqid('txn_');
@@ -120,7 +121,8 @@ class PaymentController extends Controller
         {
             $application = ApplicationForm::findOrFail($draftId);
             // $amount = 1000; 
-            $amount = optional($application->jobPosting)->application_fee ?? 0;
+            // $amount = optional($application->jobPosting)->application_fee ?? 0;
+            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
             $amount_in_paisa = $amount * 100;
             $txRef = uniqid('khalti_');
 
@@ -133,34 +135,27 @@ class PaymentController extends Controller
                 'txRef' => $txRef
             ]);
 
-            $candidate = auth('candidate')->user();
-
             $response = Http::withHeaders([
-                'Authorization' => 'Key ' . config('services.khalti.secret_key'),
+                'Authorization' => 'Key ' . env('KHALTI_SECRET_KEY'),
                 'Content-Type' => 'application/json',
-            ])->post(rtrim(config('services.khalti.base_url'), '/') . '/epayment/initiate/', [
+            ])->post('https://dev.khalti.com/api/v2/epayment/initiate/', [
                 "return_url" => route('candidate.payment.khalti.success'),
                 "website_url" => url('/'),
                 "amount" => $amount_in_paisa,
                 "purchase_order_id" => $txRef,
                 "purchase_order_name" => "Application Fee",
                 "customer_info" => [
-                    "name" => $candidate?->name ?? "Candidate",
-                    "email" => $candidate?->email ?? "test@test.com",
+                    "name" => auth()->user()->name ?? "Candidate",
+                    "email" => auth()->user()->email ?? "test@test.com",
                     "phone" => "9800000000"
                 ]
             ]);
 
             if ($response->successful()) {
-                $paymentUrl = $response['payment_url'];
-                // Sandbox API returns pay.khalti.com but sandbox pidx only works on test-pay.khalti.com
-                if (str_contains(config('services.khalti.base_url'), 'dev.khalti.com')) {
-                    $paymentUrl = str_replace('https://pay.khalti.com', 'https://test-pay.khalti.com', $paymentUrl);
-                }
-                return redirect($paymentUrl);
+                return redirect($response['payment_url']);
             }
 
-            return back()->with('error', 'Khalti payment could not be initiated. Please try eSewa or contact support.');
+            return back()->with('error', 'Khalti initiation failed');
         }
 
         // Khalti success
@@ -174,9 +169,9 @@ class PaymentController extends Controller
 
             // Lookup Khalti payment
             $response = Http::withHeaders([
-                'Authorization' => 'Key ' . config('services.khalti.secret_key'),
+                'Authorization' => 'Key ' . env('KHALTI_SECRET_KEY'),
                 'Content-Type' => 'application/json',
-            ])->post(rtrim(config('services.khalti.base_url'), '/') . '/epayment/lookup/', [
+            ])->post('https://dev.khalti.com/api/v2/epayment/lookup/', [
                 "pidx" => $pidx
             ]);
 
@@ -221,7 +216,8 @@ class PaymentController extends Controller
         {
             $application = ApplicationForm::findOrFail($draftId);
             // $amount = 1000; 
-            $amount = optional($application->jobPosting)->application_fee ?? 0;
+            // $amount = optional($application->jobPosting)->application_fee ?? 0;
+            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
             $amountInPaisa = $amount * 100;; // Change if needed
 
             $txnId = uniqid('cips_');
@@ -247,8 +243,7 @@ class PaymentController extends Controller
 
             $tokenString = "MERCHANTID={$merchantId},APPID={$appId},APPNAME={$appName},TXNID={$txnId},TXNDATE={$txnDate},TXNCRNCY=NPR,TXNAMT={$amountInPaisa},REFERENCEID={$referenceId},REMARKS={$remarks},PARTICULARS={$particulars},TOKEN=TOKEN";
 
-            $token  = $this->generateConnectIpsToken($tokenString);
-            $txnUrl = config('services.connectips.txn_url');
+            $token = $this->generateConnectIpsToken($tokenString);
 
             return view('payment.connectips', compact(
                 'merchantId',
@@ -262,34 +257,24 @@ class PaymentController extends Controller
                 'particulars',
                 'successUrl',
                 'failureUrl',
-                'token',
-                'txnUrl'
+                'token'
             ));
         }
 
         private function generateConnectIpsToken($data)
 {
-    $pfxPath     = storage_path('app/connectips/certificate.pfx');
-    $pemPath     = storage_path('app/connectips/private.key');
-    $pfxPassword = config('services.connectips.pfx_password', '');
+    $privateKeyPath = storage_path('app/connectips/private.key');
 
-    if (file_exists($pfxPath)) {
-        // Load private key directly from PFX certificate
-        $pfxContent = file_get_contents($pfxPath);
-        $certs = [];
-        if (!openssl_pkcs12_read($pfxContent, $certs, $pfxPassword)) {
-            throw new \Exception("Failed to read ConnectIPS certificate. Check PFX password.");
-        }
-        $keyResource = openssl_pkey_get_private($certs['pkey']);
-    } elseif (file_exists($pemPath)) {
-        // Fall back to extracted PEM private key
-        $keyResource = openssl_pkey_get_private(file_get_contents($pemPath));
-    } else {
-        throw new \Exception("ConnectIPS certificate not found. Place certificate.pfx in storage/app/connectips/");
+    if (!file_exists($privateKeyPath)) {
+        throw new \Exception("Private key file not found.");
     }
 
+    $privateKey = file_get_contents($privateKeyPath);
+
+    $keyResource = openssl_pkey_get_private($privateKey);
+
     if (!$keyResource) {
-        throw new \Exception("Invalid ConnectIPS private key.");
+        throw new \Exception("Invalid private key.");
     }
 
     openssl_sign($data, $signature, $keyResource, OPENSSL_ALGO_SHA256);

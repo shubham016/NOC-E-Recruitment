@@ -174,6 +174,9 @@ class ApplicationFormController extends Controller
             return !is_null($value) && $value !== '';
         });
 
+        // Total calculated fee in the 1st page of the application form
+        $data['total_fee'] = $request->input('total_fee', 0);
+
         // Create or update draft
         if ($draft) {
             $draft->update($data);

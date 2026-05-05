@@ -120,6 +120,7 @@ class ApplicationForm extends Model
         'equivalent',
         'work_experience',
         'character',
+        'total_fee',
         // System
         'status',
         'terms_agree',
