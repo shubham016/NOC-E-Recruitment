@@ -75,6 +75,7 @@ class ApproverAuthController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
+<<<<<<< HEAD
         $stats = [
             'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
             'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
@@ -90,6 +91,22 @@ class ApproverAuthController extends Controller
             ->get();
 
         return view('approver.dashboard', compact('approver', 'stats', 'recentApplications'));
+=======
+        $stats = [
+            'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
+            'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
+        ];
+
+        $recentApplications = \App\Models\ApplicationForm::with('jobPosting')
+            ->where('approver_id', $approver->id)
+            ->where('status', '!=', 'draft')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('approver.dashboard', compact('approver', 'stats'));
     }
 
     /**

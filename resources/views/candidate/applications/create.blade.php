@@ -765,110 +765,31 @@
                                 <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
-                    </div>  
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Organization</th>
-                                <th>Position</th>
-                                <th>Start Date (B.S)</th>
-                                <th>End Date (B.S.)</th>
-                                <th>Years</th>
-                                <th>Document</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp1_organization" class="form-control"
-                                    value="{{ old('exp1_organization', $draftApplication->{'exp1_organization'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp1_position" class="form-control"
-                                    value="{{ old('exp1_position', $draftApplication->{'exp1_position'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp1_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp1_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp1_years" class="form-control"
-                                    value="{{ old('exp1_years', $draftApplication->{'exp1_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp1_document" class="form-control">
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp2_organization" class="form-control"
-                                    value="{{ old('exp2_organization', $draftApplication->{'exp2_organization'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp2_position" class="form-control"
-                                    value="{{ old('exp2_position', $draftApplication->{'exp2_position'} ?? '') }}">
-                                </td>
-
-                               <td>
-                                    <input type="text" name="exp2_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp2_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp2_years" class="form-control"
-                                    value="{{ old('exp2_years', $draftApplication->{'exp2_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp2_document" class="form-control">
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp3_organization" class="form-control"
-                                    value="{{ old('exp3_organization', $draftApplication->{'exp3_organization'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp3_position" class="form-control"
-                                    value="{{ old('exp3_position', $draftApplication->{'exp3_position'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp3_start_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp3_end_date" class="form-control nepali-date" placeholder="YYYY-MM-DD">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp3_years" class="form-control"
-                                    value="{{ old('exp3_years', $draftApplication->{'exp3_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp3_document" class="form-control">
-                                </td>
-                            </tr>
-                            
-
-                        </tbody>
-                    </table>
-
+                        <div class="col-md-6">
+                            <label for="years_of_experience" class="form-label">Years of Experience</label>
+                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5"
+                                value="{{ old('years_of_experience', $draftApplication->years_of_experience ?? '') }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="previous_organization" class="form-label">Previous Organization</label>
+                            <input type="text" name="previous_organization" id="previous_organization" class="form-control"
+                                value="{{ old('previous_organization', $draftApplication->previous_organization ?? '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="previous_position" class="form-label">Previous Position</label>
+                            <input type="text" name="previous_position" id="previous_position" class="form-control"
+                                value="{{ old('previous_position', $draftApplication->previous_position ?? '') }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="work_experience" class="form-label">Work Experience Document</label>
+                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
+                            <small class="text-muted d-block">Max Size: 700KB</small>
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-light next-btn">Next</button>
@@ -1079,6 +1000,13 @@ document.addEventListener('DOMContentLoaded', function () {
         initNDP(el);
     });
 
+<<<<<<< HEAD
+     document.querySelectorAll('.nepali-date').forEach(function (el) {
+        initNDP(el);
+    });
+
+=======
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
     // ── Fields that always exist ──────────────────────────────
     initNDP(document.getElementById('birth_date_bs'));
     initNDP(document.getElementById('citizenship_issue_date_bs'));
@@ -1525,6 +1453,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.innerHTML = file.type.startsWith('image/')
                 ? `<img src="${url}" class="img-thumbnail" style="max-width:150px;max-height:150px;"><div class="mt-1 small text-muted">${file.name}</div>`
                 : `<a href="${url}" target="_blank">${file.name}</a>`;
+<<<<<<< HEAD
         }
         previewFile('p_photo',       'passport_size_photo'); previewFile('p_citizenship', 'citizenship_id_document');
         previewFile('p_transcript',  'transcript');          previewFile('p_character',   'character');
@@ -1540,161 +1469,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const urls = { esewa: '/candidate/payment/esewa/start/', khalti: '/candidate/payment/khalti/start/', connectips: '/candidate/payment/connectips/start/' };
         if (urls[gateway]) window.location.href = urls[gateway] + draftId;
     };
-});
-
-// ── BS → AD auto-fill & Age calculation ──────────────────────
-(function () {
-    function calcAge(ad) {
-        if (!ad) return '';
-        const b = new Date(ad); if (isNaN(b)) return '';
-        const t = new Date(); let age = t.getFullYear() - b.getFullYear();
-        if (t.getMonth() < b.getMonth() || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) age--;
-        return age > 0 ? age : '';
-    }
-    function applyBS(val) {
-        if (!val || typeof window.bsToAD !== 'function') return;
-        const ad = window.bsToAD(val.trim()); if (!ad) return;
-        const adEl = document.getElementById('birth_date_ad'), ageEl = document.getElementById('age');
-        if (adEl) adEl.value = ad;
-        const age = calcAge(ad); if (ageEl && age !== '') ageEl.value = age;
-    }
-    function applyAD(val) {
-        const age = calcAge(val), ageEl = document.getElementById('age');
-        if (ageEl && age !== '') ageEl.value = age;
-    }
-    function init() {
-        const bs = document.getElementById('birth_date_bs'), ad = document.getElementById('birth_date_ad');
-        if (!bs) return;
-        if (bs.value) applyBS(bs.value); else if (ad?.value) applyAD(ad.value);
-        bs.addEventListener('change', function () { applyBS(this.value); });
-        bs.addEventListener('input',  function () { applyBS(this.value); });
-        if (ad) ad.addEventListener('change', function () { applyAD(this.value); });
-    }
-    function wait() {
-        if (!window.nepaliLibrariesReady) { setTimeout(wait, 100); return; }
-        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
-    }
-    wait();
-})();
-
-// ── Devanagari-only enforcement ───────────────────────────────
-(function () {
-    const field = document.getElementById('name_nepali');
-    if (!field) return;
-    const ok = /[\u0900-\u097F\s.\-]/;
-    const clean = str => str.split('').filter(c => ok.test(c)).join('');
-    field.addEventListener('keydown', e => {
-        if (e.ctrlKey||e.metaKey||e.altKey||['Backspace','Delete','Tab','Escape','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Shift'].includes(e.key)) return;
-        if (e.key.length === 1 && !ok.test(e.key)) e.preventDefault();
-    });
-    field.addEventListener('input', function () {
-        const pos = this.selectionStart, cleaned = clean(this.value);
-        if (cleaned !== this.value) { this.value = cleaned; this.setSelectionRange(Math.min(pos, cleaned.length), Math.min(pos, cleaned.length)); }
-    });
-    field.addEventListener('paste', e => {
-        e.preventDefault();
-        const cleaned = clean((e.clipboardData||window.clipboardData).getData('text'));
-        if (!cleaned) return;
-        const s = field.selectionStart, en = field.selectionEnd;
-        field.value = field.value.slice(0, s) + cleaned + field.value.slice(en);
-        field.setSelectionRange(s + cleaned.length, s + cleaned.length);
-        field.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    field.addEventListener('drop', e => {
-        e.preventDefault();
-        const cleaned = clean(e.dataTransfer.getData('text')); if (!cleaned) return;
-        const pos = field.selectionStart;
-        field.value = field.value.slice(0, pos) + cleaned + field.value.slice(pos);
-        field.setSelectionRange(pos + cleaned.length, pos + cleaned.length);
-        field.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-})();
-
-document.querySelectorAll('.nepali-date').forEach(function (input) {
-    input.addEventListener('change', function () {
-
-        const bsDate = this.value;
-        if (!bsDate) return;
-
-        try {
-            const adDate = window.bsToAD(bsDate);
-
-            const targetName = this.getAttribute('data-target');
-            if (!targetName) return;
-
-            const hidden = document.querySelector(`[name="${targetName}"]`);
-
-            if (hidden) {
-                hidden.value = adDate;
-            }
-
-        } catch (e) {
-            console.log("BS conversion failed:", bsDate, e);
-        }
-    });
-
-    // For Work Experience
-function populateExperiencePreview() {
-
-    let html = "";
-
-    for (let i = 1; i <= 3; i++) {
-
-        let org = document.querySelector(`[name="exp${i}_organization"]`)?.value;
-        let pos = document.querySelector(`[name="exp${i}_position"]`)?.value;
-        let start = document.querySelector(`[name="exp${i}_start_date"]`)?.value;
-        let end = document.querySelector(`[name="exp${i}_end_date"]`)?.value;
-        let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
-        let fileInput = document.querySelector(`[name="exp${i}_document"]`);
-
-        let file = fileInput?.files?.[0];
-
-        html += `
-        <div style="margin-bottom:20px; padding:12px; border:1px solid #ddd; border-radius:8px;">
-            <h6>Experience ${i}</h6>
-
-            <b>Organization:</b> ${org || '-'} <br>
-            <b>Position:</b> ${pos || '-'} <br>
-            <b>Start:</b> ${start || '-'} <br>
-            <b>End:</b> ${end || '-'} <br>
-            <b>Years:</b> ${years || '-'} <br>
-        `;
-
-        // ================= FILE PREVIEW =================
-        if (file) {
-            let url = URL.createObjectURL(file);
-
-            if (file.type.includes("pdf")) {
-                html += `
-                    <div style="margin-top:10px;">
-                        <iframe src="${url}" 
-                            style="width:100%; height:400px; border:1px solid #ccc;">
-                        </iframe>
-                    </div>
-                `;
-            } else if (file.type.startsWith("image/")) {
-                html += `
-                    <div style="margin-top:10px;">
-                        <img src="${url}" style="max-width:200px; border:1px solid #ccc; padding:3px;">
-                    </div>
-                `;
-            } else {
-                html += `<div>File uploaded</div>`;
-            }
-        } else {
-            html += `<div class="text-muted">No document uploaded</div>`;
-        }
-
-        html += `</div>`;
-    }
-
-    document.getElementById("experience_preview").innerHTML =
-        html || "<span class='text-muted'>No experience added</span>";
-}
-document.querySelectorAll("input, select").forEach(el => {
-    el.addEventListener("input", populateExperiencePreview);
-});
-
 });
 
 // ── BS → AD auto-fill & Age calculation ──────────────────────

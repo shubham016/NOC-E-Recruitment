@@ -435,10 +435,63 @@
                         <p class="mb-0">{{ $applicationform->graduation_year ?? '-' }}</p>
                     </div>
                 </div>
+<<<<<<< HEAD
 
                 <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-secondary prev-btn">Back</button>
                     <button type="button" class="btn btn-light next-btn">Next</button>
+=======
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+           {{-- STEP 5: Experience --}}
+            <div class="step d-none" id="step5">
+                <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+
+                <div class="mb-3">
+                    <strong>Has Work Experience:</strong>
+                    <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
+                </div>
+
+                @for ($i = 1; $i <= 3; $i++)
+                    @php
+                        $org = "exp{$i}_organization";
+                        $pos = "exp{$i}_position";
+                        $start = "exp{$i}_start_date";
+                        $end = "exp{$i}_end_date";
+                        $years = "exp{$i}_years";
+                        $doc = "exp{$i}_document";
+                    @endphp
+
+                    @if(!empty($applicationform->$org) || !empty($applicationform->$pos))
+                        <div class="border rounded p-3 mb-3">
+                            <h6 class="text-primary">Experience {{ $i }}</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Organization:</strong>
+                                    <p>{{ $applicationform->$org ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Position:</strong>
+                                    <p>{{ $applicationform->$pos ?? '-' }}</p>
+                                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Previous Organization:</strong>
+                        <p class="mb-0">{{ $applicationform->previous_organization ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Previous Position:</strong>
+                        <p class="mb-0">{{ $applicationform->previous_position ?? '-' }}</p>
+                    </div>
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                 </div>
 
                 <div class="d-flex justify-content-between">
@@ -447,6 +500,7 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
            {{-- STEP 5: Experience --}}
             <div class="step d-none" id="step5">
                 <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
@@ -522,6 +576,8 @@
                 </div>
             </div>
 
+=======
+>>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
             {{-- STEP 6: Documents --}}
             <div class="step d-none" id="step6">
                 <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
