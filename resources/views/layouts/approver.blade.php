@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') - NOC E-Recruitment System</title>
-    <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
+    <title>@yield('title') - Online Recruitment Management System</title>
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -16,7 +16,7 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     
+
     <style>
         .nav-tabs .nav-link {
         color: #a07828 !important;
@@ -405,6 +405,8 @@
     @yield('custom-styles')
 
     @stack('styles')
+    <!-- Nepali Date JS -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/kamayura/nepali-date@master/nepali-date.min.js"></script> -->
 </head>
 
 <body>
@@ -433,9 +435,37 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                <!-- Logout -->
+                    <!-- Notifications -->
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-dark position-relative"
+                           href="{{ route('approver.notifications.index') }}"
+                           title="Notifications">
+                            <i class="bi bi-bell fs-5"></i>
+                            @php
+                                try {
+                                    if (Auth::guard('approver')->check()) {
+                                        $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('approver')->id())
+                                            ->where('user_type', 'approver')
+                                            ->where('is_read', false)
+                                            ->count();
+                                    } else {
+                                        $unreadCount = 0;
+                                    }
+                                } catch (\Exception $e) {
+                                    $unreadCount = 0;
+                                }
+                            @endphp
+                            @if($unreadCount > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
                     <li class="nav-item">
-                        <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
+                        <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
                             @csrf
                             <button class="btn btn-link nav-link text-dark" type="submit">
                                 <i class="bi bi-box-arrow-right"></i> Logout
@@ -449,52 +479,40 @@
 
     <!-- Layout Container: Sidebar + Main Content -->
     <div class="layout-container">
-        
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <div class="sidebar" id="sidebar">
+            <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="user-profile-sidebar">
-                    @php
-                        $reviewersName = 'Reviewer';
-                        $reviewersInitial = 'R';
-                        
-                        // Get reviewers from session
-                        if (session()->has('reviewers_id')) {
-                            $reviewersId = session('reviewers_id');
-                            
-                            // Fetch reviewers from database
-                            $reviewers = \DB::table('reviewers')
-                                ->where('id', $reviewersId)
-                                ->first();
-                            
-                            if ($reviewers && !empty($reviewers->name)) {
-                                $reviewersName = $reviewers->name;
-                                $reviewersInitial = strtoupper(substr($reviewersName, 0, 1));
-                            } elseif ($reviewers && !empty($reviewers->email)) {
-                                $reviewersName = explode('@', $reviewers->email)[0];
-                                $reviewersInitial = strtoupper(substr($reviewersName, 0, 1));
-                            }
-                        }
-                    @endphp
-                    <div class="user-avatar">
-                        {{ $reviewersInitial }}
+                    <!-- User Avatar with Photo or Initial -->
+                    <div class="user-avatar" style="{{ Auth::guard('approver')->user()->photo ? 'background:none;' : '' }}">
+                        @if(Auth::guard('approver')->user()->photo)
+                            <img src="{{ asset('storage/' . Auth::guard('approver')->user()->photo) }}"
+                                 alt="{{ Auth::guard('approver')->user()->name }}"
+                                 style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
+                        @else
+                            {{ strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)) }}
+                        @endif
                     </div>
+
+                    <!-- User Info -->
                     <div class="user-info">
-                        <h6 title="{{ $reviewersName }}">{{ $reviewersName }}</h6>
-                        <small>Reviewer</small>
+                        <h6>{{ Auth::guard('approver')->user()->name }}</h6>
+                        <!-- <small> Emp id- {{ Auth::guard('approver')->user()->employee_id }} </small> -->
+                        <small>Approver</small>
                     </div>
                 </div>
             </div>
 
+
             <nav class="sidebar-menu">
                 @yield('sidebar-menu')
             </nav>
-        </aside>
+        </div>
 
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
             {{-- Success Message --}}
-            @if(session('success'))
+            @if(session('success')) 
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle"></i> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -533,50 +551,132 @@
             <p class="mb-0">&copy; {{ date('Y') }} Nepal Oil Corporation</p>
         </div>
     </footer>
+    
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    
     <!-- Sidebar Toggle Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const footer = document.getElementById('footer');
-            const toggleBtn = document.getElementById('sidebarToggle');
-            
-            // Load saved state from localStorage or default to visible
-            let isHidden = localStorage.getItem('sidebarHidden') === 'true';
-            
-            // Apply initial state
+<script>
+    const BS_DATA = {
+        2081: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+        2082: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+        2083: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+        2084: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+        2085: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+        2086: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+        2087: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+        2088: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+        2089: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+        2090: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+        2091: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+        2092: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+        2093: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+    };
+
+    const NP_MONTHS = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin',
+                       'Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+
+    function getDaysInBSMonth(year, month) {
+        const fallback = [31, 31, 32, 31, 31, 30, 30, 29, 30, 29, 30, 30];
+        return (BS_DATA[year] || fallback)[month];
+    }
+
+    function adToBs(adYear, adMonth, adDay) {
+        // Reference: Baisakh 1, 2081 = April 13, 2024 (AD)
+        const refAD = new Date(2024, 3, 14);
+        const refBS = { year: 2081, month: 0, day: 1 };
+
+        const given = new Date(adYear, adMonth, adDay);
+        let diffDays = Math.round((given - refAD) / 86400000);
+
+        let { year, month, day } = { ...refBS };
+
+        if (diffDays >= 0) {
+            while (diffDays > 0) {
+                const daysInMonth = getDaysInBSMonth(year, month);
+                const remaining = daysInMonth - day;
+                if (diffDays <= remaining) {
+                    day += diffDays;
+                    diffDays = 0;
+                } else {
+                    diffDays -= remaining + 1;
+                    day = 1;
+                    month++;
+                    if (month > 11) { month = 0; year++; }
+                }
+            }
+        } else {
+            diffDays = Math.abs(diffDays);
+            while (diffDays > 0) {
+                day--;
+                if (day < 1) {
+                    month--;
+                    if (month < 0) { month = 11; year--; }
+                    day = getDaysInBSMonth(year, month);
+                }
+                diffDays--;
+            }
+        }
+
+        return { year, month, day };
+    }
+
+    function updateDates() {
+        const today = new Date();
+        const englishEl = document.getElementById('english-date');
+        const nepaliEl  = document.getElementById('nepali-date');
+
+        if (englishEl) {
+            englishEl.innerText = today.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+        }
+
+        if (nepaliEl) {
+            try {
+                const bs = adToBs(today.getFullYear(), today.getMonth(), today.getDate());
+                nepaliEl.innerText = `${bs.day} ${NP_MONTHS[bs.month]}, ${bs.year}`;
+            } catch(e) {
+                console.error('BS date error:', e);
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const footer = document.getElementById('footer');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        let isHidden = localStorage.getItem('sidebarHidden') === 'true';
+        if (isHidden) {
+            sidebar.classList.add('hidden');
+            mainContent.classList.add('expanded');
+            footer.classList.add('expanded');
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            isHidden = !isHidden;
             if (isHidden) {
                 sidebar.classList.add('hidden');
                 mainContent.classList.add('expanded');
                 footer.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+                footer.classList.remove('expanded');
             }
-
-            // Toggle functionality
-            toggleBtn.addEventListener('click', function() {
-                isHidden = !isHidden;
-                
-                if (isHidden) {
-                    sidebar.classList.add('hidden');
-                    mainContent.classList.add('expanded');
-                    footer.classList.add('expanded');
-                } else {
-                    sidebar.classList.remove('hidden');
-                    mainContent.classList.remove('expanded');
-                    footer.classList.remove('expanded');
-                }
-                
-                // Save state to localStorage
-                localStorage.setItem('sidebarHidden', isHidden);
-            });
+            localStorage.setItem('sidebarHidden', isHidden);
         });
-    </script>
+    });
 
-    @stack('scripts')
+    updateDates();
+    setInterval(updateDates, 60000);
+</script>
 
+@yield('scripts')
 </body>
 
 </html>

@@ -237,6 +237,15 @@ class ApplicationReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        \App\Models\ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => \App\Models\ApplicationStatusHistory::stageName($request->status),
+            'done_by'             => $reviewer->name,
+            'done_by_type'        => 'reviewer',
+            'done_by_id'          => $reviewer->id,
+            'remarks'             => $request->reviewer_notes,
+        ]);
+
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
             $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';

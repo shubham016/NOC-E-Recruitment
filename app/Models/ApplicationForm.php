@@ -18,6 +18,8 @@ class ApplicationForm extends Model
     protected $fillable = [
         'advertisement_no',
         'reviewer_id',
+        'approver_id',
+        'approver_notes',
         'reviewed_at',
         'job_posting_id',
         // Personal Info
@@ -198,5 +200,16 @@ class ApplicationForm extends Model
     public function reviewer()
     {
     return $this->belongsTo(\App\Models\Reviewer::class, 'reviewer_id');
+    }
+
+     public function approver()
+    {
+        return $this->belongsTo(\App\Models\Approver::class, 'approver_id');
+    }
+
+    public function statusHistories()
+    {
+        return $this->hasMany(\App\Models\ApplicationStatusHistory::class, 'application_form_id')
+                    ->orderBy('created_at', 'asc');
     }
 }

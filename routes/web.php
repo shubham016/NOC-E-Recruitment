@@ -33,6 +33,7 @@ use App\Http\Controllers\Candidate\NotificationController;
 use App\Http\Controllers\Approver\ApproverAuthController;
 use App\Http\Controllers\Approver\AssignedToMeController;
 use App\Http\Controllers\Approver\NotificationController as ApproverNotificationController;
+use App\Http\Controllers\Approver\MyProfileController as ApproverMyProfileController;
 use App\Http\Controllers\ApplicationFormController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\PaymentController as ShradhaPaymentController;
@@ -352,16 +353,22 @@ Route::prefix('approver')->name('approver.')->group(function () {
 
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
-            Route::get('/', [ApproverNotificationController::class, 'index'])->name('index');
-            Route::post('/{id}/mark-as-read', [ApproverNotificationController::class, 'markAsRead'])->name('markAsRead');
-            Route::post('/mark-all-as-read', [ApproverNotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
-            Route::delete('/{id}', [ApproverNotificationController::class, 'destroy'])->name('destroy');
+            Route::get('/', [\App\Http\Controllers\Approver\NotificationController::class, 'index'])->name('index');
+            Route::post('/{id}/mark-as-read', [\App\Http\Controllers\Approver\NotificationController::class, 'markAsRead'])->name('markAsRead');
+            Route::post('/mark-all-as-read', [\App\Http\Controllers\Approver\NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+            Route::delete('/{id}', [\App\Http\Controllers\Approver\NotificationController::class, 'destroy'])->name('destroy');
         });
 
         // Assigned Applications
         Route::get('/assigned-to-me', [AssignedToMeController::class, 'index'])->name('assignedtome');
-        Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('show');
-        Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('updateStatus');
+        Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('applications.show');
+        Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('applications.updateStatus');
+
+        // My Profile
+        Route::get('/my-profile', [ApproverMyProfileController::class, 'index'])->name('myprofile');
+
+        // Change Password for Approver
+        Route::post('/change-password', [ApproverMyProfileController::class, 'changePassword'])->name('change.password');
 
         // Export routes
         Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');

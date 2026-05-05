@@ -1,0 +1,42 @@
+[33m2743b13[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mshradha/user-registration[m[33m, [m[1;31morigin/shradha/user-registration[m[33m)[m HEAD@{0}: reset: moving to ORIG_HEAD
+[33m2743b13[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mshradha/user-registration[m[33m, [m[1;31morigin/shradha/user-registration[m[33m)[m HEAD@{1}: reset: moving to ORIG_HEAD
+[33m2743b13[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mshradha/user-registration[m[33m, [m[1;31morigin/shradha/user-registration[m[33m)[m HEAD@{2}: commit: up
+[33mbef1c1b[m HEAD@{3}: commit: up
+[33m1c29c6f[m HEAD@{4}: commit (merge): up
+[33m5b84616[m HEAD@{5}: commit: latest update
+[33mb774b4b[m HEAD@{6}: commit: up
+[33m57c33ea[m HEAD@{7}: commit: up
+[33m65dd39c[m HEAD@{8}: commit: up
+[33m1a45f06[m HEAD@{9}: commit: up
+[33m9ba52e6[m HEAD@{10}: commit: up
+[33m55e8c23[m HEAD@{11}: commit: up
+[33m03be8e9[m HEAD@{12}: commit: up
+[33ma9d8f90[m HEAD@{13}: reset: moving to origin/main
+[33ma9d8f90[m HEAD@{14}: reset: moving to origin/main
+[33mda9147f[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/HEAD[m[33m)[m HEAD@{15}: reset: moving to origin/main
+[33mda9147f[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/HEAD[m[33m)[m HEAD@{16}: reset: moving to upstream/main
+[33mda9147f[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/HEAD[m[33m)[m HEAD@{17}: reset: moving to upstream/main
+[33md972b02[m[33m ([m[1;31mupstream/shradha/user-registration[m[33m)[m HEAD@{18}: reset: moving to HEAD
+[33md972b02[m[33m ([m[1;31mupstream/shradha/user-registration[m[33m)[m HEAD@{19}: reset: moving to HEAD
+[33md972b02[m[33m ([m[1;31mupstream/shradha/user-registration[m[33m)[m HEAD@{20}: reset: moving to HEAD
+[33md972b02[m[33m ([m[1;31mupstream/shradha/user-registration[m[33m)[m HEAD@{21}: commit: updated
+[33m8f1a2f7[m HEAD@{22}: commit: updated
+[33m36c7972[m HEAD@{23}: commit: up
+[33m5c4b7bd[m HEAD@{24}: commit: updated
+[33m5733ca8[m HEAD@{25}: commit: up
+[33m1656994[m HEAD@{26}: commit: up
+[33mf4eeb47[m HEAD@{27}: commit: commit
+[33m4cfb430[m HEAD@{28}: commit: up
+[33mb54612b[m HEAD@{29}: commit: updated
+[33mb0666a3[m HEAD@{30}: commit: up
+[33m31119d6[m HEAD@{31}: commit: updated
+[33me75f6ae[m HEAD@{32}: commit: up
+[33me0885ab[m HEAD@{33}: commit: updated
+[33mf807cc2[m HEAD@{34}: commit (merge): Merge branch 'shradha/user-registration' of https://github.com/shubham016/NOC-E-Recruitment into shradha/user-registration
+[33ma1781d5[m HEAD@{35}: commit: updated
+[33m3c4be95[m HEAD@{36}: commit: updated
+[33mea71f63[m[33m ([m[1;31morigin/candidate[m[33m, [m[1;32mmain[m[33m)[m HEAD@{37}: checkout: moving from candidate to shradha/user-registration
+[33m01a44db[m[33m ([m[1;32mcandidate[m[33m)[m HEAD@{38}: commit: updated
+[33mea71f63[m[33m ([m[1;31morigin/candidate[m[33m, [m[1;32mmain[m[33m)[m HEAD@{39}: checkout: moving from shradha/user-registration to candidate
+[33mea71f63[m[33m ([m[1;31morigin/candidate[m[33m, [m[1;32mmain[m[33m)[m HEAD@{40}: checkout: moving from main to shradha/user-registration
+[33mea71f63[m[33m ([m[1;31morigin/candidate[m[33m, [m[1;32mmain[m[33m)[m HEAD@{41}: commit (initial): updated

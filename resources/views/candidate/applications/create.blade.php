@@ -765,7 +765,6 @@
                                 <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
-<<<<<<< HEAD
                     </div>  
                     <table class="table table-bordered">
                         <thead>
@@ -870,33 +869,6 @@
                         </tbody>
                     </table>
 
-=======
-                        <div class="col-md-6">
-                            <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5"
-                                value="{{ old('years_of_experience', $draftApplication->years_of_experience ?? '') }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control"
-                                value="{{ old('previous_organization', $draftApplication->previous_organization ?? '') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control"
-                                value="{{ old('previous_position', $draftApplication->previous_position ?? '') }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
-                            <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-                    </div>
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary prev-btn">Back</button>
                         <button type="button" class="btn btn-light next-btn">Next</button>
@@ -1103,13 +1075,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }, opts || {}));
     }
 
-<<<<<<< HEAD
      document.querySelectorAll('.nepali-date').forEach(function (el) {
         initNDP(el);
     });
 
-=======
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
     // ── Fields that always exist ──────────────────────────────
     initNDP(document.getElementById('birth_date_bs'));
     initNDP(document.getElementById('citizenship_issue_date_bs'));
@@ -1556,7 +1525,6 @@ document.addEventListener('DOMContentLoaded', function () {
             container.innerHTML = file.type.startsWith('image/')
                 ? `<img src="${url}" class="img-thumbnail" style="max-width:150px;max-height:150px;"><div class="mt-1 small text-muted">${file.name}</div>`
                 : `<a href="${url}" target="_blank">${file.name}</a>`;
-<<<<<<< HEAD
         }
         previewFile('p_photo',       'passport_size_photo'); previewFile('p_citizenship', 'citizenship_id_document');
         previewFile('p_transcript',  'transcript');          previewFile('p_character',   'character');
@@ -1727,23 +1695,6 @@ document.querySelectorAll("input, select").forEach(el => {
     el.addEventListener("input", populateExperiencePreview);
 });
 
-=======
-        }
-        previewFile('p_photo',       'passport_size_photo'); previewFile('p_citizenship', 'citizenship_id_document');
-        previewFile('p_transcript',  'transcript');          previewFile('p_character',   'character');
-        previewFile('p_equivalent',  'equivalent');          previewFile('p_signature',   'signature');
-        previewFile('p_work_experience','work_experience');  previewFile('p_noc_id_card', 'noc_id_card');
-        previewFile('p_ethnic_certificate','ethnic_certificate'); previewFile('p_disability_certificate','disability_certificate');
-    }
-
-    // ── Payment ───────────────────────────────────────────────
-    window.startPayment = function (gateway) {
-        const draftId = document.getElementById('draft_id')?.value;
-        if (!draftId) { alert('Application draft not found. Please complete the form properly.'); return; }
-        const urls = { esewa: '/candidate/payment/esewa/start/', khalti: '/candidate/payment/khalti/start/', connectips: '/candidate/payment/connectips/start/' };
-        if (urls[gateway]) window.location.href = urls[gateway] + draftId;
-    };
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 });
 
 // ── BS → AD auto-fill & Age calculation ──────────────────────

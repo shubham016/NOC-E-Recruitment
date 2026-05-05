@@ -16,6 +16,12 @@ class NotificationController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
+        // Mark all unread notifications as read when visiting the page
+        Notification::where('user_type', 'approver')
+            ->where('user_id', $approver->id)
+            ->where('is_read', false)
+            ->update(['is_read' => true, 'read_at' => now()]);
+
         $notifications = Notification::where('user_type', 'approver')
             ->where('user_id', $approver->id)
             ->orderBy('created_at', 'desc')

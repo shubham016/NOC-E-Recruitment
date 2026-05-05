@@ -131,3 +131,18 @@ if (!function_exists('formatNepaliDate')) {
         }
     }
 }
+
+if (!function_exists('bsToAD')) {
+    /**
+     * Convert BS to AD (basic fallback / placeholder)
+     */
+    function bsToAD($bsDate)
+    {
+        // TEMP: treat input as already AD-like to prevent crash
+        try {
+            return \Carbon\Carbon::parse($bsDate)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
