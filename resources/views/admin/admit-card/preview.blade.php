@@ -1,0 +1,88 @@
+@extends('layouts.dashboard')
+
+@section('title', 'Admit Cards Preview')
+@section('portal-name', 'Admin Portal')
+@section('brand-icon', 'bi bi-shield-check')
+@section('dashboard-route', route('admin.dashboard'))
+@section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
+@section('user-role', 'System Administrator')
+@section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
+@section('logout-route', route('admin.logout'))
+
+@section('sidebar-menu')
+    @include('admin.partials.sidebar')
+@endsection
+
+@section('content')
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Assigned Admit Cards</h4>
+            <p class="text-muted mb-0">
+                Advertisement No: <strong>{{ $job->advertisement_no }}</strong>
+                &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.admit-card.assign', $job->id) }}" class="btn btn-sm" style="background:#c9a84c;color:#fff;border:none;">Re-assign</a>
+            <a href="{{ route('admin.admit-card.index') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    @if($applications->isEmpty())
+        <div class="alert alert-info">No admit cards assigned yet for this vacancy.</div>
+    @else
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h6 class="fw-bold mb-0">
+                    {{ $applications->count() }} Candidates
+                    @if($applications->first())
+                        &nbsp;&mdash;&nbsp; Exam: {{ $applications->first()->exam_date }}
+                        &nbsp;|&nbsp; {{ $applications->first()->exam_time }}
+                        &nbsp;|&nbsp; {{ $applications->first()->exam_venue }}
+                    @endif
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0 align-middle text-center" style="font-size:0.88rem;">
+                        <thead style="background:#f9fafb;">
+                            <tr>
+                                <th>Roll No.</th>
+                                <th>Name</th>
+                                <th>Citizenship No.</th>
+                                <th>Applied Category</th>
+                                <th>First Paper Date / Time</th>
+                                <th>Second Paper Date / Time</th>
+                                <th>Venue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($applications as $app)
+                                <tr>
+                                    <td><span class="badge bg-info text-dark fw-bold">{{ $app->roll_number }}</span></td>
+                                    <td class="text-start">
+                                        <div class="fw-semibold">{{ $app->name_english }}</div>
+                                        <div class="text-muted" style="font-size:0.82rem;">{{ $app->name_nepali }}</div>
+                                    </td>
+                                    <td>{{ $app->citizenship_number }}</td>
+                                    <td>
+                                        @php
+                                            $cats = json_decode($app->applied_category, true);
+                                            $cats = is_array($cats) ? $cats : [$app->applied_category];
+                                        @endphp
+                                        {{ implode(', ', array_filter((array)$cats)) }}
+                                    </td>
+                                    <td>{{ $app->exam_date_first ?? '-' }}{{ $app->exam_time_first ? ' / ' . $app->exam_time_first : '' }}</td>
+                                    <td>{{ $app->exam_date_second ?? '-' }}{{ $app->exam_time_second ? ' / ' . $app->exam_time_second : '' }}</td>
+                                    <td class="text-start">{{ $app->exam_venue }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @endif
+
+@endsection

@@ -46,6 +46,8 @@ class AssignedToMeController extends Controller
             'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
             'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
             'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
+            'edit_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status','edit')->count(),
         ];
 
         $applications = $query->latest()->paginate(15)->withQueryString();
@@ -69,7 +71,7 @@ class AssignedToMeController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status'         => 'required|in:approved,rejected',
+            'status'         => 'required|in:approved,rejected,edit',
             'approver_notes' => 'required|string|max:1000',
         ]);
 
@@ -82,6 +84,15 @@ class AssignedToMeController extends Controller
             'status'         => $request->status,
             'approver_notes' => $request->approver_notes,
             'approved_at'    => now(),
+        ]);
+
+        \App\Models\ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => \App\Models\ApplicationStatusHistory::stageName($request->status),
+            'done_by'             => $approver->name,
+            'done_by_type'        => 'approver',
+            'done_by_id'          => $approver->id,
+            'remarks'             => $request->approver_notes,
         ]);
 
         // Notify candidate

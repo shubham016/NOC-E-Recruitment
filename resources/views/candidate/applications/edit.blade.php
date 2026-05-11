@@ -208,10 +208,274 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $applicationform->id ?? '' }}">
+                <input type="hidden" name="total_fee" id="total_fee" value="{{ $applicationform->total_fee ?? 0 }}">
 
 <!-- STEP 1: Personal Info -->
                 <div class="step" id="step1">
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
+
+                    {{-- Category Selection --}}
+                    @if($job ?? null)
+                    @php
+                        $savedCategories = $applicationform->applied_category ?? [];
+                        if (!is_array($savedCategories)) $savedCategories = [$savedCategories];
+                        $oldCategories   = old('applied_category', $savedCategories);
+                        $groupJobs       = $groupJobs ?? collect([$job]);
+                    @endphp
+
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-3">
+                            <strong>Select Application Category</strong>
+                            <span class="ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
+                        </h6>
+                        <p class="small mb-3">
+                            Select one or more categories under which you wish to apply.
+                            <br><span class="text-muted">तपाईं आवेदन दिन चाहनुभएको एक वा बढी श्रेणीहरू छान्नुहोस्।</span>
+                        </p>
+
+                        @if($job->category == 'internal_appraisal')
+                            <input type="hidden" name="applied_category[]" value="internal_appraisal">
+                            <div class="border rounded p-3 bg-light d-inline-block">
+                                <span class="fw-bold">Internal Appraisal (आन्तरिक बढुवा)</span>
+                                <br><small class="text-muted">Performance-based promotion</small>
+                                <div class="mt-1 text-primary small fw-semibold">{{ $job->advertisement_no ?? '' }}</div>
+                            </div>
+                        @else
+                            <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">
+
+                                @foreach($groupJobs as $gjIdx => $gJob)
+                                @php
+                                    $gAdvNo = $gJob->advertisement_no ?? '';
+                                    $gInclusiveTypes = [];
+                                    if ($gJob->has_inclusive || $gJob->category == 'inclusive') {
+                                        if ($gJob->inclusive_type) {
+                                            $gDecoded = json_decode($gJob->inclusive_type, true);
+                                            $gInclusiveTypes = is_array($gDecoded) ? $gDecoded : [$gJob->inclusive_type];
+                                        }
+                                    }
+                                    $gInternalInclusiveTypes = [];
+                                    if ($gJob->has_internal_inclusive && is_array($gJob->internal_inclusive_types)) {
+                                        $gInternalInclusiveTypes = $gJob->internal_inclusive_types;
+                                    }
+                                @endphp
+
+                                @if($gJob->has_open || $gJob->category == 'open')
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                            name="applied_category[]" id="cat_open_{{ $gjIdx }}" value="open"
+                                            {{ in_array('open', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_open_{{ $gjIdx }}">
+                                            Open (खुल्ला)
+                                            <br><small class="text-muted fw-normal">Open for all eligible candidates</small>
+                                        </label>
+                                    </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                    </div>
+                                </div>
+                                @endif
+
+                                @foreach($gInclusiveTypes as $idx => $type)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}_{{ $idx }}" value="inclusive"
+                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}_{{ $idx }}">
+                                                Inclusive — {{ $type }}
+                                                <br><small class="text-muted fw-normal">समावेशी — {{ $type }}</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        <div class="mt-1 text-success small fw-semibold">
+                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                @if(($gJob->has_inclusive || $gJob->category == 'inclusive') && count($gInclusiveTypes) === 0)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}" value="inclusive"
+                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}">
+                                                Inclusive (समावेशी)
+                                                <br><small class="text-muted fw-normal">Reserved for inclusive category</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    </div>
+                                @endif
+
+                                @if(($gJob->has_internal || $gJob->category == 'internal') && $gJob->has_internal_open)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_internal_open_{{ $gjIdx }}" value="internal_open"
+                                                   {{ in_array('internal_open', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_internal_open_{{ $gjIdx }}">
+                                                Internal Open
+                                                <br><small class="text-muted fw-normal">आन्तरिक खुल्ला — All NOC Staff</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        <div class="mt-1 text-success small fw-semibold">
+                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @foreach($gInternalInclusiveTypes as $idx => $type)
+                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input category-cb" type="checkbox"
+                                                   name="applied_category[]" id="cat_int_incl_{{ $gjIdx }}_{{ $idx }}" value="internal_inclusive"
+                                                   {{ in_array('internal_inclusive', $oldCategories) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="cat_int_incl_{{ $gjIdx }}_{{ $idx }}">
+                                                Internal Inclusive — {{ $type }}
+                                                <br><small class="text-muted fw-normal">आन्तरिक समावेशी — {{ $type }} (NOC only)</small>
+                                            </label>
+                                        </div>
+                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                        <div class="mt-1 text-success small fw-semibold">
+                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                @endforeach
+
+                            </div>
+
+                            <div id="feeSummaryBar" class="mt-3 p-3 rounded border bg-white" style="display:none;">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="fw-bold">Selected Categories:</span>
+                                        <span id="selectedCategoryNames" class="ms-2 text-secondary small"></span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold fs-5 text-success">
+                                            Total Fee: Rs. <span id="totalFeeDisplay">0.00</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="categoryError" class="text-danger small mt-2" style="display:none;">
+                                Please select at least one category.
+                            </div>
+                            @error('applied_category')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        @endif
+                    </div>
+                    @endif
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        function updateAdvertisementNo() {
+                            var checked = document.querySelectorAll('.category-cb:checked');
+                            var adNos = [];
+                            var seen = {};
+                            checked.forEach(function(cb) {
+                                var option = cb.closest('.category-option');
+                                if (option) {
+                                    var adv = option.getAttribute('data-adv-no');
+                                    if (adv && !seen[adv]) {
+                                        seen[adv] = true;
+                                        adNos.push(adv);
+                                    }
+                                }
+                            });
+                            var field = document.getElementById('advertisement_no');
+                            if (field) field.value = adNos.join(', ');
+                        }
+
+                        function updateTotalFee() {
+    const checkedBoxes = Array.from(document.querySelectorAll('.category-cb:checked'));
+
+    // ── Nothing selected — reset everything ──────────────────
+    if (checkedBoxes.length === 0) {
+        const totalFeeInput = document.getElementById('total_fee');
+        if (totalFeeInput) totalFeeInput.value = '0.00';
+        const bar = document.getElementById('feeSummaryBar');
+        if (bar) bar.style.display = 'none';
+        const step8Fee = document.getElementById('step8TotalFee');
+        if (step8Fee) step8Fee.textContent = '0.00';
+        return;
+    }
+
+    // ── Base = Open fee, always ──────────────────────────────
+    const openCbEl   = document.querySelector('.category-cb[value="open"]');
+    const openOption = openCbEl ? openCbEl.closest('.category-option') : null;
+    const openFee    = openOption ? parseFloat(openOption.getAttribute('data-fee') || 0) : 0;
+
+    let total = openFee;
+
+    // ── The 1st selected category is FREE (absorbed by base).
+    //    Every category from the 2nd onward adds its own fee. ─
+    checkedBoxes.slice(1).forEach(function (cb) {
+        const option = cb.closest('.category-option');
+        if (!option) return;
+        total += parseFloat(option.getAttribute('data-fee') || 0);
+    });
+
+    // ── Build display names ──────────────────────────────────
+    const names = [];
+    const openExplicitlyChecked = checkedBoxes.some(cb => cb.value === 'open');
+    // Show "Open (base)" label when open isn't explicitly ticked
+    if (!openExplicitlyChecked && openFee > 0) {
+        names.push('Open (base)');
+    }
+    checkedBoxes.forEach(function (cb) {
+        const option = cb.closest('.category-option');
+        if (!option) return;
+        const label = option.querySelector('.form-check-label');
+        if (label) {
+            const labelText = label.firstChild?.textContent?.trim()
+                || label.textContent.split('\n')[0].trim();
+            if (labelText) names.push(labelText);
+        }
+    });
+
+    // ── Update hidden input ──────────────────────────────────
+    const totalFeeInput = document.getElementById('total_fee');
+    if (totalFeeInput) totalFeeInput.value = total.toFixed(2);
+
+    // ── Update Step 1 summary bar ────────────────────────────
+    const bar      = document.getElementById('feeSummaryBar');
+    const display  = document.getElementById('totalFeeDisplay');
+    const nameSpan = document.getElementById('selectedCategoryNames');
+    if (bar)      bar.style.display = total > 0 ? '' : 'none';
+    if (display)  display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    if (nameSpan) nameSpan.textContent = names.join(' + ') || '—';
+
+    // ── Update Step 8 payment summary ────────────────────────
+    const step8Fee   = document.getElementById('step8TotalFee');
+    const step8Names = document.getElementById('step8CategoryNames');
+    const step8Pos   = document.getElementById('step8Position');
+    if (step8Fee)   step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    if (step8Names) step8Names.textContent = names.join(' + ') || '—';
+    if (step8Pos)   step8Pos.textContent = document.getElementById('applying_position')?.value || '—';
+}
+
+                        document.querySelectorAll('.category-cb').forEach(function (cb) {
+                            var advDiv = cb.closest('.category-option').querySelector('.adv-no-display');
+                            if (cb.checked && advDiv) advDiv.style.display = '';
+                            cb.addEventListener('change', function () {
+                                if (advDiv) advDiv.style.display = this.checked ? '' : 'none';
+                                updateAdvertisementNo();
+                                updateTotalFee();
+                            });
+                        });
+
+                        updateAdvertisementNo();
+                        updateTotalFee();
+                    });
+                    </script>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -1114,7 +1378,7 @@
                         </table>
 
                         <div class="form-check mb-4">
-                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required checked>
                             <label class="form-check-label" for="terms_agree">
                                 I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
                             </label>
@@ -1132,6 +1396,31 @@
                     <h5 class="mb-4 text-dark">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
+                         <div class="card border-success mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title text-success mb-3">
+                                    <i class="bi bi-receipt me-2"></i>Payment Summary
+                                </h6>
+                                <table class="table table-sm table-bordered mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th width="50%">Selected Categories</th>
+                                            <td id="step8CategoryNames" class="text-secondary">—</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Applying Position</th>
+                                            <td id="step8Position">—</td>
+                                        </tr>
+                                        <tr class="table-success">
+                                            <th class="fw-bold fs-5">Total Amount Payable</th>
+                                            <td class="fw-bold fs-5 text-success">
+                                                Rs. <span id="step8TotalFee">0.00</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         @if(isset($payment) && $payment->status == 'paid')
                         <div class="alert alert-success mb-3">
                             ✓ Payment already completed via {{ strtoupper($payment->gateway) }}
@@ -1168,7 +1457,10 @@
 
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                                <button type="submit" id="saveDraftBtn" class="btn btn-danger">Save Changes</button>
+                                <button type="button" id="saveDraftBtn" class="btn btn-danger"
+                                    onclick="document.getElementById('applicationform').submit()">
+                                    Save Changes
+                                </button>
                             </div>
 
                         </div>
@@ -1834,8 +2126,8 @@ window.populateExperiencePreview = function () {
     for (let i = 1; i <= 3; i++) {
         const org   = document.querySelector(`[name="exp${i}_organization"]`)?.value || '';
         const pos   = document.querySelector(`[name="exp${i}_position"]`)?.value || '';
-        const start = document.querySelector(`[name="exp${i}_start_date_bs"]`)?.value || '';
-        const end   = document.querySelector(`[name="exp${i}_end_date_bs"]`)?.value || '';
+        const start = document.querySelector(`[name="exp${i}_start_date"]`)?.value || '';
+        const end   = document.querySelector(`[name="exp${i}_end_date"]`)?.value || '';
         const years = document.querySelector(`[name="exp${i}_years"]`)?.value || '';
 
         const fileInput    = document.querySelector(`[name="exp${i}_document"]`);

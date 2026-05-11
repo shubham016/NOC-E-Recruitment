@@ -707,41 +707,83 @@
                 </div>
             </div>
 
-            <!-- Work Experience -->
-            <div class="info-card">
-                <h5>Work Experience</h5>
-                @if($application->has_work_experience === 'yes')
-                    <div class="row">
-                        <!-- Left Column -->
-                        <div class="col-md-6">
-                            <div class="info-row">
-                                <div class="info-label">Previous Organization:</div>
-                                <div class="info-value">{{ $application->previous_organization ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Previous Position:</div>
-                                <div class="info-value">{{ $application->previous_position ?? 'N/A' }}</div>
-                            </div>
+             <!-- Work Experience -->
+                <div class="info-card">
+                    <h5>Work Experience</h5>
+
+                    @if(strtolower($application->has_work_experience ?? '') == 'yes')
+
+                        <div class="mb-3">
+                            <strong>Has Work Experience:</strong>
+                            <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
                         </div>
 
-                        <!-- Right Column -->
-                        <div class="col-md-6">
-                            <div class="info-row">
-                                <div class="info-label">Total Years of Experience:</div>
-                                <div class="info-value">{{ $application->years_of_experience ?? 'N/A' }} years</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Relevant Experience:</div>
-                                <div class="info-value">{{ $application->relevant_experience ?? 'N/A' }}</div>
-                            </div>
+                        @for ($i = 1; $i <= 3; $i++)
+                            @php
+                                $org = "exp{$i}_organization";
+                                $pos = "exp{$i}_position";
+                                $start = "exp{$i}_start_date";
+                                $end = "exp{$i}_end_date";
+                                $years = "exp{$i}_years";
+                                $doc = "exp{$i}_document";
+                            @endphp
+
+                            @if(!empty($application->$org) || !empty($application->$pos))
+                                <div class="border rounded p-3 mb-3">
+                                    <h6 class="text-primary">Experience {{ $i }}</h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong>Organization:</strong>
+                                            <p>{{ $application->$org ?? '-' }}</p>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong>Position:</strong>
+                                            <p>{{ $application->$pos ?? '-' }}</p>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong>Start Date:</strong>
+                                            <p>{{ $application->$start ?? '-' }}</p>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong>End Date:</strong>
+                                            <p>{{ $application->$end ?? '-' }}</p>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong>Years:</strong>
+                                            <p>{{ $application->$years ?? '-' }}</p>
+                                        </div>
+
+                                        
+                                    </div>
+                                    <div >
+                                            <strong>Document:</strong>
+
+                                            @if(!empty($application->$doc))
+                                                <img src="{{ Storage::url($application->$doc) }}"
+                                                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                            
+                                            @else
+                                                <div class="alert alert-info-custom">
+                                                    No document uploaded
+                                                </div>
+                                            @endif
+
+                                        </div>
+                                </div>
+                            @endif
+                        @endfor
+
+                    @else
+                        <div class="alert alert-info-custom">
+                            No work experience declared
                         </div>
-                    </div>
-                @else
-                    <div class="alert alert-info-custom">
-                        <i class="me-2"></i>No work experience declared
-                    </div>
-                @endif
-            </div>
+                    @endif
+                </div>
 
             <!-- Payment Information -->
             <div class="info-card">
@@ -778,184 +820,214 @@
             </div>
 
             <!-- Cover Letter -->
-            @if($application->cover_letter)
+            <!-- @if($application->cover_letter)
             <div class="info-card">
                 <h5><i class=""></i>Cover Letter</h5>
                 <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                     <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
                 </div>
             </div>
-            @endif
+            @endif -->
 
              
 
-            <!-- All Documents -->
+             <!-- Uploaded Documents -->
             <div class="info-card">
-                <h5><i class=""></i>Uploaded Documents</h5>
+            <h5><i class=""></i>Uploaded Documents</h5>
 
-                @if($application->passport_size_photo)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ asset('storage/' . $application->passport_size_photo) }}" alt="Passport Photo">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Passport Size Photo</p>
-                        <p class="document-size">Candidate's passport photograph</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->passport_size_photo) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
-                    </a>
-                </div>
-                @endif
 
-                @if($application->resume)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Resume / CV</p>
-                        <p class="document-size">Detailed curriculum vitae</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->resume) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
-                    </a>
-                </div>
-                @endif
+             @if($application->passport_size_photo)
+            <div class="document-item">
+                <div class="document-info">
+                    <p class="document-name">Passport Size Photo</p>
+                    <p class="document-size">Passport Size Photo</p>
 
-                @if($application->citizenship_certificate)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ asset('storage/' . $application->citizenship_certificate) }}" alt="Citizenship">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Citizenship Certificate</p>
-                        <p class="document-size">Nepali citizenship document</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->citizenship_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class=" me-1"></i>View
-                    </a>
+                    <img src="{{ Storage::url($application->passport_size_photo) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
                 </div>
-                @endif
-
-                @if($application->educational_certificates)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Educational Certificates</p>
-                        <p class="document-size">Academic transcripts and degrees</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->educational_certificates) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
-                    </a>
-                </div>
-                @endif
-
-                @if($application->experience_certificates)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Experience Certificates</p>
-                        <p class="document-size">Work experience verification documents</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->experience_certificates) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
-                    </a>
-                </div>
-                @endif
-
-                @if($application->character_certificate)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Character Certificate</p>
-                        <p class="document-size">Good character verification</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->character_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->equivalency_certificate)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Equivalency Certificate</p>
-                        <p class="document-size">Educational equivalency document</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->equivalency_certificate) }}" target="_blank" class="btn-view-doc">
-                        <i class=" me-1"></i>View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->cover_letter_file)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Cover Letter (File)</p>
-                        <p class="document-size">Uploaded cover letter document</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->cover_letter_file) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
-                    </a>
-                </div>
-                @endif
-
-                @if($application->signature)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <img src="{{ asset('storage/' . $application->signature) }}" alt="Signature">
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Signature</p>
-                        <p class="document-size">Candidate's signature</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->signature) }}" target="_blank" class="btn-view-doc">
-                        View
-                    </a>
-                </div>
-                @endif
-
-                @if($application->other_documents)
-                <div class="document-item">
-                    <div class="document-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 2rem;"></i>
-                    </div>
-                    <div class="document-info">
-                        <p class="document-name">Other Documents</p>
-                        <p class="document-size">Additional supporting documents</p>
-                    </div>
-                    <a href="{{ asset('storage/' . $application->other_documents) }}" target="_blank" class="btn-view-doc">
-                        <i class="me-1"></i>Download
-                    </a>
-                </div>
-                @endif
-
-                @if(!$application->passport_size_photo && !$application->resume && !$application->citizenship_certificate &&
-                    !$application->educational_certificates && !$application->experience_certificates &&
-                    !$application->character_certificate && !$application->equivalency_certificate &&
-                    !$application->cover_letter_file && !$application->signature && !$application->other_documents)
-                <div class="alert alert-warning">
-                    <i class="me-2"></i>No documents uploaded
-                </div>
-                @endif
             </div>
+            @endif
+
+             @if($application->citizenship_id_document)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Citizenship Id</p>
+                    <p class="document-size">Citizenship Id</p>
+
+                    <img src="{{ Storage::url($application->citizenship_id_document) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->transcript)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Educational Certificates</p>
+                    <p class="document-size">Academic transcripts and degrees</p>
+
+                    <img src="{{ Storage::url($application->transcript) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
 
 
+            @if($application->character)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Character Certificate</p>
+                    <p class="document-size">character Certificate</p>
+
+                    <img src="{{ Storage::url($application->character) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->equivalency_certificate)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Equivalency Certificate</p>
+                    <p class="document-size">Equivalency Certificate</p>
+
+                    <img src="{{ Storage::url($application->equivalency_certificate) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->signature)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Signature</p>
+                    <p class="document-size">Signature</p>
+
+                    <img src="{{ Storage::url($application->signature) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->ethnic_certificate)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Ethnic Certificate</p>
+                    <p class="document-size">Ethnic Certificate</p>
+
+                    <img src="{{ Storage::url($application->ethnic_certificate) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+             @if($application->disability_certificate)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Disability Certificate</p>
+                    <p class="document-size">Disability Certificate</p>
+
+                    <img src="{{ Storage::url($application->disability_certificate) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->noc_id_card)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">NOC ID Card</p>
+                    <p class="document-size">NOC ID Card</p>
+
+                    <img src="{{ Storage::url($application->noc_id_card) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+        
+
+
+
+
+            <!-- @if($application->cover_letter_file)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Cover Letter (File)</p>
+                    <p class="document-size">Uploaded cover letter document</p>
+
+                    <iframe src="{{ Storage::url($application->cover_letter_file) }}"
+                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </iframe>
+                </div>
+            </div>
+            @endif -->
+
+
+          
+
+
+            <!-- @if($application->other_documents)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Other Documents</p>
+                    <p class="document-size">Additional supporting documents</p>
+
+                    <iframe src="{{ Storage::url($application->other_documents) }}"
+                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </iframe>
+                </div>
+            </div>
+            @endif -->
+
+
+            @if(
+                !$application->passport_size_photo &&
+                !$application->resume &&
+                !$application->work_experience &&
+                !$application->citizenship_certificate &&
+                !$application->citizenship_id_document &&
+                !$application->educational_certificates &&
+                !$application->transcript &&
+                !$application->experience_certificates &&
+                !$application->character_certificate &&
+                !$application->character &&
+                !$application->equivalency_certificate &&
+                !$application->equivalent &&
+                !$application->ethnic_certificate &&
+                !$application->disability_certificate &&
+                !$application->noc_id_card &&
+                !$application->cover_letter_file &&
+                !$application->signature &&
+                !$application->other_documents
+            )
+            <div class="alert alert-warning">
+                No documents uploaded
+            </div>
+            @endif
+        </div>
             <!-- Reviewed Details -->
-            <div class="info-card">
+            <!-- <div class="info-card">
                 <h5>
                     <i class="text-primary me-2"></i>Reviewed Details
                 </h5>
@@ -974,10 +1046,13 @@
                         </div>
                     
                 </div>
-            </div>
+
+            </div> -->
+
+           
 
             <!-- Admin Notes (if any) -->
-            @if($application->admin_notes)
+            <!-- @if($application->admin_notes)
             <div class="info-card">
                 <h5>Admin Notes</h5>
                 <div class="alert alert-info-custom">
@@ -995,7 +1070,7 @@
                 </div>
             </div>
             @endif
-        </div>
+        </div> -->
 
         <!-- Right Column -->
         <div class="col-12 mt-4">
@@ -1012,6 +1087,7 @@
                         <select name="status" class="form-select" required>
                             <option value="">Select Decision</option>
                             <option value="approved">Approve</option>
+                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
                             <option value="rejected">Reject</option>
                         </select>
                     </div>
@@ -1037,6 +1113,62 @@
 
             
         </div>
+
+         <div class="info-card mt-3">
+    <h5>
+        <i class="bi bi-clock-history me-2 text-secondary"></i>
+        Application Status History
+    </h5>
+
+    @php $histories = $application->statusHistories; @endphp
+
+    @if($histories->isEmpty())
+        <div class="alert alert-info-custom">No history available yet.</div>
+    @else
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:50px">S.N</th>
+                        <th>Stage Name</th>
+                        <th>Done By</th>
+                        <th>Date &amp; Time</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($histories as $index => $history)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>
+                                @php
+                                    $badgeClass = match($history->stage_name) {
+                                        'Approved'   => 'bg-success',
+                                        'Rejected'   => 'bg-danger',
+                                        'Verified'   => 'bg-primary',
+                                        'Allow Edit' => 'bg-warning text-dark',
+                                        default      => 'bg-secondary',
+                                    };
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">
+                                    {{ $history->stage_name }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ $history->done_by }}
+                                <small class="d-block text-muted">
+                                    {{ ucfirst($history->done_by_type) }}
+                                </small>
+                            </td>
+                            <td>{{ $history->created_at->format('F d, Y') }}</td>
+                            <td>{{ $history->remarks ?: '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+</div>
     </div>
 </div>
 @endsection

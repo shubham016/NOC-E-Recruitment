@@ -42,7 +42,8 @@ class PaymentController extends Controller
                 ->with('info', 'Payment has already been completed for this application.');
         }
 
-        $amount = config('services.esewa.amount', 500);
+        // $amount = config('services.esewa.amount', 500);
+        $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
         // $amount = $application->jobPosting->application_fee ?? 0;
         $txRef = 'TXN-' . strtoupper(Str::random(10)) . '-' . time();
 

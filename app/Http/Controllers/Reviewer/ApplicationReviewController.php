@@ -174,10 +174,7 @@ class ApplicationReviewController extends Controller
                 ->count(),
         ];
 
-        // Get all active approvers for assignment dropdown
-        $approvers = \App\Models\Approver::where('status', 'active')->get();
-
-        return view('reviewer.applications.show', compact('application', 'stats', 'approvers'));
+        return view('reviewer.applications.show', compact('application', 'stats'));
     }
 
     /**
@@ -225,72 +222,37 @@ class ApplicationReviewController extends Controller
         $request->validate([
             'status' => 'required|in:reviewed,rejected,edit',
             'reviewer_notes' => 'required|string|max:1000',
-            'approver_id' => 'required_if:status,reviewed|nullable|exists:approvers,id',
-        ], [
-            'approver_id.required_if' => 'Please select an approver when marking application as reviewed.',
-            'approver_id.exists' => 'The selected approver is invalid.',
         ]);
 
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only allow updating applications assigned to this reviewer
-        $application = ApplicationForm::with('vacancy')
-            ->where('reviewer_id', $reviewer->id)
+        $application = ApplicationForm::where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
-        $updateData = [
+        $application->update([
             'status' => $request->status,
             'reviewer_notes' => $request->reviewer_notes,
             'reviewer_id' => $reviewer->id,
             'reviewed_at' => now(),
-        ];
+        ]);
 
-        // If marking as reviewed and approver is selected, assign to approver
-        if ($request->status === 'reviewed' && $request->approver_id) {
-            $updateData['approver_id'] = $request->approver_id;
-        }
-
-        $application->update($updateData);
-
-        // Create notification for approver when status is 'reviewed'
-        if ($request->status === 'reviewed' && $request->approver_id) {
-            $approver = \App\Models\Approver::find($request->approver_id);
-
-            \App\Models\Notification::create([
-                'user_id' => $approver->id,
-                'user_type' => 'approver',
-                'type' => 'application_reviewed',
-                'title' => 'Application Ready for Approval',
-                'message' => 'An application for "' . ($application->vacancy->title ?? 'N/A') . '" has been reviewed and is ready for your final approval.',
-                'related_id' => $application->id,
-                'related_type' => 'application',
-            ]);
-        }
-
-        // Create notification for candidate when sent back for editing
-        if ($request->status === 'edit') {
-            $candidate = $application->candidate;
-            if ($candidate) {
-                \App\Models\Notification::create([
-                    'user_id' => $candidate->id,
-                    'user_type' => 'candidate',
-                    'type' => 'application_edit_request',
-                    'title' => 'Application Requires Editing',
-                    'message' => 'Your application for "' . ($application->vacancy->title ?? 'N/A') . '" has been sent back for corrections by the reviewer. Please review the notes and resubmit.',
-                    'related_id' => $application->id,
-                    'related_type' => 'application',
-                ]);
-            }
-        }
+        \App\Models\ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => \App\Models\ApplicationStatusHistory::stageName($request->status),
+            'done_by'             => $reviewer->name,
+            'done_by_type'        => 'reviewer',
+            'done_by_id'          => $reviewer->id,
+            'remarks'             => $request->reviewer_notes,
+        ]);
 
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
-            $approverName = $approver->name ?? 'N/A';
-            $message = 'Application reviewed and assigned to Approver: ' . $approverName . ' for final decision.';
+            $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
         } elseif ($request->status === 'edit') {
             $message = 'Application sent back to candidate for correction successfully!';
         } else {
-            $message = 'Application rejected successfully! Candidate will be notified.';
+            $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
         }
 
         // If request is AJAX / fetch, return JSON
@@ -341,7 +303,7 @@ class ApplicationReviewController extends Controller
         } elseif ($request->status === 'edit') {
             $message = $updatedCount . ' applications sent back to candidates for correction!';
         } else {
-            $message = $updatedCount . ' applications rejected! Candidates will be notified.';
+            $message = $updatedCount . ' applications rejected! Candidates will be notified via SMS when integrated.';
         }
 
         return response()->json([

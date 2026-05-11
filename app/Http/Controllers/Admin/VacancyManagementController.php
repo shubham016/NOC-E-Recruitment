@@ -62,12 +62,12 @@ class VacancyManagementController extends Controller
 
         $sortBy = $request->get('sort_by', 'notice_no');
         $sortOrder = $request->get('sort_order', 'asc');
-        // Primary: position+level+advertisement_no so same role groups together in order; Secondary: user-chosen sort
-        $query->orderBy('position', 'asc')
+        // Primary: notice_no so groups stay together; Secondary: position+level+advertisement_no within each group
+        $query->orderBy('notice_no', 'asc')
+              ->orderBy('position', 'asc')
               ->orderBy('level', 'asc')
               ->orderBy('service_group', 'asc')
-              ->orderBy('advertisement_no', 'asc')
-              ->orderBy($sortBy, $sortOrder);
+              ->orderBy('advertisement_no', 'asc');
 
         $jobs = $query->paginate(10)->withQueryString();
 
@@ -146,20 +146,20 @@ class VacancyManagementController extends Controller
 
     public function store(Request $request)
     {
-        // For Open category: Double Dastur Date and Fee are required
-        $isOpenCategory = $request->input('has_open') == '1'
+        // For Open or Inclusive-only category: Double Dastur Date and Fee are required
+        $isOpenOrInclusive = ($request->input('has_open') == '1' || $request->input('category') === 'inclusive')
             && $request->input('is_internal_appraisal') != '1'
             && $request->input('has_internal') != '1';
 
-        if ($isOpenCategory) {
+        if ($isOpenOrInclusive) {
             if (empty($request->double_dastur_date)) {
                 return redirect()->back()
-                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open category.'])
+                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open/Inclusive category.'])
                     ->withInput();
             }
             if (empty($request->double_dastur_fee) || floatval($request->double_dastur_fee) <= 0) {
                 return redirect()->back()
-                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open category and must be greater than 0.'])
+                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open/Inclusive category and must be greater than 0.'])
                     ->withInput();
             }
         }
@@ -224,6 +224,15 @@ class VacancyManagementController extends Controller
             $validated['has_internal_open'] = false;
             $validated['has_internal_inclusive'] = false;
             $validated['internal_inclusive_types'] = null;
+        } else {
+            // Server-side: derive category from actual flags (don't trust form's hidden_category)
+            if ($validated['has_internal']) {
+                $validated['category'] = 'internal';
+            } elseif ($validated['has_inclusive'] && !$validated['has_open']) {
+                $validated['category'] = 'inclusive';
+            } else {
+                $validated['category'] = 'open';
+            }
         }
 
         // Zero out double dastur for Internal / Internal Appraisal (not applicable)
@@ -309,20 +318,20 @@ class VacancyManagementController extends Controller
     {
         $job = JobPosting::findOrFail($id);
 
-        // For Open category: Double Dastur Date and Fee are required
-        $isOpenCategory = $request->input('has_open') == '1'
+        // For Open or Inclusive-only category: Double Dastur Date and Fee are required
+        $isOpenOrInclusive = ($request->input('has_open') == '1' || $request->input('category') === 'inclusive')
             && $request->input('is_internal_appraisal') != '1'
             && $request->input('has_internal') != '1';
 
-        if ($isOpenCategory) {
+        if ($isOpenOrInclusive) {
             if (empty($request->double_dastur_date)) {
                 return redirect()->back()
-                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open category.'])
+                    ->withErrors(['double_dastur_date' => 'Double Dastur Date is required for Open/Inclusive category.'])
                     ->withInput();
             }
             if (empty($request->double_dastur_fee) || floatval($request->double_dastur_fee) <= 0) {
                 return redirect()->back()
-                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open category and must be greater than 0.'])
+                    ->withErrors(['double_dastur_fee' => 'Double Dastur Fee is required for Open/Inclusive category and must be greater than 0.'])
                     ->withInput();
             }
         }
@@ -387,6 +396,15 @@ class VacancyManagementController extends Controller
             $validated['has_internal_open'] = false;
             $validated['has_internal_inclusive'] = false;
             $validated['internal_inclusive_types'] = null;
+        } else {
+            // Server-side: derive category from actual flags (don't trust form's hidden_category)
+            if ($validated['has_internal']) {
+                $validated['category'] = 'internal';
+            } elseif ($validated['has_inclusive'] && !$validated['has_open']) {
+                $validated['category'] = 'inclusive';
+            } else {
+                $validated['category'] = 'open';
+            }
         }
 
         // Zero out double dastur for Internal / Internal Appraisal (not applicable)

@@ -15,7 +15,8 @@ class ReviewerDashboardController extends Controller
         // Get pending applications assigned to this reviewer
         $pendingApplications = ApplicationForm::with(['jobPosting'])
             ->where('reviewer_id', $reviewer->id)
-            ->where('status', 'assigned')
+            ->where('status', '!=', 'draft')
+            ->whereIn('status', ['pending', 'assigned'])
             ->latest()
             ->take(4)
             ->get();
@@ -60,18 +61,10 @@ class ReviewerDashboardController extends Controller
                 ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
                 ->count(),
 
-            'total_reviewed' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->whereIn('status', ['reviewed', 'approved', 'rejected', 'shortlisted', 'edit'])
-                ->count(),
-
-            'total_assigned' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->where('status', '!=', 'draft')
-                ->count(),
-
             'daily_target' => 15,
 
             'pending_review' => ApplicationForm::where('reviewer_id', $reviewer->id)
-                ->where('status', 'assigned')
+                ->whereIn('status', ['pending', 'assigned'])
                 ->count(),
         ];
 

@@ -103,80 +103,71 @@
                             <strong>Employment Type / Category:</strong>
                             <br>
                             <div class="d-flex flex-wrap gap-2 mt-1">
-                                @if($job->category == 'internal_appraisal')
+                                @php
+                                    $isInternalAppraisal = $groupJobs->contains(fn($g) => $g->category == 'internal_appraisal');
+                                @endphp
+                                @if($isInternalAppraisal)
                                     <span class="badge text-white" style="background-color: #8b5cf6; font-size: 0.875rem;">
-                                        <i class="bi bi-star-fill me-1"></i>Internal Appraisal
+                                        Internal Appraisal
                                     </span>
                                 @else
-                                    @if($job->has_open || $job->category == 'open')
-                                        <span class="badge bg-success" style="font-size: 0.875rem;">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Open (खुल्ला)
-                                        </span>
-                                    @endif
-
-                                    @if($job->has_inclusive || $job->category == 'inclusive')
-                                        @php
-                                            $inclusiveTypes = [];
-                                            if ($job->inclusive_type) {
-                                                $inclusiveTypes = [$job->inclusive_type];
-                                            }
-                                        @endphp
-
-                                        @if(count($inclusiveTypes) > 0)
-                                            @foreach($inclusiveTypes as $type)
-                                                <span class="badge bg-info text-white" style="font-size: 0.875rem;">
-                                                    <i class="bi bi-people-fill me-1"></i>Inclusive - {{ $type }}
-                                                </span>
-                                            @endforeach
-                                        @else
-                                            <span class="badge bg-info text-white" style="font-size: 0.875rem;">
-                                                <i class="bi bi-people-fill me-1"></i>Inclusive (समावेशी)
-                                            </span>
-                                        @endif
-                                    @endif
-
-                                    @if($job->has_internal || $job->category == 'internal')
-                                        <span class="badge bg-warning text-dark" style="font-size: 0.875rem;">
-                                            <i class="bi bi-building-fill me-1"></i>Internal (आन्तरिक परीक्षा)
-                                        </span>
-
-                                        {{-- Internal Open Sub-category --}}
-                                        @if($job->has_internal_open)
-                                            <span class="badge text-white" style="background-color: #f59e0b; font-size: 0.875rem;">
-                                                <i class="bi bi-door-open-fill me-1"></i>Internal Open (All NOC Staff)
+                                    @foreach($groupJobs as $gJob)
+                                        @if($gJob->has_open || $gJob->category == 'open')
+                                            <span class="badge bg-success" style="font-size: 0.875rem;">
+                                                Open (खुल्ला)
                                             </span>
                                         @endif
 
-                                        {{-- Internal Inclusive Sub-categories --}}
-                                        @if($job->has_internal_inclusive)
+                                        @if($gJob->has_inclusive || $gJob->category == 'inclusive')
                                             @php
-                                                // Get internal inclusive types from array
-                                                $internalInclusiveTypes = [];
-                                                if (isset($job->internal_inclusive_types) && is_array($job->internal_inclusive_types)) {
-                                                    $internalInclusiveTypes = $job->internal_inclusive_types;
+                                                $gInclTypes = [];
+                                                if ($gJob->inclusive_type) {
+                                                    $dec = json_decode($gJob->inclusive_type, true);
+                                                    $gInclTypes = is_array($dec) ? $dec : [$gJob->inclusive_type];
                                                 }
                                             @endphp
-
-                                            @if(count($internalInclusiveTypes) > 0)
-                                                @foreach($internalInclusiveTypes as $type)
-                                                    <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem;">
-                                                        <i class="bi bi-people-fill me-1"></i>Internal Inclusive - {{ $type }}
+                                            @if(count($gInclTypes) > 0)
+                                                @foreach($gInclTypes as $type)
+                                                    <span class="badge bg-info text-white" style="font-size: 0.875rem;">
+                                                        Inclusive ({{ $type }})
                                                     </span>
                                                 @endforeach
                                             @else
-                                                <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem;">
-                                                    <i class="bi bi-people-fill me-1"></i>Internal Inclusive
+                                                <span class="badge bg-info text-white" style="font-size: 0.875rem;">
+                                                    Inclusive (समावेशी)
                                                 </span>
                                             @endif
                                         @endif
-                                    @endif
+
+                                        @if($gJob->has_internal || $gJob->category == 'internal')
+                                            <span class="badge bg-warning text-dark" style="font-size: 0.875rem;">
+                                                Internal (आन्तरिक परीक्षा)
+                                            </span>
+                                            @if($gJob->has_internal_open)
+                                                <span class="badge text-white" style="background-color: #f59e0b; font-size: 0.875rem;">
+                                                    Internal Open (All NOC Staff)
+                                                </span>
+                                            @endif
+                                            @if($gJob->has_internal_inclusive)
+                                                @php
+                                                    $gIntInclTypes = is_array($gJob->internal_inclusive_types) ? $gJob->internal_inclusive_types : [];
+                                                @endphp
+                                                @if(count($gIntInclTypes) > 0)
+                                                    @foreach($gIntInclTypes as $type)
+                                                        <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem;">
+                                                            Internal Inclusive - {{ $type }}
+                                                        </span>
+                                                    @endforeach
+                                                @else
+                                                    <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem;">
+                                                        Internal Inclusive
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        @endif
+                                    @endforeach
                                 @endif
                             </div>
-                            @if($job->has_open || $job->has_inclusive || $job->has_internal)
-                                <small class="text-muted d-block mt-1">
-                                    <i class="bi bi-info-circle me-1"></i>You can choose which category to apply under
-                                </small>
-                            @endif
                         </p>
                         <p class="mb-2">
                             <strong>Number of Vacancies:</strong> {{ $job->number_of_posts }}
@@ -188,18 +179,26 @@
                             <strong>Position Level:</strong> {{ $job->position_level }}
                         </p>
                         <p class="mb-2">
-                                    <strong>Advertisement Number:</strong> {{ $job->advertisement_no}}
-                                </p>
+                            <strong>Advertisement Number:</strong>
+                            @php
+                                $allAdvNos = $groupJobs->pluck('advertisement_no')->filter()->unique()->values();
+                            @endphp
+                            {{ $allAdvNos->implode(', ') ?: ($job->advertisement_no ?? '-') }}
+                        </p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-2">
                             <strong>Application Deadline:</strong>
                             <span class="text-danger fw-bold">
-                                {{ \Carbon\Carbon::parse($job->application_deadline)->format('F d, Y') }}
+                                {{ \Carbon\Carbon::parse($job->deadline_bs)->format('Y-m-d') }}  
+                                <!-- {{ \Carbon\Carbon::parse($job->deadline)->format('F d, Y') }}  -->
+                                <!-- @if($job->deadline_bs)
+                                    <br><small class="text-muted fw-normal">{{ $job->deadline_bs }}</small>
+                                @endif -->
                             </span>
                         </p>
                         <p class="mb-2">
-                            <strong>Service Group:</strong> {{ $job->service_group }}
+                            <strong>Service/Group:</strong> {{ $job->service_group }}
                         </p>
                         @if($job->min_age || $job->max_age)
                             <p class="mb-2">

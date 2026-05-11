@@ -124,6 +124,20 @@ class ApplicationForm extends Model
         // System
         'status',
         'terms_agree',
+
+        // Admit Card
+        'exam_date',
+        'exam_date_first',
+        'exam_time_first',
+        'exam_date_second',
+        'exam_time_second',
+        'exam_time',
+        'exam_venue',
+        'exam_instructions',
+        'organization_name',
+        'post_title',
+        'admit_card_service_group',
+        'roll_number',
     ];
 
     /**
@@ -273,6 +287,12 @@ class ApplicationForm extends Model
     public function canEdit()
     {
         return in_array($this->status, ['draft', 'edit']);
+    }
+
+    public function statusHistories()
+    {
+        return $this->hasMany(\App\Models\ApplicationStatusHistory::class, 'application_form_id')
+                    ->orderBy('created_at', 'asc');
     }
 
     /**

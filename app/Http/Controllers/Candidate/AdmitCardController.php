@@ -25,7 +25,7 @@ class AdmitCardController extends Controller
             ->first();
 
         $applications = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-            ->whereIn('status', ['approved', 'shortlisted', 'selected'])
+            ->whereIn('status', ['assigned', 'approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
             ->latest()
             ->get();
@@ -48,11 +48,37 @@ class AdmitCardController extends Controller
 
         $application = ApplicationForm::where('id', $id)
             ->where('citizenship_number', $candidate->citizenship_number)
-            ->whereIn('status', ['approved', 'shortlisted', 'selected'])
+            ->whereIn('status', ['assigned', 'approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
             ->firstOrFail();
 
-        return view('candidate.admit-card-view', compact('application', 'candidate'));
+        $job = $application->job_posting_id
+            ? \App\Models\JobPosting::find($application->job_posting_id)
+            : null;
+
+        // Resolve inclusive sub-types: from current job or sibling job with same position+level
+        $inclusiveTypes = [];
+        if ($job) {
+            $rawInclusive = $job->inclusive_type;
+            $inclusiveTypes = is_array($rawInclusive)
+                ? $rawInclusive
+                : (is_string($rawInclusive) ? json_decode($rawInclusive, true) : []);
+
+            if (empty($inclusiveTypes)) {
+                $siblingJob = \App\Models\JobPosting::where('position', $job->position)
+                    ->where('level', $job->level)
+                    ->where('has_inclusive', 1)
+                    ->whereNotNull('inclusive_type')
+                    ->first();
+                if ($siblingJob) {
+                    $raw = $siblingJob->inclusive_type;
+                    $inclusiveTypes = is_array($raw) ? $raw : (is_string($raw) ? json_decode($raw, true) : []);
+                }
+            }
+        }
+        $inclusiveTypes = array_filter((array) $inclusiveTypes);
+
+        return view('candidate.admit-card-view', compact('application', 'candidate', 'job', 'inclusiveTypes'));
     }
 
     /**
@@ -70,11 +96,36 @@ class AdmitCardController extends Controller
 
         $application = ApplicationForm::where('id', $id)
             ->where('citizenship_number', $candidate->citizenship_number)
-            ->whereIn('status', ['approved', 'shortlisted', 'selected'])
+            ->whereIn('status', ['assigned', 'approved', 'shortlisted', 'selected'])
             ->whereNotNull('roll_number')
             ->firstOrFail();
 
-        $pdf = Pdf::loadView('candidate.admit-card-pdf', compact('application', 'candidate'));
+        $job = $application->job_posting_id
+            ? \App\Models\JobPosting::find($application->job_posting_id)
+            : null;
+
+        $inclusiveTypes = [];
+        if ($job) {
+            $rawInclusive = $job->inclusive_type;
+            $inclusiveTypes = is_array($rawInclusive)
+                ? $rawInclusive
+                : (is_string($rawInclusive) ? json_decode($rawInclusive, true) : []);
+
+            if (empty($inclusiveTypes)) {
+                $siblingJob = \App\Models\JobPosting::where('position', $job->position)
+                    ->where('level', $job->level)
+                    ->where('has_inclusive', 1)
+                    ->whereNotNull('inclusive_type')
+                    ->first();
+                if ($siblingJob) {
+                    $raw = $siblingJob->inclusive_type;
+                    $inclusiveTypes = is_array($raw) ? $raw : (is_string($raw) ? json_decode($raw, true) : []);
+                }
+            }
+        }
+        $inclusiveTypes = array_filter((array) $inclusiveTypes);
+
+        $pdf = Pdf::loadView('candidate.admit-card-pdf', compact('application', 'candidate', 'job', 'inclusiveTypes'));
 
         $filename = 'admit-card-' . ($application->roll_number ?? $application->id) . '.pdf';
 

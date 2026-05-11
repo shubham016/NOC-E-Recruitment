@@ -1127,6 +1127,53 @@
             @endif
         </div>
 
+            <!-- Admin Notes -->
+            @if($application->admin_notes)
+            <div class="info-card">
+                <h5>Admin Notes</h5>
+                <div class="alert alert-info-custom">
+                    <p class="mb-0"><strong>Admin's Note:</strong></p>
+                    <p class="mb-0 mt-2">{{ $application->admin_notes }}</p>
+                </div>
+            </div>
+            @endif
+
+            <!-- Priority Note -->
+            @if($application->priority_note)
+            <div class="info-card">
+                <h5>Priority Note</h5>
+                <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+                    <p class="mb-0">{{ $application->priority_note }}</p>
+                </div>
+            </div>
+            @endif
+
+        </div>
+<!-- Payment -->
+@php
+    $payment = \App\Models\Payment::where('draft_id', $application->id)->first();
+@endphp
+
+@if($payment)
+<div class="info-card mt-3">
+    <h5>Payment Information</h5>
+
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <div class="info-row">
+                <div class="info-label">Amount:</div>
+                <div class="info-value">
+                    <strong>NPR {{ number_format($payment->amount, 2) }}</strong>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div class="info-value">
+                    {{ ucfirst($payment->status) }}
+                </div>
+            </div>
         </div>
 
         <!-- Right Column -->
@@ -1187,6 +1234,8 @@
                             </small>
                         </div>
 
+                        
+
                         <div id="smsPreview" style="display: none;" class="mb-3">
                             <div class="alert alert-warning" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b;">
                                 <strong>SMS Notification Preview:</strong>
@@ -1213,7 +1262,64 @@
                             </a>
                         </div>
                     </form>
+                    
                 </div>
+
+                 <div class="info-card mt-3">
+    <h5>
+        <i class="bi bi-clock-history me-2 text-secondary"></i>
+        Application Status History
+    </h5>
+
+    @php $histories = $application->statusHistories; @endphp
+
+    @if($histories->isEmpty())
+        <div class="alert alert-info-custom">No history available yet.</div>
+    @else
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:50px">S.N</th>
+                        <th>Stage Name</th>
+                        <th>Done By</th>
+                        <th>Date &amp; Time</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($histories as $index => $history)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>
+                                @php
+                                    $badgeClass = match($history->stage_name) {
+                                        'Approved'   => 'bg-success',
+                                        'Rejected'   => 'bg-danger',
+                                        'Verified'   => 'bg-primary',
+                                        'Allow Edit' => 'bg-warning text-dark',
+                                        default      => 'bg-secondary',
+                                    };
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">
+                                    {{ $history->stage_name }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ $history->done_by }}
+                                <small class="d-block text-muted">
+                                    {{ ucfirst($history->done_by_type) }}
+                                </small>
+                            </td>
+                            <td>{{ $history->created_at->format('F d, Y') }}</td>
+                            <td>{{ $history->remarks ?: '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+</div>
 
                
 
@@ -1343,6 +1449,15 @@ document.getElementById('reviewForm').addEventListener('submit', function(e) {
     if (!notes || notes.trim() === '') {
         alert('⚠️ Please add comments/notes before submitting');
         return;
+    }
+
+    // Check if approver is selected when status is 'reviewed'
+    if (status === 'reviewed') {
+        const approverId = formData.get('approver_id');
+        if (!approverId || approverId === '') {
+            alert('⚠️ Please select an approver before marking as reviewed');
+            return;
+        }
     }
 
     // Check if approver is selected when status is 'reviewed'

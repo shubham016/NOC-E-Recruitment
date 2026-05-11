@@ -132,6 +132,18 @@ class JobBrowsingController extends Controller
             }
         }
 
-        return view('candidate.jobs.show', compact('job', 'hasApplied', 'application'));
+        $groupJobs = JobPosting::where('status', 'active')
+            ->where('deadline', '>=', now())
+            ->where('position', $job->position)
+            ->where('level', $job->level)
+            ->where('service_group', $job->service_group)
+            ->orderBy('advertisement_no', 'asc')
+            ->get();
+
+        if ($groupJobs->isEmpty()) {
+            $groupJobs = collect([$job]);
+        }
+
+        return view('candidate.jobs.show', compact('job', 'hasApplied', 'application', 'groupJobs'));
     }
 }

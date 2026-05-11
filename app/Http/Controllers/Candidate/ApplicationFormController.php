@@ -390,7 +390,20 @@ class ApplicationFormController extends Controller
             ->with('error', 'This application has already been submitted and cannot be edited.');
     }
 
-    return view('candidate.applications.edit', compact('applicationform'));
+    $job = $applicationform->jobPosting;
+    $groupJobs = collect();
+    if ($job) {
+        $groupJobs = JobPosting::where('position', $job->position)
+            ->where('level', $job->level)
+            ->where('service_group', $job->service_group)
+            ->orderBy('advertisement_no', 'asc')
+            ->get();
+        if ($groupJobs->isEmpty()) {
+            $groupJobs = collect([$job]);
+        }
+    }
+
+    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs'));
 }
 
     /**
@@ -398,11 +411,6 @@ class ApplicationFormController extends Controller
      */
     public function update(Request $request, ApplicationForm $applicationform)
     {
-        \Log::info('UPDATE DEBUG', [
-    'current_status_in_db' => $applicationform->status,
-    'status_in_data'       => $data['status'] ?? 'NOT SET',
-    'all_data_keys'        => array_keys($data),
-]);
         if (!Session::has('candidate_logged_in')) {
             return redirect()->route('candidate.login')
                 ->withErrors(['error' => 'Please login first']);

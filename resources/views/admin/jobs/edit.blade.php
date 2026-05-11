@@ -444,8 +444,8 @@
                     @php
                         // Backward compatibility: jobs created with old system have category='open'/'internal'
                         // but has_open/has_internal are false. Fall back to old category field.
-                        $noNewFlags = !$job->has_open && !$job->has_internal;
-                        $effectiveHasOpen = $job->has_open || ($noNewFlags && in_array($job->category, ['open', 'inclusive']));
+                        $noNewFlags = !$job->has_open && !$job->has_internal && !$job->has_inclusive;
+                        $effectiveHasOpen = $job->has_open || ($noNewFlags && $job->category === 'open');
                         $effectiveHasInternal = $job->has_internal || ($noNewFlags && $job->category === 'internal');
                         $effectiveIsAppraisal = $job->category === 'internal_appraisal';
 
@@ -2091,9 +2091,10 @@
 
             // Update hidden fields for backward compatibility
             function updateHiddenFields() {
-                const isOpen      = hasOpenCheckbox      && hasOpenCheckbox.checked;
-                const isInternal  = hasInternalCheckbox  && hasInternalCheckbox.checked;
-                const isAppraisal = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
+                const isOpen           = hasOpenCheckbox             && hasOpenCheckbox.checked;
+                const isInternal       = hasInternalCheckbox         && hasInternalCheckbox.checked;
+                const isAppraisal      = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
+                const isInclusiveToggle= hasInclusiveToggleCheckbox  && hasInclusiveToggleCheckbox.checked;
 
                 // has_open
                 const hiddenHasOpen = document.getElementById('hidden_has_open');
@@ -2103,31 +2104,32 @@
                 const hiddenHasInternal = document.getElementById('hidden_has_internal');
                 if (hiddenHasInternal) hiddenHasInternal.value = isInternal ? '1' : '0';
 
-                // has_inclusive
-                const isInclusiveToggle = hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked;
-                if (hasInclusiveHidden) hasInclusiveHidden.value = (isOpen && isInclusiveToggle) ? '1' : '0';
+                // has_inclusive — true for standalone inclusive OR open+inclusive
+                if (hasInclusiveHidden) hasInclusiveHidden.value = isInclusiveToggle ? '1' : '0';
 
                 // has_internal_inclusive
                 const isInternalInclusive = hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked;
                 const hiddenHasInternalInclusive = document.getElementById('has_internal_inclusive');
                 if (hiddenHasInternalInclusive) hiddenHasInternalInclusive.value = (isInternal && isInternalInclusive) ? '1' : '0';
 
-                // category
+                // category — derive from which checkbox is checked
                 if (isAppraisal) {
                     hiddenCategory.value = 'internal_appraisal';
                 } else if (isInternal) {
                     hiddenCategory.value = 'internal';
                 } else if (isOpen) {
-                    hiddenCategory.value = isInclusiveToggle ? 'inclusive' : 'open';
-                } else {
                     hiddenCategory.value = 'open';
+                } else if (isInclusiveToggle) {
+                    hiddenCategory.value = 'inclusive';
+                } else {
+                    hiddenCategory.value = '';
                 }
 
-                // inclusive_type (JSON array of checked inclusive types — only relevant for Open)
+                // inclusive_type — save for both standalone inclusive and open+inclusive
                 const checkedTypes = Array.from(inclusiveTypeCheckboxes).filter(cb => cb.checked);
                 if (hiddenInclusiveType) {
-                    hiddenInclusiveType.value = (isOpen && checkedTypes.length > 0)
-                        ? checkedTypes[0].value
+                    hiddenInclusiveType.value = (isInclusiveToggle && checkedTypes.length > 0)
+                        ? JSON.stringify(checkedTypes.map(cb => cb.value))
                         : '';
                 }
 
@@ -2138,10 +2140,11 @@
             // Validate at least one category is selected
             function validateCategories() {
                 const isOpen = hasOpenCheckbox && hasOpenCheckbox.checked;
+                const isInclusive = hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked;
                 const isInternal = hasInternalCheckbox && hasInternalCheckbox.checked;
                 const isAppraisal = isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked;
 
-                if (!isOpen && !isInternal && !isAppraisal) {
+                if (!isOpen && !isInclusive && !isInternal && !isAppraisal) {
                     alert('कृपया एक मुख्य श्रेणी छान्नुहोस्!\nPlease select one main category!');
                     return false;
                 }

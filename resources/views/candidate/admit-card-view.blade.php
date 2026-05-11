@@ -77,45 +77,155 @@
             </div>
 
             <!-- Main Content Area -->
+            @php
+                $npNums = ['0'=>'०','1'=>'१','2'=>'२','3'=>'३','4'=>'४','5'=>'५','6'=>'६','7'=>'७','8'=>'८','9'=>'९'];
+                $toNp = function($str) use ($npNums) { return strtr((string)$str, $npNums); };
+
+                // English → Nepali phrase map (longer phrases first to prevent partial replacement)
+                $enNpPhrases = [
+                    'General Manager'        => 'महाप्रबन्धक',
+                    'Deputy General Manager' => 'उप महाप्रबन्धक',
+                    'Chief Manager'          => 'मुख्य प्रबन्धक',
+                    'Assistant Manager'      => 'सहायक प्रबन्धक',
+                    'Deputy Manager'         => 'उप प्रबन्धक',
+                    'Senior Manager'         => 'वरिष्ठ प्रबन्धक',
+                    'Senior Assistant'       => 'वरिष्ठ सहायक',
+                    'Junior Assistant'       => 'कनिष्ठ सहायक',
+                    'Senior Officer'         => 'वरिष्ठ अधिकृत',
+                    'Junior Officer'         => 'कनिष्ठ अधिकृत',
+                    'Executive Director'     => 'कार्यकारी निर्देशक',
+                    'Human Resources'        => 'मानव संसाधन',
+                    'Information Technology' => 'सूचना प्रविधि',
+                    'Manager'                => 'प्रबन्धक',
+                    'Assistant'              => 'सहायक',
+                    'Officer'                => 'अधिकृत',
+                    'Engineer'               => 'इन्जिनियर',
+                    'Accountant'             => 'लेखापाल',
+                    'Supervisor'             => 'पर्यवेक्षक',
+                    'Director'               => 'निर्देशक',
+                    'Level'                  => 'तह',
+                    'Technical'              => 'प्राविधिक',
+                    'Finance'                => 'वित्त',
+                    'Administration'         => 'प्रशासन',
+                    'Marketing'              => 'बजार',
+                    'Operations'             => 'सञ्चालन',
+                    'Planning'               => 'योजना',
+                    'Procurement'            => 'खरिद',
+                    'Accounts'               => 'लेखा',
+                    'Legal'                  => 'कानुनी',
+                    'IT'                     => 'सूचना प्रविधि',
+                    'Others'                 => 'अन्य',
+                    'Other'                  => 'अन्य',
+                    'General'                => 'सामान्य',
+                    // Common Nepali place names
+                    'Naxal'                  => 'नक्साल',
+                    'Kathmandu'              => 'काठमाडौं',
+                    'Lalitpur'               => 'ललितपुर',
+                    'Bhaktapur'              => 'भक्तपुर',
+                    'Pokhara'                => 'पोखरा',
+                    'Butwal'                 => 'बुटवल',
+                    'Biratnagar'             => 'विराटनगर',
+                    'Janakpur'               => 'जनकपुर',
+                    'Hetauda'                => 'हेटौंडा',
+                    'Dharan'                 => 'धरान',
+                    'Birgunj'                => 'वीरगञ्ज',
+                    'Nepalgunj'              => 'नेपालगञ्ज',
+                    'Dhangadhi'              => 'धनगढी',
+                    'Banepa'                 => 'बनेपा',
+                    'Dhulikhel'              => 'धुलिखेल',
+                    'Kirtipur'               => 'कीर्तिपुर',
+                    'Maharajgunj'            => 'महाराजगञ्ज',
+                    'Baluwatar'              => 'बालुवाटार',
+                    'Babarmahal'             => 'बबरमहल',
+                    'Tripureshwor'           => 'त्रिपुरेश्वर',
+                    'Putalisadak'            => 'पुतलीसडक',
+                    'Anamnagar'              => 'अनामनगर',
+                    'Tinkune'                => 'तीनकुने',
+                    'Koteshwor'              => 'कोटेश्वर',
+                    'Chabahil'               => 'चाबहिल',
+                    'Baneshwor'              => 'बानेश्वर',
+                    'Lazimpat'               => 'लाजिम्पाट',
+                    'Kupondole'              => 'कुपण्डोल',
+                    'Jawalakhel'             => 'जावलाखेल',
+                    'Pulchowk'               => 'पुल्चोक',
+                    'Sanepa'                 => 'सानेपा',
+                ];
+                $toNpText = function($str) use ($enNpPhrases, $toNp) {
+                    if (!$str) return '';
+                    foreach ($enNpPhrases as $en => $np) {
+                        $str = preg_replace('/\b' . preg_quote($en, '/') . '\b/i', $np, $str);
+                    }
+                    return $toNp($str);
+                };
+            @endphp
+
             <div class="content-section">
-                
+
                 <!-- Left: Candidate Details -->
                 <div class="details-left">
                     <table class="info-table">
                         <tr>
                             <td class="label">रोल नं.</td>
-                            <td class="value">: <strong>{{ $application->roll_number ?? $application->id }}</td>
+                            <td class="value">: <strong>{{ $toNp($application->roll_number ?? $application->id) }}</strong></td>
                         </tr>
                         <tr>
                             <td class="label">नाम, थर</td>
-                            <td class="value">: <strong>{{ $application->name_nepali ?? '' }}</td>
+                            <td class="value">: <strong>{{ $application->name_nepali ?? '' }}</strong></td>
                         </tr>
                         <tr>
                             <td class="label">Name, Surname</td>
-                            <td class="value">: <strong>{{ $application->name_english ?? $candidate->name }}</td>
+                            <td class="value">: <strong>{{ $application->name_english ?? $candidate->name }}</strong></td>
                         </tr>
                     </table>
 
                     <table class="info-table mt-2">
                         <tr>
                             <td class="label">विज्ञापन नं.</td>
-                            <td class="value">: <strong>{{ $application->advertisement_no ?? '' }}</td>
+                            <td class="value">: <strong>{{ $toNp($application->advertisement_no ?? '') }}</strong></td>
                         </tr>
                         <tr>
                             <td class="label">पद / तह</td>
-                            <td class="value">: <strong>{{ $application->post_title ?? '' }} / {{ $application->level ?? '' }}</td>
+                            <td class="value">: <strong>{{ $toNpText($application->post_title ?? ($job ? $job->position . ($job->level ? ' / Level ' . $job->level : '') : '')) }}</strong></td>
                         </tr>
                         <tr>
                             <td class="label">सेवा / समूह</td>
-                            <td class="value">: <strong>{{ $application->service_type ?? '' }} / {{ $application->service_group ?? '' }}</td>
+                            <td class="value">: <strong>{{ $toNpText($application->admit_card_service_group ?? ($job ? $job->service_group : '')) }}</strong></td>
                         </tr>
                         <tr>
                             <td class="label">खुल्ला / समावेशी</td>
-                            <td class="value">: <strong>{{ $application->application_type ?? 'खुल्ला' }}</td>
+                            <td class="value">: <strong>
+                                @php
+                                    $rawCat = $application->applied_category;
+                                    $cats = is_array($rawCat) ? $rawCat : (is_string($rawCat) ? json_decode($rawCat, true) : []);
+                                    $cats = array_values(array_unique(is_array($cats) ? array_filter($cats) : []));
+
+                                    $npCatMap = [
+                                        'open'        => 'खुल्ला',
+                                        'inclusive'   => 'समावेशी',
+                                        'women'       => 'महिला',
+                                        'dalit'       => 'दलित',
+                                        'janajati'    => 'जनजाति',
+                                        'madhesi'     => 'मधेसी',
+                                        'aj'          => 'आदिवासी जनजाति',
+                                        'a.j'         => 'आदिवासी जनजाति',
+                                        'apanga'      => 'अपाङ्ग',
+                                        'pichadiyeko' => 'पिछडिएको',
+                                    ];
+                                    $catLabels = array_map(function($c) use ($npCatMap) { return $npCatMap[strtolower($c)] ?? ucfirst($c); }, $cats);
+
+                                    // Inclusive sub-types passed from controller
+                                    $inclusiveSubLabel = '';
+                                    if (in_array('inclusive', array_map('strtolower', $cats)) && !empty($inclusiveTypes)) {
+                                        $subLabels = array_map(function($s) use ($npCatMap) { return $npCatMap[strtolower($s)] ?? $s; }, $inclusiveTypes);
+                                        $inclusiveSubLabel = ' (' . implode(', ', $subLabels) . ')';
+                                    }
+                                @endphp
+                                {{ ($catLabels ? implode(', ', $catLabels) : 'खुल्ला') . $inclusiveSubLabel }}
+                            </strong></td>
                         </tr>
                         <tr>
                             <td class="label">नागरिकता नं.</td>
-                            <td class="value">: <strong>{{ $application->citizenship_number ?? '' }}</td>
+                            <td class="value">: <strong>{{ $toNp($application->citizenship_number ?? '') }}</strong></td>
                         </tr>
                     </table>
 
@@ -132,16 +242,45 @@
                                 <th>मिति, समय</th>
                             </tr>
                         </thead>
+                        @php
+                            $fmtDate = function($d) use ($toNp) {
+                                return $d ? $toNp($d) : null;
+                            };
+                            $fmtTime = function($t) use ($toNp) {
+                                if (!$t) return null;
+                                // Detect AM/PM and map to Nepali period
+                                $upper = strtoupper($t);
+                                if (str_contains($upper, 'AM')) {
+                                    $period = 'बिहान';
+                                    $t = trim(str_ireplace('AM', '', $t));
+                                } elseif (str_contains($upper, 'PM')) {
+                                    $period = 'दिउँसोको';
+                                    $t = trim(str_ireplace('PM', '', $t));
+                                } else {
+                                    // No AM/PM — check hour to guess
+                                    $hour = (int)explode(':', $t)[0];
+                                    $period = $hour < 12 ? 'बिहान' : 'दिउँसोको';
+                                }
+                                return $period . ' ' . $toNp(trim($t)) . ' बजे';
+                            };
+
+                            $venue = $toNpText($application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास');
+
+                            $date1 = $fmtDate($application->exam_date_first)  ?? '२०८२-०१-११';
+                            $time1 = $fmtTime($application->exam_time_first)  ?? 'दिउँसोको ०२:०० बजे';
+                            $date2 = $fmtDate($application->exam_date_second) ?? '२०८२-०१-११';
+                            $time2 = $fmtTime($application->exam_time_second) ?? 'दिउँसोको ०२:०० बजे';
+                        @endphp
                         <tbody>
                             <tr>
                                 <td>१</td>
                                 <td>प्रथम</td>
-                                <td>{{ $application->exam_date_first ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                                <td>{{ $date1 }} / {{ $time1 }} ({{ $venue }})</td>
                             </tr>
                             <tr>
                                 <td>२</td>
                                 <td>द्वितीय</td>
-                                <td>{{ $application->exam_date_second ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                                <td>{{ $date2 }} / {{ $time2 }} ({{ $venue }})</td>
                             </tr>
                         </tbody>
                     </table>
@@ -150,11 +289,15 @@
                 <!-- Right: Citizenship and Signature -->
                 <div class="details-right">
                     <div class="citizenship-wrapper">
-                        @if(isset($application->citizenship_id_document) && $application->citizenship_id_document)
-                            <img src="{{ asset('storage/' . $application->citizenship_id_document) }}" alt="Citizenship" class="citizenship-image">
+                        @php
+                            $citizenshipDoc = $application->citizenship_id_document ?? null;
+                        @endphp
+                        @if($citizenshipDoc)
+                            <img src="{{ asset('storage/' . $citizenshipDoc) }}" alt="Citizenship Document" class="citizenship-image">
                         @else
                             <div class="citizenship-placeholder">
                                 <p>नागरिकता प्रमाणपत्र</p>
+                                <p style="font-size:10px; color:#bbb;">Not uploaded</p>
                             </div>
                         @endif
                     </div>

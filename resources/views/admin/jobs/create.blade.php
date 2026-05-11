@@ -274,11 +274,7 @@
                     <!-- <i class="bi bi-building-fill"></i> -->
                     <span>नेपाल सरकार | Government of Nepal</span>
                 </div>
-                <h3 class="fw-bold mb-2">
-                    <!-- <i class="bi bi-file-earmark-post-fill me-2"> -->
-
-                    </i>Post New Vacancy
-                </h3>
+                <h3 class="fw-bold mb-2">Post New Vacancy</h3>
                 <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
             <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
@@ -1833,17 +1829,17 @@ function initializeCategoryCheckboxes() {
             return false;
         }
 
-        // Open category: Double Dastur Date and Fee are required
-        if (isOpen) {
+        // Open or Inclusive-only: Double Dastur Date and Fee are required
+        if (isOpen || isInclusive) {
             const ddBS = document.getElementById('double_dastur_bs_hidden');
             if (!ddBS || !ddBS.value) {
-                alert('Double Dastur Date (Nepali BS) is required for Open category.\nकृपया दोहोरो दस्तुर मिति (नेपाली) भर्नुहोस्!');
+                alert('Double Dastur Date (Nepali BS) is required.\nकृपया दोहोरो दस्तुर मिति (नेपाली) भर्नुहोस्!');
                 document.getElementById('double_dastur_bs').focus();
                 return false;
             }
             const ddFee = document.getElementById('double_dastur_fee');
             if (!ddFee || !ddFee.value || parseFloat(ddFee.value) <= 0) {
-                alert('Double Dastur Fee is required for Open category and must be greater than 0.\nकृपया दोहोरो दस्तुर शुल्क भर्नुहोस्!');
+                alert('Double Dastur Fee is required and must be greater than 0.\nकृपया दोहोरो दस्तुर शुल्क भर्नुहोस्!');
                 ddFee && ddFee.focus();
                 return false;
             }
@@ -1908,7 +1904,8 @@ function initializeCategoryCheckboxes() {
                 if (hasOpenCheckbox)             { hasOpenCheckbox.checked             = false; hideOpenSections(); }
                 if (hasInternalCheckbox)         { hasInternalCheckbox.checked         = false; hideInternalSections(); }
                 if (isInternalAppraisalCheckbox) { isInternalAppraisalCheckbox.checked = false; }
-                hideDoubleDasturSections();
+                // Inclusive also shows Double Dastur (same as Open)
+                showDoubleDasturSections();
             } else {
                 inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; });
                 showDoubleDasturSections();
@@ -1961,7 +1958,7 @@ function initializeCategoryCheckboxes() {
         hideDoubleDasturSections();
     } else if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
         toggleInclusiveTypesSection();
-        hideDoubleDasturSections();
+        showDoubleDasturSections();
     } else {
         toggleInclusiveTypesSection();
         toggleInternalSubcategories();

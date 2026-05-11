@@ -82,6 +82,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/change-password', [App\Http\Controllers\Admin\AdminProfileController::class, 'changePassword'])->name('change-password.post');
         Route::get('/settings', [App\Http\Controllers\Admin\AdminProfileController::class, 'settings'])->name('settings');
 
+        /*
+        | Admit Card Routes
+        */
+        Route::prefix('admit-card')->name('admit-card.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\AdmitCardController::class, 'index'])->name('index');
+            Route::get('/{job_posting_id}/assign', [App\Http\Controllers\Admin\AdmitCardController::class, 'assign'])->name('assign');
+            Route::post('/{job_posting_id}/store', [App\Http\Controllers\Admin\AdmitCardController::class, 'store'])->name('store');
+            Route::get('/{job_posting_id}/preview', [App\Http\Controllers\Admin\AdmitCardController::class, 'preview'])->name('preview');
+        });
+
         // Reports
         Route::get('/reports', [App\Http\Controllers\Admin\AdminReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/preview/applications', [App\Http\Controllers\Admin\AdminReportController::class, 'previewApplications'])->name('reports.preview.applications');
@@ -326,6 +336,10 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
 
+        // My Profile Routes
+        Route::get('/my-profile/edit',   [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'edit'])->name('edit-profile');
+        Route::put('/my-profile/update', [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'update'])->name('my-profile.update');
+
         // Vacancies Browsing (HEAD's VacancyBrowsingController)
         Route::prefix('vacancies')->name('vacancies.')->group(function () {
             Route::get('/', [VacancyBrowsingController::class, 'index'])->name('index');
@@ -432,7 +446,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
         Route::get('/change-password', [CandidateController::class, 'showChangePasswordForm'])->name('change-password');
         Route::post('/change-password', [CandidateController::class, 'updatePassword'])->name('change-password.post');
-        Route::get('/my-profile', [CandidateController::class, 'profile'])->name('my-profile');
+        Route::get('/my-profile', [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'show'])->name('my-profile');
 
         // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {

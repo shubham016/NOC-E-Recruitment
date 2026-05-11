@@ -74,14 +74,35 @@ class ApproverAuthController extends Controller
     public function dashboard()
     {
         $approver = Auth::guard('approver')->user();
-
-        // Get statistics for dashboard
         $stats = [
             'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
             'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
             'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
             'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
         ];
+
+        $recentApplications = \App\Models\ApplicationForm::with('jobPosting')
+            ->where('approver_id', $approver->id)
+            ->where('status', '!=', 'draft')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('approver.dashboard', compact('approver', 'stats', 'recentApplications'));
+
+        $stats = [
+            'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
+            'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
+            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
+        ];
+
+        $recentApplications = \App\Models\ApplicationForm::with('jobPosting')
+            ->where('approver_id', $approver->id)
+            ->where('status', '!=', 'draft')
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('approver.dashboard', compact('approver', 'stats'));
     }
@@ -92,7 +113,7 @@ class ApproverAuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('approver')->logout();
-        $request->session()->regenerate();
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('approver.login');
     }

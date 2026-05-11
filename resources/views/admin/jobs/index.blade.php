@@ -294,8 +294,8 @@
                             <th class="text-center text-uppercase" style="border: none;">Demand</th>
                             <th class="text-center text-uppercase" style="border: none;">Qualifications</th>
                             <th class="text-center text-uppercase" style="border: none;">Total Fee</th>
-                            <th class="text-center text-uppercase" style="border: none;">Double Dastur Fee</th>
                             <th class="text-center text-uppercase" style="border: none;">Deadline</th>
+                            <th class="text-center text-uppercase" style="border: none;">Double Dastur</th>
                             <th class="text-center text-uppercase" style="border: none;">Status</th>
                             <th class="text-center text-uppercase" style="border: none;">Actions</th>
                         </tr>
@@ -336,9 +336,6 @@
                                     'draft'  => 'bg-secondary',
                                     default  => 'bg-secondary'
                                 };
-
-                                $daysRemaining = now()->diffInDays($job->deadline, false);
-                                $deadlineColor = $daysRemaining <= 7 ? 'text-danger' : ($daysRemaining <= 14 ? 'text-warning' : 'text-success');
 
                                 $isFirstInNoticeGroup = !isset($noticeRendered[$job->notice_no]);
                                 if ($isFirstInNoticeGroup) {
@@ -429,7 +426,7 @@
                             @endphp
 
                             <tr class="job-row {{ $job->status }}"
-                                data-pos-group="{{ $job->position }}_{{ $job->level }}_{{ $job->service_group }}"
+                                data-pos-group="{{ md5($job->position . '_' . $job->level . '_' . $job->service_group) }}"
                                 data-notice-group="{{ $job->notice_no }}">
                                 @if($isFirstInNoticeGroup)
                                     <td rowspan="{{ $noticeGroups[$job->notice_no] }}"
@@ -451,10 +448,13 @@
                                         {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
                                     </td>
                                 @endif
-                                <td class="align-middle text-center"
-                                    style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
-                                    {{ $job->service_group ?: $job->department }}
-                                </td>
+                                @if($thisPosRowspan > 0)
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        {{ $job->service_group ?: $job->department }}
+                                    </td>
+                                @endif
 
                                 {{-- Type --}}
                                 <td>
@@ -495,24 +495,33 @@
                                     @endforeach
                                 </td>
 
-                                <td>
-                                    @if($job->double_dastur_fee)
-                                        NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-
                                 {{-- Deadline — rowspan per position+level group (same deadline for same ad batch) --}}
                                 @if($thisPosRowspan > 0)
                                     <td rowspan="{{ $thisPosRowspan }}"
-                                        class="{{ $deadlineColor }} align-middle text-center"
+                                        class="text-danger align-middle text-center"
                                         style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
                                         <small class="d-block fw-semibold nepali-date-bs"
                                             data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
-                                            <i class="bi bi-hourglass-split"></i> Converting...
+                                            Converting...
                                         </small>
                                         <small>{{ $job->deadline->format('Y-m-d') }}</small>
+                                    </td>
+                                @endif
+
+                                {{-- Double Dastur Date — same rowspan logic as Deadline --}}
+                                @if($thisPosRowspan > 0)
+                                    <td rowspan="{{ $thisPosRowspan }}"
+                                        class="text-danger align-middle text-center"
+                                        style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
+                                        @if($job->double_dastur_date)
+                                            <small class="d-block fw-semibold nepali-date-bs"
+                                                data-ad-date="{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}">
+                                                Converting...
+                                            </small>
+                                            <small>{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}</small>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                 @endif
 
@@ -617,6 +626,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Hover by pos-group (position+level+service_group) for regular cells
             document.querySelectorAll('.job-row').forEach(function(row) {
                 row.addEventListener('mouseover', function() {
                     var group = this.dataset.posGroup;
@@ -626,6 +636,21 @@
                 row.addEventListener('mouseleave', function() {
                     var group = this.dataset.posGroup;
                     document.querySelectorAll('.job-row[data-pos-group="' + group + '"]')
+                        .forEach(function(r) { r.classList.remove('row-hovered'); });
+                });
+            });
+
+            // Hover by notice-group for the Notice No. cell (rowspan cell belongs to first tr only)
+            document.querySelectorAll('td.notice-no-cell').forEach(function(cell) {
+                cell.addEventListener('mouseover', function(e) {
+                    e.stopPropagation();
+                    var group = this.closest('tr').dataset.noticeGroup;
+                    document.querySelectorAll('.job-row[data-notice-group="' + group + '"]')
+                        .forEach(function(r) { r.classList.add('row-hovered'); });
+                });
+                cell.addEventListener('mouseleave', function() {
+                    var group = this.closest('tr').dataset.noticeGroup;
+                    document.querySelectorAll('.job-row[data-notice-group="' + group + '"]')
                         .forEach(function(r) { r.classList.remove('row-hovered'); });
                 });
             });

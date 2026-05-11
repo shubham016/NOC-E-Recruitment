@@ -360,44 +360,71 @@
 
                         // ── Live fee calculator ───────────────────────────────────
 function updateTotalFee() {
-    let total = 0;
-    const names = [];
+    const checkedBoxes = Array.from(document.querySelectorAll('.category-cb:checked'));
 
-    document.querySelectorAll('.category-cb:checked').forEach(function (cb) {
+    // ── Nothing selected — reset everything ──────────────────
+    if (checkedBoxes.length === 0) {
+        const totalFeeInput = document.getElementById('total_fee');
+        if (totalFeeInput) totalFeeInput.value = '0.00';
+        const bar = document.getElementById('feeSummaryBar');
+        if (bar) bar.style.display = 'none';
+        const step8Fee = document.getElementById('step8TotalFee');
+        if (step8Fee) step8Fee.textContent = '0.00';
+        return;
+    }
+
+    // ── Base = Open fee, always ──────────────────────────────
+    const openCbEl   = document.querySelector('.category-cb[value="open"]');
+    const openOption = openCbEl ? openCbEl.closest('.category-option') : null;
+    const openFee    = openOption ? parseFloat(openOption.getAttribute('data-fee') || 0) : 0;
+
+    let total = openFee;
+
+    // ── The 1st selected category is FREE (absorbed by base).
+    //    Every category from the 2nd onward adds its own fee. ─
+    checkedBoxes.slice(1).forEach(function (cb) {
         const option = cb.closest('.category-option');
-        if (option) {
-            const fee = parseFloat(option.getAttribute('data-fee') || 0);
-            total += fee;
+        if (!option) return;
+        total += parseFloat(option.getAttribute('data-fee') || 0);
+    });
 
-            // Collect label text (first text node of the label)
-            const label = option.querySelector('.form-check-label');
-            if (label) {
-                const labelText = label.firstChild?.textContent?.trim()
-                    || label.textContent.split('\n')[0].trim();
-                if (labelText) names.push(labelText);
-            }
+    // ── Build display names ──────────────────────────────────
+    const names = [];
+    const openExplicitlyChecked = checkedBoxes.some(cb => cb.value === 'open');
+    // Show "Open (base)" label when open isn't explicitly ticked
+    if (!openExplicitlyChecked && openFee > 0) {
+        names.push('Open (base)');
+    }
+    checkedBoxes.forEach(function (cb) {
+        const option = cb.closest('.category-option');
+        if (!option) return;
+        const label = option.querySelector('.form-check-label');
+        if (label) {
+            const labelText = label.firstChild?.textContent?.trim()
+                || label.textContent.split('\n')[0].trim();
+            if (labelText) names.push(labelText);
         }
     });
 
-    // Update hidden input
+    // ── Update hidden input ──────────────────────────────────
     const totalFeeInput = document.getElementById('total_fee');
     if (totalFeeInput) totalFeeInput.value = total.toFixed(2);
 
-    // Update Step 1 summary bar
-    const bar = document.getElementById('feeSummaryBar');
-    const display = document.getElementById('totalFeeDisplay');
+    // ── Update Step 1 summary bar ────────────────────────────
+    const bar      = document.getElementById('feeSummaryBar');
+    const display  = document.getElementById('totalFeeDisplay');
     const nameSpan = document.getElementById('selectedCategoryNames');
-    if (bar) bar.style.display = total > 0 ? '' : 'none';
-    if (display) display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    if (bar)      bar.style.display = total > 0 ? '' : 'none';
+    if (display)  display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
     if (nameSpan) nameSpan.textContent = names.join(' + ') || '—';
 
-    // Update Step 8 summary
-    const step8Fee = document.getElementById('step8TotalFee');
+    // ── Update Step 8 payment summary ────────────────────────
+    const step8Fee   = document.getElementById('step8TotalFee');
     const step8Names = document.getElementById('step8CategoryNames');
-    const step8Pos = document.getElementById('step8Position');
-    if (step8Fee) step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+    const step8Pos   = document.getElementById('step8Position');
+    if (step8Fee)   step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
     if (step8Names) step8Names.textContent = names.join(' + ') || '—';
-    if (step8Pos) step8Pos.textContent = document.getElementById('applying_position')?.value || '—';
+    if (step8Pos)   step8Pos.textContent = document.getElementById('applying_position')?.value || '—';
 }
 
 // Hook fee calculator onto every category checkbox
@@ -1104,7 +1131,7 @@ document.querySelectorAll('.category-cb').forEach(function (cb) {
                             <tr><th>Character</th><td id="p_character"></td></tr>
                             <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
                             <tr><th>Signature</th><td id="p_signature"></td></tr>
-                            <tr><th>Work Experience</th><td id="p_work_experience"></td></tr>
+                            <!-- <tr><th>Work Experience</th><td id="p_work_experience"></td></tr> -->
                         </table>
 
                         <div class="form-check mb-4">

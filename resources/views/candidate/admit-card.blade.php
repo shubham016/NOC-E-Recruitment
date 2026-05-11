@@ -102,22 +102,23 @@
                         </div>
                         
                         <div class="mb-3 pb-2 border-bottom">
-                            <small class="text-muted d-block">Exam Date</small>
-                            <strong>{{ date('d M Y', strtotime($application->exam_date)) }}</strong>
-                            <small class="d-block text-dark">{{ date('l', strtotime($application->exam_date)) }}</small>
+                            <small class="text-muted d-block">प्रथम पत्र मिति / Time</small>
+                            <strong>{{ $application->exam_date_first ?? '-' }}</strong>
+                            @if($application->exam_time_first)
+                                <small class="d-block text-dark">{{ $application->exam_time_first }}</small>
+                            @endif
                         </div>
-                        
+
+                        @if($application->exam_date_second)
                         <div class="mb-3 pb-2 border-bottom">
-                            <small class="text-muted d-block">Exam Time</small>
-                            <strong>{{ $application->exam_time }}</strong>
-                        </div>
-                        
-                        @if($application->reporting_time)
-                        <div class="mb-3 pb-2 border-bottom">
-                            <small class="text-muted d-block">Reporting Time</small>
-                            <strong class="text-danger">{{ $application->reporting_time }}</strong>
+                            <small class="text-muted d-block">द्वितीय पत्र मिति / Time</small>
+                            <strong>{{ $application->exam_date_second }}</strong>
+                            @if($application->exam_time_second)
+                                <small class="d-block text-dark">{{ $application->exam_time_second }}</small>
+                            @endif
                         </div>
                         @endif
+                        
                         
                         <div class="mb-3 pb-2 border-bottom">
                             <small class="text-muted d-block">Venue</small>

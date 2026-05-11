@@ -50,6 +50,11 @@
     @endif -->
 </a>
 
+<a href="{{ route('admin.admit-card.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.admit-card.*') ? 'active' : '' }}">
+    <i class="bi bi-card-heading"></i>
+    <span>Admit Cards</span>
+</a>
+
 <a href="{{ route('admin.reports.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
     <i class="bi bi-bar-chart"></i>
     <span>Reports</span>
