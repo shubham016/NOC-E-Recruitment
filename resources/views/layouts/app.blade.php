@@ -369,6 +369,113 @@
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
         }
 
+        /* ─── My Profile navbar dropdown ─── */
+        .profile-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid rgba(201, 168, 76, 0.35);
+            background: rgba(201, 168, 76, 0.08);
+            color: #1a2a4a;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .profile-nav-btn:hover,
+        .profile-nav-btn:focus,
+        .show > .profile-nav-btn {
+            background: rgba(201, 168, 76, 0.18);
+            border-color: #c9a84c;
+            color: #a07828;
+            text-decoration: none;
+            outline: none;
+        }
+
+        .profile-nav-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-nav-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-dropdown-menu {
+            min-width: 210px;
+            border: 1px solid #e8e2d4;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 0.4rem 0;
+            background: #fff;
+        }
+
+        .profile-dropdown-header {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid #f0ede6;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-dropdown-header .name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a2a4a;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 170px;
+        }
+
+        .profile-dropdown-header .role {
+            font-size: 0.72rem;
+            color: #a07828;
+        }
+
+        .profile-dropdown-menu .dropdown-item {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+
+        .profile-dropdown-menu .dropdown-item i {
+            color: #a07828;
+            font-size: 0.95rem;
+            width: 16px;
+        }
+
+        .profile-dropdown-menu .dropdown-item:hover {
+            background: rgba(201, 168, 76, 0.1);
+            color: #1a2a4a;
+        }
+
+        .profile-dropdown-menu .dropdown-divider {
+            border-color: #f0ede6;
+            margin: 0.25rem 0;
+        }
+
         /* Responsive */
         @media (max-width: 991px) {
             .layout-container {
@@ -466,9 +573,11 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Notifications -->
+                <ul class="navbar-nav ms-auto align-items-center">
+
                     @if(request()->is('candidate/*'))
+
+                        {{-- Notifications --}}
                         <li class="nav-item">
                             <a class="nav-link text-dark position-relative notification-link"
                                href="{{ route('candidate.notifications.index') }}"
@@ -485,13 +594,94 @@
                                                 echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
                                             }
                                         }
-                                    } catch (\Exception $e) {
-                                        // Silently fail if there's an error
-                                    }
+                                    } catch (\Exception $e) {}
                                 @endphp
                             </a>
                         </li>
+
+                        {{-- My Profile Dropdown --}}
+                        @php
+                            try {
+                                $navCandidate     = Auth::guard('candidate')->user();
+                                $navCandidateName = $navCandidate->name ?? 'Candidate';
+                                $navInitial       = strtoupper(substr($navCandidateName, 0, 1));
+                                $navPhoto         = null;
+                                if (!empty($navCandidate->citizenship_number)) {
+                                    $navPhoto = \DB::table('application_form')
+                                        ->where('citizenship_number', $navCandidate->citizenship_number)
+                                        ->whereNotNull('passport_size_photo')
+                                        ->orderBy('created_at', 'desc')
+                                        ->value('passport_size_photo');
+                                }
+                            } catch (\Exception $e) {
+                                $navCandidateName = 'Candidate';
+                                $navInitial       = 'C';
+                                $navPhoto         = null;
+                            }
+                        @endphp
+                        <li class="nav-item dropdown ms-2">
+                            <a class="profile-nav-btn dropdown-toggle"
+                               href="#"
+                               id="profileNavDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <!-- <span class="profile-nav-avatar">
+                                    @if($navPhoto)
+                                        <img src="{{ asset('storage/' . $navPhoto) }}" alt="{{ $navCandidateName }}">
+                                    @else
+                                        {{ $navInitial }}
+                                    @endif
+                                </span> -->
+                                <span class="d-none d-md-inline">My Profile</span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu"
+                                aria-labelledby="profileNavDropdown">
+
+                                <!-- {{-- Header: name + role --}}
+                                <li>
+                                    <div class="profile-dropdown-header">
+                                        <div class="name" title="{{ $navCandidateName }}">{{ $navCandidateName }}</div>
+                                        <div class="role">Applicant</div>
+                                    </div>
+                                </li> -->
+
+                                {{-- View Profile --}}
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('candidate.my-profile') }}">
+                                        <i class="bi bi-person"></i> View Profile
+                                    </a>
+                                </li>
+
+                                {{-- Edit Profile --}}
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('candidate.edit-profile') }}">
+                                        <i class="bi bi-pencil"></i> Edit Profile
+                                    </a>
+                                </li>
+
+                                <!-- {{-- Change Password --}}
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('candidate.change-password') }}">
+                                        <i class="bi bi-lock"></i> Change Password
+                                    </a>
+                                </li> -->
+                            </ul>
+                        </li>
+
+                        {{-- Standalone Logout (always visible for candidates) --}}
+                        <li class="nav-item ms-1">
+                            <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-link nav-link text-dark" type="submit" title="Logout">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+
                     @elseif(request()->is('reviewer/*'))
+
                         <li class="nav-item">
                             <a class="nav-link text-dark position-relative notification-link"
                                href="{{ route('reviewer.notifications.index') }}"
@@ -508,13 +698,13 @@
                                                 echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
                                             }
                                         }
-                                    } catch (\Exception $e) {
-                                        // Silently fail if there's an error
-                                    }
+                                    } catch (\Exception $e) {}
                                 @endphp
                             </a>
                         </li>
+
                     @elseif(request()->is('approver/*'))
+
                         <li class="nav-item">
                             <a class="nav-link text-dark position-relative notification-link"
                                href="{{ route('approver.notifications.index') }}"
@@ -531,23 +721,17 @@
                                                 echo '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . min($unreadCount, 99) . '</span>';
                                             }
                                         }
-                                    } catch (\Exception $e) {
-                                        // Silently fail if there's an error
-                                    }
+                                    } catch (\Exception $e) {}
                                 @endphp
                             </a>
                         </li>
+
                     @endif
 
+                    {{-- Logout for non-candidate roles (reviewer/approver/admin) --}}
+                    @if(!request()->is('candidate/*'))
                     <li class="nav-item">
-                        @if(request()->is('candidate/*'))
-                            <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
-                                @csrf
-                                <button class="btn btn-link nav-link text-dark" type="submit">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                </button>
-                            </form>
-                        @elseif(request()->is('reviewer/*'))
+                        @if(request()->is('reviewer/*'))
                             <form method="POST" action="{{ route('reviewer.logout') }}" class="d-inline">
                                 @csrf
                                 <button class="btn btn-link nav-link text-dark" type="submit">
@@ -570,6 +754,8 @@
                             </form>
                         @endif
                     </li>
+                    @endif
+
                 </ul>
             </div>
         </div>
@@ -824,129 +1010,72 @@
                 2099: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30]
             };
 
-            // Reference point: 2000-01-01 BS = 1943-04-14 AD
             const bsStartYear = 2000;
             const bsStartMonth = 1;
             const bsStartDay = 1;
-            const adRefDate = new Date(1943, 3, 14); // April 14, 1943
+            const adRefDate = new Date(1943, 3, 14);
 
-            // Get total days in a BS year
             function getTotalDaysInBsYear(year) {
                 if (!bsMonthData[year]) return 365;
                 return bsMonthData[year].reduce((sum, days) => sum + days, 0);
             }
 
-            // Get days in a specific BS month
             function getDaysInBsMonth(year, month) {
                 if (!bsMonthData[year]) return 30;
                 return bsMonthData[year][month - 1] || 30;
             }
 
-            // Count total days from BS reference date to given BS date
             function countBsDays(year, month, day) {
                 let totalDays = 0;
-
-                // Add days for complete years
                 for (let y = bsStartYear; y < year; y++) {
                     totalDays += getTotalDaysInBsYear(y);
                 }
-
-                // Add days for complete months in the target year
                 for (let m = 1; m < month; m++) {
                     totalDays += getDaysInBsMonth(year, m);
                 }
-
-                // Add remaining days
                 totalDays += day - bsStartDay;
-
                 return totalDays;
             }
 
-            // BS to AD conversion
             window.bsToAD = function (bsDateStr) {
                 try {
                     const parts = bsDateStr.split('-').map(Number);
-                    const bsYear = parts[0];
-                    const bsMonth = parts[1];
-                    const bsDay = parts[2];
-
-                    if (!bsYear || !bsMonth || !bsDay) {
-                        console.error('Invalid BS date format');
-                        return '';
-                    }
-
-                    // Calculate total days from reference
+                    const bsYear = parts[0], bsMonth = parts[1], bsDay = parts[2];
+                    if (!bsYear || !bsMonth || !bsDay) return '';
                     const totalDays = countBsDays(bsYear, bsMonth, bsDay);
-
-                    // Add days to AD reference date
                     const adDate = new Date(adRefDate);
                     adDate.setDate(adDate.getDate() + totalDays);
-
-                    const result = adDate.getFullYear() + '-' +
+                    return adDate.getFullYear() + '-' +
                         String(adDate.getMonth() + 1).padStart(2, '0') + '-' +
                         String(adDate.getDate()).padStart(2, '0');
-
-                    return result;
-                } catch (error) {
-                    console.error('BS to AD error:', error);
-                    return '';
-                }
+                } catch (e) { return ''; }
             };
 
-            // AD to BS conversion
             window.adToBS = function (adDateStr) {
                 try {
                     const adDate = new Date(adDateStr);
-                    if (isNaN(adDate.getTime())) {
-                        console.error('Invalid AD date');
-                        return '';
-                    }
-
-                    // Calculate days difference from reference
+                    if (isNaN(adDate.getTime())) return '';
                     const diffTime = adDate.getTime() - adRefDate.getTime();
                     let totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-                    // Find BS date
-                    let bsYear = bsStartYear;
-                    let bsMonth = bsStartMonth;
-                    let bsDay = bsStartDay;
-
-                    // Add days to find the BS date
+                    let bsYear = bsStartYear, bsMonth = bsStartMonth, bsDay = bsStartDay;
                     bsDay += totalDays;
-
-                    // Normalize the date
                     while (bsDay > getDaysInBsMonth(bsYear, bsMonth)) {
                         bsDay -= getDaysInBsMonth(bsYear, bsMonth);
                         bsMonth++;
-                        if (bsMonth > 12) {
-                            bsMonth = 1;
-                            bsYear++;
-                        }
+                        if (bsMonth > 12) { bsMonth = 1; bsYear++; }
                     }
-
                     while (bsDay < 1) {
                         bsMonth--;
-                        if (bsMonth < 1) {
-                            bsMonth = 12;
-                            bsYear--;
-                        }
+                        if (bsMonth < 1) { bsMonth = 12; bsYear--; }
                         bsDay += getDaysInBsMonth(bsYear, bsMonth);
                     }
-
-                    const result = bsYear + '-' +
+                    return bsYear + '-' +
                         String(bsMonth).padStart(2, '0') + '-' +
                         String(bsDay).padStart(2, '0');
-
-                    return result;
-                } catch (error) {
-                    console.error('AD to BS error:', error);
-                    return '';
-                }
+                } catch (e) { return ''; }
             };
 
-            // Mark as ready
             window.nepaliLibrariesReady = true;
-            console.log('Nepali Date Converter ready!');
         })();
     </script>
 
@@ -958,20 +1087,16 @@
             const footer = document.getElementById('footer');
             const toggleBtn = document.getElementById('sidebarToggle');
 
-            // Load saved state from localStorage or default to visible
             let isHidden = localStorage.getItem('sidebarHidden') === 'true';
 
-            // Apply initial state
             if (isHidden) {
                 sidebar.classList.add('hidden');
                 mainContent.classList.add('expanded');
                 footer.classList.add('expanded');
             }
 
-            // Toggle functionality
             toggleBtn.addEventListener('click', function () {
                 isHidden = !isHidden;
-
                 if (isHidden) {
                     sidebar.classList.add('hidden');
                     mainContent.classList.add('expanded');
@@ -981,8 +1106,6 @@
                     mainContent.classList.remove('expanded');
                     footer.classList.remove('expanded');
                 }
-
-                // Save state to localStorage
                 localStorage.setItem('sidebarHidden', isHidden);
             });
         });

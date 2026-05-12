@@ -29,6 +29,7 @@ use App\Http\Controllers\Candidate\ApplicationFormController as CandidateApplica
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\Candidate\AdmitCardController;
 use App\Http\Controllers\Candidate\CandidateResultController;
+use App\Http\Controllers\Candidate\Candidateprofilecontroller;
 use App\Http\Controllers\Candidate\NotificationController;
 use App\Http\Controllers\Approver\ApproverAuthController;
 use App\Http\Controllers\Approver\AssignedToMeController;
@@ -422,10 +423,15 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware(['candidate.session'])->group(function () {
+        // My Profile
+        Route::get('/my-profile',        [Candidateprofilecontroller::class, 'show'])   ->name('my-profile');
+        Route::get('/my-profile/edit',   [Candidateprofilecontroller::class, 'edit'])   ->name('edit-profile');
+        Route::put('/my-profile/update', [Candidateprofilecontroller::class, 'update']) ->name('my-profile.update');
 
         // Dashboard
         Route::get('/dashboard', [CandidateController::class, 'dashboard'])->name('dashboard');
-
+        
+        
         // Notifications
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
@@ -536,7 +542,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
         Route::get('/change-password', [CandidateController::class, 'showChangePasswordForm'])->name('change-password');
         Route::post('/change-password', [CandidateController::class, 'updatePassword'])->name('change-password.post');
-        Route::get('/my-profile', [CandidateController::class, 'profile'])->name('my-profile');
+        // Route::get('/my-profile', [CandidateController::class, 'profile'])->name('my-profile');
 
         // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {

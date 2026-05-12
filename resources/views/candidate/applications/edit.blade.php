@@ -660,8 +660,6 @@
                             class="form-control"
                             value="{{ old('institution_name', $applicationform->institution_name) }}"
                             required>
-<<<<<<< HEAD
-=======
                     </div>
                     <div class="col-md-3">
                         <label for="graduation_year" class="form-label">Passed Year in BS <span class="text-danger">*</span></label>
@@ -721,124 +719,6 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="character" class="form-label">Character Certificate <span class="text-danger">*</span></label>
-                            @if($applicationform->character)
-                                <div class="input-group" id="character_current">
-                                    <a href="{{ asset('storage/' . $applicationform->character) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('character_wrapper').classList.remove('d-none'); document.getElementById('character_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="character_wrapper" class="d-none mt-1">
-                                    <input type="file" name="character" id="character"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf" required>
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal)</label>
-                            @if($applicationform->equivalent)
-                                <div class="input-group" id="equivalent_current">
-                                    <a href="{{ asset('storage/' . $applicationform->equivalent) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('equivalent_wrapper').classList.remove('d-none'); document.getElementById('equivalent_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="equivalent_wrapper" class="d-none mt-1">
-                                    <input type="file" name="equivalent" id="equivalent"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
-                    </div>
-                    <div class="col-md-3">
-                        <label for="graduation_year" class="form-label">Passed Year in BS <span class="text-danger">*</span></label>
-                        <input type="text"
-                            name="graduation_year"
-                            id="graduation_year"
-                            class="form-control"
-                            placeholder="YYYY"
-                            inputmode="numeric"
-                            maxlength="4"
-                            autocomplete="off"
-                            value="{{ old('graduation_year', $applicationform->graduation_year) }}"
-                            required>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="graduation_year_english" class="form-label">Passed Year in AD <span class="text-danger">*</span></label>
-                        <input type="text"
-                            name="graduation_year_english"
-                            id="graduation_year_english"
-                            class="form-control"
-                            placeholder="YYYY"
-                            inputmode="numeric"
-                            maxlength="4"
-                            autocomplete="off"
-                            value="{{ old('graduation_year_english', $applicationform->graduation_year_english) }}"
-                            required>
-                    </div>
-                </div>
-<<<<<<< HEAD
-=======
-
-<!-- STEP 5: Work Experience -->
-                <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="university" class="form-label">University Name<span class="text-danger">*</span></label>
-                            <input type="text" name="university" id="university" class="form-control" value="{{ old('university', $applicationform->university) }}" required>
-                        </div>
-                        <div class="col-md-6">
-<<<<<<< HEAD
-                            <label for="transcript" class="form-label">Transcript Certificate<span class="text-danger">*</span></label>
-                            @if($applicationform->transcript)
-                                <div class="input-group" id="transcript_current">
-                                    <a href="{{ asset('storage/' . $applicationform->transcript) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('transcript_wrapper').classList.remove('d-none'); document.getElementById('transcript_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="transcript_wrapper" class="d-none mt-1">
-                                    <input type="file" name="transcript" id="transcript"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-=======
-                            <label for="years_of_experience" class="form-label">Years of Experience</label>
-                            <input type="number" name="years_of_experience" id="years_of_experience" class="form-control" min="0" step="0.5" value="{{ old('years_of_experience', $applicationform->years_of_experience) }}">
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-<<<<<<< HEAD
                             <label for="character" class="form-label">Character Certificate <span class="text-danger">*</span></label>
                             @if($applicationform->character)
                                 <div class="input-group" id="character_current">
@@ -1062,86 +942,11 @@
                             @if($applicationform->passport_size_photo)
                                 <div class="input-group" id="passport_size_photo_current">
                                     <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}"
-=======
-                            <label for="previous_organization" class="form-label">Previous Organization</label>
-                            <input type="text" name="previous_organization" id="previous_organization" class="form-control" value="{{ old('previous_organization', $applicationform->previous_organization) }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="previous_position" class="form-label">Previous Position</label>
-                            <input type="text" name="previous_position" id="previous_position" class="form-control" value="{{ old('previous_position', $applicationform->previous_position) }}">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="work_experience" class="form-label">Work Experience Document</label>
-                            @if($applicationform->work_experience)
-                                <div class="input-group" id="work_experience_current">
-                                    <a href="{{ asset('storage/' . $applicationform->work_experience) }}"
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                                     target="_blank"
                                     class="form-control text-primary text-decoration-none bg-white">
                                         📄 View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
-<<<<<<< HEAD
-                                            onclick="document.getElementById('passport_size_photo_wrapper').classList.remove('d-none'); document.getElementById('passport_size_photo_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="passport_size_photo_wrapper" class="d-none mt-1">
-                                    <input type="file" name="passport_size_photo" id="passport_size_photo"
-                                        class="form-control" accept="image/*">
-                                </div>
-                            @else
-                                <input type="file" name="passport_size_photo" id="passport_size_photo"
-                                    class="form-control" accept="image/*,application/pdf" required>
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="citizenship_id_document" class="form-label">Citizenship/ID Document<span class="text-danger"><small> (Please upload front and back in same page)</small>*</span></label>
-                            @if($applicationform->citizenship_id_document)
-                                <div class="input-group" id="citizenship_id_document_current">
-                                    <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}"
-=======
-                                            onclick="document.getElementById('work_experience_wrapper').classList.remove('d-none'); document.getElementById('work_experience_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="work_experience_wrapper" class="d-none mt-1">
-                                    <input type="file" name="work_experience" id="work_experience"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="work_experience" id="work_experience" class="form-control" accept="image/*,application/pdf">
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-light next-btn">Next</button>
-                    </div>
-                </div>
-
-<!-- STEP 6: Upload Documents -->
-                <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-dark">Step 6 — Upload Documents</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
-                            @if($applicationform->passport_size_photo)
-                                <div class="input-group" id="passport_size_photo_current">
-                                    <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}"
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-<<<<<<< HEAD
-=======
                                             onclick="document.getElementById('passport_size_photo_wrapper').classList.remove('d-none'); document.getElementById('passport_size_photo_current').classList.add('d-none')">
                                         Change
                                     </button>
@@ -1167,7 +972,6 @@
                                         📄 View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                                             onclick="document.getElementById('citizenship_id_document_wrapper').classList.remove('d-none'); document.getElementById('citizenship_id_document_current').classList.add('d-none')">
                                         Change
                                     </button>
@@ -1285,7 +1089,6 @@
                         </table>
 
                         <h6 class="text-secondary mt-4">Work Experience</h6>
-<<<<<<< HEAD
                             <table class="table table-bordered">
                                 <tr>
                                     <th width="30%">Has Experience</th>
@@ -1298,14 +1101,6 @@
                                     </td>
                                 </tr>
                             </table>
-=======
-                        <table class="table table-bordered">
-                            <tr><th width="30%">Has Experience</th><td id="p_has_work_experience"></td></tr>
-                            <tr><th>Years of Experience</th><td id="p_years_of_experience"></td></tr>
-                            <tr><th>Previous Organization</th><td id="p_previous_organization"></td></tr>
-                            <tr><th>Previous Position</th><td id="p_previous_position"></td></tr>
-                        </table>
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 
                         <h6 class="text-secondary mt-4">Uploaded Documents</h6>
                         <table class="table table-bordered">
@@ -1410,15 +1205,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Initialize date pickers
-<<<<<<< HEAD
     
     document.querySelectorAll('.nepali-date').forEach(initNDP);
     // initNDP(document.getElementById('birth_date_bs'));
     // initNDP(document.getElementById('citizenship_issue_date_bs'));
-=======
-    initNDP(document.getElementById('birth_date_bs'));
-    initNDP(document.getElementById('citizenship_issue_date_bs'));
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 });
 </script>
 
@@ -1680,14 +1470,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const el = document.getElementById('step' + step);
         if (el) { el.classList.remove('d-none'); el.classList.add('active'); }
         currentStep = step;
-<<<<<<< HEAD
         if (step === 7) {
             populatePreview();
             populateExperiencePreview();
         }
-=======
-        if (step === 7) populatePreview();
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
         updateTabsAndProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1702,7 +1488,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         let isValid = true, firstInvalid = null;
         stepEl.querySelectorAll('input[required],select[required],textarea[required]').forEach(field => {
-<<<<<<< HEAD
             // Skip disabled fields (e.g. cascading district/municipality selects not yet populated)
             if (field.disabled) return;
             // Skip fields inside any hidden ancestor div (covers _wrapper divs and d-none parents)
@@ -1712,10 +1497,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (field.type === 'checkbox') {
                 // Skip terms_agree when validating a hidden step (handled separately on submit)
                 if (field.id === 'terms_agree' && wasHidden) return;
-=======
-            if (field.parentElement?.closest('.conditionally-hidden')) return;
-            if (field.type === 'checkbox') {
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
                 if (!field.checked) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'You must agree before continuing'); if (!firstInvalid) firstInvalid = field; } return;
             }
             if (field.type === 'file') {
@@ -1771,7 +1552,6 @@ document.addEventListener('DOMContentLoaded', function () {
     } else { showStep(1); }
 
     form.addEventListener('submit', e => {
-<<<<<<< HEAD
         let termsChecked = document.getElementById('terms_agree')?.checked;
         for (let i = 1; i <= totalSteps; i++) { if (!validateStep(i)) { showStep(i); e.preventDefault(); showAutoSaveStatus('⚠ Please complete all required fields', 'danger'); return; } }
         // Re-verify terms_agree since validateStep on hidden step 7 may reset it
@@ -1783,9 +1563,6 @@ document.addEventListener('DOMContentLoaded', function () {
             showAutoSaveStatus('⚠ Please agree to the declaration', 'danger');
             return;
         }
-=======
-        for (let i = 1; i <= totalSteps; i++) { if (!validateStep(i)) { showStep(i); e.preventDefault(); showAutoSaveStatus('⚠ Please complete all required fields', 'danger'); return; } }
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
         showAutoSaveStatus('📤 Submitting...', 'light');
     });
 
@@ -1840,9 +1617,9 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_institution_name', val('institution_name'));
         set('p_graduation_year', val('graduation_year'));
         set('p_has_work_experience', val('has_work_experience'));
-        // set('p_years_of_experience', val('years_of_experience'));
-        // set('p_previous_organization', val('previous_organization'));
-        // set('p_previous_position', val('previous_position'));
+        set('p_years_of_experience', val('years_of_experience'));
+        set('p_previous_organization', val('previous_organization'));
+        set('p_previous_position', val('previous_position'));
 
         function previewFile(containerId, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`);
@@ -1939,17 +1716,12 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('input', function(e) {
         if (e.target.type === 'file') return;
         populatePreview();
-<<<<<<< HEAD
         populateExperiencePreview();
+
     });
     form.addEventListener('change', function(e) {
         populatePreview();
         populateExperiencePreview();
-=======
-    });
-    form.addEventListener('change', function(e) {
-        populatePreview();
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
     });
 
     console.log('✓ Edit form initialized');
@@ -2054,65 +1826,68 @@ document.addEventListener('DOMContentLoaded', function () {
         this.setSelectionRange(pos + cleaned.length, pos + cleaned.length);
         this.dispatchEvent(new Event('input', { bubbles: true }));
     });
-<<<<<<< HEAD
 
-   })(); // close Devanagari IIFE
-
-// ── Work Experience Preview (global scope) ────────────────────
-window.populateExperiencePreview = function () {
+    // For Work Experiences
+    function populateExperiencePreview() {
     let html = "";
     for (let i = 1; i <= 3; i++) {
-        const org   = document.querySelector(`[name="exp${i}_organization"]`)?.value || '';
-        const pos   = document.querySelector(`[name="exp${i}_position"]`)?.value || '';
-        const start = document.querySelector(`[name="exp${i}_start_date_bs"]`)?.value || '';
-        const end   = document.querySelector(`[name="exp${i}_end_date_bs"]`)?.value || '';
-        const years = document.querySelector(`[name="exp${i}_years"]`)?.value || '';
 
-        const fileInput    = document.querySelector(`[name="exp${i}_document"]`);
-        const file         = fileInput?.files?.[0];
-        const existingFile = fileInput?.getAttribute("data-existing") || '';
+        let org = document.querySelector(`[name="exp${i}_organization"]`)?.value;
+        let pos = document.querySelector(`[name="exp${i}_position"]`)?.value;
+        let start = document.querySelector(`[name="exp${i}_start_date"]`)?.value;
+        let end = document.querySelector(`[name="exp${i}_end_date"]`)?.value;
+        let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
 
-        // Skip completely empty rows
-        if (!org && !pos && !start && !end && !years && !file && !existingFile) continue;
+        let fileInput = document.querySelector(`[name="exp${i}_document"]`);
+        let file = fileInput?.files?.[0];
+
+        // 👇 EXISTING FILE (FROM DB)
+        let existingFile = fileInput?.getAttribute("data-existing");
 
         html += `
-        <div style="margin-bottom:16px; padding:12px; border:1px solid #ddd; border-radius:8px;">
-            <h6 class="mb-2">Experience ${i}</h6>
-            <table class="table table-sm table-borderless mb-1">
-                <tr><td width="120"><b>Organization:</b></td><td>${org || '-'}</td></tr>
-                <tr><td><b>Position:</b></td><td>${pos || '-'}</td></tr>
-                <tr><td><b>Start Date:</b></td><td>${start || '-'}</td></tr>
-                <tr><td><b>End Date:</b></td><td>${end || '-'}</td></tr>
-                <tr><td><b>Years:</b></td><td>${years || '-'}</td></tr>
-            </table>`;
+        <div style="margin-bottom:20px; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            <h6>Experience ${i}</h6>
+
+            <b>Organization:</b> ${org || '-'} <br>
+            <b>Position:</b> ${pos || '-'} <br>
+            <b>Start:</b> ${start || '-'} <br>
+            <b>End:</b> ${end || '-'} <br>
+            <b>Years:</b> ${years || '-'} <br>
+        `;
+
+        // ================= FILE PREVIEW =================
 
         if (file) {
-            const url = URL.createObjectURL(file);
+            // NEW UPLOADED FILE
+            let url = URL.createObjectURL(file);
+
             if (file.type.includes("pdf")) {
-                html += `<iframe src="${url}" style="width:100%;height:250px;border:1px solid #ccc;"></iframe>`;
+                html += `<iframe src="${url}" style="width:100%; height:300px;"></iframe>`;
             } else if (file.type.startsWith("image/")) {
-                html += `<img src="${url}" style="max-width:180px;border:1px solid #ccc;padding:3px;">`;
+                html += `<img src="${url}" style="max-width:200px;">`;
             }
+
         } else if (existingFile) {
-            html += `<div class="mt-1"><a href="${existingFile}" target="_blank">📄 View Uploaded Document</a></div>`;
+            // EXISTING FILE FROM DATABASE
+            html += `
+                <div style="margin-top:10px;">
+                    <a href="${existingFile}" target="_blank">📄 View Uploaded Document</a>
+                </div>
+            `;
         } else {
-            html += `<div class="text-muted small">No document uploaded</div>`;
+            html += `<div class="text-muted">No document uploaded</div>`;
         }
 
         html += `</div>`;
     }
 
-    const container = document.getElementById("experience_preview");
-    if (container) {
-        container.innerHTML = html || "<span class='text-muted'>No experience added</span>";
-    }
+    document.getElementById("experience_preview").innerHTML =
+        html || "<span class='text-muted'>No experience added</span>";
 
-    const hasExp = document.querySelector('[name="has_work_experience"]')?.value;
-    const hasExpEl = document.getElementById("p_has_work_experience");
-    if (hasExpEl) hasExpEl.innerText = hasExp || '-';
-};
-=======
+    // Has experience field
+    let hasExp = document.querySelector('[name="has_work_experience"]')?.value;
+    document.getElementById("p_has_work_experience").innerText = hasExp || '-';
+}
 })();
->>>>>>> efe7d213166d7eb2c3aef5455d337ce01292fe6f
 </script>
 @endsection
