@@ -42,9 +42,16 @@ class JobPosting extends Model
         'application_fee',
         'double_dastur_fee',
         'status',
+        'official_signature',
         'posted_by',
         'min_age',
         'max_age',
+        'min_age_male',
+        'max_age_male',
+        'min_age_female',
+        'max_age_female',
+        'min_age_disabled',
+        'max_age_disabled',
         'demand_posts',
         'category_fees',
     ];
@@ -66,6 +73,12 @@ class JobPosting extends Model
         'inclusive_posts' => 'integer',
         'min_age' => 'integer',
         'max_age' => 'integer',
+        'min_age_male' => 'integer',
+        'max_age_male' => 'integer',
+        'min_age_female' => 'integer',
+        'max_age_female' => 'integer',
+        'min_age_disabled' => 'integer',
+        'max_age_disabled' => 'integer',
         'demand_posts' => 'array',
         'category_fees' => 'array',
     ];
@@ -125,7 +138,15 @@ class JobPosting extends Model
 
     public function scopeOpen($query)
     {
-        return $query->where('deadline', '>', now());
+        return $query->where(function ($q) {
+            $q->where(function ($inner) {
+                $inner->whereNotNull('double_dastur_date')
+                      ->where('double_dastur_date', '>=', now());
+            })->orWhere(function ($inner) {
+                $inner->whereNull('double_dastur_date')
+                      ->where('deadline', '>=', now());
+            });
+        });
     }
 
     public function scopePostedByAdmin($query)
@@ -175,9 +196,9 @@ class JobPosting extends Model
             $requiredLevel = $educationLevels[$this->minimum_qualification] ?? 0;
             $candidateLevel = $educationLevels[$application->education_level] ?? 0;
 
-            if ($candidateLevel < $requiredLevel) {
-                $errors[] = "Required education: {$this->minimum_qualification}. Your education: {$application->education_level}.";
-            }
+            // if ($candidateLevel < $requiredLevel) {
+            //     $errors[] = "Required education: {$this->minimum_qualification}. Your education: {$application->education_level}.";
+            // }
         }
 
         // Check Job Category (Open or Inclusive)

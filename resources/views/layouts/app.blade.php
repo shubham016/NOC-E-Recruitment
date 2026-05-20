@@ -22,6 +22,9 @@
         rel="stylesheet" type="text/css" />
 
     <style>
+        /* Raise picker calendar above sidebar (z-index:1020) and navbar (z-index:1030) */
+        .ndp-container { z-index: 9999 !important; }
+
         .nav-tabs .nav-link {
             color: #a07828 !important;
         }

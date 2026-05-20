@@ -12,17 +12,78 @@ class PaymentController extends Controller
 
 
     // =======================
+    // Shared amount calculator
+    // =======================
+
+    /**
+     * Calculate the correct payable amount for an application.
+     * In double dastur period: sums each selected category's double_dastur_fee
+     * across all sibling jobs (mirrors JS updateTotalFee logic).
+     * In normal period: uses stored total_fee, falls back to application_fee.
+     */
+    private function calculateAmount(ApplicationForm $application): float
+    {
+        $job = $application->jobPosting;
+
+        $inDoubleDastur = $job
+            && $job->deadline && now()->gt($job->deadline)
+            && $job->double_dastur_fee && $job->double_dastur_date
+            && now()->lte($job->double_dastur_date);
+
+        if ($inDoubleDastur) {
+            $selectedCategories = $application->applied_category ?? [];
+            if (!is_array($selectedCategories)) {
+                $selectedCategories = json_decode($selectedCategories, true) ?? [];
+            }
+
+            $siblingJobs = \App\Models\JobPosting::where('status', 'active')
+                ->where('position', $job->position)
+                ->where('level', $job->level)
+                ->where('service_group', $job->service_group)
+                ->where('double_dastur_date', '>=', now())
+                ->get();
+
+            $amount = 0;
+            foreach ($selectedCategories as $cat) {
+                $match = null;
+                foreach ($siblingJobs as $sj) {
+                    if ($cat === 'open'              && ($sj->has_open || $sj->category === 'open'))           { $match = $sj; break; }
+                    if ($cat === 'inclusive'          && ($sj->has_inclusive || $sj->category === 'inclusive')) { $match = $sj; break; }
+                    if ($cat === 'internal_open'      && $sj->has_internal_open)                               { $match = $sj; break; }
+                    if ($cat === 'internal_inclusive' && $sj->has_internal_inclusive)                          { $match = $sj; break; }
+                    if ($cat === 'internal_appraisal' && $sj->category === 'internal_appraisal')               { $match = $sj; break; }
+                }
+                if ($match) {
+                    $amount += (float) ($match->double_dastur_fee ?: $match->application_fee);
+                }
+            }
+
+            return $amount > 0 ? $amount : (float) $job->double_dastur_fee;
+        }
+
+        // Normal period
+        return ((float) $application->total_fee > 0)
+            ? (float) $application->total_fee
+            : (float) (optional($job)->application_fee ?? 0);
+    }
+
+    // =======================
     // Esewa Payment
     // =======================
-    // ESEWA START 
+    // ESEWA START
         public function startEsewa($draftId)
         {
             $application = ApplicationForm::findOrFail($draftId);
-            // $amount = 1000;
-            // $amount = optional($application->jobPosting)->application_fee ?? 0;
-            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
+            $amount = $this->calculateAmount($application);
+
+            if ($amount <= 0) {
+                return redirect()->back()->with('error', 'Invalid payment amount. Please contact support.');
+            }
+
             $tax_amount = 0;
-            $total_amount = $amount + $tax_amount;
+            // Send as integer string — eSewa displays exactly what we POST, no decimals wanted
+            $amount       = (string) (int) round($amount);
+            $total_amount = (string) ((int) $amount + $tax_amount);
             $transaction_uuid = uniqid('txn_');
             $product_code = 'EPAYTEST'; // sandbox
             $successUrl = route('candidate.payment.esewa.success');
@@ -120,10 +181,14 @@ class PaymentController extends Controller
         public function startKhalti($draftId)
         {
             $application = ApplicationForm::findOrFail($draftId);
-            // $amount = 1000; 
-            // $amount = optional($application->jobPosting)->application_fee ?? 0;
-            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
-            $amount_in_paisa = $amount * 100;
+            $amount = $this->calculateAmount($application);
+
+            if ($amount <= 0) {
+                return redirect()->back()->with('error', 'Invalid payment amount. Please contact support.');
+            }
+
+            // Khalti requires amount in paisa as a strict integer
+            $amount_in_paisa = (int) round($amount * 100);
             $txRef = uniqid('khalti_');
 
             // Create pending payment
@@ -135,6 +200,9 @@ class PaymentController extends Controller
                 'txRef' => $txRef
             ]);
 
+            $candidateName  = $application->name_english ?? 'Candidate';
+            $candidateEmail = $application->email ?? 'candidate@example.com';
+
             $response = Http::withHeaders([
                 'Authorization' => 'Key ' . env('KHALTI_SECRET_KEY'),
                 'Content-Type' => 'application/json',
@@ -145,17 +213,22 @@ class PaymentController extends Controller
                 "purchase_order_id" => $txRef,
                 "purchase_order_name" => "Application Fee",
                 "customer_info" => [
-                    "name" => auth()->user()->name ?? "Candidate",
-                    "email" => auth()->user()->email ?? "test@test.com",
+                    "name" => $candidateName,
+                    "email" => $candidateEmail,
                     "phone" => "9800000000"
                 ]
             ]);
 
-            if ($response->successful()) {
+            if ($response->successful() && isset($response['payment_url'])) {
                 return redirect($response['payment_url']);
             }
 
-            return back()->with('error', 'Khalti initiation failed');
+            $responseJson = $response->json() ?? [];
+            $khaltiError  = $responseJson['detail']
+                ?? $responseJson['error_key']
+                ?? ($response->body() ?: ('HTTP ' . $response->status()));
+
+            return back()->with('error', 'Khalti initiation failed: ' . $khaltiError);
         }
 
         // Khalti success
@@ -215,9 +288,7 @@ class PaymentController extends Controller
         public function startConnectIps($draftId)
         {
             $application = ApplicationForm::findOrFail($draftId);
-            // $amount = 1000; 
-            // $amount = optional($application->jobPosting)->application_fee ?? 0;
-            $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
+            $amount = $this->calculateAmount($application);
             $amountInPaisa = $amount * 100;; // Change if needed
 
             $txnId = uniqid('cips_');

@@ -75,9 +75,28 @@ class ApplicationFormController extends Controller
                     ->withErrors(['error' => 'Job posting not found']);
             }
 
-            // Load all sibling jobs sharing the same position+level+service_group
+            // Block if job is fully expired: regular deadline passed AND double dastur window also closed (or not set)
+            $fullyExpired = $job->status !== 'active'
+                || (
+                    $job->deadline && now()->gt($job->deadline)
+                    && (!$job->double_dastur_date || now()->gt($job->double_dastur_date))
+                );
+
+            if ($fullyExpired) {
+                return redirect()->route('candidate.jobs.index')
+                    ->with('error', 'The application deadline for this vacancy has fully expired. Applications are no longer accepted.');
+            }
+
+            // Load all sibling jobs sharing the same position + level + service_group.
+            // Include jobs within regular deadline OR still within their double dastur window.
             $groupJobs = JobPosting::where('status', 'active')
-                ->where('deadline', '>=', now())
+                ->where(function ($q) {
+                    $q->where('deadline', '>=', now())
+                      ->orWhere(function ($inner) {
+                          $inner->whereNotNull('double_dastur_date')
+                                ->where('double_dastur_date', '>=', now());
+                      });
+                })
                 ->where('position', $job->position)
                 ->where('level', $job->level)
                 ->where('service_group', $job->service_group)
@@ -400,20 +419,45 @@ class ApplicationFormController extends Controller
             ->with('error', 'This application has already been submitted and cannot be edited.');
     }
 
-    $job = $applicationform->jobPosting;
-    $groupJobs = collect();
+    $job = $applicationform->job_posting_id
+        ? JobPosting::find($applicationform->job_posting_id)
+        : null;
+
+    // Full expiry guard — block edit if both deadlines have passed
     if ($job) {
-        $groupJobs = JobPosting::where('position', $job->position)
-            ->where('level', $job->level)
-            ->where('service_group', $job->service_group)
-            ->orderBy('advertisement_no', 'asc')
-            ->get();
-        if ($groupJobs->isEmpty()) {
-            $groupJobs = collect([$job]);
+        $fullyExpired = $job->status !== 'active'
+            || (
+                $job->deadline && now()->gt($job->deadline)
+                && (!$job->double_dastur_date || now()->gt($job->double_dastur_date))
+            );
+
+        if ($fullyExpired) {
+            return redirect()->route('candidate.applications.index')
+                ->with('error', 'The application deadline for this vacancy has fully expired. Editing is no longer allowed.');
         }
     }
 
-    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs'));
+    $groupJobs = $job
+        ? JobPosting::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('deadline', '>=', now())
+                  ->orWhere(function ($inner) {
+                      $inner->whereNotNull('double_dastur_date')
+                            ->where('double_dastur_date', '>=', now());
+                  });
+            })
+            ->where('position', $job->position)
+            ->where('level', $job->level)
+            ->where('service_group', $job->service_group)
+            ->orderBy('advertisement_no', 'asc')
+            ->get()
+        : collect();
+
+    if ($groupJobs->isEmpty() && $job) {
+        $groupJobs = collect([$job]);
+    }
+
+    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs', 'candidate'));
 }
 
     /**
@@ -549,7 +593,7 @@ class ApplicationFormController extends Controller
             'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
             'birth_date_bs' => 'required|string',
-            'age' => 'required|integer|min:18|max:40',
+            'age' => 'required|string|min:18|max:40',
             'phone' => 'required|digits:10',
             'email' => 'required|email',
             'gender' => 'required|in:Male,Female,Other',
@@ -591,7 +635,7 @@ class ApplicationFormController extends Controller
             'advertisement_no' => 'required|string',
             'department' => 'required|string',
             'applying_position' => 'required|string',
-            'alternate_phone_number' => 'required|digits:10',
+            'alternate_phone_number' => 'nullable|digits:10',
         ];
 
         // File validation - required on store unless already exists in draft
@@ -603,6 +647,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         } else {
             $rules['citizenship_id_document'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['passport_size_photo'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
@@ -611,6 +656,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         // Conditional validation for NOC ID Card

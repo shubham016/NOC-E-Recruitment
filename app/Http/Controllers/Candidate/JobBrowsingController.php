@@ -16,8 +16,35 @@ class JobBrowsingController extends Controller
      */
     public function index(Request $request)
     {
+        // Determine if the logged-in candidate is a NOC employee
+        $isNocEmployee = false;
+        if (Session::has('candidate_logged_in')) {
+            $nocValue = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->value('noc_employee');
+            $isNocEmployee = strtolower((string) $nocValue) === 'yes';
+        }
+
         $query = JobPosting::where('status', 'active')
-            ->where('deadline', '>=', now());
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            });
+
+        // Non-NOC candidates: hide internal-only vacancies (no open, no inclusive component)
+        if (!$isNocEmployee) {
+            $query->where(function ($q) {
+                $q->where('has_open', true)
+                  ->orWhere('has_inclusive', true)
+                  ->orWhere('category', 'open')
+                  ->orWhere('category', 'inclusive');
+            });
+        }
 
         // Search
         if ($request->filled('search')) {
@@ -103,10 +130,36 @@ class JobBrowsingController extends Controller
      */
     public function show($id)
     {
-        $job = JobPosting::where('status', 'active')
-            ->where('deadline', '>=', now())
-            ->withCount('applications')
-            ->findOrFail($id);
+        // Determine NOC status for this candidate
+        $isNocEmployee = false;
+        if (Session::has('candidate_logged_in')) {
+            $nocValue = DB::table('candidate_registration')
+                ->where('id', Session::get('candidate_id'))
+                ->value('noc_employee');
+            $isNocEmployee = strtolower((string) $nocValue) === 'yes';
+        }
+
+        $jobQuery = JobPosting::where('status', 'active')
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            });
+
+        if (!$isNocEmployee) {
+            $jobQuery->where(function ($q) {
+                $q->where('has_open', true)
+                  ->orWhere('has_inclusive', true)
+                  ->orWhere('category', 'open')
+                  ->orWhere('category', 'inclusive');
+            });
+        }
+
+        $job = $jobQuery->withCount('applications')->findOrFail($id);
 
         // Check if candidate already applied
         $hasApplied = false;
@@ -133,7 +186,15 @@ class JobBrowsingController extends Controller
         }
 
         $groupJobs = JobPosting::where('status', 'active')
-            ->where('deadline', '>=', now())
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            })
             ->where('position', $job->position)
             ->where('level', $job->level)
             ->where('service_group', $job->service_group)

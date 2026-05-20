@@ -42,9 +42,78 @@ class PaymentController extends Controller
                 ->with('info', 'Payment has already been completed for this application.');
         }
 
-        // $amount = config('services.esewa.amount', 500);
-        $amount = $application->total_fee ?? optional($application->jobPosting)->application_fee ?? 0;
-        // $amount = $application->jobPosting->application_fee ?? 0;
+        $job = $application->jobPosting;
+
+        // Block payment if both regular deadline and double dastur window have fully expired
+        if ($job) {
+            $fullyExpired = $job->status !== 'active'
+                || (
+                    $job->deadline && now()->gt($job->deadline)
+                    && (!$job->double_dastur_date || now()->gt($job->double_dastur_date))
+                );
+
+            if ($fullyExpired) {
+                return redirect()->route('candidate.applications.index')
+                    ->with('error', 'The application deadline for this vacancy has fully expired. Payment is no longer accepted.');
+            }
+        }
+
+        // Determine if the primary job is in double dastur period
+        $inDoubleDastur = $job
+            && $job->deadline && now()->gt($job->deadline)
+            && $job->double_dastur_fee && $job->double_dastur_date
+            && now()->lte($job->double_dastur_date);
+
+        if ($inDoubleDastur) {
+            // Recalculate total across ALL selected categories using each sibling job's double_dastur_fee.
+            // This mirrors the JS updateTotalFee() logic in the application form.
+            $selectedCategories = $application->applied_category ?? [];
+            if (!is_array($selectedCategories)) {
+                $selectedCategories = json_decode($selectedCategories, true) ?? [];
+            }
+
+            // Load all sibling jobs (same position+level+service_group, still within double dastur window)
+            $siblingJobs = \App\Models\JobPosting::where('status', 'active')
+                ->where('position', $job->position)
+                ->where('level', $job->level)
+                ->where('service_group', $job->service_group)
+                ->where('double_dastur_date', '>=', now())
+                ->get();
+
+            // Map each selected category to its sibling job's double_dastur_fee
+            $amount = 0;
+            foreach ($selectedCategories as $cat) {
+                $match = null;
+                foreach ($siblingJobs as $sj) {
+                    if ($cat === 'open'               && ($sj->has_open || $sj->category === 'open'))                { $match = $sj; break; }
+                    if ($cat === 'inclusive'           && ($sj->has_inclusive || $sj->category === 'inclusive'))      { $match = $sj; break; }
+                    if ($cat === 'internal_open'       && $sj->has_internal_open)                                    { $match = $sj; break; }
+                    if ($cat === 'internal_inclusive'  && $sj->has_internal_inclusive)                               { $match = $sj; break; }
+                    if ($cat === 'internal_appraisal'  && $sj->category === 'internal_appraisal')                    { $match = $sj; break; }
+                }
+                if ($match) {
+                    $amount += (float) ($match->double_dastur_fee ?: $match->application_fee);
+                }
+            }
+
+            // Fallback: if nothing matched, use primary job's double_dastur_fee
+            if ($amount <= 0) {
+                $amount = (float) $job->double_dastur_fee;
+            }
+        } else {
+            // Normal period: use stored total_fee, fall back to application_fee
+            $amount = ((float) $application->total_fee > 0)
+                ? (float) $application->total_fee
+                : (float) (optional($job)->application_fee ?? 0);
+        }
+
+        if ($amount <= 0) {
+            return redirect()->route('candidate.applications.index')
+                ->with('error', 'Invalid payment amount. Please contact support.');
+        }
+
+        // Send as integer string — eSewa displays exactly what we POST, no decimals wanted
+        $amount = (string) (int) round($amount);
         $txRef = 'TXN-' . strtoupper(Str::random(10)) . '-' . time();
 
         // Delete any pending payments and create a new one

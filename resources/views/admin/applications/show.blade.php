@@ -367,6 +367,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Application Status History -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            Application Status History
+        </div>
+        <div class="detail-card-body">
+            @php $histories = $application->statusHistories; @endphp
+
+            @if($histories->isEmpty())
+                <p class="text-muted mb-0">No history available yet.</p>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:50px">S.N</th>
+                                <th>Stage Name</th>
+                                <th>Done By</th>
+                                <th>Date &amp; Time</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($histories as $index => $history)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>
+                                        @php
+                                            $badgeClass = match($history->stage_name) {
+                                                'Approved'   => 'bg-success',
+                                                'Rejected'   => 'bg-danger',
+                                                'Verified'   => 'bg-primary',
+                                                'Allow Edit' => 'bg-warning text-dark',
+                                                default      => 'bg-secondary',
+                                            };
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }}">
+                                            {{ $history->stage_name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{ $history->done_by }}
+                                        <small class="d-block text-muted">
+                                            {{ ucfirst($history->done_by_type) }}
+                                        </small>
+                                    </td>
+                                    <td>{{ $history->created_at->format('F d, Y') }}</td>
+                                    <td>{{ $history->remarks ?: '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
 </div>
 
 <!-- Status Update Modal -->

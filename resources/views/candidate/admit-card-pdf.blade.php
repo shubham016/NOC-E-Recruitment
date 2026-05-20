@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>प्रवेश पत्र - {{ $application->id }}</title>
     <style>
         @font-face {
@@ -18,20 +19,20 @@
             font-weight: bold;
             src: url('{{ public_path("storage/fonts/NotoSansDevanagari-Bold.ttf") }}') format('truetype');
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'NotoSansDevanagari', 'DejaVu Sans', sans-serif;
             padding: 0;
             font-size: 12px;
             line-height: 1.4;
         }
-        
+
         .admit-card-wrapper {
             width: 100%;
             max-width: 800px;
@@ -320,10 +321,11 @@
         }
     </style>
 </head>
+
 <body>
     <div class="admit-card-wrapper">
         <div class="admit-card">
-            
+
             <!-- Header Section -->
             <div class="header-section">
                 <div class="header-left">
@@ -336,7 +338,9 @@
                 <div class="header-center">
                     <h2 class="org-title">{{ $application->organization_name ?? 'नेपाल आयल निगम लिमिटेड' }}</h2>
                     <h4 class="org-subtitle">{{ $application->organization_address ?? 'केन्द्रिय कार्यालय, टेकु' }}</h4>
-                    <p class="exam-type">{{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}</p>
+                    <p class="exam-type">
+                        {{ $application->exam_type ?? 'खुल्ला तथा समावेशी प्रतियोगितात्मक लिखित / प्रयोगात्मक /अन्तर्वार्ता परीक्षाको' }}
+                    </p>
                     <h3 class="card-title">प्रवेश पत्र</h3>
                 </div>
                 <div class="header-right">
@@ -348,7 +352,7 @@
                                 फोटो
                             </div>
                         @endif
-                        
+
                         @if(!empty($nocLogoImage))
                             <img src="{{ $nocLogoImage }}" alt="NOC Stamp" class="noc-stamp-overlay">
                         @endif
@@ -357,79 +361,81 @@
             </div>
 
             @php
-                $npNums = ['0'=>'०','1'=>'१','2'=>'२','3'=>'३','4'=>'४','5'=>'५','6'=>'६','7'=>'७','8'=>'८','9'=>'९'];
-                $toNp = function($str) use ($npNums) { return strtr((string)$str, $npNums); };
+                $npNums = ['0' => '०', '1' => '१', '2' => '२', '3' => '३', '4' => '४', '5' => '५', '6' => '६', '7' => '७', '8' => '८', '9' => '९'];
+                $toNp = function ($str) use ($npNums) {
+                    return strtr((string) $str, $npNums); };
 
                 $enNpPhrases = [
-                    'General Manager'        => 'महाप्रबन्धक',
+                    'General Manager' => 'महाप्रबन्धक',
                     'Deputy General Manager' => 'उप महाप्रबन्धक',
-                    'Chief Manager'          => 'मुख्य प्रबन्धक',
-                    'Assistant Manager'      => 'सहायक प्रबन्धक',
-                    'Deputy Manager'         => 'उप प्रबन्धक',
-                    'Senior Manager'         => 'वरिष्ठ प्रबन्धक',
-                    'Senior Assistant'       => 'वरिष्ठ सहायक',
-                    'Junior Assistant'       => 'कनिष्ठ सहायक',
-                    'Senior Officer'         => 'वरिष्ठ अधिकृत',
-                    'Junior Officer'         => 'कनिष्ठ अधिकृत',
-                    'Executive Director'     => 'कार्यकारी निर्देशक',
-                    'Human Resources'        => 'मानव संसाधन',
+                    'Chief Manager' => 'मुख्य प्रबन्धक',
+                    'Assistant Manager' => 'सहायक प्रबन्धक',
+                    'Deputy Manager' => 'उप प्रबन्धक',
+                    'Senior Manager' => 'वरिष्ठ प्रबन्धक',
+                    'Senior Assistant' => 'वरिष्ठ सहायक',
+                    'Junior Assistant' => 'कनिष्ठ सहायक',
+                    'Senior Officer' => 'वरिष्ठ अधिकृत',
+                    'Junior Officer' => 'कनिष्ठ अधिकृत',
+                    'Executive Director' => 'कार्यकारी निर्देशक',
+                    'Human Resources' => 'मानव संसाधन',
                     'Information Technology' => 'सूचना प्रविधि',
-                    'Manager'                => 'प्रबन्धक',
-                    'Assistant'              => 'सहायक',
-                    'Officer'                => 'अधिकृत',
-                    'Engineer'               => 'इन्जिनियर',
-                    'Accountant'             => 'लेखापाल',
-                    'Supervisor'             => 'पर्यवेक्षक',
-                    'Director'               => 'निर्देशक',
-                    'Level'                  => 'तह',
-                    'Technical'              => 'प्राविधिक',
-                    'Finance'                => 'वित्त',
-                    'Administration'         => 'प्रशासन',
-                    'Marketing'              => 'बजार',
-                    'Operations'             => 'सञ्चालन',
-                    'Planning'               => 'योजना',
-                    'Procurement'            => 'खरिद',
-                    'Accounts'               => 'लेखा',
-                    'Legal'                  => 'कानुनी',
-                    'IT'                     => 'सूचना प्रविधि',
-                    'Others'                 => 'अन्य',
-                    'Other'                  => 'अन्य',
-                    'General'                => 'सामान्य',
+                    'Manager' => 'प्रबन्धक',
+                    'Assistant' => 'सहायक',
+                    'Officer' => 'अधिकृत',
+                    'Engineer' => 'इन्जिनियर',
+                    'Accountant' => 'लेखापाल',
+                    'Supervisor' => 'पर्यवेक्षक',
+                    'Director' => 'निर्देशक',
+                    'Level' => 'तह',
+                    'Technical' => 'प्राविधिक',
+                    'Finance' => 'वित्त',
+                    'Administration' => 'प्रशासन',
+                    'Marketing' => 'बजार',
+                    'Operations' => 'सञ्चालन',
+                    'Planning' => 'योजना',
+                    'Procurement' => 'खरिद',
+                    'Accounts' => 'लेखा',
+                    'Legal' => 'कानुनी',
+                    'IT' => 'सूचना प्रविधि',
+                    'Others' => 'अन्य',
+                    'Other' => 'अन्य',
+                    'General' => 'सामान्य',
                     // Common Nepali place names
-                    'Naxal'                  => 'नक्साल',
-                    'Kathmandu'              => 'काठमाडौं',
-                    'Lalitpur'               => 'ललितपुर',
-                    'Bhaktapur'              => 'भक्तपुर',
-                    'Pokhara'                => 'पोखरा',
-                    'Butwal'                 => 'बुटवल',
-                    'Biratnagar'             => 'विराटनगर',
-                    'Janakpur'               => 'जनकपुर',
-                    'Hetauda'                => 'हेटौंडा',
-                    'Dharan'                 => 'धरान',
-                    'Birgunj'                => 'वीरगञ्ज',
-                    'Nepalgunj'              => 'नेपालगञ्ज',
-                    'Dhangadhi'              => 'धनगढी',
-                    'Banepa'                 => 'बनेपा',
-                    'Dhulikhel'              => 'धुलिखेल',
-                    'Kirtipur'               => 'कीर्तिपुर',
-                    'Maharajgunj'            => 'महाराजगञ्ज',
-                    'Baluwatar'              => 'बालुवाटार',
-                    'Babarmahal'             => 'बबरमहल',
-                    'Tripureshwor'           => 'त्रिपुरेश्वर',
-                    'Putalisadak'            => 'पुतलीसडक',
-                    'Anamnagar'              => 'अनामनगर',
-                    'Tinkune'                => 'तीनकुने',
-                    'Koteshwor'              => 'कोटेश्वर',
-                    'Chabahil'               => 'चाबहिल',
-                    'Baneshwor'              => 'बानेश्वर',
-                    'Lazimpat'               => 'लाजिम्पाट',
-                    'Kupondole'              => 'कुपण्डोल',
-                    'Jawalakhel'             => 'जावलाखेल',
-                    'Pulchowk'               => 'पुल्चोक',
-                    'Sanepa'                 => 'सानेपा',
+                    'Naxal' => 'नक्साल',
+                    'Kathmandu' => 'काठमाडौं',
+                    'Lalitpur' => 'ललितपुर',
+                    'Bhaktapur' => 'भक्तपुर',
+                    'Pokhara' => 'पोखरा',
+                    'Butwal' => 'बुटवल',
+                    'Biratnagar' => 'विराटनगर',
+                    'Janakpur' => 'जनकपुर',
+                    'Hetauda' => 'हेटौंडा',
+                    'Dharan' => 'धरान',
+                    'Birgunj' => 'वीरगञ्ज',
+                    'Nepalgunj' => 'नेपालगञ्ज',
+                    'Dhangadhi' => 'धनगढी',
+                    'Banepa' => 'बनेपा',
+                    'Dhulikhel' => 'धुलिखेल',
+                    'Kirtipur' => 'कीर्तिपुर',
+                    'Maharajgunj' => 'महाराजगञ्ज',
+                    'Baluwatar' => 'बालुवाटार',
+                    'Babarmahal' => 'बबरमहल',
+                    'Tripureshwor' => 'त्रिपुरेश्वर',
+                    'Putalisadak' => 'पुतलीसडक',
+                    'Anamnagar' => 'अनामनगर',
+                    'Tinkune' => 'तीनकुने',
+                    'Koteshwor' => 'कोटेश्वर',
+                    'Chabahil' => 'चाबहिल',
+                    'Baneshwor' => 'बानेश्वर',
+                    'Lazimpat' => 'लाजिम्पाट',
+                    'Kupondole' => 'कुपण्डोल',
+                    'Jawalakhel' => 'जावलाखेल',
+                    'Pulchowk' => 'पुल्चोक',
+                    'Sanepa' => 'सानेपा',
                 ];
-                $toNpText = function($str) use ($enNpPhrases, $toNp) {
-                    if (!$str) return '';
+                $toNpText = function ($str) use ($enNpPhrases, $toNp) {
+                    if (!$str)
+                        return '';
                     foreach ($enNpPhrases as $en => $np) {
                         $str = preg_replace('/\b' . preg_quote($en, '/') . '\b/i', $np, $str);
                     }
@@ -464,11 +470,15 @@
                         </tr>
                         <tr>
                             <td class="label">पद / तह</td>
-                            <td class="value">: {{ $toNpText($application->post_title ?? ($job ? $job->position . ($job->level ? ' / Level ' . $job->level : '') : '')) }}</td>
+                            <td class="value">:
+                                {{ $toNpText($application->post_title ?? ($job ? $job->position . ($job->level ? ' / Level ' . $job->level : '') : '')) }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="label">सेवा / समूह</td>
-                            <td class="value">: {{ $toNpText($application->admit_card_service_group ?? ($job ? $job->service_group : '')) }}</td>
+                            <td class="value">:
+                                {{ $toNpText($application->admit_card_service_group ?? ($job ? $job->service_group : '')) }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="label">खुल्ला / समावेशी</td>
@@ -479,22 +489,24 @@
                                     $cats = array_values(array_unique(is_array($cats) ? array_filter($cats) : []));
 
                                     $npCatMap = [
-                                        'open'        => 'खुल्ला',
-                                        'inclusive'   => 'समावेशी',
-                                        'women'       => 'महिला',
-                                        'dalit'       => 'दलित',
-                                        'janajati'    => 'जनजाति',
-                                        'madhesi'     => 'मधेसी',
-                                        'aj'          => 'आदिवासी जनजाति',
-                                        'a.j'         => 'आदिवासी जनजाति',
-                                        'apanga'      => 'अपाङ्ग',
+                                        'open' => 'खुल्ला',
+                                        'inclusive' => 'समावेशी',
+                                        'women' => 'महिला',
+                                        'dalit' => 'दलित',
+                                        'janajati' => 'जनजाति',
+                                        'madhesi' => 'मधेसी',
+                                        'aj' => 'आदिवासी जनजाति',
+                                        'a.j' => 'आदिवासी जनजाति',
+                                        'apanga' => 'अपाङ्ग',
                                         'pichadiyeko' => 'पिछडिएको',
                                     ];
-                                    $catLabels = array_map(function($c) use ($npCatMap) { return $npCatMap[strtolower($c)] ?? ucfirst($c); }, $cats);
+                                    $catLabels = array_map(function ($c) use ($npCatMap) {
+                                        return $npCatMap[strtolower($c)] ?? ucfirst($c); }, $cats);
 
                                     $inclusiveSubLabel = '';
                                     if (in_array('inclusive', array_map('strtolower', $cats)) && !empty($inclusiveTypes)) {
-                                        $subLabels = array_map(function($s) use ($npCatMap) { return $npCatMap[strtolower($s)] ?? $s; }, $inclusiveTypes);
+                                        $subLabels = array_map(function ($s) use ($npCatMap) {
+                                            return $npCatMap[strtolower($s)] ?? $s; }, $inclusiveTypes);
                                         $inclusiveSubLabel = ' (' . implode(', ', $subLabels) . ')';
                                     }
                                 @endphp
@@ -508,7 +520,9 @@
                     </table>
 
                     <div class="instruction-text">
-                        <p>देहाय बमोजिमको मिति तथा समयमा तिनुभएको उपयुक्त पदको परीक्षामा तपसिलबाट सूचित हुन अनुरोध गरिएको छ । विज्ञापनमा तोकिएको बर्ग बुझ नम्बरको ठहर भएको जुनसुकै अवस्थामा पनि यो अनुरोध पत्र रद्द हुनेछ ।</p>
+                        <p>देहाय बमोजिमको मिति तथा समयमा तिनुभएको उपयुक्त पदको परीक्षामा तपसिलबाट सूचित हुन अनुरोध
+                            गरिएको छ । विज्ञापनमा तोकिएको बर्ग बुझ नम्बरको ठहर भएको जुनसुकै अवस्थामा पनि यो अनुरोध पत्र
+                            रद्द हुनेछ ।</p>
                     </div>
 
                     <!-- Exam Schedule Table -->
@@ -521,9 +535,11 @@
                             </tr>
                         </thead>
                         @php
-                            $fmtDate = function($d) use ($toNp) { return $d ? $toNp($d) : null; };
-                            $fmtTime = function($t) use ($toNp) {
-                                if (!$t) return null;
+                            $fmtDate = function ($d) use ($toNp) {
+                                return $d ? $toNp($d) : null; };
+                            $fmtTime = function ($t) use ($toNp) {
+                                if (!$t)
+                                    return null;
                                 $upper = strtoupper($t);
                                 if (str_contains($upper, 'AM')) {
                                     $period = 'बिहान';
@@ -532,14 +548,17 @@
                                     $period = 'दिउँसोको';
                                     $t = trim(str_ireplace('PM', '', $t));
                                 } else {
-                                    $hour = (int)explode(':', $t)[0];
+                                    $hour = (int) explode(':', $t)[0];
                                     $period = $hour < 12 ? 'बिहान' : 'दिउँसोको';
                                 }
                                 return $period . ' ' . $toNp(trim($t)) . ' बजे';
                             };
-                            $venue = $toNpText($application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास');
-                            $date1 = $fmtDate($application->exam_date_first)  ?? '२०८२-०१-११';
-                            $time1 = $fmtTime($application->exam_time_first)  ?? 'दिउँसोको ०२:०० बजे';
+                            $fallbackVenue = $toNpText($application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास');
+                            $venue1 = $application->exam_venue_first  ? $toNpText($application->exam_venue_first)  : $fallbackVenue;
+                            $venue2 = $application->exam_venue_second ? $toNpText($application->exam_venue_second) : $fallbackVenue;
+
+                            $date1 = $fmtDate($application->exam_date_first) ?? '२०८२-०१-११';
+                            $time1 = $fmtTime($application->exam_time_first) ?? 'दिउँसोको ०२:०० बजे';
                             $date2 = $fmtDate($application->exam_date_second) ?? '२०८२-०१-११';
                             $time2 = $fmtTime($application->exam_time_second) ?? 'दिउँसोको ०२:०० बजे';
                         @endphp
@@ -547,13 +566,12 @@
                             <tr>
                                 <td>१</td>
                                 <td>प्रथम</td>
-                                <td>{{ $date1 }} / {{ $time1 }} ({{ $venue }})</td>
+                                <td>{{ $date1 }} / {{ $time1 }} ({{ $venue1 }})</td>
                             </tr>
                             <tr>
                                 <td>२</td>
                                 <td>द्वितिय</td>
-                                <td>{{ $date2 }} / {{ $time2 }} ({{ $venue }})</td>
-                            </tr>
+                                <td>{{ $date2 }} / {{ $time2 }} ({{ $venue2 }})</td>
                             </tr>
                         </tbody>
                     </table>
@@ -571,19 +589,28 @@
                         @endif
                     </div>
 
-                    <div class="signature-section">
-                        <div class="signature-box">
-                            @if(!empty($signatureImage))
-                                <img src="{{ $signatureImage }}" alt="Signature" class="candidate-signature">
-                            @endif
+                    <div class="signature-section" style="display:table; width:100%; margin-top:10px;">
+                        <div
+                            style="display:table-cell; width:50%; text-align:center; vertical-align:bottom; padding:4px;">
+                            <div class="signature-box"
+                                style="height:60px; display:flex; align-items:center; justify-content:center;">
+                                @if(!empty($signatureImage))
+                                    <img src="{{ $signatureImage }}" alt="Signature"
+                                        style="max-height:55px; max-width:90%; object-fit:contain;">
+                                @endif
+                            </div>
+                            <p style="font-size:10px; margin:4px 0 0 0; font-weight:500;">उम्मेदवार दस्तखत</p>
                         </div>
-                        <div class="signature-labels">
-                            <div class="signature-label-left">
-                                <p>उम्मेदवार दस्तखत</p>
+                        <div
+                            style="display:table-cell; width:50%; text-align:center; vertical-align:bottom; padding:4px;">
+                            <div class="signature-box"
+                                style="height:60px; display:flex; align-items:center; justify-content:center;">
+                                @if(!empty($officialSignatureImage))
+                                    <img src="{{ $officialSignatureImage }}" alt="Official Signature"
+                                        style="max-height:55px; max-width:90%; object-fit:contain;">
+                                @endif
                             </div>
-                            <div class="signature-label-right">
-                                <p>आधिकारिक दस्तखत</p>
-                            </div>
+                            <p style="font-size:10px; margin:4px 0 0 0; font-weight:500;">आधिकारिक दस्तखत</p>
                         </div>
                     </div>
                 </div>
@@ -594,21 +621,35 @@
                 <h4>उम्मेदवारले पालन गर्नुपर्ने निम्नाहरू :</h4>
                 <ol>
                     <li>उम्मेदवारले उपस्थितिसमय काखोली मसी भएको इन्टर/कलम मात्र प्रयोग गर्नुपर्नेछ।</li>
-                    <li>प्रवेश पत्र बिना कुनै पनि उम्मेदवारलाई परीक्षामा सम्मिलित नगराइने र प्रवेश पत्र अनिवार्य रूपमा साथमा लिइ परीक्षा सञ्चालन हुन्छसम्म कायाप्त राख्न र प्रत्येक प्रश्न पत्रको परीक्षा प्रस्तुत हुन्दाको कालावधि १ घण्टा अगावै प्रवेश कार्यालय बुझाउनुपर्दछ ।</li>
-                    <li>लिखित परीक्षा नहीजुन मान्यता प्राप्त अन्तर्गत हुने दिनमा पनि प्रदेयेश रुपमें प्रस्तृत हुनेछ । ।</li>
-                    <li>लिखित परीक्षा सुरु भई ३० मिनेट बग्ने समयावधि गुज्रेपछि परीक्षा हलमा प्रवेश गर्न नपाईने र उक्त समयसम्म प्रवेश गर्न नपाई विना अनुमति गत्यागना प्रवेश नै दिइने छैन । त्यस्तो परीक्षा हलमा प्रवेश नगर्न आएस अर्लीको संक्षिप्त पनि हुनेछन् वन्द्यार्यो छैन ।</li>
+                    <li>प्रवेश पत्र बिना कुनै पनि उम्मेदवारलाई परीक्षामा सम्मिलित नगराइने र प्रवेश पत्र अनिवार्य रूपमा
+                        साथमा लिइ परीक्षा सञ्चालन हुन्छसम्म कायाप्त राख्न र प्रत्येक प्रश्न पत्रको परीक्षा प्रस्तुत
+                        हुन्दाको कालावधि १ घण्टा अगावै प्रवेश कार्यालय बुझाउनुपर्दछ ।</li>
+                    <li>लिखित परीक्षा नहीजुन मान्यता प्राप्त अन्तर्गत हुने दिनमा पनि प्रदेयेश रुपमें प्रस्तृत हुनेछ । ।
+                    </li>
+                    <li>लिखित परीक्षा सुरु भई ३० मिनेट बग्ने समयावधि गुज्रेपछि परीक्षा हलमा प्रवेश गर्न नपाईने र उक्त
+                        समयसम्म प्रवेश गर्न नपाई विना अनुमति गत्यागना प्रवेश नै दिइने छैन । त्यस्तो परीक्षा हलमा प्रवेश
+                        नगर्न आएस अर्लीको संक्षिप्त पनि हुनेछन् वन्द्यार्यो छैन ।</li>
                     <li>परीक्षा हलमा प्रवेश गर्दा केवटी पनि उम्मेदवारहरुको परीक्षा भाबिर जानु अनुरोध छिटोई छ ।</li>
-                    <li>परीक्षा हलमा मोबाइल, क्यालक्यूलेटर, क्यामेरा, पेजर आदि जास्तै राखू हुँदैन । उम्मेदवारले आफसंग क्यानबारी र संबन्धित पत्र हुनैछ । ।</li>
-                    <li>परीक्षा हलमा उम्मेदवारले परीक्षा पदबारी निपुणता कुनै पनि आवमा कुरुना जैनदखाने परीक्षा हलबाट निस्काशन गरी तुसैम्मा काग्स्मा बग्गीगमेमा गरावरिद् गरीश र लिस्काही निर्काशन गरीएका उम्मेदवारकै पत्र विज्ञापित परीक्षा कार्यक्रम ब्रिदीस हुने छैन ।</li>
+                    <li>परीक्षा हलमा मोबाइल, क्यालक्यूलेटर, क्यामेरा, पेजर आदि जास्तै राखू हुँदैन । उम्मेदवारले आफसंग
+                        क्यानबारी र संबन्धित पत्र हुनैछ । ।</li>
+                    <li>परीक्षा हलमा उम्मेदवारले परीक्षा पदबारी निपुणता कुनै पनि आवमा कुरुना जैनदखाने परीक्षा हलबाट
+                        निस्काशन गरी तुसैम्मा काग्स्मा बग्गीगमेमा गरावरिद् गरीश र लिस्काही निर्काशन गरीएका उम्मेदवारकै
+                        पत्र विज्ञापित परीक्षा कार्यक्रम ब्रिदीस हुने छैन ।</li>
                     <li>उम्मेदवारले परीक्षा दिएको दिनमा हानिन आफिवार्य रुपमा गर्नुनुपर्ने छ ।</li>
                     <li>परीक्षा भवनमा झोला, मोबाइल फोन तथा अन्य इलेक्ट्रोनिक्स डिभाइइएहरु लैजान निषेध गरिएको छ।</li>
-                    <li>परीक्षा संचालन हुने ठिन आफनोमै विना पर्ने त्यस्मा आफनोमै पुरे नम्बरको कुनै जिम्मा निषेध परीक्षा कार्यक्रम ब्रिदीको हुने छैन।</li>
-                    <li>सदुद्वार बहुउत्तर (Multiple Choice) प्रश्नको उत्तर शेड्डा आफिवार्य KEY उत्तरपुस्तिका लेखुपर्दछ । नदोषी उत्तरपुस्तिकामा ब्याप पद नदुष्ट साईं बदुसार ओएअंजो छुनै अक्षर (Capital Letter) मा A, B, C, D लेखिएको उत्तरमार्ट मात्र मान्यता दिइनेछ।</li>
-                    <li>परीक्षाना सम्बन्धित निकायबाट गारी भएको प्रवेश पत्र तथा आनोनैं नामसङ्कार वा नेपालि राज्य बाट्नै फाटो सर्मुरो कुनै पत्र विदबोध्न अनिबार्य रुपमा लिई आफुनु पर्नेछ।</li>
-                    <li>कुनै उम्मेदवारले प्रश्नपत्रमा राष्टको उत्तयोको सम्बन्धमा सोधु पर्न परीक्षामा सम्मिलित अन्य उम्मेदवारलाई बाधा नपुर्ने निरोक्ष्यैलाई सोधु पर्नेछ ।</li>
+                    <li>परीक्षा संचालन हुने ठिन आफनोमै विना पर्ने त्यस्मा आफनोमै पुरे नम्बरको कुनै जिम्मा निषेध परीक्षा
+                        कार्यक्रम ब्रिदीको हुने छैन।</li>
+                    <li>सदुद्वार बहुउत्तर (Multiple Choice) प्रश्नको उत्तर शेड्डा आफिवार्य KEY उत्तरपुस्तिका लेखुपर्दछ ।
+                        नदोषी उत्तरपुस्तिकामा ब्याप पद नदुष्ट साईं बदुसार ओएअंजो छुनै अक्षर (Capital Letter) मा A, B, C,
+                        D लेखिएको उत्तरमार्ट मात्र मान्यता दिइनेछ।</li>
+                    <li>परीक्षाना सम्बन्धित निकायबाट गारी भएको प्रवेश पत्र तथा आनोनैं नामसङ्कार वा नेपालि राज्य बाट्नै
+                        फाटो सर्मुरो कुनै पत्र विदबोध्न अनिबार्य रुपमा लिई आफुनु पर्नेछ।</li>
+                    <li>कुनै उम्मेदवारले प्रश्नपत्रमा राष्टको उत्तयोको सम्बन्धमा सोधु पर्न परीक्षामा सम्मिलित अन्य
+                        उम्मेदवारलाई बाधा नपुर्ने निरोक्ष्यैलाई सोधु पर्नेछ ।</li>
                 </ol>
             </div>
         </div>
     </div>
 </body>
+
 </html>

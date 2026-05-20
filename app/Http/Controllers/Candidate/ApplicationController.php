@@ -90,7 +90,7 @@ class ApplicationController extends Controller
             // Personal Information
             'birth_date_ad' => 'required|date|before_or_equal:today',
             'birth_date_bs' => 'nullable|string|max:20',
-            'age' => 'required|integer|min:18|max:65',
+            'age' => 'required|string|min:18|max:40',
             'phone' => 'required|string|max:20',
             'gender' => 'required|string',
 
@@ -188,7 +188,7 @@ class ApplicationController extends Controller
             'vacancy_id' => $vacancyId,
             'submitted_at' => $adDate,
             'submitted_at_bs' => $submittedAtBs,
-            'status' => 'pending',
+            'status' => 'submitted',
             ...$validated
         ]);
 
@@ -270,7 +270,7 @@ class ApplicationController extends Controller
             // Personal Information
             'birth_date_ad' => 'required|date|before_or_equal:today',
             'birth_date_bs' => 'nullable|string|max:20',
-            'age' => 'required|integer|min:18|max:65',
+            'age' => 'required|string|min:18|max:40',
             'phone' => 'required|string|max:20',
             'gender' => 'required|string',
 

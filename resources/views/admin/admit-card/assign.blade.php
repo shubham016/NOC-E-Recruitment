@@ -38,7 +38,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.admit-card.store', $job->id) }}">
+    <form method="POST" action="{{ route('admin.admit-card.store', $job->id) }}" enctype="multipart/form-data">
         @csrf
 
         {{-- Exam Details --}}
@@ -48,7 +48,9 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-6">
+
+                    {{-- Row 1: Organization Name | पद / तह | सेवा / समूह --}}
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Organization Name <span class="text-danger">*</span></label>
                         @php
                             $orgDefault = ($existing->organization_name && $existing->organization_name !== 'Online Recruitment Management System')
@@ -59,23 +61,26 @@
                                value="{{ old('organization_name', $orgDefault) }}"
                                required>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">पद / तह <span class="text-danger">*</span></label>
                         <input type="text" name="post_title" class="form-control"
                                value="{{ old('post_title', $existing->post_title ?? ($job->position . ($job->level ? ' / Level ' . $job->level : ''))) }}"
                                placeholder="e.g. व्यवस्थापक / तह ५"
                                required>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">सेवा / समूह</label>
                         <input type="text" name="admit_card_service_group" class="form-control"
                                value="{{ old('admit_card_service_group', $existing->admit_card_service_group ?? $job->service_group ?? '') }}"
                                placeholder="e.g. प्राविधिक / अन्य">
                     </div>
-                    {{-- प्रथम पत्र --}}
-                    <div class="col-12">
-                        <label class="form-label fw-semibold text-primary">प्रथम पत्र (First Paper)</label>
+
+                    {{-- प्रथम पत्र label --}}
+                    <div class="col-12 mb-0 pb-0">
+                        <label class="form-label fw-semibold text-primary mb-0">प्रथम पत्र (First Paper)</label>
                     </div>
+
+                    {{-- Row 2: Date | Time | Exam Venue (First Paper) --}}
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">मिति / Date (BS) <span class="text-danger">*</span></label>
                         <input type="text" id="exam_date_first_bs" class="form-control nepali-picker" placeholder="YYYY-MM-DD" autocomplete="off"
@@ -89,11 +94,20 @@
                                value="{{ old('exam_time_first', $existing->exam_time_first ?? '') }}"
                                required>
                     </div>
-
-                    {{-- द्वितीय पत्र --}}
-                    <div class="col-12 mt-2">
-                        <label class="form-label fw-semibold text-primary">द्वितीय पत्र (Second Paper)</label>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Exam Venue (First Paper) <span class="text-danger">*</span></label>
+                        <input type="text" name="exam_venue_first" class="form-control"
+                               placeholder="Exam center name and address"
+                               value="{{ old('exam_venue_first', $existing->exam_venue_first ?? '') }}"
+                               required>
                     </div>
+
+                    {{-- द्वितीय पत्र label --}}
+                    <div class="col-12 mb-0 pb-0">
+                        <label class="form-label fw-semibold text-primary mb-0">द्वितीय पत्र (Second Paper)</label>
+                    </div>
+
+                    {{-- Row 3: Date | Time | Exam Venue (Second Paper) --}}
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">मिति / Date (BS)</label>
                         <input type="text" id="exam_date_second_bs" class="form-control nepali-picker" placeholder="YYYY-MM-DD" autocomplete="off"
@@ -106,11 +120,24 @@
                                placeholder="e.g. 2:00 PM"
                                value="{{ old('exam_time_second', $existing->exam_time_second ?? '') }}">
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Exam Venue (Second Paper)</label>
+                        <input type="text" name="exam_venue_second" class="form-control"
+                               placeholder="Exam center name and address"
+                               value="{{ old('exam_venue_second', $existing->exam_venue_second ?? '') }}">
+                    </div>
 
-                    <div class="col-md-8">
-                        <label class="form-label fw-semibold">Exam Venue <span class="text-danger">*</span></label>
-                        <textarea name="exam_venue" class="form-control" rows="2"
-                                  placeholder="Exam center name and address" required>{{ old('exam_venue', $existing->exam_venue ?? '') }}</textarea>
+                    {{-- Row 4: Official Signature | Roll Number Prefix --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">आधिकारिक दस्तखत <small class="text-muted">(Official Signature)</small></label>
+                        @if($job->official_signature)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $job->official_signature) }}" alt="Official Signature" style="max-height:60px; border:1px solid #ddd; padding:4px; background:#fff;">
+                                <div class="form-text text-success">Signature already uploaded. Upload new to replace.</div>
+                            </div>
+                        @endif
+                        <input type="file" name="official_signature" class="form-control" accept="image/*">
+                        <div class="form-text">Accepts JPG, PNG, GIF. Displayed on candidate admit card.</div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Roll Number Prefix <span class="text-danger">*</span></label>
@@ -123,11 +150,14 @@
                                placeholder="e.g. 2082-35" required>
                         <div class="form-text">Preview: <strong id="rollPreview">{{ $defaultPrefix }}-001</strong>, <strong>{{ $defaultPrefix }}-002</strong>, ...</div>
                     </div>
+
+                    {{-- Row 5: Exam Instructions --}}
                     <div class="col-12">
                         <label class="form-label fw-semibold">Exam Instructions <small class="text-muted">(optional)</small></label>
                         <textarea name="exam_instructions" class="form-control" rows="4"
                                   placeholder="Instructions for candidates...">{{ old('exam_instructions', $existing->exam_instructions ?? '') }}</textarea>
                     </div>
+
                 </div>
             </div>
         </div>

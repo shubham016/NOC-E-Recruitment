@@ -31,19 +31,21 @@ class CloseExpiredVacancies extends Command
 
         $today = Carbon::today();
 
-        // Find all active or draft vacancies where deadline has passed
-        $expiredByDeadline = JobPosting::whereIn('status', ['active', 'draft'])
-            ->whereDate('deadline', '<', $today)
+        // Close vacancies where double_dastur_date has passed (Open/Inclusive)
+        // Close vacancies where deadline has passed and no double_dastur_date is set (Internal/Appraisal)
+        $expiredVacancies = JobPosting::whereIn('status', ['active', 'draft'])
+            ->where(function ($q) use ($today) {
+                $q->where(function ($inner) use ($today) {
+                    // Has double dastur date and it has passed
+                    $inner->whereNotNull('double_dastur_date')
+                          ->whereDate('double_dastur_date', '<', $today);
+                })->orWhere(function ($inner) use ($today) {
+                    // No double dastur date — close after regular deadline
+                    $inner->whereNull('double_dastur_date')
+                          ->whereDate('deadline', '<', $today);
+                });
+            })
             ->get();
-
-        // Find all active or draft vacancies where double dastur date has passed
-        $expiredByDoubleDastur = JobPosting::whereIn('status', ['active', 'draft'])
-            ->whereNotNull('double_dastur_date')
-            ->whereDate('double_dastur_date', '<', $today)
-            ->get();
-
-        // Combine both collections and get unique vacancies
-        $expiredVacancies = $expiredByDeadline->merge($expiredByDoubleDastur)->unique('id');
 
         if ($expiredVacancies->isEmpty()) {
             $this->info('✅ No expired vacancies found.');

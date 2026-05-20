@@ -64,7 +64,7 @@
 
                 <tr>
                     <th>Amount Paid</th>
-                    <td>Rs. {{ $payment->amount ?? '0' }}</td>
+                    <td>Rs. {{ number_format((float) ($payment->amount ?? 0), 0) }}</td>
                 </tr>
 
                 <tr>
@@ -89,7 +89,10 @@
                 </tr>
                 <tr>
                     <th>Total Amount</th>
-                    <td>{{ $esewaData['total_amount'] ?? 'N/A' }}</td>
+                    <td>
+                        @php $ta = $esewaData['total_amount'] ?? null; @endphp
+                        {{ is_numeric($ta) ? 'Rs. ' . number_format((float) $ta, 0) : ($ta ?? 'N/A') }}
+                    </td>
                 </tr>
                 <tr>
                     <th>Status</th>

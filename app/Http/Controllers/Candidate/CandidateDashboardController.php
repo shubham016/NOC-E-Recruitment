@@ -35,7 +35,15 @@ class CandidateDashboardController extends Controller
                 ->where('status', 'rejected')
                 ->count(),
             'active_vacancies' => Vacancy::where('status', 'active')
-                ->where('deadline', '>=', now())
+                ->where(function ($q) {
+                    $q->where(function ($inner) {
+                        $inner->whereNotNull('double_dastur_date')
+                              ->where('double_dastur_date', '>=', now());
+                    })->orWhere(function ($inner) {
+                        $inner->whereNull('double_dastur_date')
+                              ->where('deadline', '>=', now());
+                    });
+                })
                 ->count(),
         ];
 
@@ -53,7 +61,15 @@ class CandidateDashboardController extends Controller
             ->toArray();
 
         $recommendedJobs = Vacancy::where('status', 'active')
-            ->where('deadline', '>=', now())
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            })
             ->whereNotIn('id', $appliedJobIds)
             ->latest()
             ->limit(6)

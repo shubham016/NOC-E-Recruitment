@@ -796,6 +796,78 @@
                         </small> -->
                     </div>
 
+                    <!-- Age Limit -->
+                    <div class="mb-4" id="ageLimitSection">
+                        <label class="form-label">
+                            <span>Age Limit</span>
+                            <span class="nepali-text">उमेर हद</span>
+                        </label>
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0" style="font-size:14px;">
+                                <thead style="background:#f3f4f6;">
+                                    <tr>
+                                        <th style="width:34%;">Category</th>
+                                        <th style="width:33%;">Minimum Age</th>
+                                        <th style="width:33%;">Maximum Age</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="align-middle">Male <span class="nepali-text">पुरुष</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_male') is-invalid @enderror"
+                                                name="min_age_male" id="min_age_male"
+                                                value="{{ old('min_age_male') }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_male') is-invalid @enderror"
+                                                name="max_age_male" id="max_age_male"
+                                                value="{{ old('max_age_male') }}"
+                                                min="1" max="99" placeholder="e.g. 35">
+                                            @error('max_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle">Female <span class="nepali-text">महिला</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_female') is-invalid @enderror"
+                                                name="min_age_female" id="min_age_female"
+                                                value="{{ old('min_age_female') }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_female') is-invalid @enderror"
+                                                name="max_age_female" id="max_age_female"
+                                                value="{{ old('max_age_female') }}"
+                                                min="1" max="99" placeholder="e.g. 40">
+                                            @error('max_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle">Disabled <span class="nepali-text">अपाङ्ग</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_disabled') is-invalid @enderror"
+                                                name="min_age_disabled" id="min_age_disabled"
+                                                value="{{ old('min_age_disabled') }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_disabled') is-invalid @enderror"
+                                                name="max_age_disabled" id="max_age_disabled"
+                                                value="{{ old('max_age_disabled') }}"
+                                                min="1" max="99" placeholder="e.g. 45">
+                                            @error('max_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="section-divider"></div>
 
                     <!-- Application Deadline - Dual Date Pickers -->
@@ -1595,6 +1667,7 @@ function initializeCategoryCheckboxes() {
                 if (hasInclusiveToggleCheckbox)  { hasInclusiveToggleCheckbox.checked = false; inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; }); toggleInclusiveTypesSection(); }
                 hideInternalSections();
                 showDoubleDasturSections();
+                showAgeLimitSection();
             } else if (selectedCheckbox === hasInternalCheckbox) {
                 if (hasOpenCheckbox)             hasOpenCheckbox.checked             = false;
                 if (isInternalAppraisalCheckbox) isInternalAppraisalCheckbox.checked = false;
@@ -1602,6 +1675,7 @@ function initializeCategoryCheckboxes() {
                 hideOpenSections();
                 toggleInternalSubcategories();
                 hideDoubleDasturSections();
+                hideAgeLimitSection();
             } else if (selectedCheckbox === isInternalAppraisalCheckbox) {
                 if (hasOpenCheckbox)            hasOpenCheckbox.checked             = false;
                 if (hasInternalCheckbox)        hasInternalCheckbox.checked         = false;
@@ -1609,6 +1683,7 @@ function initializeCategoryCheckboxes() {
                 hideOpenSections();
                 hideInternalSections();
                 hideDoubleDasturSections();
+                hideAgeLimitSection();
             }
         } else {
             if (selectedCheckbox === hasOpenCheckbox) {
@@ -1617,6 +1692,7 @@ function initializeCategoryCheckboxes() {
                 hideInternalSections();
             }
             showDoubleDasturSections();
+            showAgeLimitSection();
         }
         syncExclusivity();
         updateCategoryDisplay();
@@ -1660,6 +1736,17 @@ function initializeCategoryCheckboxes() {
         }
         var previewDDFeeRow = document.getElementById('preview-double-dastur-fee-row');
         if (previewDDFeeRow) previewDDFeeRow.style.display = '';
+    }
+
+    // Show/Hide Age Limit section (hidden for Internal and Internal Appraisal)
+    function showAgeLimitSection() {
+        var el = document.getElementById('ageLimitSection');
+        if (el) el.style.display = 'block';
+    }
+
+    function hideAgeLimitSection() {
+        var el = document.getElementById('ageLimitSection');
+        if (el) el.style.display = 'none';
     }
 
     // Hide Double Dastur sections (for Internal and Internal Appraisal)
@@ -1906,9 +1993,11 @@ function initializeCategoryCheckboxes() {
                 if (isInternalAppraisalCheckbox) { isInternalAppraisalCheckbox.checked = false; }
                 // Inclusive also shows Double Dastur (same as Open)
                 showDoubleDasturSections();
+                showAgeLimitSection();
             } else {
                 inclusiveTypeCheckboxes.forEach(cb => { cb.checked = false; });
                 showDoubleDasturSections();
+                showAgeLimitSection();
             }
             toggleInclusiveTypesSection();
             updateInclusiveTypesPreview();
@@ -1947,18 +2036,22 @@ function initializeCategoryCheckboxes() {
         hideInternalSections();
         toggleInclusiveTypesSection();
         showDoubleDasturSections();
+        showAgeLimitSection();
     } else if (hasInternalCheckbox && hasInternalCheckbox.checked) {
         hideOpenSections();
         toggleInternalSubcategories();
         toggleInternalInclusiveTypesSection();
         hideDoubleDasturSections();
+        hideAgeLimitSection();
     } else if (isInternalAppraisalCheckbox && isInternalAppraisalCheckbox.checked) {
         hideOpenSections();
         hideInternalSections();
         hideDoubleDasturSections();
+        hideAgeLimitSection();
     } else if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
         toggleInclusiveTypesSection();
         showDoubleDasturSections();
+        showAgeLimitSection();
     } else {
         toggleInclusiveTypesSection();
         toggleInternalSubcategories();

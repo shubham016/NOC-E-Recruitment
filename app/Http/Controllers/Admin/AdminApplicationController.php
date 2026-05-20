@@ -9,7 +9,9 @@ use App\Models\Approver;
 use App\Models\JobPosting;
 use App\Models\Payment;
 use App\Models\Notification;
+use App\Models\ApplicationStatusHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminApplicationController extends Controller
 {
@@ -221,7 +223,7 @@ class AdminApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['vacancy', 'reviewer', 'approver']);
+        $application->load(['vacancy', 'reviewer', 'approver', 'statusHistories']);
 
         // If AJAX request, return JSON for modal view
         if (request()->ajax()) {
@@ -343,6 +345,14 @@ class AdminApplicationController extends Controller
                 'exp1_document' => $application->exp1_document ? asset('storage/' . $application->exp1_document) : null,
                 'exp2_document' => $application->exp2_document ? asset('storage/' . $application->exp2_document) : null,
                 'exp3_document' => $application->exp3_document ? asset('storage/' . $application->exp3_document) : null,
+                // Status History
+                'status_histories' => $application->statusHistories->map(fn($h) => [
+                    'stage_name'   => $h->stage_name,
+                    'done_by'      => $h->done_by,
+                    'done_by_type' => $h->done_by_type,
+                    'remarks'      => $h->remarks,
+                    'created_at'   => $h->created_at->format('F d, Y'),
+                ])->values()->toArray(),
             ]);
         }
 
@@ -379,11 +389,35 @@ class AdminApplicationController extends Controller
 
         $application->update($updateData);
 
+        $adminName = Auth::guard('admin')->user()->name ?? 'Admin';
+        $adminId   = Auth::guard('admin')->id();
+
+        if ($request->status === 'reviewed' && $request->approver_id) {
+            $approver = \App\Models\Approver::find($request->approver_id);
+            ApplicationStatusHistory::create([
+                'application_form_id' => $application->id,
+                'stage_name'          => 'Assigned to Approver',
+                'done_by'             => $adminName,
+                'done_by_type'        => 'admin',
+                'done_by_id'          => $adminId,
+                'remarks'             => 'Reviewed and assigned to approver: ' . ($approver->name ?? 'N/A') . ($request->admin_notes ? '. Notes: ' . $request->admin_notes : ''),
+            ]);
+        } else {
+            ApplicationStatusHistory::create([
+                'application_form_id' => $application->id,
+                'stage_name'          => ApplicationStatusHistory::stageName($request->status),
+                'done_by'             => $adminName,
+                'done_by_type'        => 'admin',
+                'done_by_id'          => $adminId,
+                'remarks'             => $request->admin_notes,
+            ]);
+        }
+
         // Create notification for candidate
         $candidate = $application->candidate;
 
         if ($request->status === 'reviewed' && $request->approver_id) {
-            $approver = \App\Models\Approver::find($request->approver_id);
+            $approver = $approver ?? \App\Models\Approver::find($request->approver_id);
 
             // Notify the approver
             \App\Models\Notification::create([
@@ -460,6 +494,15 @@ class AdminApplicationController extends Controller
 
         $reviewer = Reviewer::find($request->reviewer_id);
 
+        ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => 'Assigned to Reviewer',
+            'done_by'             => Auth::guard('admin')->user()->name ?? 'Admin',
+            'done_by_type'        => 'admin',
+            'done_by_id'          => Auth::guard('admin')->id(),
+            'remarks'             => 'Assigned to reviewer: ' . ($reviewer->name ?? 'N/A'),
+        ]);
+
         $positionTitle = $application->applying_position ?? $application->advertisement_no ?? 'this position';
 
         // Look up candidate ID from candidate_registration via citizenship_number
@@ -509,6 +552,17 @@ class AdminApplicationController extends Controller
 
         $application->update([
             'approver_id' => $request->approver_id,
+        ]);
+
+        $approver = Approver::find($request->approver_id);
+
+        ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => 'Assigned to Approver',
+            'done_by'             => Auth::guard('admin')->user()->name ?? 'Admin',
+            'done_by_type'        => 'admin',
+            'done_by_id'          => Auth::guard('admin')->id(),
+            'remarks'             => 'Assigned to approver: ' . ($approver->name ?? 'N/A'),
         ]);
 
         $positionTitle = $application->applying_position ?? $application->advertisement_no ?? 'this position';
@@ -600,6 +654,18 @@ class AdminApplicationController extends Controller
                     'status' => $request->status,
                     'reviewed_at' => now(),
                 ]);
+                $adminName = Auth::guard('admin')->user()->name ?? 'Admin';
+                $adminId   = Auth::guard('admin')->id();
+                foreach ($applicationIds as $appId) {
+                    ApplicationStatusHistory::create([
+                        'application_form_id' => $appId,
+                        'stage_name'          => ApplicationStatusHistory::stageName($request->status),
+                        'done_by'             => $adminName,
+                        'done_by_type'        => 'admin',
+                        'done_by_id'          => $adminId,
+                        'remarks'             => 'Bulk status update',
+                    ]);
+                }
                 $message = 'Status updated for ' . count($applicationIds) . ' application(s) successfully!';
                 break;
 
@@ -636,8 +702,19 @@ class AdminApplicationController extends Controller
                     'related_type' => 'application',
                 ]);
 
-                // Per-candidate notification
+                // Per-candidate notification + history
+                $adminName = Auth::guard('admin')->user()->name ?? 'Admin';
+                $adminId   = Auth::guard('admin')->id();
                 foreach ($applications as $app) {
+                    ApplicationStatusHistory::create([
+                        'application_form_id' => $app->id,
+                        'stage_name'          => 'Assigned to Reviewer',
+                        'done_by'             => $adminName,
+                        'done_by_type'        => 'admin',
+                        'done_by_id'          => $adminId,
+                        'remarks'             => 'Bulk assigned to reviewer: ' . ($reviewer->name ?? 'N/A'),
+                    ]);
+
                     $positionTitle = $app->applying_position ?? $app->advertisement_no ?? 'this position';
                     $candidateRecord = \DB::table('candidate_registration')
                         ->where('citizenship_number', $app->citizenship_number)
@@ -691,8 +768,19 @@ class AdminApplicationController extends Controller
                     'related_type' => 'application',
                 ]);
 
-                // Per-candidate notification
+                // Per-candidate notification + history
+                $adminName = Auth::guard('admin')->user()->name ?? 'Admin';
+                $adminId   = Auth::guard('admin')->id();
                 foreach ($applications as $app) {
+                    ApplicationStatusHistory::create([
+                        'application_form_id' => $app->id,
+                        'stage_name'          => 'Assigned to Approver',
+                        'done_by'             => $adminName,
+                        'done_by_type'        => 'admin',
+                        'done_by_id'          => $adminId,
+                        'remarks'             => 'Bulk assigned to approver: ' . ($approver->name ?? 'N/A'),
+                    ]);
+
                     $positionTitle = $app->applying_position ?? $app->advertisement_no ?? 'this position';
                     $candidateRecord = \DB::table('candidate_registration')
                         ->where('citizenship_number', $app->citizenship_number)

@@ -208,14 +208,27 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $applicationform->id ?? '' }}">
-                <input type="hidden" name="total_fee" id="total_fee" value="{{ $applicationform->total_fee ?? 0 }}">
+                {{-- Age limit data for JS validation --}}
+                <input type="hidden" id="job_min_age_male"     value="{{ $job->min_age_male ?? '' }}">
+                <input type="hidden" id="job_max_age_male"     value="{{ $job->max_age_male ?? '' }}">
+                <input type="hidden" id="job_min_age_female"   value="{{ $job->min_age_female ?? '' }}">
+                <input type="hidden" id="job_max_age_female"   value="{{ $job->max_age_female ?? '' }}">
+                <input type="hidden" id="job_min_age_disabled" value="{{ $job->min_age_disabled ?? '' }}">
+                <input type="hidden" id="job_max_age_disabled" value="{{ $job->max_age_disabled ?? '' }}">
+                <input type="hidden" id="job_min_age"          value="{{ $job->min_age ?? '' }}">
+                <input type="hidden" id="job_max_age"          value="{{ $job->max_age ?? '' }}">
+                <input type="hidden" name="total_fee" id="total_fee" value="0">
+                @if($job)
+                <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
+                @endif
 
 <!-- STEP 1: Personal Info -->
                 <div class="step" id="step1">
+
                     <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
 
                     {{-- Category Selection --}}
-                    @if($job ?? null)
+                    @if($job)
                     @php
                         $savedCategories = $applicationform->applied_category ?? [];
                         if (!is_array($savedCategories)) $savedCategories = [$savedCategories];
@@ -226,7 +239,7 @@
                     <div class="alert alert-info mb-4">
                         <h6 class="mb-3">
                             <strong>Select Application Category</strong>
-                            <span class="ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
+                            <span class="nepali-text ms-2">(आवेदन श्रेणी छान्नुहोस्)</span>
                         </h6>
                         <p class="small mb-3">
                             Select one or more categories under which you wish to apply.
@@ -242,10 +255,14 @@
                             </div>
                         @else
                             <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">
-
                                 @foreach($groupJobs as $gjIdx => $gJob)
                                 @php
                                     $gAdvNo = $gJob->advertisement_no ?? '';
+                                    $gIsDoubleDastur = $gJob->deadline && now()->gt($gJob->deadline)
+                                        && $gJob->double_dastur_fee
+                                        && $gJob->double_dastur_date
+                                        && now()->lte($gJob->double_dastur_date);
+                                    $gEffectiveFee = $gIsDoubleDastur ? $gJob->double_dastur_fee : ($gJob->application_fee ?? 0);
                                     $gInclusiveTypes = [];
                                     if ($gJob->has_inclusive || $gJob->category == 'inclusive') {
                                         if ($gJob->inclusive_type) {
@@ -259,8 +276,9 @@
                                     }
                                 @endphp
 
+                                {{-- Open --}}
                                 @if($gJob->has_open || $gJob->category == 'open')
-                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
                                     <div class="form-check mb-0">
                                         <input class="form-check-input category-cb" type="checkbox"
                                             name="applied_category[]" id="cat_open_{{ $gjIdx }}" value="open"
@@ -272,83 +290,89 @@
                                     </div>
                                     <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
                                     <div class="mt-1 text-success small fw-semibold">
-                                        Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
                                     </div>
                                 </div>
                                 @endif
 
+                                {{-- Inclusive types --}}
                                 @foreach($gInclusiveTypes as $idx => $type)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input category-cb" type="checkbox"
-                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}_{{ $idx }}" value="inclusive"
-                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
-                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}_{{ $idx }}">
-                                                Inclusive — {{ $type }}
-                                                <br><small class="text-muted fw-normal">समावेशी — {{ $type }}</small>
-                                            </label>
-                                        </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
-                                        <div class="mt-1 text-success small fw-semibold">
-                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
-                                        </div>
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}_{{ $idx }}" value="inclusive"
+                                               {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}_{{ $idx }}">
+                                            Inclusive — {{ $type }}
+                                            <br><small class="text-muted fw-normal">समावेशी — {{ $type }}</small>
+                                        </label>
                                     </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                    </div>
+                                </div>
                                 @endforeach
 
+                                {{-- If inclusive but no types, show generic --}}
                                 @if(($gJob->has_inclusive || $gJob->category == 'inclusive') && count($gInclusiveTypes) === 0)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input category-cb" type="checkbox"
-                                                   name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}" value="inclusive"
-                                                   {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
-                                            <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}">
-                                                Inclusive (समावेशी)
-                                                <br><small class="text-muted fw-normal">Reserved for inclusive category</small>
-                                            </label>
-                                        </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_inclusive_{{ $gjIdx }}" value="inclusive"
+                                               {{ in_array('inclusive', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_inclusive_{{ $gjIdx }}">
+                                            Inclusive (समावेशी)
+                                            <br><small class="text-muted fw-normal">Reserved for inclusive category</small>
+                                        </label>
                                     </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                    </div>
+                                </div>
                                 @endif
 
+                                {{-- Internal Open --}}
                                 @if(($gJob->has_internal || $gJob->category == 'internal') && $gJob->has_internal_open)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input category-cb" type="checkbox"
-                                                   name="applied_category[]" id="cat_internal_open_{{ $gjIdx }}" value="internal_open"
-                                                   {{ in_array('internal_open', $oldCategories) ? 'checked' : '' }}>
-                                            <label class="form-check-label fw-bold" for="cat_internal_open_{{ $gjIdx }}">
-                                                Internal Open
-                                                <br><small class="text-muted fw-normal">आन्तरिक खुल्ला — All NOC Staff</small>
-                                            </label>
-                                        </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
-                                        <div class="mt-1 text-success small fw-semibold">
-                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
-                                        </div>
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_internal_open_{{ $gjIdx }}" value="internal_open"
+                                               {{ in_array('internal_open', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_internal_open_{{ $gjIdx }}">
+                                            Internal Open
+                                            <br><small class="text-muted fw-normal">आन्तरिक खुल्ला — All NOC Staff</small>
+                                        </label>
                                     </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                    </div>
+                                </div>
                                 @endif
 
+                                {{-- Internal Inclusive types --}}
                                 @foreach($gInternalInclusiveTypes as $idx => $type)
-                                    <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gJob->application_fee ?? 0 }}">
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input category-cb" type="checkbox"
-                                                   name="applied_category[]" id="cat_int_incl_{{ $gjIdx }}_{{ $idx }}" value="internal_inclusive"
-                                                   {{ in_array('internal_inclusive', $oldCategories) ? 'checked' : '' }}>
-                                            <label class="form-check-label fw-bold" for="cat_int_incl_{{ $gjIdx }}_{{ $idx }}">
-                                                Internal Inclusive — {{ $type }}
-                                                <br><small class="text-muted fw-normal">आन्तरिक समावेशी — {{ $type }} (NOC only)</small>
-                                            </label>
-                                        </div>
-                                        <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
-                                        <div class="mt-1 text-success small fw-semibold">
-                                            Application Fee: Rs. {{ number_format($gJob->application_fee ?? 0, 2) }}
-                                        </div>
+                                <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_int_incl_{{ $gjIdx }}_{{ $idx }}" value="internal_inclusive"
+                                               {{ in_array('internal_inclusive', $oldCategories) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold" for="cat_int_incl_{{ $gjIdx }}_{{ $idx }}">
+                                            Internal Inclusive — {{ $type }}
+                                            <br><small class="text-muted fw-normal">आन्तरिक समावेशी — {{ $type }} (NOC only)</small>
+                                        </label>
                                     </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">{{ $gAdvNo }}</div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                    </div>
+                                </div>
                                 @endforeach
 
-                                @endforeach
-
-                            </div>
+                                @endforeach{{-- end $groupJobs loop --}}
+                            </div>{{-- end flex wrap --}}
 
                             <div id="feeSummaryBar" class="mt-3 p-3 rounded border bg-white" style="display:none;">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -357,19 +381,12 @@
                                         <span id="selectedCategoryNames" class="ms-2 text-secondary small"></span>
                                     </div>
                                     <div class="text-end">
-                                        <span class="fw-bold fs-5 text-success">
-                                            Total Fee: Rs. <span id="totalFeeDisplay">0.00</span>
-                                        </span>
+                                        <span class="fw-bold fs-5 text-success">Total Fee: Rs. <span id="totalFeeDisplay">0.00</span></span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="categoryError" class="text-danger small mt-2" style="display:none;">
-                                Please select at least one category.
-                            </div>
-                            @error('applied_category')
-                                <div class="text-danger small mt-2">{{ $message }}</div>
-                            @enderror
+                            <div id="categoryError" class="text-danger small mt-2" style="display:none;">Please select at least one category.</div>
+                            @error('applied_category')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                         @endif
                     </div>
                     @endif
@@ -377,105 +394,62 @@
                     <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         function updateAdvertisementNo() {
-                            var checked = document.querySelectorAll('.category-cb:checked');
-                            var adNos = [];
-                            var seen = {};
-                            checked.forEach(function(cb) {
-                                var option = cb.closest('.category-option');
-                                if (option) {
-                                    var adv = option.getAttribute('data-adv-no');
-                                    if (adv && !seen[adv]) {
-                                        seen[adv] = true;
-                                        adNos.push(adv);
-                                    }
-                                }
+                            var adNos = [], seen = {};
+                            document.querySelectorAll('.category-cb:checked').forEach(function(cb) {
+                                var opt = cb.closest('.category-option');
+                                if (opt) { var adv = opt.getAttribute('data-adv-no'); if (adv && !seen[adv]) { seen[adv]=true; adNos.push(adv); } }
                             });
-                            var field = document.getElementById('advertisement_no');
-                            if (field) field.value = adNos.join(', ');
+                            var f = document.getElementById('advertisement_no');
+                            if (f) f.value = adNos.join(', ');
                         }
-
                         function updateTotalFee() {
-    const checkedBoxes = Array.from(document.querySelectorAll('.category-cb:checked'));
-
-    // ── Nothing selected — reset everything ──────────────────
-    if (checkedBoxes.length === 0) {
-        const totalFeeInput = document.getElementById('total_fee');
-        if (totalFeeInput) totalFeeInput.value = '0.00';
-        const bar = document.getElementById('feeSummaryBar');
-        if (bar) bar.style.display = 'none';
-        const step8Fee = document.getElementById('step8TotalFee');
-        if (step8Fee) step8Fee.textContent = '0.00';
-        return;
-    }
-
-    // ── Base = Open fee, always ──────────────────────────────
-    const openCbEl   = document.querySelector('.category-cb[value="open"]');
-    const openOption = openCbEl ? openCbEl.closest('.category-option') : null;
-    const openFee    = openOption ? parseFloat(openOption.getAttribute('data-fee') || 0) : 0;
-
-    let total = openFee;
-
-    // ── The 1st selected category is FREE (absorbed by base).
-    //    Every category from the 2nd onward adds its own fee. ─
-    checkedBoxes.slice(1).forEach(function (cb) {
-        const option = cb.closest('.category-option');
-        if (!option) return;
-        total += parseFloat(option.getAttribute('data-fee') || 0);
-    });
-
-    // ── Build display names ──────────────────────────────────
-    const names = [];
-    const openExplicitlyChecked = checkedBoxes.some(cb => cb.value === 'open');
-    // Show "Open (base)" label when open isn't explicitly ticked
-    if (!openExplicitlyChecked && openFee > 0) {
-        names.push('Open (base)');
-    }
-    checkedBoxes.forEach(function (cb) {
-        const option = cb.closest('.category-option');
-        if (!option) return;
-        const label = option.querySelector('.form-check-label');
-        if (label) {
-            const labelText = label.firstChild?.textContent?.trim()
-                || label.textContent.split('\n')[0].trim();
-            if (labelText) names.push(labelText);
-        }
-    });
-
-    // ── Update hidden input ──────────────────────────────────
-    const totalFeeInput = document.getElementById('total_fee');
-    if (totalFeeInput) totalFeeInput.value = total.toFixed(2);
-
-    // ── Update Step 1 summary bar ────────────────────────────
-    const bar      = document.getElementById('feeSummaryBar');
-    const display  = document.getElementById('totalFeeDisplay');
-    const nameSpan = document.getElementById('selectedCategoryNames');
-    if (bar)      bar.style.display = total > 0 ? '' : 'none';
-    if (display)  display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
-    if (nameSpan) nameSpan.textContent = names.join(' + ') || '—';
-
-    // ── Update Step 8 payment summary ────────────────────────
-    const step8Fee   = document.getElementById('step8TotalFee');
-    const step8Names = document.getElementById('step8CategoryNames');
-    const step8Pos   = document.getElementById('step8Position');
-    if (step8Fee)   step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
-    if (step8Names) step8Names.textContent = names.join(' + ') || '—';
-    if (step8Pos)   step8Pos.textContent = document.getElementById('applying_position')?.value || '—';
-}
-
-                        document.querySelectorAll('.category-cb').forEach(function (cb) {
-                            var advDiv = cb.closest('.category-option').querySelector('.adv-no-display');
-                            if (cb.checked && advDiv) advDiv.style.display = '';
-                            cb.addEventListener('change', function () {
-                                if (advDiv) advDiv.style.display = this.checked ? '' : 'none';
+                            var cbs = Array.from(document.querySelectorAll('.category-cb:checked'));
+                            if (cbs.length === 0) {
+                                var ti = document.getElementById('total_fee'); if (ti) ti.value = '0.00';
+                                var bar = document.getElementById('feeSummaryBar'); if (bar) bar.style.display = 'none';
+                                var s8 = document.getElementById('step8TotalFee'); if (s8) s8.textContent = '0.00';
+                                return;
+                            }
+                            var openEl = document.querySelector('.category-cb[value="open"]');
+                            var openOpt = openEl ? openEl.closest('.category-option') : null;
+                            var openFee = openOpt ? parseFloat(openOpt.getAttribute('data-fee') || 0) : 0;
+                            var total = openFee;
+                            cbs.slice(1).forEach(function(cb) {
+                                var opt = cb.closest('.category-option'); if (!opt) return;
+                                total += parseFloat(opt.getAttribute('data-fee') || 0);
+                            });
+                            var names = [];
+                            var openChecked = cbs.some(function(cb){ return cb.value==='open'; });
+                            if (!openChecked && openFee > 0) names.push('Open (base)');
+                            cbs.forEach(function(cb) {
+                                var opt = cb.closest('.category-option'); if (!opt) return;
+                                var lbl = opt.querySelector('.form-check-label');
+                                if (lbl) { var t = lbl.firstChild && lbl.firstChild.textContent ? lbl.firstChild.textContent.trim() : lbl.textContent.split('\n')[0].trim(); if (t) names.push(t); }
+                            });
+                            var ti = document.getElementById('total_fee'); if (ti) ti.value = total.toFixed(2);
+                            var bar = document.getElementById('feeSummaryBar'); if (bar) bar.style.display = total > 0 ? '' : 'none';
+                            var disp = document.getElementById('totalFeeDisplay'); if (disp) disp.textContent = total.toLocaleString('en-NP', {minimumFractionDigits:2});
+                            var ns = document.getElementById('selectedCategoryNames'); if (ns) ns.textContent = names.join(' + ') || '';
+                            var s8f = document.getElementById('step8TotalFee'); if (s8f) s8f.textContent = total.toLocaleString('en-NP', {minimumFractionDigits:2});
+                            var s8n = document.getElementById('step8CategoryNames'); if (s8n) s8n.textContent = names.join(' + ') || '';
+                            var ap = document.getElementById('applying_position');
+                            var s8p = document.getElementById('step8Position'); if (s8p && ap) s8p.textContent = ap.value || '';
+                        }
+                        document.querySelectorAll('.category-cb').forEach(function(cb) {
+                            var opt = cb.closest('.category-option');
+                            var adv = opt ? opt.querySelector('.adv-no-display') : null;
+                            if (cb.checked && adv) adv.style.display = '';
+                            cb.addEventListener('change', function() {
+                                if (adv) adv.style.display = this.checked ? '' : 'none';
                                 updateAdvertisementNo();
                                 updateTotalFee();
                             });
                         });
-
                         updateAdvertisementNo();
                         updateTotalFee();
                     });
                     </script>
+
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -501,17 +475,19 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
-                            <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control"
-                                value="{{ old('birth_date_ad', $applicationform->birth_date_ad ? \Carbon\Carbon::parse($applicationform->birth_date_ad)->format('Y-m-d') : '') }}" required>
-                        </div>
-                        <div class="col-md-3">
                             <label for="birth_date_bs" class="form-label">Birth Date (B.S) <span class="text-danger">*</span> <small>(जन्म मिति B.S)</small></label>
                             <div class="ndp-wrapper">
                                 <input type="text" name="birth_date_bs" id="birth_date_bs" class="form-control" placeholder="YYYY-MM-DD" autocomplete="off"
-                                    value="{{ old('birth_date_bs', $applicationform->birth_date_bs) }}" required>
+                                    value="{{ old('birth_date_bs', $candidate->date_of_birth_bs ?? $applicationform->birth_date_bs) }}" required>
                                 <span class="ndp-icon"><i class="bi bi-calendar-event"></i></span>
                             </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
+                            <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control bg-light"
+                                value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-m-d') : ($applicationform->birth_date_ad ? \Carbon\Carbon::parse($applicationform->birth_date_ad)->format('Y-m-d') : '')) }}"
+                                readonly required>
+                            <small class="text-muted">Auto-filled from B.S date above</small>
                         </div>
                         <div class="col-md-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -526,6 +502,90 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
+                            <label for="gender" class="form-label">Gender <span class="text-danger">*</span> <small>(लिङ्ग)</small></label>
+                            <select name="gender" id="gender" class="form-select" required>
+                                <option value="">-- Select / छान्नुहोस् --</option>
+                                <option value="Male" {{ old('gender', $applicationform->gender) == 'Male' ? 'selected' : '' }}>Male / पुरुष</option>
+                                <option value="Female" {{ old('gender', $applicationform->gender) == 'Female' ? 'selected' : '' }}>Female / महिला</option>
+                                <option value="Other" {{ old('gender', $applicationform->gender) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="noc_employee" class="form-label">Are you NOC Employee? <span class="text-danger">*</span></label>
+                            <select name="noc_employee" id="noc_employee" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="yes" {{ old('noc_employee', $applicationform->noc_employee) == 'yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="no" {{ old('noc_employee', $applicationform->noc_employee) == 'no' ? 'selected' : '' }}>No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="noc_id_card" class="form-label">NOC ID Card</label>
+                            @if($applicationform->noc_id_card)
+                                <div class="input-group" id="noc_id_card_current">
+                                    <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}"
+                                    target="_blank"
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('noc_id_card_wrapper').classList.remove('d-none'); document.getElementById('noc_id_card_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="noc_id_card_wrapper" class="d-none mt-1">
+                                    <input type="file" name="noc_id_card" id="noc_id_card"
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="noc_id_card" id="noc_id_card"
+                                    class="form-control" accept="image/*,application/pdf">
+                            @endif
+                            <small class="text-muted d-block">Max Size: 700KB</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="physical_disability" class="form-label">Physical Disability <span class="text-danger">*</span> <small>(कुनै पनि असक्षमता?)</small></label>
+                            <select name="physical_disability" id="physical_disability" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="yes" {{ old('physical_disability', $applicationform->physical_disability) == 'yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="no" {{ old('physical_disability', $applicationform->physical_disability) == 'no' ? 'selected' : '' }}>No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
+                            @if($applicationform->disability_certificate)
+                                <div class="input-group" id="disability_certificate_current">
+                                    <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}"
+                                    target="_blank"
+                                    class="form-control text-primary text-decoration-none bg-white">
+                                        View Current File
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('disability_certificate_wrapper').classList.remove('d-none'); document.getElementById('disability_certificate_current').classList.add('d-none')">
+                                        Change
+                                    </button>
+                                </div>
+                                <div id="disability_certificate_wrapper" class="d-none mt-1">
+                                    <input type="file" name="disability_certificate" id="disability_certificate"
+                                        class="form-control" accept="image/*,application/pdf">
+                                </div>
+                            @else
+                                <input type="file" name="disability_certificate" id="disability_certificate"
+                                    class="form-control" accept="image/*,application/pdf">
+                            @endif
+                            <small class="text-muted d-block">Max Size: 700KB</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nationality" class="form-label">Nationality <span class="text-danger">*</span></label>
+                            <input type="text" name="nationality" id="nationality" class="form-control"
+                                value="{{ old('nationality', $applicationform->nationality) }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
                             <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
                             <input type="text" name="advertisement_no" id="advertisement_no" class="form-control" value="{{ old('advertisement_no', $applicationform->advertisement_no ?? '') }}" readonly>
                         </div>
@@ -535,29 +595,8 @@
                         </div>
                         <div class="col-md-4">
                             <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                            <input type="text" name="department" class="form-control"
-                                value="{{ old('department', $applicationform->department ?? '') }}" readonly>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="age" class="form-label">Age <span class="text-danger">*</span> <small>(उमेर)</small></label>
-                            <input type="number" name="age" id="age" class="form-control" min="0"
-                                value="{{ old('age', $applicationform->age) }}" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="alternate_phone_number" class="form-label">Alternate Phone Number <small>(वैकल्पिक फोन नम्बर)</small></label>
-                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control" value="{{ old('alternate_phone_number', $applicationform->alternate_phone_number) }}">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="gender" class="form-label">Gender <span class="text-danger">*</span> <small>(लिङ्ग)</small></label>
-                            <select name="gender" id="gender" class="form-select" required>
-                                <option value="">-- Select / छान्नुहोस् --</option>
-                                <option value="Male" {{ old('gender', $applicationform->gender) == 'Male' ? 'selected' : '' }}>Male / पुरुष</option>
-                                <option value="Female" {{ old('gender', $applicationform->gender) == 'Female' ? 'selected' : '' }}>Female / महिला</option>
-                                <option value="Other" {{ old('gender', $applicationform->gender) == 'Other' ? 'selected' : '' }}>Other / अन्य</option>
-                            </select>
+                            <input type="text" name="department" id="department" class="form-control"
+                                value="{{ $applicationform->department ?: ($job ? ($job->service_group ?: $job->department) : '') }}" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -603,18 +642,67 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="father_name_english" class="form-label">Father Name (बुबाको नाम) <span class="text-danger">*</span></label>
+                            <label for="father_name_english" class="form-label">Father Name  <span class="text-danger">*</span></label>
                             <input type="text" name="father_name_english" id="father_name_english" class="form-control" value="{{ old('father_name_english', $applicationform->father_name_english) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="mother_name_english" class="form-label">Mother Name (आमाको नाम) <span class="text-danger">*</span></label>
+                            <label for="mother_name_english" class="form-label">Mother Name  <span class="text-danger">*</span></label>
                             <input type="text" name="mother_name_english" id="mother_name_english" class="form-control" value="{{ old('mother_name_english', $applicationform->mother_name_english) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="grandfather_name_english" class="form-label">Grandfather Name (हजुरबुबाको नाम) <span class="text-danger">*</span></label>
+                            <label for="grandfather_name_english" class="form-label">Grandfather Name  <span class="text-danger">*</span></label>
                             <input type="text" name="grandfather_name_english" id="grandfather_name_english" class="form-control" value="{{ old('grandfather_name_english', $applicationform->grandfather_name_english) }}" required>
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+
+                    <div class="col-md-4">
+                        <label for="father_name_nepali" class="form-label">
+                            Father Name in Nepali (बुबाको नाम नेपालीमा)
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                            name="father_name_nepali"
+                            id="father_name_nepali"
+                            class="form-control nepali-only"
+                            placeholder="नेपालीमा नाम लेख्नुहोस्"
+                            value="{{ old('father_name_nepali', $applicationform->father_name_nepali) }}"
+                            required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="mother_name_nepali" class="form-label">
+                            Mother Name in Nepali (आमाको नाम नेपालीमा)
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                            name="mother_name_nepali"
+                            id="mother_name_nepali"
+                            class="form-control nepali-only"
+                            placeholder="नेपालीमा नाम लेख्नुहोस्"
+                            value="{{ old('mother_name_nepali', $applicationform->mother_name_nepali) }}"
+                            required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="grandfather_name_nepali" class="form-label">
+                            Grandfather Name in Nepali (हजुरबुबाको नाम नेपालीमा)
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                            name="grandfather_name_nepali"
+                            id="grandfather_name_nepali"
+                            class="form-control nepali-only"
+                            placeholder="नेपालीमा नाम लेख्नुहोस्"
+                            value="{{ old('grandfather_name_nepali', $applicationform->grandfather_name_nepali) }}"
+                            required>
+                    </div>
+
+                </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="father_qualification" class="form-label">Father's Qualification (बुबाको योग्यता)</label>
@@ -635,43 +723,14 @@
                             <input type="text" name="blood_group" id="blood_group" class="form-control" value="{{ old('blood_group', $applicationform->blood_group) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="nationality" class="form-label">Nationality <span class="text-danger">*</span></label>
-                            <input type="text" name="nationality" id="nationality" class="form-control" value="{{ old('nationality', $applicationform->nationality) }}" required>
+                            <label for="age" class="form-label">Age <span class="text-danger">*</span> <small>(उमेर)</small></label>
+                            <input type="text" name="age" id="age" class="form-control" min="0"
+                                value="{{ old('age', $applicationform->age) }}" required readonly>
+                            <input type="hidden" id="age_numeric" name="age_numeric" value="">
                         </div>
                         <div class="col-md-4">
-                            <label for="noc_employee" class="form-label">Are you NOC Employee? <span class="text-danger">*</span></label>
-                            <select name="noc_employee" id="noc_employee" class="form-select" required>
-                                <option value="">-- Select --</option>
-                                <option value="yes" {{ old('noc_employee', $applicationform->noc_employee) == 'yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="no" {{ old('noc_employee', $applicationform->noc_employee) == 'no' ? 'selected' : '' }}>No</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="noc_id_card" class="form-label">NOC ID Card</label>
-                            @if($applicationform->noc_id_card)
-                                <div class="input-group" id="noc_id_card_current">
-                                    <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('noc_id_card_wrapper').classList.remove('d-none'); document.getElementById('noc_id_card_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="noc_id_card_wrapper" class="d-none mt-1">
-                                    <input type="file" name="noc_id_card" id="noc_id_card"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="noc_id_card" id="noc_id_card"
-                                    class="form-control" accept="image/*,application/pdf">
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
+                            <label for="alternate_phone_number" class="form-label">Alternate Phone Number <small>(वैकल्पिक फोन नम्बर)</small></label>
+                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control" value="{{ old('alternate_phone_number', $applicationform->alternate_phone_number) }}">
                         </div>
                     </div>
 
@@ -713,11 +772,11 @@
                             <label for="ethnic_group" class="form-label">Ethnic Group <span class="text-danger">*</span> <small>(जातीय समूह)</small></label>
                             <select name="ethnic_group" id="ethnic_group" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Dalit" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Dalit' ? 'selected' : '' }}>Dalit</option>
-                                <option value="Janajati" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Janajati' ? 'selected' : '' }}>Janajati</option>
-                                <option value="Madhesi" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Madhesi' ? 'selected' : '' }}>Madhesi</option>
-                                <option value="Brahmin/Chhetri" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Brahmin/Chhetri' ? 'selected' : '' }}>Brahmin / Chhetri</option>
-                                <option value="Other" {{ old('ethnic_group', $applicationform->ethnic_group) == 'Other' ? 'selected' : '' }}>Other</option>
+                                <option value="Dalit"          {{ old('ethnic_group', $applicationform->ethnic_group) == 'Dalit'          ? 'selected' : '' }}>Dalit</option>
+                                <option value="Janajati"       {{ old('ethnic_group', $applicationform->ethnic_group) == 'Janajati'       ? 'selected' : '' }}>Janajati</option>
+                                <option value="Madhesi"        {{ old('ethnic_group', $applicationform->ethnic_group) == 'Madhesi'        ? 'selected' : '' }}>Madhesi</option>
+                                <option value="Brahmin/Chhetri"{{ old('ethnic_group', $applicationform->ethnic_group) == 'Brahmin/Chhetri'? 'selected' : '' }}>Brahmin / Chhetri</option>
+                                <option value="Other"          {{ old('ethnic_group', $applicationform->ethnic_group) == 'Other'          ? 'selected' : '' }}>Other</option>
                             </select>
                             <input type="text" name="ethnic_group_other" id="ethnic_group_other" class="form-control mt-2 d-none" placeholder="If other, specify" value="{{ old('ethnic_group_other', $applicationform->ethnic_group_other) }}">
                         </div>
@@ -730,7 +789,7 @@
                                     <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}"
                                     target="_blank"
                                     class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
+                                        View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="document.getElementById('ethnic_certificate_wrapper').classList.remove('d-none'); document.getElementById('ethnic_certificate_current').classList.add('d-none')">
@@ -760,38 +819,6 @@
                                 <option value="employed" {{ old('employment_status', $applicationform->employment_status) == 'employed' ? 'selected' : '' }}>Employed</option>
                                 <option value="unemployed" {{ old('employment_status', $applicationform->employment_status) == 'unemployed' ? 'selected' : '' }}>Unemployed</option>
                             </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="physical_disability" class="form-label">Physical Disability <span class="text-danger">*</span> <small>(कुनै पनि असक्षमता?)</small></label>
-                            <select name="physical_disability" id="physical_disability" class="form-select" required>
-                                <option value="">-- Select --</option>
-                                <option value="yes" {{ old('physical_disability', $applicationform->physical_disability) == 'yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="no" {{ old('physical_disability', $applicationform->physical_disability) == 'no' ? 'selected' : '' }}>No</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="disability_certificate" class="form-label">Disability Certificate (If Any)</label>
-                            @if($applicationform->disability_certificate)
-                                <div class="input-group" id="disability_certificate_current">
-                                    <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}"
-                                    target="_blank"
-                                    class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                            onclick="document.getElementById('disability_certificate_wrapper').classList.remove('d-none'); document.getElementById('disability_certificate_current').classList.add('d-none')">
-                                        Change
-                                    </button>
-                                </div>
-                                <div id="disability_certificate_wrapper" class="d-none mt-1">
-                                    <input type="file" name="disability_certificate" id="disability_certificate"
-                                        class="form-control" accept="image/*,application/pdf">
-                                </div>
-                            @else
-                                <input type="file" name="disability_certificate" id="disability_certificate"
-                                    class="form-control" accept="image/*,application/pdf">
-                            @endif
-                            <small class="text-muted d-block">Max Size: 700KB</small>
                         </div>
                     </div>
 
@@ -964,7 +991,7 @@
                                     <a href="{{ asset('storage/' . $applicationform->transcript) }}"
                                     target="_blank"
                                     class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
+                                        View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="document.getElementById('transcript_wrapper').classList.remove('d-none'); document.getElementById('transcript_current').classList.add('d-none')">
@@ -989,7 +1016,7 @@
                                     <a href="{{ asset('storage/' . $applicationform->character) }}"
                                     target="_blank"
                                     class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
+                                        View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="document.getElementById('character_wrapper').classList.remove('d-none'); document.getElementById('character_current').classList.add('d-none')">
@@ -1012,7 +1039,7 @@
                                     <a href="{{ asset('storage/' . $applicationform->equivalent) }}"
                                     target="_blank"
                                     class="form-control text-primary text-decoration-none bg-white">
-                                        📄 View Current File
+                                        View Current File
                                     </a>
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="document.getElementById('equivalent_wrapper').classList.remove('d-none'); document.getElementById('equivalent_current').classList.add('d-none')">
@@ -1051,7 +1078,7 @@
             </select>
         </div>
     </div>
-
+    <div id="experience_table_wrapper">
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -1078,18 +1105,20 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp1_start_date"
+                    <input type="text" name="exp1_start_date_bs"
                         class="form-control nepali-date"
                         placeholder="YYYY-MM-DD"
-                        value="{{ old('exp1_start_date', $applicationform->exp1_start_date) }}">
-                        
-
+                        data-target="exp1_start_date"
+                        value="{{ old('exp1_start_date_bs', $applicationform->exp1_start_date) }}">
+                    <input type="hidden" name="exp1_start_date" value="{{ old('exp1_start_date', $applicationform->exp1_start_date) }}">
                 </td>
 
                 <td>
-                    <input type="text" name="exp1_end_date"
+                    <input type="text" name="exp1_end_date_bs"
                         class="form-control nepali-date"
-                        value="{{ old('exp1_end_date', $applicationform->exp1_end_date) }}">
+                        data-target="exp1_end_date"
+                        value="{{ old('exp1_end_date_bs', $applicationform->exp1_end_date) }}">
+                    <input type="hidden" name="exp1_end_date" value="{{ old('exp1_end_date', $applicationform->exp1_end_date) }}">
                 </td>
 
                 <td>
@@ -1121,15 +1150,19 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp2_start_date"
+                    <input type="text" name="exp2_start_date_bs"
                         class="form-control nepali-date"
-                        value="{{ old('exp2_start_date', $applicationform->exp2_start_date) }}">
+                        data-target="exp2_start_date"
+                        value="{{ old('exp2_start_date_bs', $applicationform->exp2_start_date) }}">
+                    <input type="hidden" name="exp2_start_date" value="{{ old('exp2_start_date', $applicationform->exp2_start_date) }}">
                 </td>
 
                 <td>
-                    <input type="text" name="exp2_end_date"
+                    <input type="text" name="exp2_end_date_bs"
                         class="form-control nepali-date"
-                        value="{{ old('exp2_end_date', $applicationform->exp2_end_date) }}">
+                        data-target="exp2_end_date"
+                        value="{{ old('exp2_end_date_bs', $applicationform->exp2_end_date) }}">
+                    <input type="hidden" name="exp2_end_date" value="{{ old('exp2_end_date', $applicationform->exp2_end_date) }}">
                 </td>
 
                 <td>
@@ -1161,15 +1194,19 @@
                 </td>
 
                 <td>
-                    <input type="text" name="exp3_start_date"
+                    <input type="text" name="exp3_start_date_bs"
                         class="form-control nepali-date"
-                        value="{{ old('exp3_start_date', $applicationform->exp3_start_date) }}">
+                        data-target="exp3_start_date"
+                        value="{{ old('exp3_start_date_bs', $applicationform->exp3_start_date) }}">
+                    <input type="hidden" name="exp3_start_date" value="{{ old('exp3_start_date', $applicationform->exp3_start_date) }}">
                 </td>
 
                 <td>
-                    <input type="text" name="exp3_end_date"
+                    <input type="text" name="exp3_end_date_bs"
                         class="form-control nepali-date"
-                        value="{{ old('exp3_end_date', $applicationform->exp3_end_date) }}">
+                        data-target="exp3_end_date"
+                        value="{{ old('exp3_end_date_bs', $applicationform->exp3_end_date) }}">
+                    <input type="hidden" name="exp3_end_date" value="{{ old('exp3_end_date', $applicationform->exp3_end_date) }}">
                 </td>
 
                 <td>
@@ -1190,6 +1227,7 @@
 
         </tbody>
     </table>
+</div>
 
     <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -1276,6 +1314,48 @@
                             @endif
                             <small class="text-muted d-block">Max Size: 700KB</small>
                         </div>
+                        <div class="col-md-6">
+                        <label class="form-label">Additional Document</label>
+
+                        @if(!empty($applicationform->additional_documents))
+                            <div class="input-group" id="additional_docs_current">
+
+                                <a href="{{ asset('storage/' . $applicationform->additional_documents) }}"
+                                target="_blank"
+                                class="form-control text-primary text-decoration-none bg-white">
+                                    📄 View Current File
+                                </a>
+
+                                <button type="button" class="btn btn-outline-secondary"
+                                        onclick="
+                                            document.getElementById('additional_docs_wrapper').classList.remove('d-none');
+                                            document.getElementById('additional_docs_current').classList.add('d-none');
+                                        ">
+                                    Change
+                                </button>
+
+                            </div>
+
+                            <div id="additional_docs_wrapper" class="d-none mt-1">
+                                <input type="file"
+                                    name="additional_documents"
+                                    id="additional_documents"
+                                    class="form-control"
+                                    accept="image/*,application/pdf">
+                            </div>
+
+                        @else
+                            <input type="file"
+                                name="additional_documents"
+                                id="additional_documents"
+                                class="form-control"
+                                accept="image/*,application/pdf">
+                        @endif
+
+                        <small class="text-muted d-block">
+                            Max size: 700KB 
+                        </small>
+                    </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
@@ -1314,9 +1394,12 @@
                             <tr><th>Citizenship Number</th><td id="p_citizenship_number"></td></tr>
                             <tr><th>Citizenship Issue Date (B.S)</th><td id="p_citizenship_issue_date_bs"></td></tr>
                             <tr><th>Citizenship Issue District</th><td id="p_citizenship_issue_district"></td></tr>
-                            <tr><th>Father Name (बुबाको नाम)</th><td id="p_father_name_english"></td></tr>
-                            <tr><th>Mother Name (आमाको नाम)</th><td id="p_mother_name_english"></td></tr>
-                            <tr><th>Grandfather Name (हजुरबुबाको नाम)</th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father Name </th><td id="p_father_name_english"></td></tr>
+                            <tr><th>Mother Name </th><td id="p_mother_name_english"></td></tr>
+                            <tr><th>Grandfather Name </th><td id="p_grandfather_name_english"></td></tr>
+                            <tr><th>Father Name in Nepali (बुबाको नाम नेपालीमा)</th><td id="p_father_name_nepali"></td></tr>
+                            <tr><th>Mother Name in Nepali (आमाको नाम नेपालीमा)</th><td id="p_mother_name_nepali"></td></tr>
+                            <tr><th>Grandfather Name in Nepali(हजुरबुबाको नाम नेपालीमा)</th><td id="p_grandfather_name_nepali"></td></tr>
                             <tr><th>Father's Qualification (बुबाको योग्यता)</th><td id="p_father_qualification"></td></tr>
                             <tr><th>Mother's Qualification (आमाको योग्यता)</th><td id="p_mother_qualification"></td></tr>
                             <tr><th>Parent's Occupation</th><td id="p_parent_occupation"></td></tr>
@@ -1352,7 +1435,7 @@
                             <tr><th>Passed Year</th><td id="p_graduation_year"></td></tr>
                         </table>
 
-                        <h6 class="text-secondary mt-4">Work Experience</h6>
+                        <h6 class="text-secondary mt-4">Work Experience/कार्य अनुभव</h6>
                             <table class="table table-bordered">
                                 <tr>
                                     <th width="30%">Has Experience</th>
@@ -1378,9 +1461,9 @@
                         </table>
 
                         <div class="form-check mb-4">
-                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required checked>
+                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
                             <label class="form-check-label" for="terms_agree">
-                                I hereby declare that all information provided is true and correct. <span class="text-danger">*</span>
+                                I hereby declare that all information provided is true and correct.(म यसैद्वारा घोषणा गर्दछु कि प्रदान गरिएको सबै जानकारी सत्य र सही छ।) <span class="text-danger">*</span>
                             </label>
                         </div>
 
@@ -1396,31 +1479,43 @@
                     <h5 class="mb-4 text-dark">Step 8 — Payment & Declaration</h5>
 
                     <div id="paymentSection">
-                         <div class="card border-success mb-4">
-                            <div class="card-body">
-                                <h6 class="card-title text-success mb-3">
-                                    <i class="bi bi-receipt me-2"></i>Payment Summary
-                                </h6>
-                                <table class="table table-sm table-bordered mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <th width="50%">Selected Categories</th>
-                                            <td id="step8CategoryNames" class="text-secondary">—</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Applying Position</th>
-                                            <td id="step8Position">—</td>
-                                        </tr>
-                                        <tr class="table-success">
-                                            <th class="fw-bold fs-5">Total Amount Payable</th>
-                                            <td class="fw-bold fs-5 text-success">
-                                                Rs. <span id="step8TotalFee">0.00</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="card border-success mb-4">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success mb-3">
+                                        <i class="bi bi-receipt me-2"></i>Payment Summary
+                                    </h6>
+                                    @php
+                                        $isDoubleDasturPayment = $job && $job->deadline
+                                            && now()->gt($job->deadline)
+                                            && $job->double_dastur_fee
+                                            && $job->double_dastur_date
+                                            && now()->lte($job->double_dastur_date);
+                                    @endphp
+                                    @if($isDoubleDasturPayment)
+                                        <div class="alert alert-warning py-2 mb-3" style="font-size:13px;">
+                                            Application deadline has passed. Double Dastur fee has been implimented.
+                                        </div>
+                                    @endif
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th width="50%">Selected Categories</th>
+                                                <td id="step8CategoryNames" class="text-secondary">—</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Applying Position</th>
+                                                <td id="step8Position">—</td>
+                                            </tr>
+                                            <tr class="table-success">
+                                                <th class="fw-bold fs-5">Total Amount Payable</th>
+                                                <td class="fw-bold fs-5 text-success">
+                                                    Rs. <span id="step8TotalFee">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
                         @if(isset($payment) && $payment->status == 'paid')
                         <div class="alert alert-success mb-3">
                             ✓ Payment already completed via {{ strtoupper($payment->gateway) }}
@@ -1457,10 +1552,7 @@
 
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                                <button type="button" id="saveDraftBtn" class="btn btn-danger"
-                                    onclick="document.getElementById('applicationform').submit()">
-                                    Save Changes
-                                </button>
+                                <button type="submit" id="saveDraftBtn" class="btn btn-danger">Save Changes</button>
                             </div>
 
                         </div>
@@ -1497,10 +1589,64 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Initialize date pickers
-    
     document.querySelectorAll('.nepali-date').forEach(initNDP);
-    // initNDP(document.getElementById('birth_date_bs'));
-    // initNDP(document.getElementById('citizenship_issue_date_bs'));
+    initNDP(document.getElementById('birth_date_bs'));
+    initNDP(document.getElementById('citizenship_issue_date_bs'));
+
+    // ── BS → AD: poll for picker value changes (onChange is unreliable) ──
+    var bsInput   = document.getElementById('birth_date_bs');
+    var adEl      = document.getElementById('birth_date_ad');
+    var lastBsVal = bsInput ? bsInput.value : '';
+
+    // Immediate page-load conversion if AD is missing
+    if (bsInput && bsInput.value && adEl && !adEl.value && typeof window.bsToAD === 'function') {
+        var ad0 = window.bsToAD(bsInput.value);
+        if (ad0) {
+            adEl.value = ad0;
+            adEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
+    // Poll every 300 ms — detects picker selection reliably
+    setInterval(function () {
+        if (!bsInput || !adEl) return;
+        var cur = bsInput.value;
+        if (cur && cur !== lastBsVal && cur.length >= 10) {
+            lastBsVal = cur;
+            if (typeof window.bsToAD === 'function') {
+                var ad = window.bsToAD(cur);
+                if (ad) {
+                    adEl.value = ad;
+                    adEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    adEl.dispatchEvent(new Event('input',  { bubbles: true }));
+                }
+            }
+        }
+    }, 300);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const workExperienceSelect = document.getElementById('has_work_experience');
+    const experienceTable = document.getElementById('experience_table_wrapper');
+
+    function toggleExperienceTable() {
+
+        if (!workExperienceSelect || !experienceTable) return;
+
+        if (workExperienceSelect.value === 'Yes') {
+            experienceTable.style.display = 'block';
+        } else {
+            experienceTable.style.display = 'none';
+        }
+    }
+
+    // Run on page load
+    toggleExperienceTable();
+
+    // Run when dropdown changes
+    workExperienceSelect.addEventListener('change', toggleExperienceTable);
+
 });
 </script>
 
@@ -1565,7 +1711,7 @@ document.addEventListener('DOMContentLoaded', function () {
         2075:[31,31,32,31,31,31,30,29,30,29,30,30],2076:[31,32,31,32,31,30,30,30,29,29,30,30],
         2077:[31,32,31,32,31,30,30,30,29,30,29,31],2078:[31,31,31,32,31,31,30,29,30,29,30,30],
         2079:[31,31,32,31,31,31,30,29,30,29,30,30],2080:[31,32,31,32,31,30,30,30,29,29,30,30],
-        2081:[31,32,31,32,31,30,30,30,29,30,29,31],2082:[31,31,31,32,31,31,30,29,30,29,30,30],
+        2081:[31,32,31,32,31,30,30,30,29,30,29,30],2082:[31,31,31,32,31,31,30,29,30,29,30,31],
         2083:[31,31,32,31,31,31,30,29,30,29,30,30],2084:[31,32,31,32,31,30,30,30,29,29,30,31],
         2085:[30,32,31,32,31,30,30,30,29,30,29,31],2086:[31,31,32,31,31,31,30,29,30,29,30,30],
         2087:[31,31,32,32,31,30,30,29,30,29,30,30],2088:[31,32,31,32,31,30,30,30,29,29,30,31],
@@ -1713,7 +1859,7 @@ document.addEventListener('DOMContentLoaded', function () {
     conditionalFile(
         document.getElementById('noc_employee'),
         document.getElementById('noc_id_card'),
-        document.getElementById('noc_id_card')?.closest('.col-md-6')?.querySelector('label'),
+        document.getElementById('noc_id_card')?.closest('.col-md-4')?.querySelector('label'),
         ['yes']
     );
     conditionalFile(
@@ -1871,7 +2017,7 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_phone', val('phone'));
         set('p_advertisement_no', val('advertisement_no'));
         set('p_applying_position', val('applying_position'));
-        set('p_department', val('department'));
+        set('p_department', val('department') !== '-' ? val('department') : (@json($job ? ($job->service_group ?: $job->department ?: '') : ($applicationform->department ?? '')) || '-'));
         set('p_age', val('age'));
         set('p_alternate_phone_number', val('alternate_phone_number'));
         set('p_gender', val('gender'));
@@ -1884,6 +2030,9 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_father_name_english', val('father_name_english'));
         set('p_mother_name_english', val('mother_name_english'));
         set('p_grandfather_name_english', val('grandfather_name_english'));
+        set('p_father_name_nepali', val('father_name_nepali'));
+        set('p_mother_name_nepali', val('mother_name_nepali'));
+        set('p_grandfather_name_nepali', val('grandfather_name_nepali'));
         set('p_father_qualification', val('father_qualification'));
         set('p_mother_qualification', val('mother_qualification'));
         set('p_parent_occupation', val('parent_occupation'));
@@ -1909,9 +2058,9 @@ document.addEventListener('DOMContentLoaded', function () {
         set('p_institution_name', val('institution_name'));
         set('p_graduation_year', val('graduation_year'));
         set('p_has_work_experience', val('has_work_experience'));
-        // set('p_years_of_experience', val('years_of_experience'));
-        // set('p_previous_organization', val('previous_organization'));
-        // set('p_previous_position', val('previous_position'));
+        set('p_years_of_experience', val('years_of_experience'));
+        set('p_previous_organization', val('previous_organization'));
+        set('p_previous_position', val('previous_position'));
 
         function previewFile(containerId, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`);
@@ -2009,6 +2158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target.type === 'file') return;
         populatePreview();
         populateExperiencePreview();
+
     });
     form.addEventListener('change', function(e) {
         populatePreview();
@@ -2018,57 +2168,273 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('✓ Edit form initialized');
 });
 
-// ============================================================
-// BS → AD date conversion + Age auto-fill
-// ============================================================
+// Age and date 
 (function () {
-    function calculateAge(adDateStr) {
-        if (!adDateStr) return '';
-        const birth = new Date(adDateStr);
-        if (isNaN(birth.getTime())) return '';
+
+    function calculateExactAge(dateString) {
+
+        if (!dateString) return '';
+
+        const birthDate = new Date(dateString);
+
+        if (isNaN(birthDate.getTime())) return '';
+
         const today = new Date();
-        let age = today.getFullYear() - birth.getFullYear();
-        const m = today.getMonth() - birth.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-        return age > 0 ? age : '';
-    }
 
-    function applyFromBS(bsValue) {
-        if (!bsValue || typeof window.bsToAD !== 'function') return;
-        const adDate = window.bsToAD(bsValue.trim());
-        if (!adDate) return;
-        const adInput = document.getElementById('birth_date_ad');
-        const ageInput = document.getElementById('age');
-        if (adInput) adInput.value = adDate;
-        const age = calculateAge(adDate);
-        if (ageInput && age !== '') ageInput.value = age;
-    }
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
 
-    function applyFromAD(adValue) {
-        const ageInput = document.getElementById('age');
-        const age = calculateAge(adValue);
-        if (ageInput && age !== '') ageInput.value = age;
-    }
+        if (days < 0) {
 
-    function init() {
-        const bsInput = document.getElementById('birth_date_bs');
-        const adInput = document.getElementById('birth_date_ad');
-        if (!bsInput) return;
-        if (bsInput.value) applyFromBS(bsInput.value);
-        else if (adInput && adInput.value) applyFromAD(adInput.value);
-        bsInput.addEventListener('change', function () { applyFromBS(this.value); });
-        bsInput.addEventListener('input', function () { applyFromBS(this.value); });
-        if (adInput) adInput.addEventListener('change', function () { applyFromAD(this.value); });
-    }
+            months--;
 
-    function waitForConverter() {
-        if (!window.nepaliLibrariesReady || typeof window.bsToAD !== 'function') {
-            setTimeout(waitForConverter, 100); return;
+            const lastMonth = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0
+            );
+
+            days += lastMonth.getDate();
         }
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-        else init();
+
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return `${years} years ${months} months ${days} days`;
     }
-    waitForConverter();
+
+    function updateAge(dateValue) {
+
+        const ageField = document.getElementById('age');
+
+        if (!ageField) return;
+
+        ageField.value = calculateExactAge(dateValue);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const adField = document.getElementById('birth_date_ad');
+        const bsField = document.getElementById('birth_date_bs');
+
+        if (adField) {
+
+            adField.addEventListener('change', function () {
+                updateAge(this.value);
+            });
+
+            adField.addEventListener('input', function () {
+                updateAge(this.value);
+            });
+        }
+
+        if (bsField) {
+
+            bsField.addEventListener('change', function () {
+
+                if (typeof window.bsToAD === 'function') {
+
+                    const adDate = window.bsToAD(this.value);
+
+                    if (adDate) {
+
+                        if (adField) {
+                            adField.value = adDate;
+                        }
+
+                        updateAge(adDate);
+                    }
+                }
+            });
+        }
+
+        // On page load: if BS already has a value but AD is empty, auto-convert
+        if (bsField && bsField.value && adField && !adField.value) {
+            if (typeof window.bsToAD === 'function') {
+                const adDate = window.bsToAD(bsField.value);
+                if (adDate) {
+                    adField.value = adDate;
+                    updateAge(adDate);
+                }
+            }
+        }
+
+        // Initial age calculation if AD already has a value
+        if (adField && adField.value) {
+            updateAge(adField.value);
+        }
+    });
+
+})();
+
+// ── Age Validation (male / female / disabled / NOC) ──────────────────────
+(function () {
+    'use strict';
+
+    function getLimits() {
+        const v = id => parseInt(document.getElementById(id)?.value || '0') || null;
+        return {
+            male:     { min: v('job_min_age_male'),     max: v('job_max_age_male')     },
+            female:   { min: v('job_min_age_female'),   max: v('job_max_age_female')   },
+            disabled: { min: v('job_min_age_disabled'), max: v('job_max_age_disabled') },
+            general:  { min: v('job_min_age'),          max: v('job_max_age')          },
+        };
+    }
+
+    function resolveLimit(limits) {
+        const noc      = document.getElementById('noc_employee')?.value;
+        const disabled = document.getElementById('physical_disability')?.value;
+        const gender   = document.getElementById('gender')?.value;
+        if (noc === 'yes') return null;
+        if (disabled === 'yes' && (limits.disabled.min || limits.disabled.max)) return limits.disabled;
+        if (gender === 'Female' && (limits.female.min || limits.female.max))     return limits.female;
+        if ((gender === 'Male' || gender === 'Other') && (limits.male.min || limits.male.max)) return limits.male;
+        if (limits.general.min || limits.general.max) return limits.general;
+        return null;
+    }
+
+    // Returns integer years only — used for limit comparison.
+    // Does NOT touch the #age display field.
+    function calcPreciseAge() {
+        const birthVal = document.getElementById('birth_date_ad')?.value;
+        if (!birthVal) return null;
+        const birth = new Date(birthVal);
+        if (isNaN(birth.getTime())) return null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        birth.setHours(0, 0, 0, 0);
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        const dayDiff   = today.getDate()  - birth.getDate();
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) age--;
+        return age;
+    }
+
+    function getOrCreateBanner() {
+        let banner = document.getElementById('age-limit-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'age-limit-banner';
+            banner.style.cssText = 'margin-top:6px;font-size:.875rem;padding:8px 12px;border-radius:6px;display:none;';
+            const ageField = document.getElementById('age');
+            if (ageField) ageField.parentNode.appendChild(banner);
+        }
+        return banner;
+    }
+
+    function showBanner(type, msg) {
+        const banner = getOrCreateBanner();
+        const styles = {
+            error:   { bg: '#fde8e8', border: '#dc3545', color: '#721c24' },
+            success: { bg: '#d4edda', border: '#28a745', color: '#155724' },
+            info:    { bg: '#e8f4fd', border: '#0c63e4', color: '#084298' },
+        };
+        const s = styles[type] || styles.info;
+        banner.style.background = s.bg;
+        banner.style.border     = `1px solid ${s.border}`;
+        banner.style.color      = s.color;
+        banner.textContent      = msg;
+        banner.style.display    = 'block';
+    }
+
+    function hideBanner() {
+        const b = document.getElementById('age-limit-banner');
+        if (b) b.style.display = 'none';
+    }
+
+    function validateAge() {
+        const ageInput   = document.getElementById('age');
+        const numericFld = document.getElementById('age_numeric'); // ← hidden field
+        const limits     = getLimits();
+        const limit      = resolveLimit(limits);
+        const noc        = document.getElementById('noc_employee')?.value;
+        const gender     = document.getElementById('gender')?.value;
+        const disabled   = document.getElementById('physical_disability')?.value;
+
+        if (ageInput) ageInput.classList.remove('is-invalid', 'is-valid');
+
+        // NOC — no age restriction
+        if (noc === 'yes') {
+            showBanner('info', 'NOC employees have no age restriction for this vacancy.');
+            if (ageInput) ageInput.classList.add('is-valid');
+            return;
+        }
+
+        const age = calcPreciseAge();
+
+        if (age === null) {
+            // No birth date yet — show limit hint only
+            if (limit) {
+                const parts = [];
+                if (limit.min) parts.push(`Minimum: ${limit.min} yrs`);
+                if (limit.max) parts.push(`Maximum: ${limit.max} yrs`);
+                showBanner('info', `Age limit for your category — ${parts.join('  |  ')}`);
+            } else {
+                hideBanner();
+            }
+            return;
+        }
+
+        // ✅ Write numeric age to hidden field — leave #age display untouched
+        if (numericFld) numericFld.value = age;
+
+        if (!limit) {
+            hideBanner();
+            if (ageInput) ageInput.classList.add('is-valid');
+            return;
+        }
+
+        const tooYoung = limit.min && age <= limit.min;
+        const tooOld   = limit.max && age >= limit.max;
+
+        if (tooYoung || tooOld) {
+            if (ageInput) ageInput.classList.add('is-invalid');
+            const label = disabled === 'yes'                         ? 'Disabled'
+                        : gender === 'Female'                        ? 'Female'
+                        : (gender === 'Male' || gender === 'Other')  ? 'Male/Other'
+                        : 'this category';
+            const msg = tooYoung
+                ? `Your age (${age}) is below the minimum of ${limit.min} years for ${label} applicants.`
+                : `Your age (${age}) exceeds the maximum of ${limit.max} years for ${label} applicants.`;
+            showBanner('error', msg);
+        } else {
+            if (ageInput) ageInput.classList.add('is-valid');
+            const parts = [];
+            if (limit.min) parts.push(`Min: ${limit.min}`);
+            if (limit.max) parts.push(`Max: ${limit.max}`);
+            showBanner('success', `Age ${age} is within the allowed range (${parts.join(' – ')}) for your category.`);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        ['gender', 'noc_employee', 'physical_disability', 'birth_date_ad'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', validateAge);
+                el.addEventListener('input',  validateAge);
+            }
+        });
+
+        validateAge(); // run on load for pre-filled values
+
+        // Block Step 1 "Next" if age is out of range
+        document.querySelectorAll('.next-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                const activeStep = document.querySelector('.step:not(.d-none)');
+                if (!activeStep || activeStep.id !== 'step1') return;
+                if (document.getElementById('noc_employee')?.value === 'yes') return;
+                const ageInput = document.getElementById('age');
+                if (ageInput && ageInput.classList.contains('is-invalid')) {
+                    e.stopImmediatePropagation();
+                    validateAge();
+                }
+            }, true);
+        });
+    });
+
 })();
 
 // ============================================================
@@ -2118,60 +2484,83 @@ document.addEventListener('DOMContentLoaded', function () {
         this.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
-   })(); // close Devanagari IIFE
-
-// ── Work Experience Preview (global scope) ────────────────────
-window.populateExperiencePreview = function () {
+    // For Work Experiences
+    function populateExperiencePreview() {
     let html = "";
     for (let i = 1; i <= 3; i++) {
-        const org   = document.querySelector(`[name="exp${i}_organization"]`)?.value || '';
-        const pos   = document.querySelector(`[name="exp${i}_position"]`)?.value || '';
-        const start = document.querySelector(`[name="exp${i}_start_date"]`)?.value || '';
-        const end   = document.querySelector(`[name="exp${i}_end_date"]`)?.value || '';
-        const years = document.querySelector(`[name="exp${i}_years"]`)?.value || '';
 
-        const fileInput    = document.querySelector(`[name="exp${i}_document"]`);
-        const file         = fileInput?.files?.[0];
-        const existingFile = fileInput?.getAttribute("data-existing") || '';
+        let org = document.querySelector(`[name="exp${i}_organization"]`)?.value;
+        let pos = document.querySelector(`[name="exp${i}_position"]`)?.value;
+        let start = document.querySelector(`[name="exp${i}_start_date_bs"]`)?.value;
+        let end = document.querySelector(`[name="exp${i}_end_date_bs"]`)?.value;
+        let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
 
-        // Skip completely empty rows
-        if (!org && !pos && !start && !end && !years && !file && !existingFile) continue;
+        let fileInput = document.querySelector(`[name="exp${i}_document"]`);
+        let file = fileInput?.files?.[0];
+
+        // 👇 EXISTING FILE (FROM DB)
+        let existingFile = fileInput?.getAttribute("data-existing");
 
         html += `
-        <div style="margin-bottom:16px; padding:12px; border:1px solid #ddd; border-radius:8px;">
-            <h6 class="mb-2">Experience ${i}</h6>
-            <table class="table table-sm table-borderless mb-1">
-                <tr><td width="120"><b>Organization:</b></td><td>${org || '-'}</td></tr>
-                <tr><td><b>Position:</b></td><td>${pos || '-'}</td></tr>
-                <tr><td><b>Start Date:</b></td><td>${start || '-'}</td></tr>
-                <tr><td><b>End Date:</b></td><td>${end || '-'}</td></tr>
-                <tr><td><b>Years:</b></td><td>${years || '-'}</td></tr>
-            </table>`;
+        <div style="margin-bottom:20px; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            <h6>Experience ${i}</h6>
+
+            <b>Organization:</b> ${org || '-'} <br>
+            <b>Position:</b> ${pos || '-'} <br>
+            <b>Start:</b> ${start || '-'} <br>
+            <b>End:</b> ${end || '-'} <br>
+            <b>Years:</b> ${years || '-'} <br>
+        `;
+
+        // ================= FILE PREVIEW =================
 
         if (file) {
-            const url = URL.createObjectURL(file);
+            // NEW UPLOADED FILE
+            let url = URL.createObjectURL(file);
+
             if (file.type.includes("pdf")) {
-                html += `<iframe src="${url}" style="width:100%;height:250px;border:1px solid #ccc;"></iframe>`;
+                html += `<iframe src="${url}" style="width:100%; height:300px;"></iframe>`;
             } else if (file.type.startsWith("image/")) {
-                html += `<img src="${url}" style="max-width:180px;border:1px solid #ccc;padding:3px;">`;
+                html += `<img src="${url}" style="max-width:200px;">`;
             }
+
         } else if (existingFile) {
-            html += `<div class="mt-1"><a href="${existingFile}" target="_blank">📄 View Uploaded Document</a></div>`;
+            // EXISTING FILE FROM DATABASE
+            html += `
+                <div style="margin-top:10px;">
+                    <a href="${existingFile}" target="_blank">📄 View Uploaded Document</a>
+                </div>
+            `;
         } else {
-            html += `<div class="text-muted small">No document uploaded</div>`;
+            html += `<div class="text-muted">No document uploaded</div>`;
         }
 
         html += `</div>`;
     }
 
-    const container = document.getElementById("experience_preview");
-    if (container) {
-        container.innerHTML = html || "<span class='text-muted'>No experience added</span>";
-    }
+    document.getElementById("experience_preview").innerHTML =
+        html || "<span class='text-muted'>No experience added</span>";
 
-    const hasExp = document.querySelector('[name="has_work_experience"]')?.value;
-    const hasExpEl = document.getElementById("p_has_work_experience");
-    if (hasExpEl) hasExpEl.innerText = hasExp || '-';
-};
+    // Has experience field
+    let hasExp = document.querySelector('[name="has_work_experience"]')?.value;
+    document.getElementById("p_has_work_experience").innerText = hasExp || '-';
+}
+})();
+document.addEventListener('DOMContentLoaded', function () {
+
+    const nepaliInputs = document.querySelectorAll('.nepali-only');
+
+    nepaliInputs.forEach(function (input) {
+
+        input.addEventListener('input', function () {
+
+            // Allow only Devanagari Unicode + spaces
+            this.value = this.value.replace(/[^\u0900-\u097F\s]/g, '');
+
+        });
+
+    });
+
+});
 </script>
 @endsection

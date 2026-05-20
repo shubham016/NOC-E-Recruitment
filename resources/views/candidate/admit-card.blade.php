@@ -61,6 +61,85 @@
         </div>
     @endif
 
+    @php
+        $npNums = ['0'=>'०','1'=>'१','2'=>'२','3'=>'३','4'=>'४','5'=>'५','6'=>'६','7'=>'७','8'=>'८','9'=>'९'];
+        $toNp = function($str) use ($npNums) { return strtr((string)$str, $npNums); };
+        $enNpPhrases = [
+            'General Manager'        => 'महाप्रबन्धक',
+            'Deputy General Manager' => 'उप महाप्रबन्धक',
+            'Chief Manager'          => 'मुख्य प्रबन्धक',
+            'Assistant Manager'      => 'सहायक प्रबन्धक',
+            'Deputy Manager'         => 'उप प्रबन्धक',
+            'Senior Manager'         => 'वरिष्ठ प्रबन्धक',
+            'Senior Assistant'       => 'वरिष्ठ सहायक',
+            'Junior Assistant'       => 'कनिष्ठ सहायक',
+            'Senior Officer'         => 'वरिष्ठ अधिकृत',
+            'Junior Officer'         => 'कनिष्ठ अधिकृत',
+            'Executive Director'     => 'कार्यकारी निर्देशक',
+            'Human Resources'        => 'मानव संसाधन',
+            'Information Technology' => 'सूचना प्रविधि',
+            'Manager'                => 'प्रबन्धक',
+            'Assistant'              => 'सहायक',
+            'Officer'                => 'अधिकृत',
+            'Engineer'               => 'इन्जिनियर',
+            'Accountant'             => 'लेखापाल',
+            'Supervisor'             => 'पर्यवेक्षक',
+            'Director'               => 'निर्देशक',
+            'Level'                  => 'तह',
+            'Technical'              => 'प्राविधिक',
+            'Finance'                => 'वित्त',
+            'Administration'         => 'प्रशासन',
+            'Marketing'              => 'बजार',
+            'Operations'             => 'सञ्चालन',
+            'Planning'               => 'योजना',
+            'Procurement'            => 'खरिद',
+            'Accounts'               => 'लेखा',
+            'Legal'                  => 'कानुनी',
+            'IT'                     => 'सूचना प्रविधि',
+            'Others'                 => 'अन्य',
+            'Other'                  => 'अन्य',
+            'General'                => 'सामान्य',
+            'Naxal'                  => 'नक्साल',
+            'Kathmandu'              => 'काठमाडौं',
+            'Lalitpur'               => 'ललितपुर',
+            'Bhaktapur'              => 'भक्तपुर',
+            'Pokhara'                => 'पोखरा',
+            'Butwal'                 => 'बुटवल',
+            'Biratnagar'             => 'विराटनगर',
+            'Janakpur'               => 'जनकपुर',
+            'Hetauda'                => 'हेटौंडा',
+            'Dharan'                 => 'धरान',
+            'Birgunj'                => 'वीरगञ्ज',
+            'Nepalgunj'              => 'नेपालगञ्ज',
+            'Dhangadhi'              => 'धनगढी',
+            'Banepa'                 => 'बनेपा',
+            'Dhulikhel'              => 'धुलिखेल',
+            'Kirtipur'               => 'कीर्तिपुर',
+            'Maharajgunj'            => 'महाराजगञ्ज',
+            'Baluwatar'              => 'बालुवाटार',
+            'Babarmahal'             => 'बबरमहल',
+            'Tripureshwor'           => 'त्रिपुरेश्वर',
+            'Putalisadak'            => 'पुतलीसडक',
+            'Anamnagar'              => 'अनामनगर',
+            'Tinkune'                => 'तीनकुने',
+            'Koteshwor'              => 'कोटेश्वर',
+            'Chabahil'               => 'चाबहिल',
+            'Baneshwor'              => 'बानेश्वर',
+            'Lazimpat'               => 'लाजिम्पाट',
+            'Kupondole'              => 'कुपण्डोल',
+            'Jawalakhel'             => 'जावलाखेल',
+            'Pulchowk'               => 'पुल्चोक',
+            'Sanepa'                 => 'सानेपा',
+        ];
+        $toNpText = function($str) use ($enNpPhrases, $toNp) {
+            if (!$str) return '';
+            foreach ($enNpPhrases as $en => $np) {
+                $str = preg_replace('/\b' . preg_quote($en, '/') . '\b/i', $np, $str);
+            }
+            return $toNp($str);
+        };
+    @endphp
+
     <div class="row">
         @if($applications->isEmpty())
             <div class="col-12">
@@ -107,6 +186,11 @@
                             @if($application->exam_time_first)
                                 <small class="d-block text-dark">{{ $application->exam_time_first }}</small>
                             @endif
+                            @if($application->exam_venue_first)
+                                <small class="d-block text-muted mt-1">{{ Str::limit($toNpText($application->exam_venue_first), 60) }}</small>
+                            @elseif($application->exam_venue)
+                                <small class="d-block text-muted mt-1">{{ Str::limit($toNpText($application->exam_venue), 60) }}</small>
+                            @endif
                         </div>
 
                         @if($application->exam_date_second)
@@ -116,14 +200,13 @@
                             @if($application->exam_time_second)
                                 <small class="d-block text-dark">{{ $application->exam_time_second }}</small>
                             @endif
+                            @if($application->exam_venue_second)
+                                <small class="d-block text-muted mt-1">{{ Str::limit($toNpText($application->exam_venue_second), 60) }}</small>
+                            @elseif($application->exam_venue)
+                                <small class="d-block text-muted mt-1">{{ Str::limit($toNpText($application->exam_venue), 60) }}</small>
+                            @endif
                         </div>
                         @endif
-                        
-                        
-                        <div class="mb-3 pb-2 border-bottom">
-                            <small class="text-muted d-block">Venue</small>
-                            <strong>{{ Str::limit($application->exam_venue, 50) }}</strong>
-                        </div>
                         
                         <div class="mb-3">
                             <small class="text-muted d-block">Status</small>

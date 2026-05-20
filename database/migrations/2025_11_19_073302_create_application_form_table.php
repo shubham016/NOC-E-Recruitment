@@ -37,7 +37,7 @@ return new class extends Migration
             // Personal Information - Basic
             $table->date('birth_date_ad')->nullable(); // जन्म मिति (A.D)
             $table->string('birth_date_bs')->nullable(); // जन्म मिति (B.S)
-            $table->integer('age')->nullable(); // उमेर
+            $table->string('age')->nullable(); // उमेर
             $table->string('phone')->nullable(); // फोन नम्बर
             $table->text('gender')->nullable(); // लिङ्ग
             

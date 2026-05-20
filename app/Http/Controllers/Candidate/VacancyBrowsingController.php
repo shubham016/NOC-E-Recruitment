@@ -17,7 +17,15 @@ class VacancyBrowsingController extends Controller
     public function index(Request $request)
     {
         $query = Vacancy::where('status', 'active')
-            ->where('deadline', '>=', now());
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            });
 
         // Search
         if ($request->filled('search')) {
@@ -101,7 +109,15 @@ class VacancyBrowsingController extends Controller
     public function show($id)
     {
         $vacancy = Vacancy::where('status', 'active')
-            ->where('deadline', '>=', now())
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                          ->where('deadline', '>=', now());
+                });
+            })
             ->withCount('applications')
             ->findOrFail($id);
 

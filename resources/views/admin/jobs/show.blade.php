@@ -564,6 +564,44 @@
                 </div>
             </div>
 
+            <!-- Age Limit Card -->
+            @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
+            <div class="detail-card">
+                <div class="detail-header">
+                    <h5 class="fw-bold text-danger mb-0">Age Limit</h5>
+                    <small class="text-muted">उमेर हद</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0" style="font-size:14px;">
+                        <thead style="background:#f3f4f6;">
+                            <tr>
+                                <th style="width:34%;">Category</th>
+                                <th style="width:33%;">Minimum Age</th>
+                                <th style="width:33%;">Maximum Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Male (पुरुष)</td>
+                                <td>{{ $job->min_age_male ?? '—' }}</td>
+                                <td>{{ $job->max_age_male ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Female (महिला)</td>
+                                <td>{{ $job->min_age_female ?? '—' }}</td>
+                                <td>{{ $job->max_age_female ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Disabled (अपाङ्ग)</td>
+                                <td>{{ $job->min_age_disabled ?? '—' }}</td>
+                                <td>{{ $job->max_age_disabled ?? '—' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+
             <!-- Description Card -->
             @if($job->description)
                 <div class="detail-card">

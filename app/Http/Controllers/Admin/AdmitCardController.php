@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\JobPosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class AdmitCardController extends Controller
 {
@@ -89,17 +91,56 @@ class AdmitCardController extends Controller
         $job = JobPosting::findOrFail($job_posting_id);
 
         $request->validate([
-            'exam_date_first'   => 'required|string|max:50',
-            'exam_time_first'   => 'required|string|max:50',
-            'exam_date_second'  => 'nullable|string|max:50',
-            'exam_time_second'  => 'nullable|string|max:50',
-            'exam_venue'        => 'required|string|max:500',
-            'organization_name' => 'required|string|max:255',
+            'exam_date_first'    => 'required|string|max:50',
+            'exam_time_first'    => 'required|string|max:50',
+            'exam_venue_first'   => 'required|string|max:255',
+            'exam_date_second'   => 'nullable|string|max:50',
+            'exam_time_second'   => 'nullable|string|max:50',
+            'exam_venue_second'  => 'nullable|string|max:255',
+            'organization_name'        => 'required|string|max:255',
             'post_title'               => 'required|string|max:255',
             'admit_card_service_group' => 'nullable|string|max:255',
+            'official_signature'       => 'nullable|image|max:2048',
             'roll_prefix'              => 'required|string|max:50',
             'exam_instructions'        => 'nullable|string',
         ]);
+
+        // Translate venue fields to Nepali if admin entered English text
+        $venueFirst  = $request->exam_venue_first;
+        $venueSecond = $request->exam_venue_second;
+
+        $isDevanagari = fn($str) => (bool) preg_match('/[\x{0900}-\x{097F}]/u', (string) $str);
+
+        try {
+            $gt = new GoogleTranslate('ne');
+            $gt->setSource('en');
+
+            if ($venueFirst && !$isDevanagari($venueFirst)) {
+                $translated = $gt->translate($venueFirst);
+                if ($translated) {
+                    $venueFirst = $translated;
+                }
+            }
+
+            if ($venueSecond && !$isDevanagari($venueSecond)) {
+                $translated = $gt->translate($venueSecond);
+                if ($translated) {
+                    $venueSecond = $translated;
+                }
+            }
+        } catch (\Exception $e) {
+            // Translation failed — store the original text as entered
+        }
+
+        // Handle official signature upload — stored on job_posting (same for all candidates)
+        if ($request->hasFile('official_signature')) {
+            if ($job->official_signature) {
+                Storage::disk('public')->delete($job->official_signature);
+            }
+            $path = $request->file('official_signature')->store('official-signatures', 'public');
+            $job->official_signature = $path;
+            $job->save();
+        }
 
         $applications = DB::table('application_form')
             ->where('job_posting_id', $job_posting_id)
@@ -133,9 +174,12 @@ class AdmitCardController extends Controller
                 ->update([
                     'exam_date_first'   => $request->exam_date_first,
                     'exam_time_first'   => $request->exam_time_first,
+                    'exam_venue_first'  => $venueFirst,
                     'exam_date_second'  => $request->exam_date_second,
                     'exam_time_second'  => $request->exam_time_second,
-                    'exam_venue'        => $request->exam_venue,
+                    'exam_venue_second' => $venueSecond,
+                    // Keep exam_venue in sync with first paper venue for backward compatibility
+                    'exam_venue'        => $venueFirst,
                     'exam_instructions' => $request->exam_instructions,
                     'organization_name'        => $request->organization_name,
                     'post_title'               => $request->post_title,

@@ -13,6 +13,7 @@ class CandidateRegistration extends Model
         'email',
         'gender',
         'date_of_birth_bs',
+        'birth_date_ad',
         'citizenship_number',
         'nid',
         'noc_employee',

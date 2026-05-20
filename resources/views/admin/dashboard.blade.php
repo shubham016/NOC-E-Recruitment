@@ -1191,7 +1191,7 @@
                         <div class="item-middle">
                             <div style="display:inline-block; text-align:left;">
                                 <div style="font-size:13px; color:var(--gray-700); font-weight:600; line-height:1.4; margin-bottom:4px;">
-                                    Applied on: {{ $application->created_at->format('M d, Y') }}
+                                    Applied on: {{ adToBS($application->created_at->format('Y/m/d')) }}
                                 </div>
                                 <div style="font-size:12px; color:var(--gray-400);">
                                     {{ $application->created_at->diffForHumans() }}

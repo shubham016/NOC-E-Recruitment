@@ -18,6 +18,20 @@ class VacancyManagementController extends Controller
 {
     public function index(Request $request)
     {
+        // Auto-close vacancies whose double_dastur_date (or deadline if no double dastur) has passed
+        JobPosting::whereIn('status', ['active', 'draft'])
+            ->where(function ($q) {
+                $today = now()->startOfDay();
+                $q->where(function ($inner) use ($today) {
+                    $inner->whereNotNull('double_dastur_date')
+                          ->whereDate('double_dastur_date', '<', $today);
+                })->orWhere(function ($inner) use ($today) {
+                    $inner->whereNull('double_dastur_date')
+                          ->whereDate('deadline', '<', $today);
+                });
+            })
+            ->update(['status' => 'closed']);
+
         // Handle bulk export
         if ($request->filled('export') && $request->filled('ids')) {
             $ids = explode(',', $request->ids);
@@ -183,6 +197,12 @@ class VacancyManagementController extends Controller
             'demand_posts' => 'nullable|array',
             'demand_posts.*' => 'nullable|integer|min:0',
             'minimum_qualification' => 'required|string',
+            'min_age_male' => 'nullable|integer|min:1|max:99',
+            'max_age_male' => 'nullable|integer|min:1|max:99',
+            'min_age_female' => 'nullable|integer|min:1|max:99',
+            'max_age_female' => 'nullable|integer|min:1|max:99',
+            'min_age_disabled' => 'nullable|integer|min:1|max:99',
+            'max_age_disabled' => 'nullable|integer|min:1|max:99',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
@@ -355,6 +375,12 @@ class VacancyManagementController extends Controller
             'demand_posts' => 'nullable|array',
             'demand_posts.*' => 'nullable|integer|min:0',
             'minimum_qualification' => 'required|string',
+            'min_age_male' => 'nullable|integer|min:1|max:99',
+            'max_age_male' => 'nullable|integer|min:1|max:99',
+            'min_age_female' => 'nullable|integer|min:1|max:99',
+            'max_age_female' => 'nullable|integer|min:1|max:99',
+            'min_age_disabled' => 'nullable|integer|min:1|max:99',
+            'max_age_disabled' => 'nullable|integer|min:1|max:99',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'location' => 'required|string|max:100',
@@ -445,6 +471,15 @@ class VacancyManagementController extends Controller
         $validated['notice_no'] = !empty($validated['notice_no']) ? $validated['notice_no'] : null;
 
         $validated['department'] = $validated['service_group'];
+
+        // Auto-close if double_dastur_date is already past (or deadline if no double dastur)
+        $ddDate = $validated['double_dastur_date'] ?? null;
+        if ($ddDate && \Carbon\Carbon::parse($ddDate)->startOfDay()->isPast()) {
+            $validated['status'] = 'closed';
+        } elseif (!$ddDate && isset($validated['deadline']) && \Carbon\Carbon::parse($validated['deadline'])->startOfDay()->isPast()) {
+            $validated['status'] = 'closed';
+        }
+
         $job->update($validated);
 
         return redirect()

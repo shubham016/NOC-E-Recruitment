@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -39,7 +38,7 @@ class CandidateController extends Controller
             'gender'                     => 'required|in:Male,Female,Other',
             'date_of_birth_bs'           => 'required|string',
             'citizenship_number'         => 'required|string|unique:candidate_registration,citizenship_number',
-            'nid'                        => 'required|string|unique:candidate_registration,nid',
+            'nid'                        => 'nullable|string|unique:candidate_registration,nid',
             'noc_employee'               => 'required|string|in:yes,no',
             'employee_id'                => 'required_if:noc_employee,yes|nullable|string|max:50',
             'citizenship_issue_distric'  => 'required|string|max:255',
@@ -150,6 +149,7 @@ class CandidateController extends Controller
         Session::forget('candidate_name');
         Session::forget('candidate_email');
         Session::forget('candidate_logged_in');
+        Session::flush();
 
         return redirect()->route('candidate.login')
             ->with('success', 'Logged out successfully!');

@@ -411,7 +411,7 @@
                                 </div>
                             </div>
 
-                            {{-- UPDATED: DOB BS Date Picker --}}
+                            {{-- DOB BS Date Picker --}}
                             <div class="noc-field">
                                 <label for="date_of_birth_bs">Date of Birth (BS) <span class="req">*</span></label>
                                 <div class="noc-input-group">
@@ -425,6 +425,10 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            {{-- Hidden AD date — auto-filled from BS conversion --}}
+                            <input type="hidden" id="birth_date_ad" name="birth_date_ad"
+                                value="{{ old('birth_date_ad') }}">
 
                             <div class="noc-field">
                                 <label for="noc_employee">NOC Employee <span class="text-danger">*</span></label>
@@ -475,7 +479,7 @@
                             <div class="noc-field">
                                 <label for="nid">National ID Number</label>
                                 <div class="noc-input-group">
-                                    <input type="text" id="nid" name="nid" value="{{ old('nid') }}"
+                                    <input type="number" id="nid" name="nid" value="{{ old('nid') }}"
                                         placeholder="Enter national ID number"
                                         class="{{ $errors->has('nid') ? 'is-invalid' : '' }}">
                                     <span class="noc-input-icon"><i class="bi bi-card-text"></i></span>
@@ -581,6 +585,18 @@
                 ndpYear: true,
                 ndpMonth: true,
                 ndpYearCount: 100
+            });
+        }
+
+        // Auto-convert BS → AD whenever the BS DOB field changes
+        if (dobInput) {
+            dobInput.addEventListener('change', function () {
+                var adHidden = document.getElementById('birth_date_ad');
+                if (!adHidden) return;
+                if (typeof window.bsToAD === 'function' && this.value) {
+                    var adDate = window.bsToAD(this.value);
+                    if (adDate) adHidden.value = adDate;
+                }
             });
         }
 
@@ -734,8 +750,8 @@
             2078: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
             2079: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
             2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
-            2081: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
-            2082: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            2081: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+            2082: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 31],
             2083: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
             2084: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
             2085: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],

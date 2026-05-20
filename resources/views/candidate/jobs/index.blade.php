@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Browse Jobs')
+@section('title', 'Browse Vacancy')
 
 @section('portal-name', 'Candidate Portal')
 @section('brand-icon', 'bi bi-briefcase')
@@ -45,7 +45,8 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title">
-        <i class="bi bi-search text-dark"></i> Browse Vacancies
+        <!-- <i class="bi bi-search text-dark"></i> -->
+         Browse Vacancies
     </h1>
     <p class="page-subtitle">Find and apply for available positions</p>
 </div>
@@ -90,7 +91,8 @@
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-light w-100">
-                        <i class="fas fa-search"></i> Search
+                        <!-- <i class="fas fa-search"></i>  -->
+                        Search
                     </button>
                 </div>
             </div>
@@ -102,7 +104,8 @@
     <div class="card shadow-sm">
         <div class="card-header bg-light text-black">
             <h5 class="mb-0">
-                <i class="bi bi-table"></i> Available Vacancies
+                <!-- <i class="bi bi-table"></i> -->
+                 Available Vacancies
             </h5>
         </div>
         <div class="card-body">
@@ -110,7 +113,7 @@
                 <table class="table table-bordered align-middle vacancy-table">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center">S.N.</th>
+                            <th class="text-center">S.N</th>
                             <th>Vacancy Title</th>
                             <th>Service / Group</th>
                             <th>Position / Level</th>
@@ -118,7 +121,7 @@
                             <th>Type</th>
                             <th class="text-center">Demand</th>
                             <th>Deadline</th>
-                            <th class="text-center">Status</th>
+                            <th class="text-center">Double Dastur</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -302,15 +305,25 @@
                                 </td>
                             @endif
 
-                            {{-- Status — rowspan per position+level+service_group group --}}
+                            {{-- Double Dastur — rowspan per position+level+service_group group --}}
                             @if($thisPosRowspan > 0)
                             <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
-                                @if($hasAppliedInGroup)
-                                    <span class="badge bg-secondary"><i class="fas fa-check-circle"></i> Applied</span>
-                                @elseif($job->status === 'active')
-                                    <span class="badge bg-success"><i class="bi bi-circle-fill"></i> Active</span>
+                                @if($job->double_dastur_date && $job->double_dastur_fee)
+                                    @php
+                                        $ddExpired = now()->gt($job->double_dastur_date);
+                                    @endphp
+                                    @if(!$ddExpired)
+                                        <small class="text-danger d-block fw-semibold nepali-date-bs"
+                                            data-ad-date="{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}">
+                                            <i class="bi bi-hourglass-split"></i> ...
+                                        </small>
+                                        <small class="text-muted">{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('M d, Y') }}</small>
+                                    @else
+                                        <small class="text-muted d-block text-decoration-line-through">{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('M d, Y') }}</small>
+                                        <span class="badge bg-secondary mt-1">Expired</span>
+                                    @endif
                                 @else
-                                    <span class="badge bg-secondary"><i class="bi bi-circle"></i> Closed</span>
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
                             @endif
@@ -321,13 +334,15 @@
                                 <div class="d-flex gap-1 justify-content-center">
                                     <a href="{{ route('candidate.jobs.show', $job->id) }}"
                                        class="btn btn-sm btn-outline-danger" title="View Details">
-                                        <i class="bi bi-eye"></i> Details
+                                        <!-- <i class="bi bi-eye"></i>  -->
+                                        Details
                                     </a>
                                     @if(!$hasAppliedInGroup && $job->status === 'active')
                                         <button onclick="checkEligibilityAndApply({{ $job->id }})"
                                             class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
                                             title="Apply Now">
-                                            <i class="fas fa-paper-plane"></i> Apply
+                                            <!-- <i class="fas fa-paper-plane"></i> -->
+                                            Apply
                                         </button>
                                     @endif
                                 </div>

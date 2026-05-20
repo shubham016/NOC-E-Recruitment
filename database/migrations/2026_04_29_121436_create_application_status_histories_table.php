@@ -22,7 +22,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('application_form_id')
-                ->references('id')->on('application_form')
+                ->references('id')
+                ->on('application_form')
                 ->onDelete('cascade');
         });
     }

@@ -869,6 +869,16 @@
                         }
 
                         // All 4 types are fully mutually exclusive
+                        function showAgeLimit() {
+                            var el = document.getElementById('ageLimitSection');
+                            if (el) el.style.display = 'block';
+                        }
+
+                        function hideAgeLimit() {
+                            var el = document.getElementById('ageLimitSection');
+                            if (el) el.style.display = 'none';
+                        }
+
                         function handleChange(cb) {
                             if (cb.checked) {
                                 if (cb === cbOpen) {
@@ -878,6 +888,7 @@
                                     hideInternalSections();
                                     showOpenSections();
                                     showDoubleDastur();
+                                    showAgeLimit();
                                 } else if (cb === cbInternal) {
                                     if (cbOpen)           cbOpen.checked           = false;
                                     if (cbAppraisal)      cbAppraisal.checked      = false;
@@ -885,6 +896,7 @@
                                     hideOpenSections();
                                     showInternalSections();
                                     hideDoubleDastur();
+                                    hideAgeLimit();
                                 } else if (cb === cbAppraisal) {
                                     if (cbOpen)           cbOpen.checked           = false;
                                     if (cbInternal)       cbInternal.checked       = false;
@@ -892,11 +904,13 @@
                                     hideOpenSections();
                                     hideInternalSections();
                                     hideDoubleDastur();
+                                    hideAgeLimit();
                                 }
                             } else {
                                 if (cb === cbOpen)     hideOpenSections();
                                 if (cb === cbInternal) hideInternalSections();
                                 showDoubleDastur();
+                                showAgeLimit();
                             }
                             setLock();
                             updatePreviewCategory();
@@ -1021,6 +1035,10 @@
                             updatePreviewCategory();
                             updatePreviewInclusiveTypes();
                             updatePreviewInternalTypes();
+                            // Hide age limit for internal / internal appraisal on initial load
+                            if ((cbInternal && cbInternal.checked) || (cbAppraisal && cbAppraisal.checked)) {
+                                hideAgeLimit();
+                            }
                         });
                     })();
                     </script>
@@ -1204,6 +1222,78 @@
                         @error('minimum_qualification')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <!-- Age Limit -->
+                    <div class="mb-4" id="ageLimitSection">
+                        <label class="form-label">
+                            <span>Age Limit</span>
+                            <span class="nepali-text">उमेर हद</span>
+                        </label>
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0" style="font-size:14px;">
+                                <thead style="background:#f3f4f6;">
+                                    <tr>
+                                        <th style="width:34%;">Category</th>
+                                        <th style="width:33%;">Minimum Age</th>
+                                        <th style="width:33%;">Maximum Age</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="align-middle">Male <span class="nepali-text">पुरुष</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_male') is-invalid @enderror"
+                                                name="min_age_male" id="min_age_male"
+                                                value="{{ old('min_age_male', $job->min_age_male) }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_male') is-invalid @enderror"
+                                                name="max_age_male" id="max_age_male"
+                                                value="{{ old('max_age_male', $job->max_age_male) }}"
+                                                min="1" max="99" placeholder="e.g. 35">
+                                            @error('max_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle">Female <span class="nepali-text">महिला</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_female') is-invalid @enderror"
+                                                name="min_age_female" id="min_age_female"
+                                                value="{{ old('min_age_female', $job->min_age_female) }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_female') is-invalid @enderror"
+                                                name="max_age_female" id="max_age_female"
+                                                value="{{ old('max_age_female', $job->max_age_female) }}"
+                                                min="1" max="99" placeholder="e.g. 40">
+                                            @error('max_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle">Disabled <span class="nepali-text">अपाङ्ग</span></td>
+                                        <td>
+                                            <input type="number" class="form-control @error('min_age_disabled') is-invalid @enderror"
+                                                name="min_age_disabled" id="min_age_disabled"
+                                                value="{{ old('min_age_disabled', $job->min_age_disabled) }}"
+                                                min="1" max="99" placeholder="e.g. 18">
+                                            @error('min_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control @error('max_age_disabled') is-invalid @enderror"
+                                                name="max_age_disabled" id="max_age_disabled"
+                                                value="{{ old('max_age_disabled', $job->max_age_disabled) }}"
+                                                min="1" max="99" placeholder="e.g. 45">
+                                            @error('max_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="section-divider"></div>

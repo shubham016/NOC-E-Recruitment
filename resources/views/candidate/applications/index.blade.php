@@ -41,6 +41,28 @@
     </div>
 
     <div class="card-body">
+        @php
+            $doubleDasturDrafts = $forms->filter(function($form) {
+                if (!in_array($form->status, ['draft', 'edit'])) return false;
+                if ($form->payment && $form->payment->status === 'paid') return false;
+                $job = $form->jobPosting;
+                if (!$job) return false;
+                return $job->deadline
+                    && now()->gt($job->deadline)
+                    && $job->double_dastur_fee
+                    && $job->double_dastur_date
+                    && now()->lte($job->double_dastur_date);
+            });
+        @endphp
+        @if($doubleDasturDrafts->count() > 0)
+        <div class="alert alert-warning mb-3">
+            <strong>Double Dastur Fee Notice</strong><br>
+            You have {{ $doubleDasturDrafts->count() }} unpaid draft application(s) where the application deadline has passed.
+            If you proceed to pay now, the <strong>Double Dastur Fee</strong> will apply instead of the regular application fee.
+            Please complete payment before the double dastur deadline to avoid losing your application.
+        </div>
+        @endif
+
         @if($forms->count() > 0)
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
@@ -67,7 +89,23 @@
                                 
                                 <td>{{ $form->status ?? '-' }}</td>
                                 <td>{{ $form->roll_number ?? '-' }}</td>
-                                <td>{{ $form->payment->status ?? 'unpaid' }}</td>
+                                <td>
+                                    {{ $form->payment->status ?? 'unpaid' }}
+                                    @php
+                                        $fJob = $form->jobPosting;
+                                        $fInDoubleDastur = $fJob && $fJob->deadline
+                                            && now()->gt($fJob->deadline)
+                                            && $fJob->double_dastur_fee
+                                            && $fJob->double_dastur_date
+                                            && now()->lte($fJob->double_dastur_date)
+                                            && in_array($form->status, ['draft', 'edit'])
+                                            && (!$form->payment || $form->payment->status !== 'paid');
+                                    @endphp
+                                    @if($fInDoubleDastur)
+                                        <br><small class="fw-semibold" style="color: #664d03;">Double Dastur
+                                            : Rs. {{ number_format($fJob->double_dastur_fee) }}</small>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if($form->noc_id_card) <span class="badge bg-dark">NOC</span> @endif

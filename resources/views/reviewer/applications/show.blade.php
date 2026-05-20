@@ -529,12 +529,19 @@
                 </div>
             </div>
 
-            <div class="info-row">
+            <!-- <div class="info-row">
                 <div class="info-label">Issue Date (AD):</div>
                 <div class="info-value">
                     {{ $application->citizenship_issue_date_ad 
                         ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') 
                         : 'N/A' }}
+                </div>
+            </div> -->
+
+            <div class="info-row">
+                <div class="info-label">Issue District:</div>
+                <div class="info-value">
+                    {{ $application->citizenship_issue_district ?? 'N/A' }}
                 </div>
             </div>
         </div>
@@ -548,14 +555,21 @@
                 </div>
             </div>
 
-            <div class="info-row">
-                <div class="info-label">Issue District:</div>
-                <div class="info-value">
-                    {{ $application->citizenship_issue_district ?? 'N/A' }}
-                </div>
-            </div>
+            
         </div>
     </div>
+
+     @if($application->citizenship_id_document)
+            <div class="document-item">
+                <div class="document-info">
+                    <p class="document-name">Citizenship Id</p>
+                    <p class="document-size">Citizenship Id</p>
+
+                    <img src="{{ Storage::url($application->citizenship_id_document) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
 </div>
 
             <!-- Community & Ethnic Information -->
@@ -579,12 +593,7 @@
                 </div>
             </div>
 
-            <div class="info-row">
-                <div class="info-label">Ethnic Group:</div>
-                <div class="info-value">
-                    {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
-                </div>
-            </div>
+           
         </div>
 
         <!-- Right Column -->
@@ -603,6 +612,13 @@
             <div class="info-row">
                 <div class="info-label">Mother Tongue:</div>
                 <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
+            </div>
+            
+             <div class="info-row">
+                <div class="info-label">Ethnic Group:</div>
+                <div class="info-value">
+                    {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
+                </div>
             </div>
         </div>
     </div>
@@ -667,20 +683,21 @@
         <div class="col-md-6">
             <!-- Grandfather -->
             <div class="info-row">
-                <div class="info-label">Grandfather Name:</div>
+                <div class="info-label text-dark">Grandfather Name:</div>
                 <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
             </div>
 
             <!-- Father -->
             <h6 class="text-dark mt-3 mb-2"><i class=""></i>Father's Information</h6>
+            
             <div class="info-row">
                 <div class="info-label">Name (English):</div>
                 <div class="info-value">{{ $application->father_name_english ?? 'N/A' }}</div>
             </div>
-            <div class="info-row">
+            <!-- <div class="info-row">
                 <div class="info-label">Name (Nepali):</div>
                 <div class="info-value">{{ $application->father_name_nepali ?? 'N/A' }}</div>
-            </div>
+            </div> -->
             <div class="info-row">
                 <div class="info-label">Qualification:</div>
                 <div class="info-value">{{ $application->father_qualification ?? 'N/A' }}</div>
@@ -695,10 +712,10 @@
                 <div class="info-label">Name (English):</div>
                 <div class="info-value">{{ $application->mother_name_english ?? 'N/A' }}</div>
             </div>
-            <div class="info-row">
+            <!-- <div class="info-row">
                 <div class="info-label">Name (Nepali):</div>
                 <div class="info-value">{{ $application->mother_name_nepali ?? 'N/A' }}</div>
-            </div>
+            </div> -->
             <div class="info-row">
                 <div class="info-label">Qualification:</div>
                 <div class="info-value">{{ $application->mother_qualification ?? 'N/A' }}</div>
@@ -771,7 +788,7 @@
             <h6 class="text-dark mt-3 mb-2">Mailing/Temporary Address</h6>
 
             @if($application->same_as_permanent == 'yes')
-                <div class="alert alert-info-custom">
+                <div class="alert alert-primary">
                     <i class=""></i>Same as Permanent Address
                 </div>
             @else
@@ -839,6 +856,49 @@
             </div>
         </div>
     </div>
+
+    @if($application->transcript)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Educational Certificates</p>
+                    <p class="document-size">Academic transcripts and degrees</p>
+
+                    <img src="{{ Storage::url($application->transcript) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+
+            @if($application->character)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Character Certificate</p>
+                    <p class="document-size">character Certificate</p>
+
+                    <img src="{{ Storage::url($application->character) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
+
+            @if($application->equivalency_certificate)
+            <div class="document-item">
+                
+
+                <div class="document-info">
+                    <p class="document-name">Equivalency Certificate</p>
+                    <p class="document-size">Equivalency Certificate</p>
+
+                    <img src="{{ Storage::url($application->equivalency_certificate) }}"
+                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                </div>
+            </div>
+            @endif
 </div>
 
              <!-- Work Experience -->
@@ -902,7 +962,7 @@
                                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
             
                             @else
-                                <div class="alert alert-info-custom">
+                                <div class="alert alert-primary">
                                     No document uploaded
                                 </div>
                             @endif
@@ -948,62 +1008,9 @@
             </div>
             @endif
 
-             @if($application->citizenship_id_document)
-            <div class="document-item">
-                
+            
 
-                <div class="document-info">
-                    <p class="document-name">Citizenship Id</p>
-                    <p class="document-size">Citizenship Id</p>
-
-                    <img src="{{ Storage::url($application->citizenship_id_document) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->transcript)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Educational Certificates</p>
-                    <p class="document-size">Academic transcripts and degrees</p>
-
-                    <img src="{{ Storage::url($application->transcript) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-
-            @if($application->character)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Character Certificate</p>
-                    <p class="document-size">character Certificate</p>
-
-                    <img src="{{ Storage::url($application->character) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->equivalency_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Equivalency Certificate</p>
-                    <p class="document-size">Equivalency Certificate</p>
-
-                    <img src="{{ Storage::url($application->equivalency_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
+            
 
             @if($application->signature)
             <div class="document-item">

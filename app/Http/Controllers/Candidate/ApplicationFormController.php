@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Candidate;
+namespace App\Http\Controllers;
 
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 
 class ApplicationFormController extends Controller
 {
+    
     private $fileFields = [
         'ethnic_certificate'       => 'ethnic-certificates',
         'noc_id_card'              => 'noc-id-cards',
@@ -174,9 +174,6 @@ class ApplicationFormController extends Controller
             return !is_null($value) && $value !== '';
         });
 
-        // Total calculated fee in the 1st page of the application form
-        $data['total_fee'] = $request->input('total_fee', 0);
-
         // Create or update draft
         if ($draft) {
             $draft->update($data);
@@ -185,6 +182,13 @@ class ApplicationFormController extends Controller
             $draft = ApplicationForm::create($data);
             Log::info('Draft created', ['draft_id' => $draft->id]);
         }
+
+        // Keep candidate profile birth date in sync
+        $this->syncBirthDateToProfile(
+            $candidate->id,
+            $request->birth_date_bs,
+            $request->birth_date_ad
+        );
 
         // Handle file uploads
         $fileData = [];
@@ -340,6 +344,13 @@ class ApplicationFormController extends Controller
             $application = ApplicationForm::create($data);
         }
 
+        // Keep candidate profile birth date in sync
+        $this->syncBirthDateToProfile(
+            $candidate->id,
+            $request->birth_date_bs,
+            $request->birth_date_ad
+        );
+
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application submitted successfully!');
     }
@@ -390,20 +401,7 @@ class ApplicationFormController extends Controller
             ->with('error', 'This application has already been submitted and cannot be edited.');
     }
 
-    $job = $applicationform->jobPosting;
-    $groupJobs = collect();
-    if ($job) {
-        $groupJobs = JobPosting::where('position', $job->position)
-            ->where('level', $job->level)
-            ->where('service_group', $job->service_group)
-            ->orderBy('advertisement_no', 'asc')
-            ->get();
-        if ($groupJobs->isEmpty()) {
-            $groupJobs = collect([$job]);
-        }
-    }
-
-    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs'));
+    return view('candidate.applications.edit', compact('applicationform', 'candidate'));
 }
 
     /**
@@ -411,6 +409,11 @@ class ApplicationFormController extends Controller
      */
     public function update(Request $request, ApplicationForm $applicationform)
     {
+        \Log::info('UPDATE DEBUG', [
+    'current_status_in_db' => $applicationform->status,
+    'status_in_data'       => $data['status'] ?? 'NOT SET',
+    'all_data_keys'        => array_keys($data),
+]);
         if (!Session::has('candidate_logged_in')) {
             return redirect()->route('candidate.login')
                 ->withErrors(['error' => 'Please login first']);
@@ -446,6 +449,13 @@ class ApplicationFormController extends Controller
         }
 
         $applicationform->update($data);
+
+        // Keep candidate profile birth date in sync
+        $this->syncBirthDateToProfile(
+            $candidate->id,
+            $request->birth_date_bs,
+            $request->birth_date_ad
+        );
 
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application updated successfully!');
@@ -538,7 +548,7 @@ class ApplicationFormController extends Controller
             'name_nepali' => 'required|string|max:255',
             'birth_date_ad' => 'required|date',
             'birth_date_bs' => 'required|string',
-            'age' => 'required|integer|min:18|max:40',
+            'age' => 'required|string|min:18|max:40',
             'phone' => 'required|digits:10',
             'email' => 'required|email',
             'gender' => 'required|in:Male,Female,Other',
@@ -580,7 +590,7 @@ class ApplicationFormController extends Controller
             'advertisement_no' => 'required|string',
             'department' => 'required|string',
             'applying_position' => 'required|string',
-            'alternate_phone_number' => 'required|digits:10',
+            'alternate_phone_number' => 'nullable|digits:10',
         ];
 
         // File validation - required on store unless already exists in draft
@@ -731,5 +741,21 @@ class ApplicationFormController extends Controller
                 Storage::disk('public')->delete($model->$field);
             }
         }
+    }
+
+    /**
+     * Sync birth date entered on the application form back to the candidate profile.
+     * Keeps date_of_birth_bs and birth_date_ad consistent across the system.
+     */
+    private function syncBirthDateToProfile(int $candidateId, ?string $birthDateBs, ?string $birthDateAd): void
+    {
+        if (empty($birthDateBs)) return;
+
+        DB::table('candidate_registration')
+            ->where('id', $candidateId)
+            ->update([
+                'date_of_birth_bs' => $birthDateBs,
+                'birth_date_ad'    => $birthDateAd ?: null,
+            ]);
     }
 }

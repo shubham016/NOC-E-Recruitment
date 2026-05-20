@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
-use App\Models\Candidate;
 use App\Models\Reviewer;
 use App\Models\Approver;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +23,7 @@ class AdminDashboardController extends Controller
             'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
             'approved' => ApplicationForm::where('status', 'approved')->count(),
             'rejected' => ApplicationForm::where('status', 'rejected')->count(),
-            'total_candidates' => Candidate::count(),
+            'total_candidates' => ApplicationForm::distinct('email')->count('email'),
             'total_reviewers' => Reviewer::count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
             'total_approvers' => Approver::count(),
@@ -39,9 +38,10 @@ class AdminDashboardController extends Controller
             'applications' => ApplicationForm::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
-            'candidates' => Candidate::whereMonth('created_at', now()->month)
+            'candidates' => ApplicationForm::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
-                ->count(),
+                ->distinct('email')
+                ->count('email'),
         ];
 
         // Last Month Statistics
@@ -52,9 +52,10 @@ class AdminDashboardController extends Controller
             'applications' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
                 ->count(),
-            'candidates' => Candidate::whereMonth('created_at', now()->subMonth()->month)
+            'candidates' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
-                ->count(),
+                ->distinct('email')
+                ->count('email'),
         ];
 
         // Growth calculations

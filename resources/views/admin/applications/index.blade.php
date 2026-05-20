@@ -1643,6 +1643,44 @@
                 <div class="app-modal-docs-grid">${docsHtml}</div>
             </div>` : ''}
 
+            <div class="app-modal-section">
+                <div class="app-modal-section-title">Application Status History</div>
+                ${(Array.isArray(d.status_histories) && d.status_histories.length > 0) ? (() => {
+                    const badgeMap = {
+                        'Approved': 'bg-success',
+                        'Rejected': 'bg-danger',
+                        'Verified': 'bg-primary',
+                        'Allow Edit': 'bg-warning text-dark',
+                    };
+                    let rows = '';
+                    d.status_histories.forEach((h, i) => {
+                        const bc = badgeMap[h.stage_name] || 'bg-secondary';
+                        const role = h.done_by_type ? (h.done_by_type.charAt(0).toUpperCase() + h.done_by_type.slice(1)) : '';
+                        rows += `<tr>
+                            <td>${i + 1}</td>
+                            <td><span class="badge ${bc}">${h.stage_name}</span></td>
+                            <td>${h.done_by}<br><small class="text-muted">${role}</small></td>
+                            <td>${h.created_at}</td>
+                            <td>${h.remarks || '—'}</td>
+                        </tr>`;
+                    });
+                    return `<div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle mb-0" style="font-size:0.85rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:40px">S.N</th>
+                                    <th>Stage Name</th>
+                                    <th>Done By</th>
+                                    <th>Date &amp; Time</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+                })() : `<p style="color:#9ca3af;font-style:italic;margin:0;">No history available yet.</p>`}
+            </div>
+
         </div>`;
     }
 

@@ -26,7 +26,7 @@ class CandidateRegistrationController extends Controller
             'citizenship_number'        => 'required|string|unique:candidates,citizenship_number',
             'citizenship_issue_distric' => 'required|string|max:255',
             'citizenship_issue_date_bs' => 'required|string|max:20',
-            'nid'                       => 'required|string|max:20',
+            'nid'                       => 'nullable|string|max:50|unique:users,nid',
             'noc_employee'              => 'required|string',
             'password'                  => 'required|string|min:8|confirmed',
         ], [

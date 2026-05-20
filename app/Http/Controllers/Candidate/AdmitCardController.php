@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class AdmitCardController extends Controller
 {
@@ -125,7 +126,23 @@ class AdmitCardController extends Controller
         }
         $inclusiveTypes = array_filter((array) $inclusiveTypes);
 
-        $pdf = Pdf::loadView('candidate.admit-card-pdf', compact('application', 'candidate', 'job', 'inclusiveTypes'));
+        // Build local file paths for DomPDF (must use server paths, not URLs)
+        $signatureImage = ($application->signature && Storage::disk('public')->exists($application->signature))
+            ? storage_path('app/public/' . $application->signature)
+            : null;
+
+        $citizenshipImage = ($application->citizenship_id_document && Storage::disk('public')->exists($application->citizenship_id_document))
+            ? storage_path('app/public/' . $application->citizenship_id_document)
+            : null;
+
+        $officialSignatureImage = ($job && $job->official_signature && Storage::disk('public')->exists($job->official_signature))
+            ? storage_path('app/public/' . $job->official_signature)
+            : (file_exists(public_path('images/official-signature.png')) ? public_path('images/official-signature.png') : null);
+
+        $pdf = Pdf::loadView('candidate.admit-card-pdf', compact(
+            'application', 'candidate', 'job', 'inclusiveTypes',
+            'signatureImage', 'citizenshipImage', 'officialSignatureImage'
+        ));
 
         $filename = 'admit-card-' . ($application->roll_number ?? $application->id) . '.pdf';
 
