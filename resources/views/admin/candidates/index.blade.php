@@ -261,7 +261,7 @@
                             Showing {{ $candidates->firstItem() }} to {{ $candidates->lastItem() }} of {{ $candidates->total() }}
                         </div>
                         <div>
-                            {{ $candidates->links() }}
+                            {{ $candidates->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>

@@ -12,22 +12,27 @@ class NotificationController extends Controller
     /**
      * Display notifications for the approver
      */
-    public function index()
+    public function index(Request $request)
     {
         $approver = Auth::guard('approver')->user();
 
-        // Mark all unread notifications as read when visiting the page
-        Notification::where('user_type', 'approver')
-            ->where('user_id', $approver->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true, 'read_at' => now()]);
+        $tab = $request->get('tab', 'unseen');
 
-        $notifications = Notification::where('user_type', 'approver')
-            ->where('user_id', $approver->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $query = Notification::forUser($approver->id, 'approver')
+            ->orderBy('created_at', 'desc');
 
-        return view('approver.notifications.index', compact('notifications'));
+        if ($tab === 'seen') {
+            $query->where('is_read', true);
+        } else {
+            $query->where('is_read', false);
+        }
+
+        $notifications = $query->paginate(20)->withQueryString();
+
+        $unseenCount = Notification::forUser($approver->id, 'approver')->where('is_read', false)->count();
+        $seenCount   = Notification::forUser($approver->id, 'approver')->where('is_read', true)->count();
+
+        return view('approver.notifications.index', compact('notifications', 'tab', 'unseenCount', 'seenCount'));
     }
 
     /**
@@ -46,7 +51,11 @@ class NotificationController extends Controller
             'read_at' => now(),
         ]);
 
-        return back()->with('success', 'Notification marked as read');
+        if ($notification->related_type === 'application' && $notification->related_id) {
+            return redirect()->route('approver.assignedtome');
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -64,7 +73,7 @@ class NotificationController extends Controller
                 'read_at' => now(),
             ]);
 
-        return back()->with('success', 'All notifications marked as read');
+        return redirect()->route('approver.notifications.index', ['tab' => 'seen'])->with('success', 'All notifications marked as seen.');
     }
 
     /**

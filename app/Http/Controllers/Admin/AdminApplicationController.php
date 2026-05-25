@@ -413,8 +413,10 @@ class AdminApplicationController extends Controller
             ]);
         }
 
-        // Create notification for candidate
-        $candidate = $application->candidate;
+        // Create notification for candidate (lookup via citizenship_number — no candidate_id FK in application_form)
+        $candidate = \DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
 
         if ($request->status === 'reviewed' && $request->approver_id) {
             $approver = $approver ?? \App\Models\Approver::find($request->approver_id);

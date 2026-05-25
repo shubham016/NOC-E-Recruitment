@@ -582,7 +582,7 @@
                         Showing {{ $jobs->firstItem() }} to {{ $jobs->lastItem() }} of {{ $jobs->total() }}
                     </div>
                     <div>
-                        {{ $jobs->links() }}
+                        {{ $jobs->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

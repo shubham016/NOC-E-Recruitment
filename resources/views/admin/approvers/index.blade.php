@@ -333,7 +333,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $approvers->links() }}
+        {{ $approvers->links('pagination::bootstrap-5') }}
     </div>
 </div>
 

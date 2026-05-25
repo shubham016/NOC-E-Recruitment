@@ -12,40 +12,27 @@ class NotificationController extends Controller
     /**
      * Display a listing of notifications
      */
-    public function index()
+    public function index(Request $request)
     {
         $reviewer = Auth::guard('reviewer')->user();
 
-        // Get unread notification IDs before marking as read
-        $unreadIds = Notification::forUser($reviewer->id, 'reviewer')
-            ->unread()
-            ->pluck('id')
-            ->toArray();
+        $tab = $request->get('tab', 'unseen');
 
-        // Automatically mark all unread notifications as read when viewing the page
-        if (!empty($unreadIds)) {
-            Notification::forUser($reviewer->id, 'reviewer')
-                ->unread()
-                ->update([
-                    'is_read' => true,
-                    'read_at' => now(),
-                ]);
+        $query = Notification::forUser($reviewer->id, 'reviewer')
+            ->orderBy('created_at', 'desc');
+
+        if ($tab === 'seen') {
+            $query->where('is_read', true);
+        } else {
+            $query->where('is_read', false);
         }
 
-        // Get all notifications for this reviewer, ordered by newest first
-        $notifications = Notification::forUser($reviewer->id, 'reviewer')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $notifications = $query->paginate(20)->withQueryString();
 
-        // Log notification access
-        \Log::info('Reviewer viewed notifications page', [
-            'reviewer_id' => $reviewer->id,
-            'total_notifications' => $notifications->total(),
-            'auto_marked_read' => count($unreadIds),
-            'marked_notification_ids' => $unreadIds,
-        ]);
+        $unseenCount = Notification::forUser($reviewer->id, 'reviewer')->where('is_read', false)->count();
+        $seenCount   = Notification::forUser($reviewer->id, 'reviewer')->where('is_read', true)->count();
 
-        return view('reviewer.notifications.index', compact('notifications'));
+        return view('reviewer.notifications.index', compact('notifications', 'tab', 'unseenCount', 'seenCount'));
     }
 
     /**
@@ -69,13 +56,11 @@ class NotificationController extends Controller
 
         $notification->markAsRead();
 
-        // Redirect to related page if available
         if ($notification->related_type === 'application' && $notification->related_id) {
-            return redirect()->route('reviewer.applications.show', $notification->related_id)
-                ->with('success', 'Notification marked as read.');
+            return redirect()->route('reviewer.applications.show', $notification->related_id);
         }
 
-        return redirect()->back()->with('success', 'Notification marked as read.');
+        return redirect()->back();
     }
 
     /**
@@ -92,7 +77,7 @@ class NotificationController extends Controller
                 'read_at' => now(),
             ]);
 
-        return redirect()->back()->with('success', 'All notifications marked as read.');
+        return redirect()->route('reviewer.notifications.index', ['tab' => 'seen'])->with('success', 'All notifications marked as seen.');
     }
 
     /**

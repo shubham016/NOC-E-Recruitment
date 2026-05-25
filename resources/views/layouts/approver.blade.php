@@ -74,6 +74,32 @@
             margin-bottom: 0.3rem;
         }
 
+        /* Notification bell link */
+        .notification-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .notification-link .bi-bell {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Bell badge: smaller circle, number centered, shifted left */
+        .notification-link .badge.translate-middle {
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 12px !important;
+            font-size: 0.5rem !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: translate(-128%, 44%) !important;
+        }
+
         /* Top Navbar - light warm white with gold bottom border */
         .navbar {
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
@@ -436,11 +462,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <!-- Notifications -->
-                    <li class="nav-item me-2">
-                        <a class="nav-link text-dark position-relative"
+                    <li class="nav-item">
+                        <a class="nav-link text-dark position-relative notification-link"
                            href="{{ route('approver.notifications.index') }}"
                            title="Notifications">
-                            <i class="bi bi-bell fs-5"></i>
+                            <i class="bi bi-bell"></i>
                             @php
                                 try {
                                     if (Auth::guard('approver')->check()) {
@@ -456,7 +482,7 @@
                                 }
                             @endphp
                             @if($unreadCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                     {{ $unreadCount > 99 ? '99+' : $unreadCount }}
                                 </span>
                             @endif

@@ -358,7 +358,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $jobs->links() }}
+        {{ $jobs->links('pagination::bootstrap-5') }}
     </div>
 @else
     <div class="card shadow-sm">

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Reviewer;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApplicationReviewController extends Controller
@@ -245,6 +247,47 @@ class ApplicationReviewController extends Controller
             'done_by_id'          => $reviewer->id,
             'remarks'             => $request->reviewer_notes,
         ]);
+
+        // Notify candidate for all reviewer actions
+        $candidateRecord = DB::table('candidate_registration')
+            ->where('citizenship_number', $application->citizenship_number)
+            ->first();
+
+        if ($candidateRecord) {
+            $positionTitle = $application->applying_position ?? $application->advertisement_no ?? 'N/A';
+
+            if ($request->status === 'reviewed') {
+                Notification::create([
+                    'user_id'      => $candidateRecord->id,
+                    'user_type'    => 'candidate',
+                    'type'         => 'application_reviewed',
+                    'title'        => 'Application Reviewed',
+                    'message'      => 'Your application for "' . $positionTitle . '" has been reviewed and is progressing to the next stage.',
+                    'related_id'   => $application->id,
+                    'related_type' => 'application',
+                ]);
+            } elseif ($request->status === 'rejected') {
+                Notification::create([
+                    'user_id'      => $candidateRecord->id,
+                    'user_type'    => 'candidate',
+                    'type'         => 'application_rejected',
+                    'title'        => 'Application Rejected',
+                    'message'      => 'Your application for "' . $positionTitle . '" has been rejected by the reviewer.',
+                    'related_id'   => $application->id,
+                    'related_type' => 'application',
+                ]);
+            } elseif ($request->status === 'edit') {
+                Notification::create([
+                    'user_id'      => $candidateRecord->id,
+                    'user_type'    => 'candidate',
+                    'type'         => 'application_edit_request',
+                    'title'        => 'Application Requires Editing',
+                    'message'      => 'Your application for "' . $positionTitle . '" has been sent back for corrections by the reviewer.',
+                    'related_id'   => $application->id,
+                    'related_type' => 'application',
+                ]);
+            }
+        }
 
         // Prepare response message based on status
         if ($request->status === 'reviewed') {

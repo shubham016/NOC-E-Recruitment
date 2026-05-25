@@ -149,7 +149,7 @@
             </div>
 
             <div class="d-flex justify-content-center mt-4">
-                {{ $forms->links() }}
+                {{ $forms->links('pagination::bootstrap-5') }}
             </div>
         @else
             <div class="alert alert-info text-center">

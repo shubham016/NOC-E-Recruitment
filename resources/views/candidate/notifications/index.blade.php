@@ -48,14 +48,15 @@
         }
 
         .notification-icon {
-            width: 48px;
-            height: 48px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1rem;
             flex-shrink: 0;
+            margin-left: -4px;
         }
 
         .notification-icon.info {
@@ -82,31 +83,42 @@
 
 @section('content')
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-1">
-                Notifications
-                <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">CANDIDATE PORTAL</span>
-            </h2>
-            <p class="text-muted mb-0">View and manage your notifications</p>
-        </div>
-        @if($notifications->where('is_read', false)->count() > 0)
-            <form method="POST" action="{{ route('candidate.notifications.markAllAsRead') }}" class="d-inline">
-                @csrf
-                <button type="submit" class="in btn-sm btn-outline-secondary">
-                    <i class="bi bi-check2-all"></i> Mark All as Read
-                </button>
-            </form>
-        @endif
+    <div class="mb-3">
+        <h2 class="mb-1">
+            Notifications
+            <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">CANDIDATE PORTAL</span>
+        </h2>
+        <p class="text-muted mb-0">View and manage your notifications</p>
     </div>
 
-    <!-- Success Message -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Unseen / Seen Tabs + Mark All As Seen -->
+    <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 2px solid #dee2e6;">
+        <ul class="nav nav-tabs border-0 mb-0">
+            <li class="nav-item">
+                <a class="nav-link {{ $tab === 'unseen' ? 'active fw-semibold' : 'text-muted' }}"
+                   href="{{ route('candidate.notifications.index', ['tab' => 'unseen']) }}"
+                   style="{{ $tab === 'unseen' ? 'color:#c9a84c !important; border-bottom: 2px solid #c9a84c; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    Unseen
+                    @if($unseenCount > 0)
+                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $unseenCount }}</span>
+                    @endif
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ $tab === 'seen' ? 'active fw-semibold' : 'text-muted' }}"
+                   href="{{ route('candidate.notifications.index', ['tab' => 'seen']) }}"
+                   style="{{ $tab === 'seen' ? 'color:#17a2b8 !important; border-bottom: 2px solid #17a2b8; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    Seen
+                </a>
+            </li>
+        </ul>
+        <form method="POST" action="{{ route('candidate.notifications.markAllAsRead') }}" class="d-inline mb-1">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-secondary fw-semibold" style="letter-spacing:0.05em;" {{ $unseenCount === 0 ? 'disabled' : '' }}>
+                MARK ALL AS SEEN
+            </button>
+        </form>
+    </div>
 
     <!-- Notifications List -->
     @if($notifications->count() > 0)
@@ -155,13 +167,14 @@
                                     <!-- Action Buttons -->
                                     <div class="d-flex gap-2">
                                         @if($notification->related_type === 'application' && $notification->related_id)
-                                            <a href="{{ route('candidate.applications.show', $notification->related_id) }}"
-                                               class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-eye"></i> View Application
-                                            </a>
-                                        @endif
-
-                                        @if(!$notification->is_read)
+                                            {{-- Routes through markAsRead which marks as read then redirects to application --}}
+                                            <form method="POST" action="{{ route('candidate.notifications.markAsRead', $notification->id) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-eye"></i> View Application
+                                                </button>
+                                            </form>
+                                        @elseif(!$notification->is_read)
                                             <form method="POST" action="{{ route('candidate.notifications.markAsRead', $notification->id) }}" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success">
@@ -189,15 +202,19 @@
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
-            {{ $notifications->links() }}
+            {{ $notifications->links('pagination::bootstrap-5') }}
         </div>
     @else
         <!-- Empty State -->
         <div class="card shadow-sm">
             <div class="card-body text-center py-5">
                 <i class="bi bi-bell-slash display-1 text-muted mb-3"></i>
-                <h4 class="text-muted">No Notifications Available</h4>
-                <p class="text-secondary">You don't have any notifications at the moment.</p>
+                <h4 class="text-muted">
+                    {{ $tab === 'seen' ? 'No Seen Notifications' : 'No Unseen Notifications' }}
+                </h4>
+                <p class="text-secondary">
+                    {{ $tab === 'seen' ? 'You have no seen notifications yet.' : 'You have no new notifications at the moment.' }}
+                </p>
                 <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger mt-3">
                     <i class="bi bi-house-door"></i> Back to Dashboard
                 </a>

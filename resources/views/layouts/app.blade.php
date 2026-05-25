@@ -67,6 +67,19 @@
             line-height: 1;
         }
 
+        /* Bell badge: smaller circle, number centered, shifted left */
+        .notification-link .badge.translate-middle {
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 12px !important;
+            font-size: 0.5rem !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: translate(-128%, 44%) !important;
+        }
+
         .tab-item {
             font-size: 14px;
             margin-right: -20px;
@@ -588,8 +601,9 @@
                                 <i class="bi bi-bell"></i>
                                 @php
                                     try {
-                                        if (Auth::guard('candidate')->check()) {
-                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('candidate')->id())
+                                        $candidateSessionId = session('candidate_id');
+                                        if ($candidateSessionId) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', $candidateSessionId)
                                                 ->where('user_type', 'candidate')
                                                 ->where('is_read', false)
                                                 ->count();

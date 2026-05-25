@@ -74,6 +74,32 @@
             margin-bottom: 0.3rem;
         }
 
+        /* Notification bell link */
+        .notification-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .notification-link .bi-bell {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Bell badge: smaller circle, number centered, shifted left */
+        .notification-link .badge.translate-middle {
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 12px !important;
+            font-size: 0.5rem !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: translate(-128%, 44%) !important;
+        }
+
         /* Top Navbar - light warm white with gold bottom border */
         .navbar {
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
@@ -455,11 +481,11 @@
                     @endphp
 
                     @if($notifRoute)
-                    <li class="nav-item me-2">
-                        <a href="{{ $notifRoute }}" class="btn btn-link nav-link text-dark position-relative" style="font-size:1.3rem;">
+                    <li class="nav-item">
+                        <a href="{{ $notifRoute }}" class="nav-link text-dark position-relative notification-link">
                             <i class="bi bi-bell"></i>
                             @if($notifCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                     {{ $notifCount > 99 ? '99+' : $notifCount }}
                                 </span>
                             @endif

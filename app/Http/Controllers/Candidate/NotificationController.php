@@ -22,7 +22,7 @@ class NotificationController extends Controller
     /**
      * Display a listing of notifications
      */
-    public function index()
+    public function index(Request $request)
     {
         $candidate = $this->getCandidate();
 
@@ -30,28 +30,23 @@ class NotificationController extends Controller
             return redirect()->route('candidate.login')->with('error', 'Please login to view notifications.');
         }
 
-        // Get unread notification IDs before marking as read
-        $unreadIds = Notification::forUser($candidate->id, 'candidate')
-            ->unread()
-            ->pluck('id')
-            ->toArray();
+        $tab = $request->get('tab', 'unseen');
 
-        // Automatically mark all unread notifications as read when viewing the page
-        if (!empty($unreadIds)) {
-            Notification::forUser($candidate->id, 'candidate')
-                ->unread()
-                ->update([
-                    'is_read' => true,
-                    'read_at' => now(),
-                ]);
+        $query = Notification::forUser($candidate->id, 'candidate')
+            ->orderBy('created_at', 'desc');
+
+        if ($tab === 'seen') {
+            $query->where('is_read', true);
+        } else {
+            $query->where('is_read', false);
         }
 
-        // Get all notifications for this candidate, ordered by newest first
-        $notifications = Notification::forUser($candidate->id, 'candidate')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $notifications = $query->paginate(20)->withQueryString();
 
-        return view('candidate.notifications.index', compact('notifications'));
+        $unseenCount = Notification::forUser($candidate->id, 'candidate')->where('is_read', false)->count();
+        $seenCount   = Notification::forUser($candidate->id, 'candidate')->where('is_read', true)->count();
+
+        return view('candidate.notifications.index', compact('notifications', 'tab', 'unseenCount', 'seenCount'));
     }
 
     /**
@@ -72,11 +67,10 @@ class NotificationController extends Controller
 
         // Redirect to related page if available
         if ($notification->related_type === 'application' && $notification->related_id) {
-            return redirect()->route('candidate.applications.show', $notification->related_id)
-                ->with('success', 'Notification marked as read.');
+            return redirect()->route('candidate.applications.show', $notification->related_id);
         }
 
-        return redirect()->back()->with('success', 'Notification marked as read.');
+        return redirect()->back();
     }
 
     /**
@@ -97,7 +91,7 @@ class NotificationController extends Controller
                 'read_at' => now(),
             ]);
 
-        return redirect()->back()->with('success', 'All notifications marked as read.');
+        return redirect()->route('candidate.notifications.index', ['tab' => 'seen'])->with('success', 'All notifications marked as seen.');
     }
 
     /**

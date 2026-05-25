@@ -351,7 +351,7 @@
                         Showing {{ $applications->firstItem() }} to {{ $applications->lastItem() }} of {{ $applications->total() }}
                     </div>
                     <div>
-                        {{ $applications->links() }}
+                        {{ $applications->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

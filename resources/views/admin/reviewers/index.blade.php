@@ -381,7 +381,7 @@
                             {{ $reviewers->total() }}
                         </div>
                         <div>
-                            {{ $reviewers->links() }}
+                            {{ $reviewers->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>

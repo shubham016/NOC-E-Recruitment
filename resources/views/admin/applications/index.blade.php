@@ -947,7 +947,7 @@
                             <strong style="color: #1f2937;">{{ $applications->total() }}</strong> applications
                         </div>
                         <div>
-                            {{ $applications->links() }}
+                            {{ $applications->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>

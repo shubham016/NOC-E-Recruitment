@@ -166,7 +166,7 @@
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
-            {{ $notifications->links() }}
+            {{ $notifications->links('pagination::bootstrap-5') }}
         </div>
     @else
         <!-- Empty State -->

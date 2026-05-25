@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.approver')
 
 @section('title', 'Notifications')
 
@@ -27,139 +27,173 @@
 
 @section('custom-styles')
 <style>
-    .page-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        border-radius: 12px;
-        padding: 1.5rem;
-        color: white;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
-    }
-
-    .notification-item {
-        background: white;
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin-bottom: 0.75rem;
-        border-left: 4px solid #e5e7eb;
+    .notification-card {
         transition: all 0.3s ease;
+        border-left: 4px solid transparent;
     }
 
-    .notification-item:hover {
-        transform: translateX(4px);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    .notification-card:hover {
+        border-left-color: #c9a84c;
+        transform: translateX(5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
     }
 
-    .notification-item.unread {
-        background: #fef3c7;
+    .notification-card.unread {
+        background-color: #fffbf0;
         border-left-color: #c9a84c;
     }
 
-    .notification-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #1f2937;
+    .notification-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
     }
 
-    .notification-message {
-        color: #6b7280;
-        font-size: 0.9rem;
+    .notification-icon.info {
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(160, 120, 40, 0.1));
+        color: #a07828;
+    }
+
+    .notification-icon.success {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+        color: #059669;
+    }
+
+    .notification-icon.danger {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+        color: #dc2626;
     }
 
     .notification-time {
+        font-size: 0.75rem;
         color: #9ca3af;
-        font-size: 0.85rem;
-    }
-
-    .btn-gold {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
-        color: white;
-        border: none;
-    }
-
-    .btn-gold:hover {
-        background: linear-gradient(135deg, #a07828 0%, #c9a84c 100%);
-        color: white;
     }
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid px-4 py-4">
     <!-- Page Header -->
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="fw-bold mb-1">
-                    <i class="bi bi-bell me-2"></i>Notifications
-                </h3>
-                <p class="mb-0 opacity-90 small">Manage your notifications</p>
-            </div>
-            <div>
-                <form action="{{ route('approver.notifications.markAllAsRead') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-light btn-sm">
-                        <i class="bi bi-check-all me-1"></i>Mark All as Read
-                    </button>
-                </form>
-            </div>
-        </div>
+    <div class="mb-3">
+        <h2 class="mb-1">
+            Notifications
+            <span class="badge bg-warning text-dark" style="font-size: 0.6rem; vertical-align: middle;">APPROVER PORTAL</span>
+        </h2>
+        <p class="text-muted mb-0">View and manage your notifications</p>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Unseen / Seen Tabs + Mark All As Seen -->
+    <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 2px solid #dee2e6;">
+        <ul class="nav nav-tabs border-0 mb-0">
+            <li class="nav-item">
+                <a class="nav-link {{ $tab === 'unseen' ? 'active fw-semibold' : 'text-muted' }}"
+                   href="{{ route('approver.notifications.index', ['tab' => 'unseen']) }}"
+                   style="{{ $tab === 'unseen' ? 'color:#c9a84c !important; border-bottom: 2px solid #c9a84c; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    Unseen
+                    @if($unseenCount > 0)
+                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $unseenCount }}</span>
+                    @endif
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ $tab === 'seen' ? 'active fw-semibold' : 'text-muted' }}"
+                   href="{{ route('approver.notifications.index', ['tab' => 'seen']) }}"
+                   style="{{ $tab === 'seen' ? 'color:#17a2b8 !important; border-bottom: 2px solid #17a2b8; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    Seen
+                </a>
+            </li>
+        </ul>
+        <form method="POST" action="{{ route('approver.notifications.markAllAsRead') }}" class="d-inline mb-1">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-secondary fw-semibold" style="letter-spacing:0.05em;" {{ $unseenCount === 0 ? 'disabled' : '' }}>
+                MARK ALL AS SEEN
+            </button>
+        </form>
+    </div>
 
     <!-- Notifications List -->
-    <div class="notifications-list">
-        @forelse($notifications as $notification)
-            <div class="notification-item {{ !$notification->is_read ? 'unread' : '' }}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <div class="notification-title">
-                            {{ $notification->title }}
-                        </div>
-                        <div class="notification-message">
-                            {{ $notification->message }}
-                        </div>
-                        <div class="notification-time mt-2">
-                            <i class="bi bi-clock me-1"></i>
-                            {{ $notification->created_at->diffForHumans() }}
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2">
-                        @if(!$notification->is_read)
-                            <form action="{{ route('approver.notifications.markAsRead', $notification->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-gold" title="Mark as read">
-                                    <i class="bi bi-check"></i>
-                                </button>
-                            </form>
-                        @endif
-                        <form action="{{ route('approver.notifications.destroy', $notification->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="text-center py-5">
-                <i class="bi bi-bell-slash fs-1 text-muted d-block mb-3"></i>
-                <p class="text-muted">No notifications found</p>
-            </div>
-        @endforelse
-    </div>
+    @if($notifications->count() > 0)
+        <div class="row">
+            <div class="col-12">
+                @foreach($notifications as $notification)
+                    <div class="card notification-card mb-3 {{ $notification->is_read ? '' : 'unread' }}">
+                        <div class="card-body">
+                            <div class="d-flex gap-3">
+                                <!-- Notification Icon -->
+                                <div class="notification-icon
+                                    @if($notification->type === 'application_assigned') success
+                                    @elseif($notification->type === 'application_resubmitted') info
+                                    @else info
+                                    @endif">
+                                    @if($notification->type === 'application_assigned')
+                                        <i class="bi bi-clipboard-check-fill"></i>
+                                    @elseif($notification->type === 'application_resubmitted')
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    @else
+                                        <i class="bi bi-bell-fill"></i>
+                                    @endif
+                                </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
-        {{ $notifications->links() }}
-    </div>
-</div>
+                                <!-- Notification Content -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0 fw-semibold">{{ $notification->title }}</h6>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            @if(!$notification->is_read)
+                                                <span class="badge bg-warning text-dark">New</span>
+                                            @endif
+                                            <span class="notification-time">
+                                                {{ $notification->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted mb-3">{{ $notification->message }}</p>
+
+                                    <!-- Action Buttons -->
+                                    <div class="d-flex gap-2">
+                                        @if($notification->related_type === 'application' && $notification->related_id)
+                                            <form method="POST" action="{{ route('approver.notifications.markAsRead', $notification->id) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">View Application</button>
+                                            </form>
+                                        @elseif(!$notification->is_read)
+                                            <form method="POST" action="{{ route('approver.notifications.markAsRead', $notification->id) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-success">Mark as Read</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $notifications->links('pagination::bootstrap-5') }}
+        </div>
+    @else
+        <!-- Empty State -->
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-bell-slash display-1 text-muted mb-3"></i>
+                <h4 class="text-muted">
+                    {{ $tab === 'seen' ? 'No Seen Notifications' : 'No Unseen Notifications' }}
+                </h4>
+                <p class="text-secondary">
+                    {{ $tab === 'seen' ? 'You have no seen notifications yet.' : 'You have no new notifications at the moment.' }}
+                </p>
+                <a href="{{ route('approver.dashboard') }}" class="btn btn-danger mt-3">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    @endif
 @endsection

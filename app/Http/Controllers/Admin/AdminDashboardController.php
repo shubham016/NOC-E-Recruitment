@@ -23,7 +23,7 @@ class AdminDashboardController extends Controller
             'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
             'approved' => ApplicationForm::where('status', 'approved')->count(),
             'rejected' => ApplicationForm::where('status', 'rejected')->count(),
-            'total_candidates' => ApplicationForm::distinct('email')->count('email'),
+            'total_candidates' => DB::table('candidate_registration')->count(),
             'total_reviewers' => Reviewer::count(),
             'active_reviewers' => Reviewer::where('status', 'active')->count(),
             'total_approvers' => Approver::count(),
@@ -38,10 +38,10 @@ class AdminDashboardController extends Controller
             'applications' => ApplicationForm::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
-            'candidates' => ApplicationForm::whereMonth('created_at', now()->month)
+            'candidates' => DB::table('candidate_registration')
+                ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
-                ->distinct('email')
-                ->count('email'),
+                ->count(),
         ];
 
         // Last Month Statistics
@@ -52,10 +52,10 @@ class AdminDashboardController extends Controller
             'applications' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
                 ->count(),
-            'candidates' => ApplicationForm::whereMonth('created_at', now()->subMonth()->month)
+            'candidates' => DB::table('candidate_registration')
+                ->whereMonth('created_at', now()->subMonth()->month)
                 ->whereYear('created_at', now()->subMonth()->year)
-                ->distinct('email')
-                ->count('email'),
+                ->count(),
         ];
 
         // Growth calculations
