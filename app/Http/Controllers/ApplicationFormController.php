@@ -23,9 +23,6 @@ class ApplicationFormController extends Controller
         'character'                => 'character-certificates',
         'equivalent'               => 'equivalency-certificates',
         'work_experience'          => 'work-experience-documents',
-        'exp1_document' => 'experience-documents',
-        'exp2_document' => 'experience-documents',
-        'exp3_document' => 'experience-documents',
     ];
 
     /**
@@ -215,6 +212,9 @@ class ApplicationFormController extends Controller
             Log::info('Draft created', ['draft_id' => $draft->id]);
         }
 
+         // ✅ Save experiences AFTER draft has an ID
+        $this->saveExperiences($request, $draft);
+
         // Handle file uploads
         $fileData = [];
         if ($this->hasAnyFiles($request)) {
@@ -368,6 +368,7 @@ class ApplicationFormController extends Controller
             // Create new application
             $application = ApplicationForm::create($data);
         }
+        $this->saveExperiences($request, $application);
 
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application submitted successfully!');
@@ -391,6 +392,8 @@ class ApplicationFormController extends Controller
             return redirect()->route('candidate.applications.index')
                 ->withErrors(['error' => 'Unauthorized access']);
         }
+
+        $applicationform->load('experiences');
 
         return view('candidate.applications.show', compact('applicationform'));
     }
@@ -457,7 +460,9 @@ class ApplicationFormController extends Controller
         $groupJobs = collect([$job]);
     }
 
-    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs', 'candidate'));
+    $payment = $applicationform->payment;
+
+    return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs', 'candidate', 'payment'));
 }
 
     /**
@@ -502,9 +507,85 @@ class ApplicationFormController extends Controller
 
         $applicationform->update($data);
 
+        $this->saveExperiences($request, $applicationform);
+
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application updated successfully!');
     }
+
+    private function saveExperiences(Request $request, ApplicationForm $application): void
+{
+    $hasAnyData = false;
+    for ($i = 1; $i <= 10; $i++) {
+        if (!empty($request->input("exp{$i}_organization")) ||
+            !empty($request->input("exp{$i}_position")) ||
+            !empty($request->input("exp{$i}_start_date_bs")) ||
+            !empty($request->input("exp{$i}_years"))) {
+            $hasAnyData = true;
+            break;
+        }
+    }
+
+    if (!$hasAnyData) {
+        Log::info('saveExperiences: no data, preserving existing records', [
+            'application_id' => $application->id,
+        ]);
+        return;
+    }
+
+    // Snapshot existing documents keyed by exp_number before deleting
+    $existingDocs = \App\Models\ApplicationExperience::where('application_form_id', $application->id)
+        ->pluck('document', 'exp_number')
+        ->toArray();
+
+    \App\Models\ApplicationExperience::where('application_form_id', $application->id)->delete();
+
+    for ($i = 1; $i <= 10; $i++) {
+        $org      = $request->input("exp{$i}_organization");
+        $position = $request->input("exp{$i}_position");
+        $startBs  = $request->input("exp{$i}_start_date_bs");
+        $startAd  = $request->input("exp{$i}_start_date");
+        $endBs    = $request->input("exp{$i}_end_date_bs");
+        $endAd    = $request->input("exp{$i}_end_date");
+        $years    = $request->input("exp{$i}_years");
+
+        if (empty($org) && empty($position) && empty($startBs) && empty($years)) {
+            continue;
+        }
+
+        $expData = [
+            'application_form_id' => $application->id,
+            'exp_number'          => $i,
+            'organization'        => $org,
+            'position'            => $position,
+            'start_date_bs'       => $startBs,
+            'start_date'          => $startAd ?: null,
+            'end_date_bs'         => $endBs,
+            'end_date'            => $endAd ?: null,
+            'years'               => $years ?: null,
+        ];
+
+        $fileField = "exp{$i}_document";
+        if ($request->hasFile($fileField) && $request->file($fileField)->isValid()) {
+            // New file uploaded — store it
+            $file     = $request->file($fileField);
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path     = $file->storeAs('experience-documents', $filename, 'public');
+            $expData['document'] = $path;
+        } elseif (!empty($existingDocs[$i])) {
+            // No new file — restore the previously uploaded document
+            $expData['document'] = $existingDocs[$i];
+        }
+
+        \App\Models\ApplicationExperience::create($expData);
+
+        Log::info('Experience saved', [
+            'application_id' => $application->id,
+            'exp_number'     => $i,
+            'organization'   => $org,
+        ]);
+    }
+}
 
     /**
      * Remove the specified application

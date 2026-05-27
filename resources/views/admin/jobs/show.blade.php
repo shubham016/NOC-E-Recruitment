@@ -252,6 +252,80 @@
         html, body {
             scroll-behavior: auto !important;
         }
+
+        /* ---- Print Styles ---- */
+        .print-header { display: none; }
+        .print-only { display: none; }
+
+        @media print {
+            /* Hide everything by default */
+            body * { visibility: hidden !important; }
+
+            /* Show only the print section */
+            #vacancy-print-section,
+            #vacancy-print-section * { visibility: visible !important; }
+
+            /* Show the print-only header */
+            .print-header,
+            .print-header * { visibility: visible !important; display: block !important; }
+
+            /* Position print section at top */
+            #vacancy-print-section {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            /* Remove shadows and borders for clean print */
+            #vacancy-print-section .detail-card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                page-break-inside: avoid;
+            }
+
+            /* Print header styling */
+            .print-header {
+                text-align: center;
+                margin-bottom: 16px;
+                border-bottom: 2px solid #dc2626;
+                padding-bottom: 12px;
+            }
+
+            .print-header h4 {
+                font-size: 18px;
+                font-weight: 700;
+                color: #dc2626;
+                margin: 0 0 4px 0;
+            }
+
+            .print-header p {
+                font-size: 13px;
+                color: #555;
+                margin: 0;
+            }
+
+            /* Hide action buttons inside print section (status badge stays) */
+            .stp { display: none !important; }
+
+            /* Hide relative time and Posts: line */
+            .no-print { display: none !important; }
+
+            /* Show print-only elements */
+            .print-only { display: block !important; visibility: visible !important; }
+            .print-only * { visibility: visible !important; }
+            .print-only table { display: table !important; }
+            .print-only thead { display: table-header-group !important; }
+            .print-only tbody { display: table-row-group !important; }
+            .print-only tr { display: table-row !important; }
+            .print-only th,
+            .print-only td { display: table-cell !important; }
+
+            @page {
+                margin: 1.5cm;
+            }
+        }
     </style>
 @endsection
 
@@ -292,6 +366,13 @@
     <div class="row g-4">
         <!-- Main Content Column -->
         <div class="col-lg-8">
+            <div id="vacancy-print-section">
+            <!-- Print-only header -->
+            <div class="print-header">
+                <h4>Vacancy Details &nbsp;|&nbsp; विज्ञापन विवरण</h4>
+                <p>नेपाल सरकार | Government of Nepal &nbsp;&mdash;&nbsp; {{ $job->position }} &nbsp;&mdash;&nbsp; Advertisement No. {{ $job->advertisement_no }}</p>
+            </div>
+
             <!-- Vacancy Information Card -->
             <div class="detail-card">
                 <div class="detail-header">
@@ -310,7 +391,7 @@
                 <div class="detail-row">
                     <div class="detail-label">Notice No.</div>
                     <div class="detail-value">
-                        <strong class="text-primary">{{ $job->notice_no }}</strong>
+                        {{ $job->notice_no }}
                     </div>
                 </div>
                 @endif
@@ -318,18 +399,13 @@
                 <div class="detail-row">
                     <div class="detail-label">Advertisement No.</div>
                     <div class="detail-value">
-                        <strong class="text-danger">{{ $job->advertisement_no }}</strong>
+                        {{ $job->advertisement_no }}
                     </div>
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Position</div>
-                    <div class="detail-value">{{ $job->position }}</div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-label">Level</div>
-                    <div class="detail-value">{{ $job->level ? $job->level : '-' }}</div>
+                    <div class="detail-label">Position / Level</div>
+                    <div class="detail-value">{{ $job->position }} / {{ $job->level ?: '-' }}</div>
                 </div>
 
                 <div class="detail-row">
@@ -340,61 +416,22 @@
                 <div class="detail-row">
                     <div class="detail-label">Demand Post (Number)</div>
                     <div class="detail-value">
-                        @php
-                            $demandTypeLabels = [
-                                'has_open'               => 'Open (खुल्ला)',
-                                'incl_women'             => 'Women (महिला)',
-                                'incl_aj'                => 'A.J (आ.ज)',
-                                'incl_madhesi'           => 'Madhesi (मधेसी)',
-                                'incl_janajati'          => 'Janajati (जनजाति)',
-                                'incl_apanga'            => 'Apanga (अपाङ्ग)',
-                                'incl_dalit'             => 'Dalit (दलित)',
-                                'incl_pichadiyeko'       => 'Pichadiyeko Chetra (पिचडिएको क्षेत्र)',
-                                'has_internal_open'      => 'Internal Open',
-                                'internal_incl_women'    => 'Internal / Women (महिला)',
-                                'internal_incl_aj'       => 'Internal / A.J (आ.ज)',
-                                'internal_incl_madhesi'  => 'Internal / Madhesi (मधेसी)',
-                                'internal_incl_janajati' => 'Internal / Janajati (जनजाति)',
-                                'internal_incl_apanga'   => 'Internal / Apanga (अपाङ्ग)',
-                                'internal_incl_dalit'    => 'Internal / Dalit (दलित)',
-                                'internal_incl_pichadiyeko' => 'Internal / Pichadiyeko Chetra',
-                                'is_internal_appraisal'  => 'Internal Appraisal (आन्तरिक बढुवा)',
-                            ];
-                            $demandPosts = $job->demand_posts ?? [];
-                        @endphp
-                        @if(!empty($demandPosts))
-                            @foreach($demandPosts as $key => $count)
-                                @if(isset($demandTypeLabels[$key]) && $count > 0)
-                                    <div class="d-flex justify-content-between" style="max-width:320px;">
-                                        <span class="text-muted" style="font-size:0.9rem;">{{ $demandTypeLabels[$key] }}</span>
-                                        <strong class="text-danger ms-3">{{ $count }}</strong>
-                                    </div>
-                                @endif
-                            @endforeach
-                            @if(count($demandPosts) > 1)
-                                <div class="d-flex justify-content-between mt-1 pt-1 border-top" style="max-width:320px;">
-                                    <span class="fw-semibold text-muted" style="font-size:0.9rem;">Total</span>
-                                    <strong class="text-danger ms-3 fs-5">{{ $job->number_of_posts }}</strong>
-                                </div>
-                            @endif
-                        @else
-                            <strong class="text-danger fs-5">{{ $job->number_of_posts }}</strong>
-                            <small class="text-muted ms-2">positions available</small>
-                        @endif
+                        {{ $job->number_of_posts }}
                     </div>
                 </div>
 
-                <div class="detail-row">
+                {{-- Department is same as Service / Group — hidden --}}
+                {{-- <div class="detail-row">
                     <div class="detail-label">Department</div>
                     <div class="detail-value">{{ $job->department }}</div>
-                </div>
+                </div> --}}
 
-                <div class="detail-row">
+                {{-- <div class="detail-row">
                     <div class="detail-label">Location</div>
                     <div class="detail-value">
                         {{ $job->location }}
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="detail-row">
                     <div class="detail-label">Category / Type</div>
@@ -405,9 +442,7 @@
                                     Internal Appraisal (आन्तरिक बढुवा)
                                 </span>
                             @elseif($job->category == 'open')
-                                <span class="badge" style="background:#f3f4f6; color:#1f2937; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                    Open (खुल्ला)
-                                </span>
+                                Open (खुल्ला)
                             @elseif($job->category == 'inclusive')
                                 @php
                                     $inclusiveTypes = json_decode($job->inclusive_type ?? '[]', true) ?: [];
@@ -451,10 +486,25 @@
                                 Converting...
                             </strong>
                             {{-- English Date (AD) --}}
-                            <small class="text-muted">{{ $job->deadline->format('F d, Y') }} ({{ $job->deadline->diffForHumans() }})</small>
+                            <small class="text-muted">{{ $job->deadline->format('F d, Y') }} <span class="no-print">({{ $job->deadline->diffForHumans() }})</span></small>
                         </div>
                     </div>
                 </div>
+
+                @if($job->double_dastur_date)
+                <div class="detail-row">
+                    <div class="detail-label">Double Dastur Deadline</div>
+                    <div class="detail-value">
+                        <div>
+                            <strong class="d-block nepali-date-bs text-danger"
+                                data-ad-date="{{ $job->double_dastur_date->format('Y-m-d') }}">
+                                Converting...
+                            </strong>
+                            <small class="text-muted">{{ $job->double_dastur_date->format('F d, Y') }} <span class="no-print">({{ $job->double_dastur_date->diffForHumans() }})</span></small>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 @if($job->category_fees && count($job->category_fees))
                     @php
@@ -481,12 +531,13 @@
                         <div class="detail-row">
                             <div class="detail-label">{{ $feeLabels[$feeKey] ?? ucwords(str_replace('_', ' ', $feeKey)) }}</div>
                             <div class="detail-value">
-                                <strong>NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}</strong>
+                                NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
                             </div>
                         </div>
                     @endforeach
                 @endif
-                <div class="detail-row">
+                {{-- Total Application Fee hidden --}}
+                {{-- <div class="detail-row">
                     <div class="detail-label">Total Application Fee</div>
                     <div class="detail-value">
                         @if($job->application_fee)
@@ -495,20 +546,20 @@
                             <span class="text-muted">Not set</span>
                         @endif
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="detail-row">
                     <div class="detail-label">Double Dastur Fee</div>
                     <div class="detail-value">
                         @if($job->double_dastur_fee)
-                            <strong>NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}</strong>
+                            NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
                         @else
                             <span class="text-muted">Not set</span>
                         @endif
                     </div>
                 </div>
 
-                <div class="detail-row">
+                <div class="detail-row no-print">
                     <div class="detail-label">Posted On</div>
                     <div class="detail-value">
                         {{ $job->created_at->format('F d, Y') }}
@@ -517,12 +568,44 @@
                 </div>
 
                 @if($job->postedBy)
-                    <div class="detail-row">
+                    <div class="detail-row no-print">
                         <div class="detail-label">Posted By</div>
                         <div class="detail-value">
                             {{ $job->postedBy->name }}
                         </div>
                     </div>
+                @endif
+
+                @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
+                <div class="print-only mt-3">
+                    <div style="font-weight:600; margin-bottom:4px;">Age Limit <small style="font-weight:400;">उमेर हद</small></div>
+                    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                        <thead>
+                            <tr style="background:#f3f4f6;">
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:left;">Category</th>
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">Minimum Age</th>
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">Maximum Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">Male (पुरुष)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_male ?? '—' }}</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_male ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">Female (महिला)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_female ?? '—' }}</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_female ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">Disabled (अपाङ्ग)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_disabled ?? '—' }}</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_disabled ?? '—' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 @endif
             </div>
 
@@ -566,7 +649,7 @@
 
             <!-- Age Limit Card -->
             @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
-            <div class="detail-card">
+            <div class="detail-card no-print">
                 <div class="detail-header">
                     <h5 class="fw-bold text-danger mb-0">Age Limit</h5>
                     <small class="text-muted">उमेर हद</small>
@@ -602,19 +685,9 @@
             </div>
             @endif
 
-            <!-- Description Card -->
-            @if($job->description)
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <h5 class="fw-bold text-danger mb-0">
-                            Description
-                        </h5>
-                    </div>
-                    <div class="qualification-box">
-                        {!! nl2br(e(implode("\n", array_filter(array_map('trim', explode("\n", $job->description)), 'strlen')))) !!}
-                    </div>
-                </div>
-            @endif
+            {{-- Description Card removed — auto-generated content duplicates Position/Level row --}}
+
+            </div>{{-- #vacancy-print-section --}}
 
             <!-- Applications List -->
                 <div class="detail-card">
@@ -728,6 +801,10 @@
                 </div>
 
                 <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-dark action-btn" onclick="printVacancy()">
+                        Print Vacancy
+                    </button>
+
                     <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-danger action-btn">
                         Edit Vacancy
                     </a>
@@ -739,16 +816,8 @@
                         </button>
                     </form>
 
-                    @if($job->status == 'active')
-                        <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="status" value="closed">
-                            <button type="submit" class="btn btn-outline-warning action-btn w-100"
-                                onclick="return confirm('Close this vacancy?')">
-                                Close Vacancy
-                            </button>
-                        </form>
-                    @elseif($job->status == 'closed')
+                    {{-- Close Vacancy button hidden --}}
+                    @if($job->status == 'closed')
                         <form action="{{ route('admin.jobs.changeStatus', $job->id) }}" method="POST">
                             @csrf
                             <input type="hidden" name="status" value="active">
@@ -822,7 +891,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        Recent Activities (Latest 5)
+                        Recent Activities <span class="text-success">(Latest 5)</span>
                     </h6>
                 </div>
 
@@ -1036,6 +1105,13 @@
             checkScroll();
 
         })();
+
+        // ========================================
+        // PRINT VACANCY
+        // ========================================
+        function printVacancy() {
+            window.print();
+        }
 
         // ========================================
         // DELETE APPLICATION CONFIRMATION

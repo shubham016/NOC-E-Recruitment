@@ -27,7 +27,8 @@ class ReviewerAuthController extends Controller
             'password' => $request->password,
             'status' => 'active'
         ], $request->remember)) {
-            return redirect()->intended(route('reviewer.dashboard'));
+            $request->session()->regenerate();
+            return redirect()->route('reviewer.dashboard');
         }
 
         return back()->withErrors([

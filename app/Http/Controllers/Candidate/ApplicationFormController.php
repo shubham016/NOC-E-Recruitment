@@ -24,6 +24,7 @@ class ApplicationFormController extends Controller
         'character'                => 'character-certificates',
         'equivalent'               => 'equivalency-certificates',
         'work_experience'          => 'work-experience-documents',
+        'additional_documents'     => 'additional-documents',
         'exp1_document' => 'experience-documents',
         'exp2_document' => 'experience-documents',
         'exp3_document' => 'experience-documents',
@@ -79,18 +80,27 @@ class ApplicationFormController extends Controller
         // Check for existing draft application for this job
         $draftApplication = null;
         if ($jobId) {
-            $draftApplication = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+            $draftApplication = ApplicationForm::with('experiences')
+                ->where('citizenship_number', $candidate->citizenship_number)
                 ->where('job_posting_id', $jobId)
                 ->where('status', 'draft')
                 ->first();
         } else {
             // Get the most recent draft without job_posting_id
-            $draftApplication = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+            $draftApplication = ApplicationForm::with('experiences')
+                ->where('citizenship_number', $candidate->citizenship_number)
                 ->whereNull('job_posting_id')
                 ->where('status', 'draft')
                 ->latest()
                 ->first();
         }
+
+        if ($draftApplication) {
+        $draftApplication->setRelation(
+            'experiences',
+            $draftApplication->experiences ?? collect()
+        );
+    }
 
         return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
     }
@@ -344,6 +354,8 @@ class ApplicationFormController extends Controller
             $application = ApplicationForm::create($data);
         }
 
+        $this->saveExperiences($request, $application);
+
         // Keep candidate profile birth date in sync
         $this->syncBirthDateToProfile(
             $candidate->id,
@@ -395,10 +407,18 @@ class ApplicationFormController extends Controller
             ->withErrors(['error' => 'Unauthorized access']);
     }
 
-    // ✅ Block editing after payment/submission
-    if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
+    // Block editing once payment is COMPLETED or application submitted
+    // Allow: status='edit' (portal-granted), or status='draft' with no completed payment
+    $applicationform->load(['experiences', 'payment']);
+    $paymentCompleted = $applicationform->payment && $applicationform->payment->status === 'completed';
+
+    if ($applicationform->status === 'edit') {
+        // Admin/portal explicitly granted edit access — allow
+    } elseif ($applicationform->status === 'draft' && !$paymentCompleted) {
+        // Draft with no completed payment — allow (pending/abandoned payments are ignored)
+    } else {
         return redirect()->route('candidate.applications.index')
-            ->with('error', 'This application has already been submitted and cannot be edited.');
+            ->with('error', 'This application cannot be edited. It has been paid and submitted.');
     }
 
     return view('candidate.applications.edit', compact('applicationform', 'candidate'));
@@ -409,11 +429,6 @@ class ApplicationFormController extends Controller
      */
     public function update(Request $request, ApplicationForm $applicationform)
     {
-        \Log::info('UPDATE DEBUG', [
-    'current_status_in_db' => $applicationform->status,
-    'status_in_data'       => $data['status'] ?? 'NOT SET',
-    'all_data_keys'        => array_keys($data),
-]);
         if (!Session::has('candidate_logged_in')) {
             return redirect()->route('candidate.login')
                 ->withErrors(['error' => 'Please login first']);
@@ -449,6 +464,7 @@ class ApplicationFormController extends Controller
         }
 
         $applicationform->update($data);
+        $this->saveExperiences($request, $applicationform);
 
         // Keep candidate profile birth date in sync
         $this->syncBirthDateToProfile(
@@ -758,4 +774,75 @@ class ApplicationFormController extends Controller
                 'birth_date_ad'    => $birthDateAd ?: null,
             ]);
     }
+
+    // work experiences
+private function saveExperiences(Request $request, ApplicationForm $application): void
+{
+    // ✅ Add this debug log to see what's arriving
+    Log::info('saveExperiences called', [
+        'application_id' => $application->id,
+        'has_work_exp'   => $request->input('has_work_experience'),
+        'exp1_org'       => $request->input('exp1_organization'),
+        'exp1_pos'       => $request->input('exp1_position'),
+        'exp1_years'     => $request->input('exp1_years'),
+        'all_exp_keys'   => array_filter(array_keys($request->all()), fn($k) => str_starts_with($k, 'exp')),
+    ]);
+
+    // ✅ Only delete existing records if we actually have experience data to save
+    $hasAnyData = false;
+    for ($i = 1; $i <= 10; $i++) {
+        if (!empty($request->input("exp{$i}_organization")) || 
+            !empty($request->input("exp{$i}_position")) ||
+            !empty($request->input("exp{$i}_start_date_bs")) ||
+            !empty($request->input("exp{$i}_years"))) {
+            $hasAnyData = true;
+            break;
+        }
+    }
+
+    // ✅ Only wipe existing records if new data is coming in
+    if ($hasAnyData) {
+        \App\Models\ApplicationExperience::where('application_form_id', $application->id)->delete();
+    } else {
+        Log::info('saveExperiences: no data found, preserving existing records');
+        return;
+    }
+
+    for ($i = 1; $i <= 10; $i++) {
+        $org      = $request->input("exp{$i}_organization");
+        $position = $request->input("exp{$i}_position");
+        $startBs  = $request->input("exp{$i}_start_date_bs");
+        $startAd  = $request->input("exp{$i}_start_date");
+        $endBs    = $request->input("exp{$i}_end_date_bs");
+        $endAd    = $request->input("exp{$i}_end_date");
+        $years    = $request->input("exp{$i}_years");
+
+        if (empty($org) && empty($position) && empty($startBs) && empty($years)) {
+            continue;
+        }
+
+        $expData = [
+            'application_form_id' => $application->id,
+            'exp_number'          => $i,
+            'organization'        => $org,
+            'position'            => $position,
+            'start_date_bs'       => $startBs,
+            'start_date'          => $startAd ?: null,
+            'end_date_bs'         => $endBs,
+            'end_date'            => $endAd ?: null,
+            'years'               => $years ?: null,
+        ];
+
+        $fileField = "exp{$i}_document";
+        if ($request->hasFile($fileField) && $request->file($fileField)->isValid()) {
+            $file     = $request->file($fileField);
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path     = $file->storeAs('experience-documents', $filename, 'public');
+            $expData['document'] = $path;
+        }
+
+        $created = \App\Models\ApplicationExperience::create($expData);
+        Log::info('Experience saved', ['exp_number' => $i, 'id' => $created->id, 'org' => $org]);
+    }
+}
 }

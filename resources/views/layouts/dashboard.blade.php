@@ -381,32 +381,30 @@
             line-height: 1;
         }
 
-        /* Notification icon styling */
+        /* Notification bell link */
         .notification-link {
             display: inline-flex !important;
             align-items: center !important;
-            padding: 0 !important;
-            position: relative;
-            height: 40px !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
         }
 
         .notification-link .bi-bell {
-            font-size: 1rem;
-            line-height: 1;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
         }
 
-        .notification-badge {
-            position: absolute;
-            top: 6px;
-            right: -2px;
-            font-size: 0.6rem;
-            padding: 0.15em 0.35em;
-            min-width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
+        /* Bell badge: smaller circle, number centered, shifted left */
+        .notification-link .badge.translate-middle {
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 12px !important;
+            font-size: 0.5rem !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: translate(-128%, 44%) !important;
         }
 
         .user-menu {
@@ -691,7 +689,7 @@
             <div class="navbar-right-section">
                 <!-- Notifications -->
                 @if(request()->is('admin/*'))
-                    <a class="nav-link notification-link" href="{{ route('admin.notifications.index') }}" title="Notifications">
+                    <a class="nav-link text-dark position-relative notification-link" href="{{ route('admin.notifications.index') }}" title="Notifications">
                         <i class="bi bi-bell"></i>
                         @php
                             try {

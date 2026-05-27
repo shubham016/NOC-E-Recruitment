@@ -120,6 +120,7 @@ class ApplicationForm extends Model
         'equivalent',
         'work_experience',
         'character',
+        'additional_documents',
         'total_fee',
         // System
         'status',
@@ -249,7 +250,12 @@ class ApplicationForm extends Model
 
     public function payment()
     {
-        return $this->hasOne(\App\Models\Payment::class, 'draft_id');
+        return $this->hasOne(\App\Models\Payment::class, 'draft_id')->latestOfMany('id');
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(\App\Models\ApplicationExperience::class, 'application_form_id')->orderBy('exp_number');
     }
     public function reviewer()
     {
@@ -264,6 +270,11 @@ class ApplicationForm extends Model
     public function candidate()
     {
         return $this->belongsTo(\App\Models\Candidate::class, 'candidate_id');
+    }
+
+    public function candidateRegistration()
+    {
+        return $this->belongsTo(\App\Models\CandidateRegistration::class, 'citizenship_number', 'citizenship_number');
     }
 
     /**

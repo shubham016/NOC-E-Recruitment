@@ -18,7 +18,7 @@ class AdminApplicationController extends Controller
     public function index(Request $request)
     {
         // Initialize query
-        $query = ApplicationForm::with(['vacancy', 'reviewer', 'approver'])
+        $query = ApplicationForm::with(['vacancy', 'reviewer', 'approver', 'candidateRegistration'])
             ->where('status', '!=', 'draft');
 
         // Search filter
@@ -223,7 +223,7 @@ class AdminApplicationController extends Controller
 
     public function show(ApplicationForm $application)
     {
-        $application->load(['vacancy', 'reviewer', 'approver', 'statusHistories']);
+        $application->load(['vacancy', 'reviewer', 'approver', 'statusHistories', 'experiences']);
 
         // If AJAX request, return JSON for modal view
         if (request()->ajax()) {
@@ -307,19 +307,14 @@ class AdminApplicationController extends Controller
                 'graduation_year' => $application->graduation_year,
                 // Experience
                 'has_work_experience' => $application->has_work_experience,
-                'years_of_experience' => $application->years_of_experience,
-                'exp1_organization' => $application->exp1_organization,
-                'exp1_position' => $application->exp1_position,
-                'exp1_start_date' => $application->exp1_start_date,
-                'exp1_end_date' => $application->exp1_end_date,
-                'exp2_organization' => $application->exp2_organization,
-                'exp2_position' => $application->exp2_position,
-                'exp2_start_date' => $application->exp2_start_date,
-                'exp2_end_date' => $application->exp2_end_date,
-                'exp3_organization' => $application->exp3_organization,
-                'exp3_position' => $application->exp3_position,
-                'exp3_start_date' => $application->exp3_start_date,
-                'exp3_end_date' => $application->exp3_end_date,
+                'experiences' => $application->experiences->map(fn($e) => [
+                    'organization'  => $e->organization,
+                    'position'      => $e->position,
+                    'start_date_bs' => $e->start_date_bs,
+                    'end_date_bs'   => $e->end_date_bs,
+                    'years'         => $e->years,
+                    'document'      => $e->document ? asset('storage/' . $e->document) : null,
+                ])->values()->toArray(),
                 // Vacancy
                 'applying_position' => $application->applying_position,
                 'advertisement_no' => $application->advertisement_no,
@@ -342,9 +337,6 @@ class AdminApplicationController extends Controller
                 'signature' => $application->signature ? asset('storage/' . $application->signature) : null,
                 'transcript' => $application->transcript ? asset('storage/' . $application->transcript) : null,
                 'character' => $application->character ? asset('storage/' . $application->character) : null,
-                'exp1_document' => $application->exp1_document ? asset('storage/' . $application->exp1_document) : null,
-                'exp2_document' => $application->exp2_document ? asset('storage/' . $application->exp2_document) : null,
-                'exp3_document' => $application->exp3_document ? asset('storage/' . $application->exp3_document) : null,
                 // Status History
                 'status_histories' => $application->statusHistories->map(fn($h) => [
                     'stage_name'   => $h->stage_name,

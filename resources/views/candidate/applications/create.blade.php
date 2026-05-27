@@ -129,7 +129,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('candidate.jobs.applications.store', ['jobId' => $job->id]) }}" method="POST" enctype="multipart/form-data" id="applicationform">
+            <form action="{{ route('candidate.jobs.applications.store', ['jobId' => $job->id]) }}" method="POST" enctype="multipart/form-data" id="applicationform" novalidate>
                 @csrf
                 <input type="hidden" name="draft_id" id="draft_id" value="{{ $draftApplication->id ?? '' }}">
                 {{-- Age limit data for JS validation --}}
@@ -181,6 +181,26 @@
                                 <br><small class="text-muted">Performance-based promotion</small>
                                 <div class="mt-1 text-primary small fw-semibold">{{ $job->advertisement_no ?? '' }}</div>
                             </div>
+                            @php
+                                $appraisalFee = ($job->deadline && now()->gt($job->deadline) && $job->double_dastur_fee && $job->double_dastur_date && now()->lte($job->double_dastur_date))
+                                    ? $job->double_dastur_fee
+                                    : $job->application_fee;
+                            @endphp
+                            @if($appraisalFee)
+                            <div class="mt-3 p-3 rounded border bg-white">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="fw-bold">Selected Categories:</span>
+                                        <span class="ms-2 text-secondary small">Internal Appraisal (आन्तरिक बढुवा)</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold fs-5 text-success">
+                                            Total Fee: Rs. {{ number_format($appraisalFee, 0) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         @else
                             {{-- Loop over all sibling jobs sharing the same position+level --}}
                             <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">
@@ -222,7 +242,7 @@
                                         {{ $gAdvNo }}
                                     </div>
                                     <div class="mt-1 text-success small fw-semibold">
-                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                        @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 0) }}
                                     </div>
                                 </div>
                                 @endif
@@ -244,7 +264,7 @@
                                         </div>
                                         <div class="mt-1 text-success small fw-semibold">
                                             @if($gIsDoubleDastur)<span class="badge bg-warning text-dark me-1">Double Dastur</span>@endif
-                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 0) }}
                                         </div>
                                     </div>
                                 @endforeach
@@ -282,7 +302,7 @@
                                         </div>
                                         <div class="mt-1 text-success small fw-semibold">
                                             @if($gIsDoubleDastur)<span class="badge bg-warning text-dark me-1">Double Dastur</span>@endif
-                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 0) }}
                                         </div>
                                     </div>
                                 @endif
@@ -304,7 +324,7 @@
                                         </div>
                                         <div class="mt-1 text-success small fw-semibold">
                                             @if($gIsDoubleDastur)<span class="badge bg-warning text-dark me-1">Double Dastur</span>@endif
-                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 2) }}
+                                            @if($gIsDoubleDastur)Double Dastur @endif Application Fee: Rs. {{ number_format($gEffectiveFee, 0) }}
                                         </div>
                                     </div>
                                 @endforeach
@@ -322,7 +342,7 @@
                                     </div>
                                     <div class="text-end">
                                         <span class="fw-bold fs-5 text-success">
-                                            Total Fee: Rs. <span id="totalFeeDisplay">0.00</span>
+                                            Total Fee: Rs. <span id="totalFeeDisplay">0</span>
                                         </span>
                                     </div>
                                 </div>
@@ -362,28 +382,30 @@
                             var checkedBoxes = Array.from(document.querySelectorAll('.category-cb:checked'));
                             if (checkedBoxes.length === 0) {
                                 var totalFeeInput = document.getElementById('total_fee');
-                                if (totalFeeInput) totalFeeInput.value = '0.00';
+                                if (totalFeeInput) totalFeeInput.value = '0';
                                 var bar = document.getElementById('feeSummaryBar');
                                 if (bar) bar.style.display = 'none';
                                 var step8Fee = document.getElementById('step8TotalFee');
-                                if (step8Fee) step8Fee.textContent = '0.00';
+                                if (step8Fee) step8Fee.textContent = '0';
                                 return;
                             }
-                            var openCbEl   = document.querySelector('.category-cb[value="open"]');
-                            var openOption = openCbEl ? openCbEl.closest('.category-option') : null;
-                            var openFee    = openOption ? parseFloat(openOption.getAttribute('data-fee') || 0) : 0;
-                            var total = openFee;
-                            checkedBoxes.slice(1).forEach(function (cb) {
+
+                            // Sum fee once per unique advertisement number
+                            // (multiple categories from the same vacancy share one fee)
+                            var seenAdvNos = {};
+                            var total = 0;
+                            checkedBoxes.forEach(function(cb) {
                                 var option = cb.closest('.category-option');
                                 if (!option) return;
-                                total += parseFloat(option.getAttribute('data-fee') || 0);
+                                var advNo = option.getAttribute('data-adv-no') || cb.id;
+                                if (!seenAdvNos[advNo]) {
+                                    seenAdvNos[advNo] = true;
+                                    total += parseFloat(option.getAttribute('data-fee') || 0);
+                                }
                             });
+
                             var names = [];
-                            var openExplicitlyChecked = checkedBoxes.some(function(cb){ return cb.value === 'open'; });
-                            if (!openExplicitlyChecked && openFee > 0) {
-                                names.push('Open (base)');
-                            }
-                            checkedBoxes.forEach(function (cb) {
+                            checkedBoxes.forEach(function(cb) {
                                 var option = cb.closest('.category-option');
                                 if (!option) return;
                                 var label = option.querySelector('.form-check-label');
@@ -394,18 +416,19 @@
                                     if (labelText) names.push(labelText);
                                 }
                             });
+
                             var totalFeeInput = document.getElementById('total_fee');
                             if (totalFeeInput) totalFeeInput.value = total.toFixed(2);
                             var bar      = document.getElementById('feeSummaryBar');
                             var display  = document.getElementById('totalFeeDisplay');
                             var nameSpan = document.getElementById('selectedCategoryNames');
                             if (bar)      bar.style.display = total > 0 ? '' : 'none';
-                            if (display)  display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+                            if (display)  display.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
                             if (nameSpan) nameSpan.textContent = names.join(' + ') || '—';
                             var step8Fee   = document.getElementById('step8TotalFee');
                             var step8Names = document.getElementById('step8CategoryNames');
                             var step8Pos   = document.getElementById('step8Position');
-                            if (step8Fee)   step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 2 });
+                            if (step8Fee)   step8Fee.textContent = total.toLocaleString('en-NP', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
                             if (step8Names) step8Names.textContent = names.join(' + ') || '—';
                             if (step8Pos)   step8Pos.textContent = document.getElementById('applying_position') ? document.getElementById('applying_position').value : '—';
                         }
@@ -456,9 +479,11 @@
                         {{-- Birth Date AD — auto-filled from BS conversion --}}
                         <div class="col-md-3">
                             <label for="birth_date_ad" class="form-label">Birth Date (A.D) <span class="text-danger">*</span> <small>(जन्म मिति A.D)</small></label>
-                            <input type="date" name="birth_date_ad" id="birth_date_ad" class="form-control bg-light" placeholder="YYYY-MM-DD"
-                                value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-m-d') : '') }}"
-                                readonly required>
+                            <input type="text" id="birth_date_ad_display" class="form-control bg-light" placeholder="YYYY-MMM-DD"
+                                value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-M-d') : '') }}"
+                                readonly>
+                            <input type="hidden" name="birth_date_ad" id="birth_date_ad"
+                                value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-m-d') : '') }}">
                             <small class="text-muted">Auto-filled from B.S date above</small>
                         </div>
 
@@ -500,8 +525,14 @@
                              <div class="col-md-4">
                                 <label for="noc_id_card" class="form-label">NOC ID Card</label>
                                 <input type="file" name="noc_id_card" id="noc_id_card" class="form-control"
-                                    accept="image/*,application/pdf">
+                                    accept="image/*,application/pdf"
+                                    {{ $draftApplication && $draftApplication->noc_id_card ? 'data-existing-file="1"' : '' }}>
                                 <small class="text-muted d-block">Max Size: 700KB</small>
+                                @if($draftApplication && $draftApplication->noc_id_card)
+                                    <small class="text-success d-block mt-1">
+                                        Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->noc_id_card) }}" target="_blank">View</a> — upload new to replace
+                                    </small>
+                                @endif
                             </div>
 
 
@@ -764,8 +795,14 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="ethnic_certificate" class="form-label">Ethnic Certificate</label>
-                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" class="form-control" accept="image/*,application/pdf" multiple>
+                            <input type="file" name="ethnic_certificate" id="ethnic_certificate" class="form-control" accept="image/*,application/pdf" multiple
+                                {{ $draftApplication && $draftApplication->ethnic_certificate ? 'data-existing-file="1"' : '' }}>
                             <small class="text-muted">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->ethnic_certificate)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->ethnic_certificate) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <label for="mother_tongue" class="form-label">Mother Tongue <span class="text-danger">*</span> <small>(मातृभाषा)</small></label>
@@ -972,20 +1009,37 @@
                         </div>
                         <div class="col-md-6">
                             <label for="transcript" class="form-label">Transcript Certificate <span class="text-danger">*</span></label>
-                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf" required>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept="image/*,application/pdf"
+                                {{ $draftApplication && $draftApplication->transcript ? 'data-existing-file="1"' : 'required' }}>
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->transcript)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->transcript) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="character" class="form-label">Character Certificate <span class="text-danger">*</span></label>
-                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf" required>
+                            <input type="file" name="character" id="character" class="form-control" accept="image/*,application/pdf"
+                                {{ $draftApplication && $draftApplication->character ? 'data-existing-file="1"' : 'required' }}>
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->character)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->character) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <label for="equivalent" class="form-label">Equivalency Certificate (If your degree is out of Nepal)</label>
                             <input type="file" name="equivalent" id="equivalent" class="form-control" accept="image/*,application/pdf">
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->equivalent)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->equivalent) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -994,167 +1048,97 @@
                     </div>
                 </div>
 
-                {{-- ══════════════════════════════════════════════════════
+               {{-- ══════════════════════════════════════════════════════
                      STEP 5 — Work Experience
                      ══════════════════════════════════════════════════════ --}}
-                <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-dark">Step 5 — Work Experience/कार्य अनुभव</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
-                            <select name="has_work_experience" id="has_work_experience" class="form-select" required>
-                                <option value="">-- Select --</option>
-                                <option value="Yes" {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
-                            </select>
-                        </div>
-                    </div>  
-                    <div id="experience_table_wrapper">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Organization</th>
-                                <th>Position</th>
-                                <th>Start Date (B.S)</th>
-                                <th>End Date (B.S.)</th>
-                                <th>Years</th>
-                                <th>Document</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp1_organization" class="form-control"
-                                    value="{{ old('exp1_organization', $draftApplication->{'exp1_organization'} ?? '') }}">
-                                </td>
+<div class="step d-none" id="step5">
+    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="has_work_experience" class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
+            <select name="has_work_experience" id="has_work_experience" class="form-select" required>
+                <option value="">-- Select --</option>
+                <option value="Yes" {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'Yes' ? 'selected' : '' }}>Yes</option>
+                <option value="No"  {{ old('has_work_experience', $draftApplication->has_work_experience ?? '') == 'No'  ? 'selected' : '' }}>No</option>
+            </select>
+        </div>
+    </div>
 
-                                <td>
-                                    <input type="text" name="exp1_position" class="form-control"
-                                    value="{{ old('exp1_position', $draftApplication->{'exp1_position'} ?? '') }}">
-                                </td>
+    <div id="experience_table_wrapper" style="display:none;">
 
-                                <td>
-                                    <input type="text"
-                                        name="exp1_start_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp1_start_date">
-
-                                    <input type="hidden" name="exp1_start_date">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="exp1_end_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp1_end_date">
-
-                                    <input type="hidden" name="exp1_end_date">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp1_years" class="form-control"
-                                    value="{{ old('exp1_years', $draftApplication->{'exp1_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp1_document" class="form-control">
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp2_organization" class="form-control"
-                                    value="{{ old('exp2_organization', $draftApplication->{'exp2_organization'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp2_position" class="form-control"
-                                    value="{{ old('exp2_position', $draftApplication->{'exp2_position'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="exp2_start_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp2_start_date">
-
-                                    <input type="hidden" name="exp2_start_date">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="exp2_end_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp2_end_date">
-
-                                    <input type="hidden" name="exp2_end_date">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp2_years" class="form-control"
-                                    value="{{ old('exp2_years', $draftApplication->{'exp2_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp2_document" class="form-control">
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <input type="text" name="exp3_organization" class="form-control"
-                                    value="{{ old('exp3_organization', $draftApplication->{'exp3_organization'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text" name="exp3_position" class="form-control"
-                                    value="{{ old('exp3_position', $draftApplication->{'exp3_position'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="exp3_start_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp3_start_date">
-
-                                    <input type="hidden" name="exp3_start_date">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="exp3_end_date_bs"
-                                        class="form-control nepali-date"
-                                        placeholder="YYYY-MM-DD"
-                                        data-target="exp3_end_date">
-
-                                    <input type="hidden" name="exp3_end_date">
-                                </td>
-
-                                <td>
-                                    <input type="number" step="0.5" name="exp3_years" class="form-control"
-                                    value="{{ old('exp3_years', $draftApplication->{'exp3_years'} ?? '') }}">
-                                </td>
-
-                                <td>
-                                    <input type="file" name="exp3_document" class="form-control">
-                                </td>
-                            </tr>
-                            
-
-                        </tbody>
-                    </table>
+        <div id="experience_rows">
+            {{-- Row 1 — always rendered server-side --}}
+            <div class="experience-row border rounded p-3 mb-3" data-row="1">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-muted" style="font-size:.9rem;">
+                        Experience #<span class="row-number">1</span>
+                    </strong>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-exp-row" style="display:none;">
+                        <i class="bi bi-trash"></i> Remove
+                    </button>
                 </div>
-
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                        <button type="button" class="btn btn-light next-btn">Next</button>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label small">Organization</label>
+                        <input type="text" name="exp1_organization" class="form-control form-control-sm"
+                            value="{{ old('exp1_organization', optional($draftApplication?->experiences?->firstWhere('exp_number', 1))->organization ?? '') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Position</label>
+                        <input type="text" name="exp1_position" class="form-control form-control-sm"
+                            value="{{ old('exp1_position', optional($draftApplication?->experiences?->firstWhere('exp_number',1))->position ?? '') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Start Date (B.S)</label>
+                        <input type="text" name="exp1_start_date_bs" class="form-control form-control-sm exp-nepali-date"
+                            placeholder="YYYY-MM-DD" data-target="exp1_start_date" autocomplete="off"
+                            value="{{ old('exp1_start_date_bs', optional($draftApplication?->experiences?->firstWhere('exp_number',1))->start_date_bs ?? '') }}">
+                        <input type="hidden" name="exp1_start_date"
+                            value="{{ optional($draftApplication?->experiences?->firstWhere('exp_number',1))->start_date ?? '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">End Date (B.S)</label>
+                        <input type="text" name="exp1_end_date_bs" class="form-control form-control-sm exp-nepali-date"
+                            placeholder="YYYY-MM-DD" data-target="exp1_end_date" autocomplete="off"
+                            value="{{ old('exp1_end_date_bs', optional($draftApplication?->experiences?->firstWhere('exp_number',1))->end_date_bs ?? '') }}">
+                        <input type="hidden" name="exp1_end_date"
+                            value="{{ optional($draftApplication?->experiences?->firstWhere('exp_number',1))->end_date ?? '' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Years</label>
+                        <input type="number" step="0.5" name="exp1_years" class="form-control form-control-sm"
+                            value="{{ old('exp1_years', optional($draftApplication?->experiences?->firstWhere('exp_number',1))->years ?? '') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Document</label>
+                        <input type="file" name="exp1_document" class="form-control form-control-sm" accept="image/*,application/pdf">
+                        @if(optional($draftApplication?->experiences?->firstWhere('exp_number',1))->document)
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i>
+                                File uploaded:
+                                <a href="{{ asset('storage/'.optional($draftApplication?->experiences?->firstWhere('exp_number',1))->document) }}"
+                                   target="_blank">View</a>
+                            </small>
+                        @endif
                     </div>
                 </div>
+            </div>
+        </div>{{-- #experience_rows --}}
+
+        <div class="d-flex align-items-center gap-3 mt-2 mb-3">
+            <button type="button" id="addExpRow" class="btn btn-sm btn-outline-dark">
+                <i class="bi bi-plus-circle"></i> Add Experience
+            </button>
+            <span class="text-muted small" id="expRowCount">1 / 10 entries</span>
+        </div>
+
+    </div>{{-- #experience_table_wrapper --}}
+
+    <div class="d-flex justify-content-between mt-3">
+        <button type="button" class="btn btn-secondary prev-btn">Back</button>
+        <button type="button" class="btn btn-light next-btn">Next</button>
+    </div>
+</div>
 
                 {{-- ══════════════════════════════════════════════════════
                      STEP 6 — Upload Documents
@@ -1164,25 +1148,48 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="passport_size_photo" class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
-                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf" required>
+                            <input type="file" name="passport_size_photo" id="passport_size_photo" class="form-control" accept="image/*,application/pdf"
+                                {{ $draftApplication && $draftApplication->passport_size_photo ? 'data-existing-file="1"' : 'required' }}>
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->passport_size_photo)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->passport_size_photo) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <label for="citizenship_id_document" class="form-label">Citizenship/ID Document <span class="text-danger"><small>(Please upload front and back in same page)</small> *</span></label>
-                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf" required>
+                            <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control" accept="image/*,application/pdf"
+                                {{ $draftApplication && $draftApplication->citizenship_id_document ? 'data-existing-file="1"' : 'required' }}>
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->citizenship_id_document)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->citizenship_id_document) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="signature" class="form-label">Signature <span class="text-danger">*</span></label>
-                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*,application/pdf" required>
+                            <input type="file" name="signature" id="signature" class="form-control" accept="image/*,application/pdf"
+                                {{ $draftApplication && $draftApplication->signature ? 'data-existing-file="1"' : 'required' }}>
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->signature)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->signature) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <label for="additional_documents" class="form-label">Additional Document</label>
                             <input type="file" name="additional_documents" id="additional_documents" class="form-control" accept="image/*,application/pdf">
                             <small class="text-muted d-block">Max Size: 700KB</small>
+                            @if($draftApplication && $draftApplication->additional_documents)
+                                <small class="text-success d-block mt-1">
+                                    Previously uploaded: <a href="{{ asset('storage/'.$draftApplication->additional_documents) }}" target="_blank">View</a> — upload new to replace
+                                </small>
+                            @endif
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -1273,6 +1280,7 @@
                             <tr><th>Character</th><td id="p_character"></td></tr>
                             <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
                             <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Additional Document</th><td id="p_additional_documents"></td></tr>
                             <!-- <tr><th>Work Experience</th><td id="p_work_experience"></td></tr> -->
                         </table>
 
@@ -1325,7 +1333,7 @@
                                             <tr class="table-success">
                                                 <th class="fw-bold fs-5">Total Amount Payable</th>
                                                 <td class="fw-bold fs-5 text-success">
-                                                    Rs. <span id="step8TotalFee">0.00</span>
+                                                    Rs. <span id="step8TotalFee">0</span>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -1419,6 +1427,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var ad0 = window.bsToAD(bsInput.value);
         if (ad0) {
             adEl.value = ad0;
+            var adDisp0 = document.getElementById('birth_date_ad_display');
+            if (adDisp0 && window.formatADDisplay) adDisp0.value = window.formatADDisplay(ad0);
             adEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
     }
@@ -1433,6 +1443,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 var ad = window.bsToAD(cur);
                 if (ad) {
                     adEl.value = ad;
+                    var adDisp = document.getElementById('birth_date_ad_display');
+                    if (adDisp && window.formatADDisplay) adDisp.value = window.formatADDisplay(ad);
                     adEl.dispatchEvent(new Event('change', { bubbles: true }));
                     adEl.dispatchEvent(new Event('input',  { bubbles: true }));
                 }
@@ -1588,6 +1600,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.nepaliLibrariesReady = true;
 })();
+
+window.formatADDisplay = function (yyyymmdd) {
+    if (!yyyymmdd) return '';
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var d = new Date(yyyymmdd);
+    if (isNaN(d.getTime())) return yyyymmdd;
+    return d.getFullYear() + '-' + months[d.getMonth()] + '-' + ('0' + d.getDate()).slice(-2);
+};
 </script>
 
 {{-- ══════════════════════════════════════════════════════
@@ -1810,7 +1830,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!field.checked) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'You must agree before continuing'); if (!firstInvalid) firstInvalid = field; } return;
             }
             if (field.type === 'file') {
-                if (field.files.length === 0) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'This file is required'); if (!firstInvalid) firstInvalid = field; } return;
+                if (field.files.length === 0 && !field.dataset.existingFile) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'This file is required'); if (!firstInvalid) firstInvalid = field; } return;
             }
             if (!field.value.trim()) { isValid = false; field.classList.add('is-invalid'); addErr(field, 'This field is required'); if (!firstInvalid) firstInvalid = field; }
         });
@@ -1881,7 +1901,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
         s('p_name_english', v('name_english')); s('p_name_nepali', v('name_nepali')); s('p_email', v('email'));
-        s('p_birth_date_ad', v('birth_date_ad')); s('p_birth_date_bs', v('birth_date_bs')); s('p_phone', v('phone'));
+        s('p_birth_date_ad', v('birth_date_ad_display')); s('p_birth_date_bs', v('birth_date_bs')); s('p_phone', v('phone'));
         s('p_advertisement_no', v('advertisement_no')); s('p_applying_position', v('applying_position')); s('p_department', v('department') !== '-' ? v('department') : (@json($job ? ($job->service_group ?: $job->department ?: '') : '') || '-'));
         s('p_age', v('age')); s('p_alternate_phone_number', v('alternate_phone_number')); s('p_gender', v('gender'));
         s('p_marital_status', v('marital_status')); s('spouse_name_english', v('spouse_name_english')); s('p_spouse_nationality', v('spouse_nationality'));
@@ -1903,7 +1923,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const container = document.getElementById(containerId);
             if (!container) return;
             container.innerHTML = '';
-            if (!input?.files?.length) { container.textContent = 'Not Uploaded'; return; }
+            if (!input?.files?.length) {
+                // If draft has existing file, show link instead of "Not Uploaded"
+                if (input && input.dataset.existingFile) {
+                    const existingLink = input.parentElement ? input.parentElement.querySelector('a') : null;
+                    if (existingLink) {
+                        container.innerHTML = `<a href="${existingLink.href}" target="_blank" class="text-success">Previously uploaded — View</a>`;
+                    } else {
+                        container.textContent = 'Previously uploaded';
+                    }
+                } else {
+                    container.textContent = 'Not Uploaded';
+                }
+                return;
+            }
             const file = input.files[0], url = URL.createObjectURL(file);
             container.innerHTML = file.type.startsWith('image/')
                 ? `<img src="${url}" class="img-thumbnail" style="max-width:150px;max-height:150px;"><div class="mt-1 small text-muted">${file.name}</div>`
@@ -1914,6 +1947,7 @@ document.addEventListener('DOMContentLoaded', function () {
         previewFile('p_equivalent',  'equivalent');          previewFile('p_signature',   'signature');
         previewFile('p_work_experience','work_experience');  previewFile('p_noc_id_card', 'noc_id_card');
         previewFile('p_ethnic_certificate','ethnic_certificate'); previewFile('p_disability_certificate','disability_certificate');
+        previewFile('p_additional_documents','additional_documents');
     }
 
     // ── Payment ───────────────────────────────────────────────
@@ -1999,6 +2033,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (adField) {
                             adField.value = adDate;
+                            const adDisp = document.getElementById('birth_date_ad_display');
+                            if (adDisp && window.formatADDisplay) adDisp.value = window.formatADDisplay(adDate);
                         }
 
                         updateAge(adDate);
@@ -2013,6 +2049,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const adDate = window.bsToAD(bsField.value);
                 if (adDate) {
                     adField.value = adDate;
+                    const adDisp = document.getElementById('birth_date_ad_display');
+                    if (adDisp && window.formatADDisplay) adDisp.value = window.formatADDisplay(adDate);
                     updateAge(adDate);
                 }
             }
@@ -2081,70 +2119,200 @@ document.querySelectorAll('.nepali-date').forEach(function (input) {
             console.log("BS conversion failed:", bsDate, e);
         }
     });
+});
 
-    // For Work Experience
-function populateExperiencePreview() {
+   //  Work Experiences
+document.addEventListener('DOMContentLoaded', function () {
 
-    let html = "";
+    // ── Toggle experience table on Yes/No ────────────────────
+    const hasExpSelect  = document.getElementById('has_work_experience');
+    const expWrapper    = document.getElementById('experience_table_wrapper');
 
-    for (let i = 1; i <= 3; i++) {
+    function toggleExpWrapper() {
+        if (!hasExpSelect || !expWrapper) return;
+        expWrapper.style.display = hasExpSelect.value === 'Yes' ? 'block' : 'none';
+    }
+    toggleExpWrapper();
+    hasExpSelect?.addEventListener('change', toggleExpWrapper);
 
-        let org = document.querySelector(`[name="exp${i}_organization"]`)?.value;
-        let pos = document.querySelector(`[name="exp${i}_position"]`)?.value;
-        let start = document.querySelector(`[name="exp${i}_start_date_bs"]`)?.value;
-        let end = document.querySelector(`[name="exp${i}_end_date_bs"]`)?.value;
-        let years = document.querySelector(`[name="exp${i}_years"]`)?.value;
-        let fileInput = document.querySelector(`[name="exp${i}_document"]`);
+    // ── Dynamic row management ────────────────────────────────
+    const MAX_ROWS  = 10;
+    const rowsWrap  = document.getElementById('experience_rows');
+    const addBtn    = document.getElementById('addExpRow');
+    const countSpan = document.getElementById('expRowCount');
 
-        let file = fileInput?.files?.[0];
+    if (!rowsWrap || !addBtn) return;
 
-        html += `
-        <div style="margin-bottom:20px; padding:12px; border:1px solid #ddd; border-radius:8px;">
-            <h6>Experience ${i}</h6>
-
-            <b>Organization:</b> ${org || '-'} <br>
-            <b>Position:</b> ${pos || '-'} <br>
-            <b>Start:</b> ${start || '-'} <br>
-            <b>End:</b> ${end || '-'} <br>
-            <b>Years:</b> ${years || '-'} <br>
-        `;
-
-        // ================= FILE PREVIEW =================
-        if (file) {
-            let url = URL.createObjectURL(file);
-
-            if (file.type.includes("pdf")) {
-                html += `
-                    <div style="margin-top:10px;">
-                        <iframe src="${url}" 
-                            style="width:100%; height:400px; border:1px solid #ccc;">
-                        </iframe>
-                    </div>
-                `;
-            } else if (file.type.startsWith("image/")) {
-                html += `
-                    <div style="margin-top:10px;">
-                        <img src="${url}" style="max-width:200px; border:1px solid #ccc; padding:3px;">
-                    </div>
-                `;
-            } else {
-                html += `<div>File uploaded</div>`;
+    // ── Nepali date picker init (scoped to a row) ─────────────
+    function initNDPOnRow(row) {
+        row.querySelectorAll('.exp-nepali-date').forEach(function (el) {
+            if (typeof el.nepaliDatePicker === 'function') {
+                el.nepaliDatePicker({
+                    ndpYear: true, ndpMonth: true, ndpYearCount: 100,
+                    onChange: function () {
+                        el.dispatchEvent(new Event('input',  { bubbles: true }));
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
             }
-        } else {
-            html += `<div class="text-muted">No document uploaded</div>`;
-        }
-
-        html += `</div>`;
+            // Scoped BS→AD: search hidden field INSIDE this row only
+            el.addEventListener('change', function () {
+                const bsDate = this.value;
+                if (!bsDate || typeof window.bsToAD !== 'function') return;
+                const adDate     = window.bsToAD(bsDate);
+                const targetName = this.getAttribute('data-target');
+                if (!targetName) return;
+                const hiddenEl = row.querySelector(`input[name="${targetName}"]`);
+                if (hiddenEl) hiddenEl.value = adDate;
+            });
+        });
     }
 
-    document.getElementById("experience_preview").innerHTML =
-        html || "<span class='text-muted'>No experience added</span>";
-}
-document.querySelectorAll("input, select").forEach(el => {
-    el.addEventListener("input", populateExperiencePreview);
-});
+    // Init NDP on the first pre-rendered row
+    initNDPOnRow(rowsWrap.querySelector('.experience-row'));
+
+    // ── Update counter & remove-button visibility ─────────────
+    function updateCounter() {
+        const rows = rowsWrap.querySelectorAll('.experience-row');
+        const n    = rows.length;
+        if (countSpan) countSpan.textContent = `${n} / ${MAX_ROWS} entr${n === 1 ? 'y' : 'ies'}`;
+        addBtn.disabled = n >= MAX_ROWS;
+        rows.forEach((row, i) => {
+            row.dataset.row = i + 1;
+            row.querySelector('.row-number').textContent = i + 1;
+            row.querySelector('.remove-exp-row').style.display = n > 1 ? '' : 'none';
+        });
+    }
+    updateCounter();
+
+    // ── Build a new blank row ─────────────────────────────────
+    function buildRow(n) {
+        const div = document.createElement('div');
+        div.className  = 'experience-row border rounded p-3 mb-3';
+        div.dataset.row = n;
+        div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-muted" style="font-size:.9rem;">
+                    Experience #<span class="row-number">${n}</span>
+                </strong>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-exp-row">
+                    <i class="bi bi-trash"></i> Remove
+                </button>
+            </div>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label class="form-label small">Organization</label>
+                    <input type="text" name="exp${n}_organization" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Position</label>
+                    <input type="text" name="exp${n}_position" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Start Date (B.S)</label>
+                    <input type="text" name="exp${n}_start_date_bs"
+                        class="form-control form-control-sm exp-nepali-date"
+                        placeholder="YYYY-MM-DD" data-target="exp${n}_start_date" autocomplete="off">
+                    <input type="hidden" name="exp${n}_start_date">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">End Date (B.S)</label>
+                    <input type="text" name="exp${n}_end_date_bs"
+                        class="form-control form-control-sm exp-nepali-date"
+                        placeholder="YYYY-MM-DD" data-target="exp${n}_end_date" autocomplete="off">
+                    <input type="hidden" name="exp${n}_end_date">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">Years</label>
+                    <input type="number" step="0.5" name="exp${n}_years" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small">Document</label>
+                    <input type="file" name="exp${n}_document"
+                        class="form-control form-control-sm" accept="image/*,application/pdf">
+                </div>
+            </div>`;
+        return div;
+    }
+
+    // ── Add row ───────────────────────────────────────────────
+    addBtn.addEventListener('click', function () {
+        const current = rowsWrap.querySelectorAll('.experience-row').length;
+        if (current >= MAX_ROWS) return;
+        const newRow = buildRow(current + 1);
+        rowsWrap.appendChild(newRow);
+        initNDPOnRow(newRow);
+        updateCounter();
+        newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // ── Remove row (delegated) ────────────────────────────────
+    rowsWrap.addEventListener('click', function (e) {
+        const btn = e.target.closest('.remove-exp-row');
+        if (!btn) return;
+        const row = btn.closest('.experience-row');
+        if (rowsWrap.querySelectorAll('.experience-row').length <= 1) return;
+        row.remove();
+
+        // Re-index remaining rows so names stay exp1_, exp2_ etc.
+        rowsWrap.querySelectorAll('.experience-row').forEach((r, i) => {
+            const idx = i + 1;
+            r.dataset.row = idx;
+            r.querySelector('.row-number').textContent = idx;
+            r.querySelectorAll('input[name]').forEach(inp => {
+                inp.name = inp.name.replace(/^exp\d+_/, `exp${idx}_`);
+                const dt = inp.getAttribute('data-target');
+                if (dt) inp.setAttribute('data-target', dt.replace(/^exp\d+_/, `exp${idx}_`));
+            });
+        });
+        updateCounter();
+        populateExperiencePreview();
+    });
+
+    // ── Experience preview for Step 7 ────────────────────────
+    window.populateExperiencePreview = function () {
+        const rows = rowsWrap.querySelectorAll('.experience-row');
+        const preview = document.getElementById('experience_preview');
+        if (!preview) return;
+        let html = '';
+
+        rows.forEach(function (row, i) {
+            const n   = i + 1;
+            const get = name => row.querySelector(`[name="exp${n}_${name}"]`)?.value || '-';
+            const fileInput = row.querySelector(`[name="exp${n}_document"]`);
+            const file = fileInput?.files?.[0];
+
+            html += `<div style="margin-bottom:14px;padding:10px 12px;border:1px solid #dee2e6;border-radius:8px;">
+                <strong style="font-size:.9rem;">Experience ${n}</strong><br>
+                <span class="text-muted small">
+                    <b>Org:</b> ${get('organization')} &nbsp;|&nbsp;
+                    <b>Position:</b> ${get('position')} &nbsp;|&nbsp;
+                    <b>From:</b> ${get('start_date_bs')} &nbsp;|&nbsp;
+                    <b>To:</b> ${get('end_date_bs')} &nbsp;|&nbsp;
+                    <b>Years:</b> ${get('years')}
+                </span>`;
+
+            if (file) {
+                const url = URL.createObjectURL(file);
+                html += file.type.startsWith('image/')
+                    ? `<div class="mt-1"><img src="${url}" style="max-width:120px;border:1px solid #ccc;padding:2px;border-radius:4px;"></div>`
+                    : `<div class="mt-1"><a href="${url}" target="_blank" class="small">${file.name}</a></div>`;
+            } else {
+                html += `<div class="text-muted" style="font-size:.8rem;">No document uploaded</div>`;
+            }
+            html += `</div>`;
+        });
+
+        preview.innerHTML = html || "<span class='text-muted'>No experience entries</span>";
+    };
+
+    // Trigger preview update on any experience input change
+    rowsWrap.addEventListener('input', function () {
+        populateExperiencePreview();
+    });
 
 });
+
 document.addEventListener('DOMContentLoaded', function () {
 
     const nepaliInputs = document.querySelectorAll('.nepali-only');

@@ -264,18 +264,18 @@
                             <td>{{ $application->has_work_experience ?? 'N/A' }}</td>
                         </tr>
                         @if($application->has_work_experience == 'Yes')
+                        @foreach($application->experiences as $exp)
                         <tr>
-                            <td>Years of Experience</td>
-                            <td>{{ $application->years_of_experience ?? 'N/A' }}</td>
+                            <td colspan="2">
+                                <strong>Experience {{ $exp->exp_number }}</strong><br>
+                                {{ $exp->organization ?? '-' }} — {{ $exp->position ?? '-' }}<br>
+                                <small>{{ $exp->start_date_bs ?? '-' }} to {{ $exp->end_date_bs ?? 'Present' }}{{ $exp->years ? ' (' . $exp->years . ' yrs)' : '' }}</small>
+                                @if($exp->document)
+                                    <br><a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="small">View Document</a>
+                                @endif
+                            </td>
                         </tr>
-                        <tr>
-                            <td>Previous Organization</td>
-                            <td>{{ $application->previous_organization ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Previous Position</td>
-                            <td>{{ $application->previous_position ?? 'N/A' }}</td>
-                        </tr>
+                        @endforeach
                         @endif
                     </table>
                 </div>

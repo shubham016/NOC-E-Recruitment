@@ -59,7 +59,7 @@ class ApproverAuthController extends Controller
         ], $request->filled('remember'))) {
             $request->session()->regenerate();
             \Log::info('Approver logged in successfully: ' . $request->employee_id);
-            return redirect()->intended(route('approver.dashboard'));
+            return redirect()->route('approver.dashboard');
         }
 
         \Log::error('Auth attempt failed for: ' . $request->employee_id);

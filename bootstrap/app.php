@@ -30,5 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('vacancies:close-expired')->daily();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            return redirect()->back()
+                ->withInput($request->except(['_token', 'password', 'password_confirmation']))
+                ->withErrors(['error' => 'Your session has expired. Please try again.']);
+        });
     })->create();

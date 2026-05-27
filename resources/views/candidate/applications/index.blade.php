@@ -90,7 +90,11 @@
                                 <td>{{ $form->status ?? '-' }}</td>
                                 <td>{{ $form->roll_number ?? '-' }}</td>
                                 <td>
-                                    {{ $form->payment->status ?? 'unpaid' }}
+                                    @php
+                                        $submittedStatuses = ['edit', 'edited', 'pending', 'shortlisted', 'approved', 'rejected', 'reviewed'];
+                                        $displayPayment = in_array($form->status, $submittedStatuses) ? 'paid' : ($form->payment->status ?? 'unpaid');
+                                    @endphp
+                                    {{ $displayPayment }}
                                     @php
                                         $fJob = $form->jobPosting;
                                         $fInDoubleDastur = $fJob && $fJob->deadline
@@ -124,7 +128,8 @@
                                         <a href="{{ route('candidate.applications.show', $form->id) }}" class="btn btn-danger" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                       @if(in_array($form->status, ['draft', 'edit']))
+                                       @php $paymentDone = $form->payment && in_array($form->payment->status, ['completed', 'paid']); @endphp
+                                       @if($form->status === 'edit' || ($form->status === 'draft' && !$paymentDone))
                                             <a href="{{ route('candidate.applications.edit', $form->id) }}"
                                             class="btn btn-sm btn-warning" title="Edit">
                                                 <i class="bi bi-pencil"></i>

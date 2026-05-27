@@ -61,7 +61,7 @@ class AssignedToMeController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
-        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver', 'experiences'])
             ->where('approver_id', $approver->id)
             ->findOrFail($id);
 

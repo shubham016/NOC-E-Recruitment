@@ -466,65 +466,51 @@
         <p class="mb-0">{{ ucfirst($applicationform->has_work_experience ?? '-') }}</p>
     </div>
 
-    @for ($i = 1; $i <= 3; $i++)
-        @php
-            $org = "exp{$i}_organization";
-            $pos = "exp{$i}_position";
-            $start = "exp{$i}_start_date";
-            $end = "exp{$i}_end_date";
-            $years = "exp{$i}_years";
-            $doc = "exp{$i}_document";
-        @endphp
-
-        @if(!empty($applicationform->$org) || !empty($applicationform->$pos))
-            <div class="border rounded p-3 mb-3">
-                <h6 class="text-primary">Experience {{ $i }}</h6>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Organization:</strong>
-                        <p>{{ $applicationform->$org ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <strong>Position:</strong>
-                        <p>{{ $applicationform->$pos ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <strong>Start Date:</strong>
-                        <p>{{ $applicationform->$start ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <strong>End Date:</strong>
-                        <p>{{ $applicationform->$end ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <strong>Years:</strong>
-                        <p>{{ $applicationform->$years ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <strong>Document:</strong>
-                        <p>
-                            @if(!empty($applicationform->$doc))
-                                <iframe 
-                                    src="{{ asset('storage/' . $applicationform->$doc) }}" 
-                                    width="100%" 
-                                    height="250px"
-                                    style="border:1px solid #ccc;">
-                                </iframe>
+    @forelse($applicationform->experiences as $exp)
+        <div class="border rounded p-3 mb-3">
+            <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Organization:</strong>
+                    <p>{{ $exp->organization ?? '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Position:</strong>
+                    <p>{{ $exp->position ?? '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Start Date (B.S):</strong>
+                    <p>{{ $exp->start_date_bs ?? '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>End Date (B.S):</strong>
+                    <p>{{ $exp->end_date_bs ?? '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Years:</strong>
+                    <p>{{ $exp->years ?? '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Document:</strong>
+                    <p>
+                        @if($exp->document)
+                            @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
+                            @if(in_array($ext, ['jpg','jpeg','png','webp']))
+                                <img src="{{ asset('storage/' . $exp->document) }}"
+                                     style="max-width:100%;max-height:250px;border:1px solid #ccc;border-radius:4px;">
                             @else
-                                -
+                                <a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View Document</a>
                             @endif
-                        </p>
-                    </div>
+                        @else
+                            -
+                        @endif
+                    </p>
                 </div>
             </div>
-        @endif
-    @endfor
+        </div>
+    @empty
+        <p class="text-muted">No work experience records.</p>
+    @endforelse
 
     <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -633,14 +619,11 @@
                         <strong>Additional Documents:</strong>
                         <p class="mb-0">
                             @if(!empty($applicationform->additional_documents))
-                                @foreach($applicationform->additional_documents as $doc)
-                                    <a href="{{ asset('storage/' . $doc) }}"
-                                       target="_blank"
-                                       class="btn btn-sm bg-light mb-1">
-                                        <i class="fas fa-file"></i> View Document
-                                    </a>
-                                    <br>
-                                @endforeach
+                                <a href="{{ asset('storage/' . $applicationform->additional_documents) }}"
+                                   target="_blank"
+                                   class="btn btn-sm bg-light mb-1">
+                                    View Document
+                                </a>
                             @else
                                 <span class="text-muted">Not uploaded</span>
                             @endif
@@ -658,27 +641,43 @@
             <div class="step d-none" id="step7">
                 <h5 class="mb-4 text-dark">Step 7 — Payment Details & Application Status</h5>
 
+                @php
+                    $submittedStatuses = ['edit', 'edited', 'pending', 'shortlisted', 'approved', 'rejected', 'reviewed'];
+                    $paymentWasDone = in_array($applicationform->status, $submittedStatuses)
+                        || ($applicationform->payment && in_array($applicationform->payment->status, ['completed', 'paid']));
+                    $completedPayment = $paymentWasDone ? $applicationform->payment : null;
+                @endphp
+                @if($paymentWasDone)
+                <div class="alert alert-success py-2 mb-3">
+                    Payment completed.
+                </div>
+                @if($completedPayment)
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Payment ID:</strong>
-                        <p class="mb-0">{{ $applicationform->payment->id ?? '-' }}</p>
+                        <p class="mb-0">{{ $completedPayment->id }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Gateway:</strong>
-                        <p class="mb-0">{{ $applicationform->payment->gateway ?? '-' }}</p>
+                        <p class="mb-0">{{ strtoupper($completedPayment->gateway) }}</p>
                     </div>
                 </div>
-
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Amount:</strong>
-                        <p class="mb-0">{{ $applicationform->payment->amount ?? '-' }}</p>
+                        <p class="mb-0">Rs. {{ number_format($completedPayment->amount, 0) }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Transaction ID:</strong>
-                        <p class="mb-0">{{ $applicationform->payment->transaction_id ?? '-' }}</p>
+                        <p class="mb-0">{{ $completedPayment->transaction_id ?? '-' }}</p>
                     </div>
                 </div>
+                @endif
+                @else
+                <div class="alert alert-warning py-2">
+                    Payment not yet completed.
+                </div>
+                @endif
 
                 <hr class="my-4">
 

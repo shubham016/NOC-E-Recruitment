@@ -145,7 +145,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['jobPosting', 'reviewer'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'experiences'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 

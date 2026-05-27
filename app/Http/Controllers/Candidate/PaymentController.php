@@ -33,7 +33,7 @@ class PaymentController extends Controller
 
         // Check if already paid
         $completedPayment = Payment::where('draft_id', $application->id)
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'paid'])
             ->first();
 
         if ($completedPayment) {

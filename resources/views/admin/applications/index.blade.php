@@ -723,16 +723,13 @@
                                         </small>
                                     </td>
                                     <td class="compact-col-noc">
-                                        {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
+                                        @php
+                                            $nocVal = strtolower($application->candidateRegistration->noc_employee ?? $application->noc_employee ?? 'no');
+                                        @endphp
+                                        {{ $nocVal === 'yes' ? 'Yes' : 'No' }}
                                     </td>
                                     <td class="compact-col-code">
-                                        @if($application->noc_employee == 'yes' && $application->noc_id_card)
-                                            <a href="{{ asset('storage/' . $application->noc_id_card) }}" target="_blank" class="text-primary" title="View NOC ID Card">
-                                                <i class="bi bi-file-earmark-text"></i> View
-                                            </a>
-                                        @else
-                                            -
-                                        @endif
+                                        {{ $nocVal === 'yes' ? ($application->candidateRegistration->employee_id ?? '-') : '-' }}
                                     </td>
                                     <td>
                                         @if($application->reviewer)
@@ -790,19 +787,18 @@
 
                                             @if($application->approver_id)
                                                 <button type="button"
-                                                        class="gov-action-btn"
+                                                        class="gov-action-btn gov-action-btn-success"
                                                         title="Approver already assigned: {{ $application->approver->name ?? 'N/A' }}"
-                                                        disabled style="background-color:#7c3aed; color:#fff; border-color:#7c3aed; opacity:0.45; cursor:not-allowed;">
-                                                    <i class="bi bi-person-check-fill"></i>
+                                                        disabled style="opacity:0.45; cursor:not-allowed;">
+                                                    <i class="bi bi-person-check"></i>
                                                 </button>
                                             @else
                                                 <button type="button"
-                                                        class="gov-action-btn"
+                                                        class="gov-action-btn gov-action-btn-success"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#assignApproverModal{{ $application->id }}"
-                                                        title="Assign Approver"
-                                                        style="background-color: #7c3aed; color: #fff; border-color: #7c3aed;">
-                                                    <i class="bi bi-person-check-fill"></i>
+                                                        title="Assign Approver">
+                                                    <i class="bi bi-person-check"></i>
                                                 </button>
                                             @endif
                                             <button type="button"
@@ -1497,9 +1493,6 @@
             ['signature',              'Signature'],
             ['transcript',             'Transcript'],
             ['character',              'Character Certificate'],
-            ['exp1_document',          'Experience 1 Doc'],
-            ['exp2_document',          'Experience 2 Doc'],
-            ['exp3_document',          'Experience 3 Doc'],
         ];
 
         let docsHtml = '';
@@ -1520,19 +1513,19 @@
 
         // ── Work Experience ──
         let expHtml = '';
-        const hasExp = d.has_work_experience === 'Yes' || d.exp1_organization || d.exp2_organization || d.exp3_organization;
+        const experiences = Array.isArray(d.experiences) ? d.experiences : [];
+        const hasExp = d.has_work_experience === 'Yes' || experiences.length > 0;
         if (hasExp) {
             let expItems = '';
-            [
-                [d.exp1_organization, d.exp1_position, d.exp1_start_date, d.exp1_end_date, 'Experience 1'],
-                [d.exp2_organization, d.exp2_position, d.exp2_start_date, d.exp2_end_date, 'Experience 2'],
-                [d.exp3_organization, d.exp3_position, d.exp3_start_date, d.exp3_end_date, 'Experience 3'],
-            ].forEach(([org, pos, start, end, label]) => {
-                if (!org) return;
-                const period = [start, end || 'Present'].filter(Boolean).join(' – ');
+            experiences.forEach((exp, i) => {
+                if (!exp.organization) return;
+                const period = [exp.start_date_bs, exp.end_date_bs || 'Present'].filter(Boolean).join(' – ');
                 expItems += `<div class="app-modal-field">
-                    <span class="app-modal-field-label">${label}</span>
-                    <span class="app-modal-field-value">${pos ? pos + ', ' : ''}${org}<br><small style="color:#9ca3af;">${period}</small></span>
+                    <span class="app-modal-field-label">Experience ${i + 1}</span>
+                    <span class="app-modal-field-value">${exp.position ? exp.position + ', ' : ''}${exp.organization}<br>
+                    <small style="color:#9ca3af;">${period}${exp.years ? ' (' + exp.years + ' yrs)' : ''}</small>
+                    ${exp.document ? `<br><a href="${exp.document}" target="_blank" class="small">View Document</a>` : ''}
+                    </span>
                 </div>`;
             });
             if (expItems) {

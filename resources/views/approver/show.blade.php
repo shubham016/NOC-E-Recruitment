@@ -841,78 +841,62 @@
                 <div class="info-card">
                     <h5>Work Experience</h5>
 
-                    @if(strtolower($application->has_work_experience ?? '') == 'yes')
+                    <div class="mb-3">
+                        <strong>Has Work Experience:</strong>
+                        <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
+                    </div>
 
-                        <div class="mb-3">
-                            <strong>Has Work Experience:</strong>
-                            <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
-                        </div>
+                    @forelse($application->experiences as $exp)
+                        <div class="border rounded p-3 mb-3">
+                            <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
 
-                        @for ($i = 1; $i <= 3; $i++)
-                            @php
-                                $org = "exp{$i}_organization";
-                                $pos = "exp{$i}_position";
-                                $start = "exp{$i}_start_date";
-                                $end = "exp{$i}_end_date";
-                                $years = "exp{$i}_years";
-                                $doc = "exp{$i}_document";
-                            @endphp
-
-                            @if(!empty($application->$org) || !empty($application->$pos))
-                                <div class="border rounded p-3 mb-3">
-                                    <h6 class="text-primary">Experience {{ $i }}</h6>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>Organization:</strong>
-                                            <p>{{ $application->$org ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Position:</strong>
-                                            <p>{{ $application->$pos ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Start Date:</strong>
-                                            <p>{{ $application->$start ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>End Date:</strong>
-                                            <p>{{ $application->$end ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Years:</strong>
-                                            <p>{{ $application->$years ?? '-' }}</p>
-                                        </div>
-
-                                        
-                                    </div>
-                                    <div >
-                                            <strong>Document:</strong>
-
-                                            @if(!empty($application->$doc))
-                                                <img src="{{ Storage::url($application->$doc) }}"
-                                                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                            
-                                            @else
-                                                <div class="alert alert-primary">
-                                                    No document uploaded
-                                                </div>
-                                            @endif
-
-                                        </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Organization:</strong>
+                                    <p>{{ $exp->organization ?? '-' }}</p>
                                 </div>
-                            @endif
-                        @endfor
 
-                    @else
-                        <div class="alert alert-primary">
-                            No work experience declared
+                                <div class="col-md-6">
+                                    <strong>Position:</strong>
+                                    <p>{{ $exp->position ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Start Date (B.S):</strong>
+                                    <p>{{ $exp->start_date_bs ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>End Date (B.S):</strong>
+                                    <p>{{ $exp->end_date_bs ?? '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong>Years:</strong>
+                                    <p>{{ $exp->years ?? '-' }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <strong>Document:</strong>
+                                @if($exp->document)
+                                    @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
+                                    @if(in_array($ext, ['jpg','jpeg','png','webp']))
+                                        <img src="{{ asset('storage/' . $exp->document) }}"
+                                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                                    @else
+                                        <a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
+                                    @endif
+                                @else
+                                    <div class="alert alert-primary">No document uploaded</div>
+                                @endif
+                            </div>
                         </div>
-                    @endif
+                    @empty
+                        <div class="alert alert-primary">
+                            No work experience records.
+                        </div>
+                    @endforelse
                 </div>
 
             <!-- Payment Information -->

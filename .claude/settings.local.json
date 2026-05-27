@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(grep -n \"nepali-date\\\\|forEach.*input\\\\|}\\);$\" resources/views/candidate/applications/edit.blade.php)",
+      "Bash(xargs grep *)",
+      "Bash(php -r \"require 'vendor/autoload.php'; echo 'PHP OK';\")",
+      "Bash(xargs ls *)"
     ]
   }
 }
