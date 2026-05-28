@@ -9,6 +9,7 @@ use App\Http\Middleware\ReviewerMiddleware;
 use App\Http\Middleware\ApproverMiddleware;
 use App\Http\Middleware\CandidateMiddleware;
 use App\Http\Middleware\CandidateSessionMiddleware;
+use App\Http\Middleware\SetLocale;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            SetLocale::class,
+        ]);
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'reviewer' => ReviewerMiddleware::class,

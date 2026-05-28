@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Applications Report — Preview')
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -126,18 +126,18 @@
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th>S.N.</th>
-                    <th>Adv. No.</th>
-                    <th>Applicant Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Position</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Reviewer</th>
-                    <th>Reviewed At</th>
-                    <th>Approver</th>
-                    <th>Applied On</th>
+                    <th>{{ __('admin.sn') }}</th>
+                    <th>{{ __('admin.adv_no') }}</th>
+                    <th>{{ __('admin.applicant_name') }}</th>
+                    <th>{{ __('admin.email') }}</th>
+                    <th>{{ __('admin.phone') }}</th>
+                    <th>{{ __('admin.position') }}</th>
+                    <th>{{ __('admin.category') }}</th>
+                    <th>{{ __('admin.status') }}</th>
+                    <th>{{ __('admin.reviewer') }}</th>
+                    <th>{{ __('admin.reviewed_at') }}</th>
+                    <th>{{ __('admin.approver') }}</th>
+                    <th>{{ __('admin.applied_on_col') }}</th>
                 </tr>
             </thead>
             <tbody>

@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Manage Candidates')
+@section('title', __('admin.manage_candidates'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -89,8 +89,8 @@
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 mb-1">Manage Candidates</h1>
-                <p class="text-muted mb-0">View and manage all registered candidates</p>
+                <h1 class="h3 mb-1">{{ __('admin.manage_candidates') }}</h1>
+                <p class="text-muted mb-0">{{ __('admin.view_manage_candidates') }}</p>
             </div>
         </div>
 
@@ -119,7 +119,7 @@
                         </div>
                         <div>
                             <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                            <small class="text-muted">Total Candidates</small>
+                            <small class="text-muted">{{ __('admin.total_candidates') }}</small>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                         </div>
                         <div>
                             <h3 class="fw-bold mb-0">{{ $stats['with_applications'] }}</h3>
-                            <small class="text-muted">With Applications</small>
+                            <small class="text-muted">{{ __('admin.with_applications') }}</small>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                         </div>
                         <div>
                             <h3 class="fw-bold mb-0">{{ $stats['this_month'] }}</h3>
-                            <small class="text-muted">This Month</small>
+                            <small class="text-muted">{{ __('admin.this_month') }}</small>
                         </div>
                     </div>
                 </div>
@@ -156,25 +156,25 @@
         <div class="search-section mb-4">
             <form method="GET" class="row g-3">
                 <div class="col-md-8">
-                    <label class="form-label fw-semibold">Search</label>
+                    <label class="form-label fw-semibold">{{ __('admin.search') }}</label>
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="search" class="form-control"
-                            placeholder="Search by name, email, username, mobile..." value="{{ $search ?? '' }}">
+                            placeholder="{{ __('admin.ph_search_candidates') }}" value="{{ $search ?? '' }}">
                     </div>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-search me-1"></i> Search
+                        <i class="bi bi-search me-1"></i> {{ __('admin.search') }}
                     </button>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
                     <a href="{{ route('admin.candidates.index') }}" class="btn btn-secondary w-100">
-                        <i class="bi bi-x-circle me-1"></i> Clear
+                        <i class="bi bi-x-circle me-1"></i> {{ __('admin.clear') }}
                     </a>
                 </div>
             </form>
@@ -185,9 +185,9 @@
             <div class="card-header bg-white py-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-list-ul text-primary me-2"></i>Candidates List
+                        <i class="bi bi-list-ul text-primary me-2"></i>{{ __('admin.candidates_list') }}
                     </h6>
-                    <span class="badge bg-primary ms-2"> Total {{ $candidates->total() }}</span>
+                    <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $candidates->total() }}</span>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -196,14 +196,14 @@
                         style="table-layout: auto; white-space: nowrap;">
                         <thead class="table-light">
                             <tr>
-                                <th class="text-center text-uppercase">S.N</th>
-                                <th class="text-center text-uppercase">Name</th>
-                                <th class="text-center text-uppercase">Citizenship No.</th>
-                                <th class="text-center text-uppercase">Email</th>
-                                <th class="text-center text-uppercase">Phone</th>
-                                <th class="text-center text-uppercase">Applications</th>
-                                <th class="text-center text-uppercase">Registered</th>
-                                <th class="text-center text-uppercase">Actions</th>
+                                <th class="text-center text-uppercase">{{ __('admin.sn') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.name') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.citizenship_no') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.email') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.phone') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.total_applications') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.registered') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="text-center align-middle">
@@ -244,8 +244,8 @@
                                 <tr>
                                     <td colspan="8" class="text-center py-5">
                                         <i class="bi bi-inbox display-1 text-muted"></i>
-                                        <h5 class="text-muted mt-3">No Candidates Found</h5>
-                                        <p class="text-muted">No candidates have registered yet.</p>
+                                        <h5 class="text-muted mt-3">{{ __('admin.no_candidates_found') }}</h5>
+                                        <p class="text-muted">{{ __('admin.no_candidates_registered') }}</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -258,7 +258,7 @@
                 <div class="card-footer bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-muted small">
-                            Showing {{ $candidates->firstItem() }} to {{ $candidates->lastItem() }} of {{ $candidates->total() }}
+                            {{ __('admin.showing') }} {{ $candidates->firstItem() }} {{ __('admin.to') }} {{ $candidates->lastItem() }} {{ __('admin.of') }} {{ $candidates->total() }}
                         </div>
                         <div>
                             {{ $candidates->links('pagination::bootstrap-5') }}
@@ -278,7 +278,7 @@
 @section('scripts')
     <script>
         function confirmDelete(candidateId) {
-            if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
+            if (confirm('{{ __('admin.delete_candidate_confirm') }}')) {
                 const form = document.getElementById('deleteForm');
                 form.action = `/admin/candidates/${candidateId}`;
                 form.submit();

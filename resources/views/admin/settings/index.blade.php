@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Settings')
-@section('portal-name', 'Admin Portal')
+@section('title', __('admin.settings'))
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
@@ -89,8 +89,8 @@
     <div class="page-header" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border-radius: 12px; padding: 1.5rem; color: white; margin-bottom: 1.5rem;">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h4 class="fw-bold mb-1"><i class="bi bi-gear me-2"></i>Settings</h4>
-                <p class="mb-0 opacity-90">Manage your account and preferences</p>
+                <h4 class="fw-bold mb-1"><i class="bi bi-gear me-2"></i>{{ __('admin.system_settings') }}</h4>
+                <p class="mb-0 opacity-90">{{ __('admin.manage_account') }}</p>
             </div>
         </div>
     </div>
@@ -116,10 +116,10 @@
             <div class="settings-card p-2">
                 <nav class="settings-nav nav flex-column gap-1" id="settingsTabs" role="tablist">
                     <button class="nav-link active" id="tab-profile" data-bs-toggle="tab" data-bs-target="#pane-profile" type="button" role="tab">
-                        <i class="bi bi-person-circle"></i> Profile
+                        <i class="bi bi-person-circle"></i> {{ __('admin.profile') }}
                     </button>
                     <button class="nav-link" id="tab-password" data-bs-toggle="tab" data-bs-target="#pane-password" type="button" role="tab">
-                        <i class="bi bi-shield-lock"></i> Change Password
+                        <i class="bi bi-shield-lock"></i> {{ __('admin.change_password') }}
                     </button>
                 </nav>
             </div>
@@ -133,7 +133,7 @@
                 <div class="tab-pane fade show active" id="pane-profile" role="tabpanel">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h6 class="fw-bold mb-0">Profile Information</h6>
+                            <h6 class="fw-bold mb-0">{{ __('admin.profile_information') }}</h6>
                         </div>
                         <div class="card-body p-4">
 
@@ -153,10 +153,10 @@
                                     </div>
                                     <div>
                                         <label for="photo" class="btn btn-sm btn-outline-secondary">
-                                            <i class="bi bi-upload me-1"></i>Upload Photo
+                                            <i class="bi bi-upload me-1"></i>{{ __('admin.upload_photo') }}
                                         </label>
                                         <input type="file" id="photo" name="photo" class="d-none" accept="image/jpeg,image/jpg,image/png" onchange="previewAvatar(this)">
-                                        <p class="text-muted small mb-0 mt-1">JPG or PNG, max 2 MB</p>
+                                        <p class="text-muted small mb-0 mt-1">{{ __('admin.jpg_png_max') }}</p>
                                         @error('photo')
                                             <div class="text-danger small mt-1">{{ $message }}</div>
                                         @enderror
@@ -165,7 +165,7 @@
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-semibold">{{ __('admin.full_name') }} <span class="text-danger">*</span></label>
                                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                             value="{{ old('name', $admin->name) }}" required>
                                         @error('name')
@@ -174,7 +174,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-semibold">{{ __('admin.email_address') }} <span class="text-danger">*</span></label>
                                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                             value="{{ old('email', $admin->email) }}" required>
                                         @error('email')
@@ -183,7 +183,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Phone Number</label>
+                                        <label class="form-label fw-semibold">{{ __('admin.phone_number') }}</label>
                                         <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
                                             value="{{ old('phone', $admin->phone) }}" placeholder="e.g. 98XXXXXXXX">
                                         @error('phone')
@@ -192,14 +192,14 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Role</label>
-                                        <input type="text" class="form-control bg-light" value="System Administrator" readonly>
+                                        <label class="form-label fw-semibold">{{ __('admin.role') }}</label>
+                                        <input type="text" class="form-control bg-light" value="{{ __('admin.system_administrator') }}" readonly>
                                     </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-4">
                                     <button type="submit" class="btn btn-primary px-4">
-                                        <i class="bi bi-check-circle me-2"></i>Save Changes
+                                        <i class="bi bi-check-circle me-2"></i>{{ __('admin.save_changes') }}
                                     </button>
                                 </div>
                             </form>
@@ -212,7 +212,7 @@
                 <div class="tab-pane fade" id="pane-password" role="tabpanel">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h6 class="fw-bold mb-0">Change Password</h6>
+                            <h6 class="fw-bold mb-0">{{ __('admin.change_password') }}</h6>
                         </div>
                         <div class="card-body p-4">
 
@@ -221,7 +221,7 @@
 
                                 <div class="row g-3">
                                     <div class="col-12">
-                                        <label class="form-label fw-semibold">Current Password <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-semibold">{{ __('admin.current_password') }} <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="password" name="current_password" id="current_password"
                                                 class="form-control @error('current_password') is-invalid @enderror" required>
@@ -235,7 +235,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">New Password <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-semibold">{{ __('admin.new_password') }} <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="password" name="password" id="new_password"
                                                 class="form-control @error('password') is-invalid @enderror"
@@ -251,7 +251,7 @@
                                                 <div class="password-strength-bar flex-fill bg-secondary" id="bar3"></div>
                                                 <div class="password-strength-bar flex-fill bg-secondary" id="bar4"></div>
                                             </div>
-                                            <small class="text-muted" id="strengthLabel">Min. 8 characters</small>
+                                            <small class="text-muted" id="strengthLabel">{{ __('admin.at_least_8_chars') }}</small>
                                         </div>
                                         @error('password')
                                             <div class="text-danger small mt-1">{{ $message }}</div>
@@ -259,7 +259,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Confirm New Password <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-semibold">{{ __('admin.confirm_new_password') }} <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="password" name="password_confirmation" id="confirm_password"
                                                 class="form-control" required minlength="8">
@@ -271,17 +271,17 @@
                                 </div>
 
                                 <div class="alert alert-light border mt-4 mb-0">
-                                    <strong>Password requirements:</strong>
+                                    <strong>{{ __('admin.password_requirements') }}:</strong>
                                     <ul class="mb-0 mt-1 ps-3 small text-muted">
-                                        <li>At least 8 characters</li>
-                                        <li>Mix of uppercase and lowercase letters</li>
-                                        <li>Include numbers and special characters</li>
+                                        <li>{{ __('admin.at_least_8_chars') }}</li>
+                                        <li>{{ __('admin.mix_upper_lower') }}</li>
+                                        <li>{{ __('admin.include_numbers_special') }}</li>
                                     </ul>
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-4">
                                     <button type="submit" class="btn btn-primary px-4">
-                                        <i class="bi bi-shield-check me-2"></i>Update Password
+                                        <i class="bi bi-shield-check me-2"></i>{{ __('admin.update_password') }}
                                     </button>
                                 </div>
                             </form>
@@ -342,7 +342,7 @@
         if (/[^A-Za-z0-9]/.test(val))             score++;
 
         const colors  = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
-        const labels  = ['Weak', 'Fair', 'Good', 'Strong'];
+        const labels  = ["{{ __('admin.weak') }}", "{{ __('admin.fair') }}", "{{ __('admin.good') }}", "{{ __('admin.strong') }}"];
         const bars    = ['bar1','bar2','bar3','bar4'];
 
         bars.forEach((id, i) => {
@@ -351,7 +351,7 @@
         });
 
         const label = document.getElementById('strengthLabel');
-        label.textContent = val.length === 0 ? 'Min. 8 characters' : labels[score - 1] ?? 'Weak';
+        label.textContent = val.length === 0 ? "{{ __('admin.at_least_8_chars') }}" : labels[score - 1] ?? "{{ __('admin.weak') }}";
         label.style.color = val.length === 0 ? '' : colors[score - 1];
     }
 </script>

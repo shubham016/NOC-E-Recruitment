@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Post New Vacancy')
+@section('title', __('admin.post_new_vacancy'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
@@ -272,13 +272,13 @@
             <div>
                 <div class="govt-badge">
                     <!-- <i class="bi bi-building-fill"></i> -->
-                    <span>नेपाल सरकार | Government of Nepal</span>
+                    <span>{{ __('admin.govt_of_nepal_label') }}</span>
                 </div>
-                <h3 class="fw-bold mb-2">Post New Vacancy</h3>
+                <h3 class="fw-bold mb-2">{{ __('admin.post_new_vacancy') }}</h3>
                 <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
             <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
-                <i class="bi bi-arrow-left me-2"></i>Back
+                <i class="bi bi-arrow-left me-2"></i>{{ __('admin.back') }}
             </a>
         </div>
     </div>
@@ -288,11 +288,8 @@
         <div class="d-flex align-items-start gap-3">
             <i class="bi bi-info-circle-fill text-warning fs-4"></i>
             <div>
-                <strong>Important Notice:</strong> All fields marked with <span class="text-danger fw-bold">*</span> are
-                mandatory.
-                Please ensure all information is accurate before publishing. The Sr. No. will be auto-generated in the
-                vacancy list.
-                <br><small class="text-muted">सबै तारे चिन्ह (*) भएका फिल्डहरू अनिवार्य छन्।</small>
+                <strong>{{ __('admin.important_notice') }}</strong> {{ __('admin.notice_fields_mandatory') }}
+                <br><small class="text-muted">{{ __('admin.notice_fields_mandatory_ne') }}</small>
             </div>
         </div>
     </div>
@@ -305,7 +302,7 @@
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <h5 class="alert-heading">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Validation Errors
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ __('admin.validation_error') }}
                 </h5>
                 <hr>
                 <ul class="mb-0">
@@ -323,13 +320,13 @@
                 <div class="form-card">
                     <h5 class="fw-bold mb-4 text-danger">
                         <!-- <i class="bi bi-pencil-square me-2"></i> -->
-                        Vacancy Details
+                        {{ __('admin.vacancy_information') }}
                     </h5>
 
                     <!-- Notice Number -->
                     <div class="mb-4">
                         <label for="notice_no" class="form-label">
-                            <span>Notice No. <span class="required">*</span></span>
+                            <span>{{ __('admin.notice_no') }} <span class="required">*</span></span>
                             <span class="nepali-text">सूचना नं.</span>
                         </label>
                         <input type="text"
@@ -348,7 +345,7 @@
                     <!-- Fields grouped under Notice No. -->
                     <div class="notice-sub-section">
                         <div class="notice-sub-section-label">
-                            Advertisement under this Notice No.
+                            {{ __('admin.existing_ads') }}
                             @if(!empty($prefillNoticeNo))
                                 <span class="ms-2 badge bg-danger">{{ $prefillNoticeNo }}</span>
                             @endif
@@ -365,7 +362,7 @@
                     <!-- Advertisement Number -->
                     <div class="mb-4">
                         <label for="advertisement_no" class="form-label">
-                            <span>Advertisement No. <span class="required">*</span></span>
+                            <span>{{ __('admin.advertisement_no') }} <span class="required">*</span></span>
                             <span class="nepali-text">विज्ञापन नं.</span>
                         </label>
                         <input type="text"
@@ -384,7 +381,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="position_input" class="form-label">
-                                    <span>Position <span class="required">*</span></span>
+                                    <span>{{ __('admin.position') }} <span class="required">*</span></span>
                                     <span class="nepali-text">पद</span>
                                 </label>
                                 <input type="text"
@@ -400,7 +397,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="level_input" class="form-label">
-                                    <span>Level <span class="required">*</span></span>
+                                    <span>{{ __('admin.level') }} <span class="required">*</span></span>
                                     <span class="nepali-text">तह</span>
                                 </label>
                                 <input type="number"
@@ -421,7 +418,7 @@
                     <!-- Existing ads for this position/level -->
                     <div id="existing-ads-panel" style="display:none;" class="mt-2 mb-3">
                         <div class="alert alert-info py-2 px-3 mb-0" style="font-size:0.85rem;">
-                            <strong>Existing advertisements for this position/level:</strong>
+                            <strong>{{ __('admin.existing_ads') }}</strong>
                             <div id="existing-ads-list" class="mt-1"></div>
                         </div>
                     </div>
@@ -431,7 +428,7 @@
                     <!-- Service / Group -->
                     <div class="mb-4">
                         <label for="service_group" class="form-label">
-                            <span>Service / Group <span class="required">*</span></span>
+                            <span>{{ __('admin.service_slash_group') }} <span class="required">*</span></span>
                             <span class="nepali-text">सेवा / समूह</span>
                         </label>
                         <input type="text"
@@ -450,7 +447,7 @@
                     <!-- Category Checkboxes - Hierarchical Structure -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <span>Category / Type <span class="required">*</span></span>
+                            <span>{{ __('admin.category_type') }} <span class="required">*</span></span>
                             <span class="nepali-text">श्रेणी / प्रकार</span>
                         </label>
 
@@ -464,7 +461,7 @@
                                            value="1"
                                            {{ old('has_open') == '1' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-bold" for="has_open">
-                                        Open (खुल्ला)
+                                        {{ __('admin.cat_open') }}
                                     </label>
                                 </div>
                             </div>
@@ -478,7 +475,7 @@
                                            value="1"
                                            {{ old('has_inclusive_toggle') == '1' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-bold" for="has_inclusive_toggle">
-                                        Inclusive Types: <small class="text-muted fw-normal">(समावेशी प्रकारहरू)</small>
+                                        {{ __('admin.cat_inclusive_types') }}
                                     </label>
                                 </div>
 
@@ -494,7 +491,7 @@
                                                        value="Women"
                                                        {{ is_array(old('inclusive_types')) && in_array('Women', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_women">
-                                                    Women (महिला)
+                                                    {{ __('admin.cat_incl_women') }}
                                                 </label>
                                             </div>
 
@@ -506,7 +503,7 @@
                                                        value="A.J"
                                                        {{ is_array(old('inclusive_types')) && in_array('A.J', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_aj">
-                                                    A.J (आ.ज / आदिवासी जनजाति)
+                                                    {{ __('admin.cat_incl_aj') }}
                                                 </label>
                                             </div>
 
@@ -518,7 +515,7 @@
                                                        value="Madhesi"
                                                        {{ is_array(old('inclusive_types')) && in_array('Madhesi', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_madhesi">
-                                                    Madhesi (मधेसी)
+                                                    {{ __('admin.cat_incl_madhesi') }}
                                                 </label>
                                             </div>
 
@@ -530,7 +527,7 @@
                                                        value="Janajati"
                                                        {{ is_array(old('inclusive_types')) && in_array('Janajati', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_janajati">
-                                                    Janajati (जनजाति)
+                                                    {{ __('admin.cat_incl_janajati') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -544,7 +541,7 @@
                                                        value="Apanga"
                                                        {{ is_array(old('inclusive_types')) && in_array('Apanga', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_apanga">
-                                                    Apanga (अपाङ्ग)
+                                                    {{ __('admin.cat_incl_apanga') }}
                                                 </label>
                                             </div>
 
@@ -556,7 +553,7 @@
                                                        value="Dalit"
                                                        {{ is_array(old('inclusive_types')) && in_array('Dalit', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_dalit">
-                                                    Dalit (दलित)
+                                                    {{ __('admin.cat_incl_dalit') }}
                                                 </label>
                                             </div>
 
@@ -568,7 +565,7 @@
                                                        value="Pichadiyeko Chetra"
                                                        {{ is_array(old('inclusive_types')) && in_array('Pichadiyeko Chetra', old('inclusive_types')) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="incl_pichadiyeko">
-                                                    Pichadiyeko Chetra (पिचडिएको क्षेत्र)
+                                                    {{ __('admin.cat_incl_pichadiyeko') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -590,9 +587,9 @@
                                            value="1"
                                            {{ old('has_internal') == '1' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-bold" for="has_internal">
-                                        Internal (आन्तरिक परीक्षा)
+                                        {{ __('admin.cat_internal') }}
                                     </label>
-                                    <small class="d-block text-muted ms-4">For NOC employees only</small>
+                                    <small class="d-block text-muted ms-4">{{ __('admin.for_noc_employees_only') }}</small>
                                 </div>
 
                                 <!-- Level 2: Internal Open -->
@@ -605,9 +602,9 @@
                                                value="1"
                                                {{ old('has_internal_open') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label fw-bold" for="has_internal_open">
-                                            Internal Open (All NOC Staff)
+                                            {{ __('admin.cat_internal_open') }}
                                         </label>
-                                        <small class="d-block text-muted">Open for all NOC employees</small>
+                                        <small class="d-block text-muted">{{ __('admin.cat_internal_open_desc') }}</small>
                                     </div>
                                 </div>
 
@@ -620,9 +617,9 @@
                                                value="1"
                                                {{ old('has_internal_inclusive') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label fw-bold" for="has_internal_inclusive_toggle">
-                                            Internal Inclusive Types:
+                                            {{ __('admin.cat_internal_inclusive_types') }}
                                         </label>
-                                        <small class="d-block text-muted">For NOC employees from inclusive categories</small>
+                                        <small class="d-block text-muted">{{ __('admin.for_noc_inclusive') }}</small>
                                     </div>
                                 </div>
 
@@ -638,7 +635,7 @@
                                                        value="Women"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Women', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_women">
-                                                    Women (महिला)
+                                                    {{ __('admin.cat_incl_women') }}
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
@@ -649,7 +646,7 @@
                                                        value="A.J"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('A.J', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_aj">
-                                                    A.J (आ.ज / आदिवासी जनजाति)
+                                                    {{ __('admin.cat_incl_aj') }}
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
@@ -660,7 +657,7 @@
                                                        value="Madhesi"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Madhesi', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_madhesi">
-                                                    Madhesi (मधेसी)
+                                                    {{ __('admin.cat_incl_madhesi') }}
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
@@ -671,7 +668,7 @@
                                                        value="Janajati"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Janajati', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_janajati">
-                                                    Janajati (जनजाति)
+                                                    {{ __('admin.cat_incl_janajati') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -684,7 +681,7 @@
                                                        value="Apanga"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Apanga', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_apanga">
-                                                    Apanga (अपाङ्ग)
+                                                    {{ __('admin.cat_incl_apanga') }}
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
@@ -695,7 +692,7 @@
                                                        value="Dalit"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Dalit', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_dalit">
-                                                    Dalit (दलित)
+                                                    {{ __('admin.cat_incl_dalit') }}
                                                 </label>
                                             </div>
                                             <div class="form-check mb-2">
@@ -706,7 +703,7 @@
                                                        value="Pichadiyeko Chetra"
                                                        {{ (is_array(old('internal_inclusive_types')) && in_array('Pichadiyeko Chetra', old('internal_inclusive_types'))) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="internal_incl_pichadiyeko">
-                                                    Pichadiyeko Chetra (पिचडिएको क्षेत्र)
+                                                    {{ __('admin.cat_incl_pichadiyeko') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -724,7 +721,7 @@
                                            value="1"
                                            {{ old('is_internal_appraisal') == '1' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-bold" for="is_internal_appraisal">
-                                        Internal Appraisal (आन्तरिक बढुवा)
+                                        {{ __('admin.cat_internal_appraisal') }}
                                     </label>
                                 </div>
                             </div>
@@ -753,7 +750,7 @@
                     <!-- Demand Post (Number of Posts) - Dynamic per-type -->
                     <div class="mb-4" id="demand-posts-section">
                         <label class="form-label">
-                            <span>Demand Post (Number) <span class="required">*</span></span>
+                            <span>{{ __('admin.demand_post') }} <span class="required">*</span></span>
                             <span class="nepali-text">माग पद संख्या</span>
                         </label>
                         <div id="demand-posts-container">
@@ -762,7 +759,7 @@
                                 <input type="number"
                                     class="form-control form-control-lg @error('number_of_posts') is-invalid @enderror"
                                     id="number_of_posts_default"
-                                    placeholder="Enter number of posts"
+                                    placeholder="{{ __('admin.ph_number_posts') }}"
                                     value="{{ old('number_of_posts', 1) }}"
                                     min="1" max="1000">
                             </div>
@@ -780,12 +777,12 @@
                     <!-- Minimum Educational Qualification -->
                     <div class="mb-4">
                         <label for="minimum_qualification" class="form-label">
-                            <span>Minimum Educational Qualification <span class="required">*</span></span>
+                            <span>{{ __('admin.min_qualification') }} <span class="required">*</span></span>
                             <span class="nepali-text">आवश्यक शिक्षक योग्यता</span>
                         </label>
                         <textarea class="form-control @error('minimum_qualification') is-invalid @enderror"
                             id="minimum_qualification" name="minimum_qualification" rows="5"
-                            placeholder="Example:&#10;• Bachelor's degree in relevant field from recognized university&#10;• मान्यता प्राप्त विश्वविद्यालयबाट सम्बन्धित विषयमा स्नातक उत्तीर्ण"
+                            placeholder="{{ __('admin.ph_qualification') }}"
                             required>{{ old('minimum_qualification') }}</textarea>
                         @error('minimum_qualification')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -799,21 +796,21 @@
                     <!-- Age Limit -->
                     <div class="mb-4" id="ageLimitSection">
                         <label class="form-label">
-                            <span>Age Limit</span>
+                            <span>{{ __('admin.age_limit') }}</span>
                             <span class="nepali-text">उमेर हद</span>
                         </label>
                         <div class="table-responsive">
                             <table class="table table-bordered mb-0" style="font-size:14px;">
                                 <thead style="background:#f3f4f6;">
                                     <tr>
-                                        <th style="width:34%;">Category</th>
-                                        <th style="width:33%;">Minimum Age</th>
-                                        <th style="width:33%;">Maximum Age</th>
+                                        <th style="width:34%;">{{ __('admin.category') }}</th>
+                                        <th style="width:33%;">{{ __('admin.min_age') }}</th>
+                                        <th style="width:33%;">{{ __('admin.max_age') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="align-middle">Male <span class="nepali-text">पुरुष</span></td>
+                                        <td class="align-middle">{{ __('admin.male') }} <span class="nepali-text">पुरुष</span></td>
                                         <td>
                                             <input type="number" class="form-control @error('min_age_male') is-invalid @enderror"
                                                 name="min_age_male" id="min_age_male"
@@ -830,7 +827,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="align-middle">Female <span class="nepali-text">महिला</span></td>
+                                        <td class="align-middle">{{ __('admin.female') }} <span class="nepali-text">महिला</span></td>
                                         <td>
                                             <input type="number" class="form-control @error('min_age_female') is-invalid @enderror"
                                                 name="min_age_female" id="min_age_female"
@@ -847,7 +844,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="align-middle">Disabled <span class="nepali-text">अपाङ्ग</span></td>
+                                        <td class="align-middle">{{ __('admin.disabled_category') }} <span class="nepali-text">अपाङ्ग</span></td>
                                         <td>
                                             <input type="number" class="form-control @error('min_age_disabled') is-invalid @enderror"
                                                 name="min_age_disabled" id="min_age_disabled"
@@ -873,7 +870,7 @@
                     <!-- Application Deadline - Dual Date Pickers -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <span>Application Deadline <span class="required">*</span></span>
+                            <span>{{ __('admin.application_deadline') }} <span class="required">*</span></span>
                             <span class="nepali-text">आवेदन दिने अन्तिम मिति</span>
                         </label>
 
@@ -882,7 +879,7 @@
                             <div class="col-md-6">
                                 <label for="deadline_bs" class="form-label small fw-bold text-primary">
                                     <!-- <i class="bi bi-calendar3 me-1"></i> -->
-                                    Nepali Date (BS) / नेपाली मिति
+                                    {{ __('admin.nepali_date_bs') }}
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg"
@@ -900,7 +897,7 @@
                             <div class="col-md-6">
                                 <label for="deadline_ad" class="form-label small fw-bold">
                                     <!-- <i class="bi bi-calendar-date me-1"></i> -->
-                                    English Date (AD) <span class="text-danger">*</span>
+                                    {{ __('admin.english_date_ad') }} <span class="text-danger">*</span>
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg @error('deadline') is-invalid @enderror"
@@ -911,7 +908,7 @@
                                     required
                                     readonly>
                                 <small class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>Auto-set to 21 days from today
+                                    <i class="bi bi-info-circle me-1"></i>{{ __('admin.auto_set_21_days') }}
                                 </small>
                             </div>
                         </div>
@@ -930,7 +927,7 @@
                     <!-- Double Dastur Date - Dual Date Pickers -->
                     <div class="mb-4" id="doubleDasturDateSection">
                         <label class="form-label">
-                            <span>Double Dastur Date</span>
+                            <span>{{ __('admin.double_dastur_date') }}</span>
                             <span class="nepali-text">दोहोरो दस्तुर मिति</span>
                         </label>
 
@@ -939,7 +936,7 @@
                             <div class="col-md-6">
                                 <label for="double_dastur_bs" class="form-label small fw-bold text-success">
                                     <!-- <i class="bi bi-calendar3 me-1"></i> -->
-                                    Nepali Date (BS) / नेपाली मिति
+                                    {{ __('admin.nepali_date_bs') }}
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg"
@@ -956,7 +953,7 @@
                             <div class="col-md-6">
                                 <label for="double_dastur_ad" class="form-label small fw-bold text-success">
                                     <!-- <i class="bi bi-calendar-date me-1"></i> -->
-                                    English Date (AD)
+                                    {{ __('admin.english_date_ad') }}
                                 </label>
                                 <input type="text"
                                     class="form-control form-control-lg @error('double_dastur_date') is-invalid @enderror"
@@ -966,7 +963,7 @@
                                     value="{{ old('double_dastur_date', '') }}"
                                     readonly>
                                 <small class="form-text text-success">
-                                    <i class="bi bi-info-circle me-1"></i>Auto-set to 7 days after deadline (28 days total)
+                                    <i class="bi bi-info-circle me-1"></i>{{ __('admin.auto_set_7_days') }}
                                 </small>
                             </div>
                         </div>
@@ -977,7 +974,7 @@
 
                             <!-- <div class="alert alert-success mt-3 mb-0">
                                 <i class="bi bi-calendar-plus me-2"></i>
-                                <strong>Extended Period:</strong> Double Dastur allows additional 7 days after the original deadline (total 28 days from posting).
+                                <strong>{{ __('admin.extended_period') }}</strong> Double Dastur allows additional 7 days after the original deadline (total 28 days from posting).
                                 <br><small>विस्तारित अवधि: दोहोरो दस्तुरले मूल समय सीमा पछि थप ७ दिन अनुमति दिन्छ।</small>
                             </div> -->
                     </div>
@@ -992,7 +989,7 @@
                         <!-- Total Application Fee -->
                         <div class="col-md-6">
                             <label class="form-label">
-                                <span>Total Application Fee <span class="text-danger">*</span></span>
+                                <span>{{ __('admin.application_fee') }} <span class="text-danger">*</span></span>
                                 <span class="nepali-text">कुल आवेदन शुल्क</span>
                             </label>
                             <input type="number"
@@ -1000,7 +997,7 @@
                                    id="application_fee"
                                    name="application_fee"
                                    value="{{ old('application_fee') }}"
-                                   placeholder="Total Application Fees"
+                                   placeholder="{{ __('admin.ph_app_fee') }}"
                                    min="0"
                                    step="0.01"
                                    required
@@ -1014,7 +1011,7 @@
                         <!-- Double Dastur Fee -->
                         <div class="col-md-6" id="doubleDasturFeeSection">
                             <label class="form-label">
-                                <span>Double Dastur Fee<span class="text-danger">*</span></span>
+                                <span>{{ __('admin.double_dastur_fee') }}<span class="text-danger">*</span></span>
                                 <span class="nepali-text">दोहोरो दस्तुर</span>
                             </label>
                             <input type="number"
@@ -1022,7 +1019,7 @@
                                    id="double_dastur_fee"
                                    name="double_dastur_fee"
                                    value="{{ old('double_dastur_fee') }}"
-                                   placeholder="Enter Double Dastur Fee"
+                                   placeholder="{{ __('admin.ph_dd_fee') }}"
                                    min="0"
                                    step="0.01">
                             @error('double_dastur_fee')
@@ -1047,74 +1044,74 @@
                 <div class="preview-card">
                     <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
                         <i class="bi bi-eye-fill text-danger"></i>
-                        Live Preview
+                        {{ __('admin.live_preview') }}
                         <span class="badge bg-danger ms-auto">रियल टाइम</span>
                     </h6>
 
                     <table class="preview-table">
                         <tbody>
                             <tr>
-                                <th>Sr. No.</th>
-                                <td class="text-muted"><em>Auto-generated</em></td>
+                                <th>{{ __('admin.sr_no') }}</th>
+                                <td class="text-muted"><em>{{ __('admin.auto_generated') }}</em></td>
                             </tr>
                             <tr id="preview-notice-row">
-                                <th>Notice No.</th>
+                                <th>{{ __('admin.notice_no') }}</th>
                                 <td id="preview-notice-no" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Advertisement No.</th>
+                                <th>{{ __('admin.advertisement_no') }}</th>
                                 <td id="preview-adv-no" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Position</th>
+                                <th>{{ __('admin.position') }}</th>
                                 <td id="preview-position" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Level</th>
+                                <th>{{ __('admin.level') }}</th>
                                 <td id="preview-level" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Department</th>
+                                <th>{{ __('admin.department') }}</th>
                                 <td id="preview-service" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Category</th>
+                                <th>{{ __('admin.category') }}</th>
                                 <td id="preview-category" class="fw-semibold">-</td>
                             </tr>
                             <tr id="preview-inclusive-row" style="display: none;">
-                                <th>Inclusive Type</th>
+                                <th>{{ __('admin.inclusive_type') }}</th>
                                 <td id="preview-inclusive-type" class="fw-semibold">-</td>
                             </tr>
                             <tr id="preview-internal-subcategory-row" style="display: none;">
-                                <th>Internal Type</th>
+                                <th>{{ __('admin.internal_type') }}</th>
                                 <td id="preview-internal-subcategory" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Demand Post</th>
+                                <th>{{ __('admin.demand_post') }}</th>
                                 <td id="preview-posts" class="fw-semibold">-</td>
                             </tr>
                             <tr>
-                                <th>Deadline (BS)</th>
+                                <th>{{ __('admin.deadline_bs') }}</th>
                                 <td id="preview-deadline-bs" class="fw-semibold text-danger">-</td>
                             </tr>
                             <tr>
-                                <th>Deadline (AD)</th>
+                                <th>{{ __('admin.deadline_ad') }}</th>
                                 <td id="preview-deadline-ad" class="fw-semibold text-danger">-</td>
                             </tr>
                             <tr id="preview-double-dastur-row" style="display: none;">
-                                <th>Double Dastur (BS)</th>
+                                <th>{{ __('admin.double_dastur_bs_header') }}</th>
                                 <td id="preview-double-dastur-bs" class="fw-semibold text-success">-</td>
                             </tr>
                             <tr id="preview-double-dastur-ad-row" style="display: none;">
-                                <th>Double Dastur (AD)</th>
+                                <th>{{ __('admin.double_dastur_ad_header') }}</th>
                                 <td id="preview-double-dastur-ad" class="fw-semibold text-success">-</td>
                             </tr>
                             <tr id="preview-application-fee-row">
-                                <th>Total Application Fee</th>
+                                <th>{{ __('admin.total_application_fee') }}</th>
                                 <td id="preview-application-fee" class="fw-semibold text-primary">NPR</td>
                             </tr>
                             <tr id="preview-double-dastur-fee-row" style="display: none;">
-                                <th>Double Dastur Fee</th>
+                                <th>{{ __('admin.double_dastur_fee') }}</th>
                                 <td id="preview-double-dastur-fee" class="fw-semibold text-danger">NPR</td>
                             </tr>
                         </tbody>
@@ -1122,10 +1119,10 @@
 
                     <div class="mt-4 p-3 bg-white rounded border">
                         <h6 class="small fw-bold text-muted mb-2">
-                            <i class="bi bi-mortarboard-fill me-1"></i>Min. Qualification
+                            <i class="bi bi-mortarboard-fill me-1"></i>{{ __('admin.min_qual_short') }}
                         </h6>
                         <p id="preview-qualification" class="small mb-0 text-muted">
-                            <em>Not yet entered...</em>
+                            <em>{{ __('admin.not_yet_entered') }}</em>
                         </p>
                     </div>
 
@@ -1152,12 +1149,12 @@
                     <div class="card-body py-3">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary btn-lg">
-                                Cancel
+                                {{ __('admin.cancel') }}
                             </a>
                             <div class="d-flex gap-2 flex-wrap">
                                 <button type="submit" class="btn btn-warning btn-lg btn-action px-5"
                                     onclick="return confirmSaveDraft()">
-                                    Save as Draft
+                                    {{ __('admin.save_as_draft') }}
                                 </button>
                             </div>
                         </div>
@@ -1482,11 +1479,13 @@
         // NOTE: Category checkbox logic has been moved outside initializeForm()
         // to run independently of Nepali date libraries (see initializeCategoryCheckboxes function)
 
+        const _tNPR = "{{ __('admin.npr') }}";
+
         const previewMappings = {
             'notice_no': { preview: 'preview-notice-no', default: '-' },
             'advertisement_no': { preview: 'preview-adv-no', default: '-' },
             'service_group': { preview: 'preview-service', default: '-' },
-            'minimum_qualification': { preview: 'preview-qualification', default: 'Not yet entered...' },
+            'minimum_qualification': { preview: 'preview-qualification', default: "{{ __('admin.not_yet_entered') }}" },
             'application_fee': { preview: 'preview-application-fee', default: '-' },
             'double_dastur_fee': { preview: 'preview-double-dastur-fee', default: '-' }
         };
@@ -1509,9 +1508,9 @@
                             const formattedValue = numValue % 1 === 0
                                 ? numValue.toLocaleString('en-NP', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                                 : numValue.toLocaleString('en-NP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                            preview.textContent = 'NPR ' + formattedValue;
+                            preview.textContent = _tNPR + ' ' + formattedValue;
                         } else {
-                            preview.textContent = 'NPR';
+                            preview.textContent = _tNPR;
                         }
                     } else if (fieldId === 'notice_no') {
                         preview.textContent = value || '-';
@@ -1912,7 +1911,7 @@ function initializeCategoryCheckboxes() {
 
         // Must select at least one main category
         if (!isOpen && !isInclusive && !isInternal && !isAppraisal) {
-            alert('कृपया कम्तिमा एक मुख्य श्रेणी छान्नुहोस्!\nPlease select at least one category (Open, Inclusive Types, Internal, or Internal Appraisal)!');
+            alert('{{ __('admin.val_select_one_category') }}');
             return false;
         }
 
@@ -1920,13 +1919,13 @@ function initializeCategoryCheckboxes() {
         if (isOpen || isInclusive) {
             const ddBS = document.getElementById('double_dastur_bs_hidden');
             if (!ddBS || !ddBS.value) {
-                alert('Double Dastur Date (Nepali BS) is required.\nकृपया दोहोरो दस्तुर मिति (नेपाली) भर्नुहोस्!');
+                alert('{{ __('admin.val_dd_date_required') }}');
                 document.getElementById('double_dastur_bs').focus();
                 return false;
             }
             const ddFee = document.getElementById('double_dastur_fee');
             if (!ddFee || !ddFee.value || parseFloat(ddFee.value) <= 0) {
-                alert('Double Dastur Fee is required and must be greater than 0.\nकृपया दोहोरो दस्तुर शुल्क भर्नुहोस्!');
+                alert('{{ __('admin.val_dd_fee_required') }}');
                 ddFee && ddFee.focus();
                 return false;
             }
@@ -1936,7 +1935,7 @@ function initializeCategoryCheckboxes() {
         if (hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
             const anyInclusiveTypeChecked = Array.from(inclusiveTypeCheckboxes).some(cb => cb.checked);
             if (!anyInclusiveTypeChecked) {
-                alert('कृपया कम्तिमा एक समावेशी प्रकार छान्नुहोस्!\nPlease select at least one inclusive type!');
+                alert('{{ __('admin.val_select_inclusive_type') }}');
                 return false;
             }
         }
@@ -1947,7 +1946,7 @@ function initializeCategoryCheckboxes() {
             const hasInternalInclusive = hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked;
 
             if (!hasInternalOpen && !hasInternalInclusive) {
-                alert('कृपया आन्तरिक श्रेणीको लागि कम्तिमा एक उप-श्रेणी छान्नुहोस्!\nPlease select at least one sub-category for Internal!');
+                alert('{{ __('admin.val_select_internal_sub') }}');
                 return false;
             }
 
@@ -1955,7 +1954,7 @@ function initializeCategoryCheckboxes() {
             if (hasInternalInclusive) {
                 const anyInternalInclusiveTypeChecked = Array.from(internalInclusiveTypeCheckboxes).some(cb => cb.checked);
                 if (!anyInternalInclusiveTypeChecked) {
-                    alert('कृपया कम्तिमा एक आन्तरिक समावेशी प्रकार छान्नुहोस्!\nPlease select at least one internal inclusive type!');
+                    alert('{{ __('admin.val_select_int_incl_type') }}');
                     return false;
                 }
             }
@@ -2174,7 +2173,7 @@ function initializeCategoryCheckboxes() {
                     row.innerHTML =
                         '<div class="input-group">' +
                         '<span class="input-group-text fw-semibold" style="min-width:220px;background:#f9fafb;font-size:0.875rem;">' + label + '</span>' +
-                        '<input type="number" class="form-control form-control-lg demand-type-input" name="demand_posts[' + typeId + ']" value="1" min="1" max="1000" placeholder="Posts">' +
+                        '<input type="number" class="form-control form-control-lg demand-type-input" name="demand_posts[' + typeId + ']" value="1" min="1" max="1000" placeholder="{{ __('admin.ph_posts') }}">' +
                         '</div>';
                     demandPostsContainer.appendChild(row);
                     row.querySelector('.demand-type-input').addEventListener('input', updateDemandTotal);
@@ -2243,10 +2242,8 @@ function initializeCategoryCheckboxes() {
 }
 
 function confirmSaveDraft() {
-    return confirm(
-        'Save this advertisement as draft?\n\n' +
-        'The vacancy will be saved as draft and will NOT be visible to candidates until you change the status to "Active".'
-    );
+    var msg = "{{ __('admin.confirm_save_draft') }}\n\n{{ __('admin.confirm_save_draft_body') }}";
+    return confirm(msg);
 }
 
 
@@ -2434,8 +2431,8 @@ function confirmSaveDraft() {
             container.innerHTML = '';
             totalInput.readOnly = true;
             totalInput.value = '';
-            totalInput.placeholder = 'Total Application Fee';
-            if (note) note.textContent = 'Select a category above to enter individual fees.';
+            totalInput.placeholder = "{{ __('admin.ph_total_app_fee') }}";
+            if (note) note.textContent = "{{ __('admin.ph_select_category') }}";
             return;
         }
 
@@ -2467,7 +2464,7 @@ function confirmSaveDraft() {
                            'name="category_fees[' + key + ']" ' +
                            'data-fee-key="' + key + '" ' +
                            'value="' + val + '" ' +
-                           'placeholder="Enter amount (NPR)" ' +
+                           'placeholder="{{ __('admin.ph_amount') }}" ' +
                            'min="0" step="0.01">' +
                 '</div>';
             container.appendChild(div);
@@ -2493,7 +2490,7 @@ function confirmSaveDraft() {
 
         var previewEl = document.getElementById('preview-application-fee');
         if (previewEl) {
-            previewEl.textContent = sum > 0 ? 'NPR ' + sum.toLocaleString() : '-';
+            previewEl.textContent = sum > 0 ? _tNPR + ' ' + sum.toLocaleString() : '-';
         }
     }
 
@@ -2503,7 +2500,7 @@ function confirmSaveDraft() {
             var previewEl = document.getElementById('preview-application-fee');
             if (previewEl) {
                 var val = parseFloat(e.target.value) || 0;
-                previewEl.textContent = val > 0 ? 'NPR ' + val.toLocaleString() : '-';
+                previewEl.textContent = val > 0 ? _tNPR + ' ' + val.toLocaleString() : '-';
             }
         }
     });

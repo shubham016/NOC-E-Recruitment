@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard')
+@section('title', __('admin.dashboard'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -1080,7 +1080,7 @@
                         <i class="bi bi-briefcase-fill"></i>
                     </div> -->
             <div class="stat-value">{{ $stats['active_vacancies'] }}</div>
-            <div class="stat-label">Active Vacancies</div>
+            <div class="stat-label">{{ __('admin.active_vacancies') }}</div>
             <!-- <div class="stat-meta">
                         @if($growth['jobs_posted'] != 0)
                             <span class="stat-badge {{ $growth['jobs_posted'] > 0 ? 'badge-up' : 'badge-down' }}">
@@ -1098,7 +1098,7 @@
                         <i class="bi bi-file-earmark-text-fill"></i>
                     </div> -->
             <div class="stat-value">{{ $stats['pending_applications'] }}</div>
-            <div class="stat-label">Pending Reviews</div>
+            <div class="stat-label">{{ __('admin.pending_reviews') }}</div>
             <!-- <div class="stat-meta">
                         @if($growth['applications'] != 0)
                             <span class="stat-badge {{ $growth['applications'] > 0 ? 'badge-up' : 'badge-down' }}">
@@ -1116,7 +1116,7 @@
                         <i class="bi bi-people-fill"></i>
                     </div> -->
             <div class="stat-value">{{ $stats['total_candidates'] }}</div>
-            <div class="stat-label">Candidates</div>
+            <div class="stat-label">{{ __('admin.candidates') }}</div>
             <!-- <div class="stat-meta">
                         @if($growth['candidates'] != 0)
                             <span class="stat-badge {{ $growth['candidates'] > 0 ? 'badge-up' : 'badge-down' }}">
@@ -1134,7 +1134,7 @@
                         <i class="bi bi-person-badge-fill"></i>
                     </div> -->
             <div class="stat-value">{{ $stats['active_reviewers'] }}</div>
-            <div class="stat-label">Active Reviewers</div>
+            <div class="stat-label">{{ __('admin.active_reviewers') }}</div>
             <!-- <div class="stat-meta">
                         <span class="stat-text">{{ $stats['total_reviewers'] }} total reviewers</span>
                     </div> -->
@@ -1146,7 +1146,7 @@
                         <i class="bi bi-person-check-fill"></i>
                     </div> -->
             <div class="stat-value">{{ $stats['active_approvers'] }}</div>
-            <div class="stat-label">Active Approvers</div>
+            <div class="stat-label">{{ __('admin.active_approvers') }}</div>
             <!-- <div class="stat-meta">
                         <span class="stat-text">{{ $stats['total_approvers'] }} total approvers</span>
                     </div> -->
@@ -1160,9 +1160,9 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <!-- <i class="bi bi-clock-history text-warning" style="font-size:16px;"></i> -->
-                    Recent Applications
+                    {{ __('admin.recent_applications') }}
                 </h3>
-                <a href="{{ route('admin.applications.index') }}" class="card-link">View All →</a>
+                <a href="{{ route('admin.applications.index') }}" class="card-link">{{ __('admin.view_all') }}</a>
             </div>
             <div>
                 @forelse($recentApplications as $application)
@@ -1191,7 +1191,7 @@
                         <div class="item-middle">
                             <div style="display:inline-block; text-align:left;">
                                 <div style="font-size:13px; color:var(--gray-700); font-weight:600; line-height:1.4; margin-bottom:4px;">
-                                    Applied on: {{ adToBS($application->created_at->format('Y/m/d')) }}
+                                    {{ __('admin.applied_on') }} {{ adToBS($application->created_at->format('Y/m/d')) }}
                                 </div>
                                 <div style="font-size:12px; color:var(--gray-400);">
                                     {{ $application->created_at->diffForHumans() }}
@@ -1202,15 +1202,15 @@
                         {{-- RIGHT: status badge --}}
                         <div class="item-right">
                             <span class="item-badge badge-{{ $application->status }}">
-                                {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                                {{ __('admin.' . $application->status) }}
                             </span>
                         </div>
                     </div>
                 @empty
                     <div class="empty-state">
                         <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-                        <h4 class="empty-title">No Recent Applications</h4>
-                        <p class="empty-text">New applications will appear here</p>
+                        <h4 class="empty-title">{{ __('admin.no_recent_applications') }}</h4>
+                        <p class="empty-text">{{ __('admin.new_apps_appear_here') }}</p>
                     </div>
                 @endforelse
             </div>
@@ -1221,9 +1221,9 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <!-- <i class="bi bi-briefcase-fill text-primary" style="font-size:16px;"></i> -->
-                    Applications per Vacancy
+                    {{ __('admin.applications_per_vacancy') }}
                 </h3>
-                <a href="{{ route('admin.jobs.index') }}" class="card-link">View All →</a>
+                <a href="{{ route('admin.jobs.index') }}" class="card-link">{{ __('admin.view_all') }}</a>
             </div>
             <div>
                 @forelse($topJobs as $vacancy)
@@ -1270,15 +1270,15 @@
                         {{-- Right: application count --}}
                         <div class="job-count-box">
                             <div class="job-count">{{ $vacancy->application_forms_count ?? 0 }}</div>
-                            <div class="job-count-label">Applied</div>
+                            <div class="job-count-label">{{ __('admin.applied') }}</div>
                         </div>
                     </div>
                 @empty
                     <div class="empty-state">
                         <div class="empty-icon"><i class="bi bi-briefcase"></i></div>
-                        <h4 class="empty-title">No Vacancies Posted</h4>
+                        <h4 class="empty-title">{{ __('admin.no_vacancies_posted') }}</h4>
                         <p class="empty-text">
-                            <a href="{{ route('admin.jobs.create') }}" style="color:#1976d2;">Post your first vacancy</a>
+                            <a href="{{ route('admin.jobs.create') }}" style="color:#1976d2;">{{ __('admin.post_first_vacancy') }}</a>
                         </p>
                     </div>
                 @endforelse
@@ -1309,7 +1309,7 @@
                                 <i class="bi bi-person-plus"></i>
                                 Add Approver
                             </a>
-                            <button class="btn-action btn-secondary" onclick="alert('Coming soon!')">
+                            <button class="btn-action btn-secondary" onclick="alert('{{ __('admin.coming_soon') }}')">
                                 <i class="bi bi-download"></i>
                                 Export Report
                             </button>
@@ -1359,7 +1359,7 @@
                                 <div class="empty-icon" style="width: 48px; height: 48px; font-size: 20px; margin-bottom: 12px;">
                                     <i class="bi bi-person-badge"></i>
                                 </div>
-                                <h4 class="empty-title" style="font-size: 14px;">No Active Reviewers</h4>
+                                <h4 class="empty-title" style="font-size: 14px;">{{ __('admin.no_active_reviewers') }}</h4>
                                 <p class="empty-text" style="font-size: 13px;">Add reviewers to start</p>
                             </div>
                         @endforelse
@@ -1409,7 +1409,7 @@
                                 <div class="empty-icon" style="width: 48px; height: 48px; font-size: 20px; margin-bottom: 12px;">
                                     <i class="bi bi-person-check"></i>
                                 </div>
-                                <h4 class="empty-title" style="font-size: 14px;">No Active Approvers</h4>
+                                <h4 class="empty-title" style="font-size: 14px;">{{ __('admin.no_active_approvers') }}</h4>
                                 <p class="empty-text" style="font-size: 13px;">Add approvers to start</p>
                             </div>
                         @endforelse

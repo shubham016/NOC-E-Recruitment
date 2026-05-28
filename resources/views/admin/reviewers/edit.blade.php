@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Reviewer')
+@section('title', __('admin.edit_reviewer'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -306,11 +306,11 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #c9a84c;">Dashboard</a>
+                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #c9a84c;">{{ __('admin.dashboard') }}</a>
                 </li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.reviewers.index') }}"
-                        style="color: #c9a84c;">Reviewers</a></li>
-                <li class="breadcrumb-item active">Edit Reviewer</li>
+                        style="color: #c9a84c;">{{ __('admin.reviewers') }}</a></li>
+                <li class="breadcrumb-item active">{{ __('admin.edit_reviewer') }}</li>
             </ol>
         </nav>
 
@@ -318,12 +318,12 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="fw-bold mb-2" style="color: #92400e;">
-                    <i class="bi bi-pencil-square me-2"></i>Edit Reviewer
+                    <i class="bi bi-pencil-square me-2"></i>{{ __('admin.edit_reviewer') }}
                 </h2>
-                <p class="text-muted mb-0">Update reviewer information and settings</p>
+                <p class="text-muted mb-0">{{ __('admin.update_reviewer_info') }}</p>
             </div>
             <a href="{{ route('admin.reviewers.show', $reviewer->id) }}" class="btn btn-outline-warning">
-                <i class="bi bi-eye me-2"></i>View Profile
+                <i class="bi bi-eye me-2"></i>{{ __('admin.view_profile') }}
             </a>
         </div>
 
@@ -341,24 +341,24 @@
                             <div class="section-icon">
                                 <i class="bi bi-person-circle"></i>
                             </div>
-                            <h3 class="section-title">Personal Information</h3>
+                            <h3 class="section-title">{{ __('admin.personal_information') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">
-                                    Full Name<span class="required-star">*</span>
+                                    {{ __('admin.full_name') }}<span class="required-star">*</span>
                                 </label>
                                 <input type="text" name="name" id="name"
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $reviewer->name) }}" placeholder="Enter full name" required>
+                                    value="{{ old('name', $reviewer->name) }}" placeholder="{{ __('admin.ph_full_name') }}" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Phone Number</label>
+                                <label class="form-label">{{ __('admin.phone_number') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-telephone"></i>
@@ -373,7 +373,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Department</label>
+                                <label class="form-label">{{ __('admin.department') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-building"></i>
@@ -389,7 +389,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Designation</label>
+                                <label class="form-label">{{ __('admin.designation') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-briefcase"></i>
@@ -412,13 +412,13 @@
                             <div class="section-icon">
                                 <i class="bi bi-shield-lock"></i>
                             </div>
-                            <h3 class="section-title">Account Credentials</h3>
+                            <h3 class="section-title">{{ __('admin.account_credentials') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label">
-                                    Email Address<span class="required-star">*</span>
+                                    {{ __('admin.email_address') }}<span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
@@ -445,17 +445,17 @@
                             <div class="section-icon">
                                 <i class="bi bi-key"></i>
                             </div>
-                            <h3 class="section-title">Change Password</h3>
+                            <h3 class="section-title">{{ __('admin.change_password') }}</h3>
                         </div>
 
                         <div class="alert-info-custom mb-3">
                             <i class="bi bi-info-circle me-2"></i>
-                            <small>Leave password fields empty if you don't want to change the password</small>
+                            <small>{{ __('admin.leave_password_empty') }}</small>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">New Password</label>
+                                <label class="form-label">{{ __('admin.new_password') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-lock"></i>
@@ -477,7 +477,7 @@
                                 <!-- Password Strength Indicator -->
                                 <div class="password-strength" id="passwordStrength">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <small class="text-muted">Password Strength:</small>
+                                        <small class="text-muted">{{ __('admin.password_strength') }}:</small>
                                         <small class="fw-bold" id="strengthText"></small>
                                     </div>
                                     <div class="strength-bar">
@@ -487,7 +487,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Confirm New Password</label>
+                                <label class="form-label">{{ __('admin.confirm_new_password') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-lock-fill"></i>
@@ -509,20 +509,20 @@
                             <div class="section-icon">
                                 <i class="bi bi-toggle-on"></i>
                             </div>
-                            <h3 class="section-title">Account Status</h3>
+                            <h3 class="section-title">{{ __('admin.account_status') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label">
-                                    Account Status<span class="required-star">*</span>
+                                    {{ __('admin.account_status') }}<span class="required-star">*</span>
                                 </label>
                                 <select name="status" class="form-select @error('status') is-invalid @enderror" required>
                                     <option value="active" {{ old('status', $reviewer->status) == 'active' ? 'selected' : '' }}>
-                                        ✓ Active - Can login immediately
+                                        {{ __('admin.active_can_login') }}
                                     </option>
                                     <option value="inactive" {{ old('status', $reviewer->status) == 'inactive' ? 'selected' : '' }}>
-                                        ✗ Inactive - Cannot login until activated
+                                        {{ __('admin.inactive_cannot_login') }}
                                     </option>
                                 </select>
                                 @error('status')
@@ -543,7 +543,7 @@
                             <div class="section-icon">
                                 <i class="bi bi-image"></i>
                             </div>
-                            <h3 class="section-title">Profile Photo</h3>
+                            <h3 class="section-title">{{ __('admin.profile_photo') }}</h3>
                         </div>
 
                         <div class="photo-upload-container" id="photoUploadContainer">
@@ -562,7 +562,7 @@
                                 <div class="upload-icon">
                                     <i class="bi bi-cloud-arrow-up"></i>
                                 </div>
-                                <div class="upload-text">Upload Profile Photo</div>
+                                <div class="upload-text">{{ __('admin.upload_profile_photo') }}</div>
                                 <div class="upload-subtext">
                                     Drag and drop or click to browse
                                 </div>
@@ -601,7 +601,7 @@
                     <div class="info-box">
                         <div class="info-box-title">
                             <i class="bi bi-clock-history"></i>
-                            Account Information
+                            {{ __('admin.account_information') }}
                         </div>
                         <ul class="info-list">
                             <li>
@@ -610,15 +610,15 @@
                             </li>
                             <li>
                                 <i class="bi bi-calendar-plus"></i>
-                                <span><strong>Created:</strong> {{ $reviewer->created_at->format('M d, Y') }}</span>
+                                <span><strong>{{ __('admin.created') }}:</strong> {{ $reviewer->created_at->format('M d, Y') }}</span>
                             </li>
                             <li>
                                 <i class="bi bi-calendar-check"></i>
-                                <span><strong>Updated:</strong> {{ $reviewer->updated_at->format('M d, Y') }}</span>
+                                <span><strong>{{ __('admin.updated') }}:</strong> {{ $reviewer->updated_at->format('M d, Y') }}</span>
                             </li>
                             <li>
                                 <i class="bi bi-clock"></i>
-                                <span><strong>Member since:</strong> {{ $reviewer->created_at->diffForHumans() }}</span>
+                                <span><strong>{{ __('admin.member_since') }}:</strong> {{ $reviewer->created_at->diffForHumans() }}</span>
                             </li>
                         </ul>
                     </div>
@@ -629,10 +629,10 @@
             <!-- Form Actions -->
             <div class="d-flex gap-3 justify-content-end mt-4">
                 <a href="{{ route('admin.reviewers.index') }}" class="btn btn-custom btn-secondary-custom">
-                    <i class="bi bi-x-circle me-2"></i>Cancel
+                    <i class="bi bi-x-circle me-2"></i>{{ __('admin.cancel') }}
                 </a>
                 <button type="submit" class="btn btn-custom btn-primary-custom">
-                    <i class="bi bi-check-circle me-2"></i>Update Reviewer
+                    <i class="bi bi-check-circle me-2"></i>{{ __('admin.update') }}
                 </button>
             </div>
         </form>
@@ -689,14 +689,14 @@
             // Validate file type
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
             if (!validTypes.includes(file.type)) {
-                alert('Please select a valid image file (JPG or PNG)');
+                alert('{{ __('admin.val_photo_type') }}');
                 photoInput.value = '';
                 return;
             }
 
             // Validate file size (2MB)
             if (file.size > 2 * 1024 * 1024) {
-                alert('File size must be less than 2MB');
+                alert('{{ __('admin.val_photo_size') }}');
                 photoInput.value = '';
                 return;
             }
@@ -802,19 +802,19 @@
             if (password) {
                 if (password !== passwordConfirm) {
                     e.preventDefault();
-                    alert('Passwords do not match!');
+                    alert('{{ __('admin.val_passwords_mismatch') }}');
                     return false;
                 }
 
                 if (password.length < 8) {
                     e.preventDefault();
-                    alert('Password must be at least 8 characters long!');
+                    alert('{{ __('admin.val_password_min_8') }}');
                     return false;
                 }
 
                 if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
                     e.preventDefault();
-                    alert('Password must contain both letters and numbers!');
+                    alert('{{ __('admin.val_password_letters_nums') }}');
                     return false;
                 }
             }

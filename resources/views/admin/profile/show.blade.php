@@ -1,46 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'My Profile')
-@section('portal-name', 'Admin Portal')
+@section('title', __('admin.my_profile'))
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-lock')
 @section('dashboard-route', route('admin.dashboard'))
 @section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.jobs.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.jobs.*') ? 'active' : '' }}">
-        <i class="bi bi-briefcase"></i>
-        <span>Job Management</span>
-    </a>
-    <a href="{{ route('admin.applications.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Applications</span>
-    </a>
-    <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.candidates.*') ? 'active' : '' }}">
-        <i class="bi bi-people"></i>
-        <span>Candidates</span>
-    </a>
-    <a href="{{ route('admin.reviewers.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.reviewers.*') ? 'active' : '' }}">
-        <i class="bi bi-person-check"></i>
-        <span>Reviewers</span>
-    </a>
-    <a href="{{ route('admin.approvers.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.approvers.*') ? 'active' : '' }}">
-        <i class="bi bi-person-check-fill"></i>
-        <span>Approvers</span>
-    </a>
-    <a href="{{ route('admin.profile') }}" class="sidebar-menu-item {{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
-        <i class="bi bi-person-circle"></i>
-        <span>My Profile</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('content')
     <div class="page-header">
-        <h1 class="page-title">My Profile</h1>
-        <p class="page-subtitle">View and manage your profile information</p>
+        <h1 class="page-title">{{ __('admin.my_profile') }}</h1>
+        <p class="page-subtitle">{{ __('admin.view_manage_profile') }}</p>
     </div>
 
     @if (session('success'))
@@ -74,13 +47,13 @@
                         @endif
                     </div>
                     <h4 class="mb-1">{{ $admin->name }}</h4>
-                    <p class="text-muted mb-3">System Administrator</p>
+                    <p class="text-muted mb-3">{{ __('admin.system_administrator') }}</p>
                     <div class="d-grid gap-2">
                         <a href="{{ route('admin.profile.edit') }}" class="btn btn-outline-primary">
-                            <i class="bi bi-pencil me-2"></i>Edit Profile
+                            <i class="bi bi-pencil me-2"></i>{{ __('admin.edit_profile') }}
                         </a>
                         <a href="{{ route('admin.change-password') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-lock me-2"></i>Change Password
+                            <i class="bi bi-lock me-2"></i>{{ __('admin.change_password') }}
                         </a>
                     </div>
                 </div>
@@ -92,26 +65,26 @@
             <!-- Contact Information -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Contact Information</h5>
+                    <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2 text-primary"></i>{{ __('admin.contact_information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Full Name</label>
+                            <label class="text-muted small">{{ __('admin.name') }}</label>
                             <p class="mb-0 fw-semibold">{{ $admin->name }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Email Address</label>
+                            <label class="text-muted small">{{ __('admin.email_address') }}</label>
                             <p class="mb-0 fw-semibold">{{ $admin->email }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Phone Number</label>
-                            <p class="mb-0 fw-semibold">{{ $admin->phone ?? 'Not provided' }}</p>
+                            <label class="text-muted small">{{ __('admin.phone_number') }}</label>
+                            <p class="mb-0 fw-semibold">{{ $admin->phone ?? __('admin.not_provided') }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Status</label>
+                            <label class="text-muted small">{{ __('admin.status') }}</label>
                             <p class="mb-0">
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ __('admin.active') }}</span>
                             </p>
                         </div>
                     </div>
@@ -121,7 +94,7 @@
             <!-- Statistics -->
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2 text-primary"></i>System Overview</h5>
+                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2 text-primary"></i>{{ __('admin.system_overview') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
@@ -135,7 +108,7 @@
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h3 class="mb-0">{{ $stats['total_vacancies'] }}</h3>
-                                    <p class="text-muted mb-0 small">Total Vacancies</p>
+                                    <p class="text-muted mb-0 small">{{ __('admin.total_vacancies') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +122,7 @@
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h3 class="mb-0">{{ $stats['active_vacancies'] }}</h3>
-                                    <p class="text-muted mb-0 small">Active Vacancies</p>
+                                    <p class="text-muted mb-0 small">{{ __('admin.active_vacancies') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +136,7 @@
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h3 class="mb-0">{{ $stats['total_applications'] }}</h3>
-                                    <p class="text-muted mb-0 small">Total Applications</p>
+                                    <p class="text-muted mb-0 small">{{ __('admin.total_applications') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +150,7 @@
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h3 class="mb-0">{{ $stats['pending_applications'] }}</h3>
-                                    <p class="text-muted mb-0 small">Pending Applications</p>
+                                    <p class="text-muted mb-0 small">{{ __('admin.pending_applications') }}</p>
                                 </div>
                             </div>
                         </div>

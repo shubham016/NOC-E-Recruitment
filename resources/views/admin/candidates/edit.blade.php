@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Candidate - Nepal Oil Nigam')
+@section('title', __('admin.edit_candidate_profile'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -225,20 +225,20 @@
         <!-- Back Button -->
         <a href="{{ route('admin.candidates.show', $candidate->id) }}" class="nav-back">
             <i class="bi bi-arrow-left"></i>
-            Back to Profile
+            {{ __('admin.back_to_profile') }}
         </a>
 
         <!-- Page Header -->
         <div class="page-header">
-            <h1 class="page-title">Edit Candidate Profile</h1>
-            <p class="page-subtitle">Update candidate information and account settings</p>
+            <h1 class="page-title">{{ __('admin.edit_candidate_profile') }}</h1>
+            <p class="page-subtitle">{{ __('admin.update_candidate_info') }}</p>
         </div>
 
         <!-- Alerts -->
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <strong>Success!</strong> {{ session('success') }}
+                <strong>{{ __('admin.success') }}</strong> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -246,7 +246,7 @@
         @if($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <strong>Error!</strong> Please fix the following errors:
+                <strong>{{ __('admin.error') }}</strong> {{ __('admin.please_fix_errors') }}
                 <ul class="mb-0 mt-2">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -266,14 +266,14 @@
                 <div class="form-card-header">
                     <h3 class="form-card-title">
                         <i class="bi bi-person-vcard"></i>
-                        Personal Information
+                        {{ __('admin.personal_information') }}
                     </h3>
                 </div>
                 <div class="form-card-body">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
-                                First Name <span class="required">*</span>
+                                {{ __('admin.first_name') }} <span class="required">*</span>
                             </label>
                             <input type="text" name="first_name"
                                 class="form-control @error('first_name') is-invalid @enderror"
@@ -284,7 +284,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Middle Name</label>
+                            <label class="form-label">{{ __('admin.middle_name') }}</label>
                             <input type="text" name="middle_name"
                                 class="form-control @error('middle_name') is-invalid @enderror"
                                 value="{{ old('middle_name', $candidate->middle_name) }}">
@@ -297,7 +297,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
-                                Last Name <span class="required">*</span>
+                                {{ __('admin.last_name') }} <span class="required">*</span>
                             </label>
                             <input type="text" name="last_name"
                                 class="form-control @error('last_name') is-invalid @enderror"
@@ -309,11 +309,11 @@
 
                         <div class="form-group">
                             <label class="form-label">
-                                Citizenship Number
+                                {{ __('admin.citizenship_number') }}
                             </label>
                             <input type="text" class="form-control"
                                 value="{{ $candidate->username }}" disabled>
-                            <small class="form-text">Citizenship number cannot be changed</small>
+                            <small class="form-text">{{ __('admin.citizenship_cannot_change') }}</small>
                         </div>
                     </div>
                 </div>
@@ -324,14 +324,14 @@
                 <div class="form-card-header">
                     <h3 class="form-card-title">
                         <i class="bi bi-telephone"></i>
-                        Contact Information
+                        {{ __('admin.contact_information') }}
                     </h3>
                 </div>
                 <div class="form-card-body">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
-                                Email Address <span class="required">*</span>
+                                {{ __('admin.email') }} <span class="required">*</span>
                             </label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', $candidate->email) }}" required>
@@ -342,7 +342,7 @@
 
                         <div class="form-group">
                             <label class="form-label">
-                                Mobile Number <span class="required">*</span>
+                                {{ __('admin.mobile') }} <span class="required">*</span>
                             </label>
                             <input type="text" name="mobile_number"
                                 class="form-control @error('mobile_number') is-invalid @enderror"
@@ -350,13 +350,13 @@
                             @error('mobile_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text">10-digit mobile number</small>
+                            <small class="form-text">{{ __('admin.ten_digit_mobile') }}</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Qualification</label>
+                            <label class="form-label">{{ __('admin.qualification') }}</label>
                             <input type="text" name="qualification"
                                 class="form-control @error('qualification') is-invalid @enderror"
                                 value="{{ old('qualification', $candidate->qualification) }}">
@@ -377,21 +377,21 @@
                 <div class="form-card-header">
                     <h3 class="form-card-title">
                         <i class="bi bi-shield-check"></i>
-                        Account Settings
+                        {{ __('admin.account_status') }}
                     </h3>
                 </div>
                 <div class="form-card-body">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
-                                Account Status <span class="required">*</span>
+                                {{ __('admin.account_status') }} <span class="required">*</span>
                             </label>
                             <select name="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="active" {{ old('status', $candidate->status) === 'active' ? 'selected' : '' }}>
-                                    Active
+                                    {{ __('admin.active') }}
                                 </option>
                                 <option value="inactive" {{ old('status', $candidate->status) === 'inactive' ? 'selected' : '' }}>
-                                    Inactive
+                                    {{ __('admin.inactive') }}
                                 </option>
                             </select>
                             @error('status')
@@ -400,16 +400,16 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Candidate ID</label>
+                            <label class="form-label">{{ __('admin.candidate_id') }}</label>
                             <input type="text" class="form-control"
                                 value="{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}" disabled>
-                            <small class="form-text">System generated, cannot be changed</small>
+                            <small class="form-text">{{ __('admin.system_generated') }}</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Registration Date</label>
+                            <label class="form-label">{{ __('admin.registration_date') }}</label>
                             <input type="text" class="form-control"
                                 value="{{ $candidate->created_at->format('F d, Y h:i A') }}" disabled>
                         </div>
@@ -427,11 +427,11 @@
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i>
-                            Update Profile
+                            {{ __('admin.update') }}
                         </button>
                         <a href="{{ route('admin.candidates.show', $candidate->id) }}" class="btn btn-secondary">
                             <i class="bi bi-x-circle"></i>
-                            Cancel
+                            {{ __('admin.cancel') }}
                         </a>
                     </div>
                 </div>

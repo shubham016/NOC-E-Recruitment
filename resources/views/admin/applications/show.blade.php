@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Application Details')
+@section('title', __('admin.application_details'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -91,7 +91,7 @@
 <div class="container-fluid px-4 py-4">
     <!-- Back Button -->
     <a href="{{ route('admin.applications.index') }}" class="btn btn-outline-secondary mb-3">
-        <i class="bi bi-arrow-left"></i> Back to Applications
+        <i class="bi bi-arrow-left"></i> {{ __('admin.back') }}
     </a>
 
     @if(session('success'))
@@ -125,7 +125,7 @@
             </div>
             <div class="col-auto">
                 <span class="status-badge status-{{ $application->status }}">
-                    {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                    {{ __('admin.' . $application->status) }}
                 </span>
             </div>
         </div>
@@ -134,16 +134,16 @@
     <!-- Action Buttons -->
     <div class="mb-4 d-flex gap-2">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statusModal">
-            <i class="bi bi-pencil-square"></i> Update Status
+            <i class="bi bi-pencil-square"></i> {{ __('admin.update_status') }}
         </button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignModal">
-            <i class="bi bi-person-plus"></i> Assign Reviewer
+            <i class="bi bi-person-plus"></i> {{ __('admin.assign_reviewer') }}
         </button>
-        <form action="{{ route('admin.applications.destroy', $application->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
+        <form action="{{ route('admin.applications.destroy', $application->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('admin.delete_app_confirm_short') }}')">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger">
-                <i class="bi bi-trash"></i> Delete
+                <i class="bi bi-trash"></i> {{ __('admin.delete') }}
             </button>
         </form>
     </div>
@@ -154,24 +154,24 @@
             <!-- Vacancy Information -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-briefcase me-2"></i>Vacancy Information
+                    <i class="bi bi-briefcase me-2"></i>{{ __('admin.vacancy_applied_for') }}
                 </div>
                 <div class="detail-card-body">
                     <table class="detail-table">
                         <tr>
-                            <td>Vacancy Title</td>
+                            <td>{{ __('admin.vacancy_position') }}</td>
                             <td>{{ $application->vacancy->title }}</td>
                         </tr>
                         <tr>
-                            <td>Advertisement No.</td>
+                            <td>{{ __('admin.advertisement_no') }}</td>
                             <td>{{ $application->vacancy->advertisement_no }}</td>
                         </tr>
                         <tr>
-                            <td>Department</td>
+                            <td>{{ __('admin.department') }}</td>
                             <td>{{ $application->vacancy->department }}</td>
                         </tr>
                         <tr>
-                            <td>Location</td>
+                            <td>{{ __('admin.location') }}</td>
                             <td>{{ $application->vacancy->location }}</td>
                         </tr>
                     </table>
@@ -181,54 +181,54 @@
             <!-- Personal Information -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-person me-2"></i>Personal Information
+                    <i class="bi bi-person me-2"></i>{{ __('admin.personal_information') }}
                 </div>
                 <div class="detail-card-body">
                     <table class="detail-table">
                         <tr>
-                            <td>Name (English)</td>
+                            <td>{{ __('admin.name_english') }}</td>
                             <td>{{ $application->name_english }}</td>
                         </tr>
                         <tr>
-                            <td>Name (Nepali)</td>
-                            <td>{{ $application->name_nepali ?? 'N/A' }}</td>
+                            <td>{{ __('admin.name_nepali') }}</td>
+                            <td>{{ $application->name_nepali ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Date of Birth (BS)</td>
-                            <td>{{ $application->birth_date_bs ?? 'N/A' }}</td>
+                            <td>{{ __('admin.dob_bs') }}</td>
+                            <td>{{ $application->birth_date_bs ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Date of Birth (AD)</td>
-                            <td>{{ $application->birth_date_ad ? \Carbon\Carbon::parse($application->birth_date_ad)->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ __('admin.dob_ad') }}</td>
+                            <td>{{ $application->birth_date_ad ? \Carbon\Carbon::parse($application->birth_date_ad)->format('Y-m-d') : __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Age</td>
-                            <td>{{ $application->age ?? 'N/A' }}</td>
+                            <td>{{ __('admin.age') }}</td>
+                            <td>{{ $application->age ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Gender</td>
+                            <td>{{ __('admin.gender') }}</td>
                             <td>{{ ucfirst($application->gender) }}</td>
                         </tr>
                         <tr>
-                            <td>Citizenship Number</td>
+                            <td>{{ __('admin.citizenship_number') }}</td>
                             <td>{{ $application->citizenship_number }}</td>
                         </tr>
                         <tr>
-                            <td>Email</td>
+                            <td>{{ __('admin.email') }}</td>
                             <td>{{ $application->email }}</td>
                         </tr>
                         <tr>
-                            <td>Phone</td>
+                            <td>{{ __('admin.phone') }}</td>
                             <td>{{ $application->phone }}</td>
                         </tr>
                         <tr>
-                            <td>Permanent Address</td>
+                            <td>{{ __('admin.permanent_address') }}</td>
                             <td>
                                 @if($application->permanent_province || $application->permanent_district)
                                     {{ $application->permanent_municipality }}, Ward-{{ $application->permanent_ward }},
                                     {{ $application->permanent_district }}, {{ $application->permanent_province }}
                                 @else
-                                    N/A
+                                    {{ __('admin.na') }}
                                 @endif
                             </td>
                         </tr>
@@ -239,29 +239,29 @@
             <!-- Education -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-mortarboard me-2"></i>Educational Qualification
+                    <i class="bi bi-mortarboard me-2"></i>{{ __('admin.educational_background') }}
                 </div>
                 <div class="detail-card-body">
                     <table class="detail-table">
                         <tr>
-                            <td>Education Level</td>
-                            <td>{{ $application->education_level ?? 'N/A' }}</td>
+                            <td>{{ __('admin.level') }}</td>
+                            <td>{{ $application->education_level ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Field of Study</td>
-                            <td>{{ $application->field_of_study ?? 'N/A' }}</td>
+                            <td>{{ __('admin.field_of_study') }}</td>
+                            <td>{{ $application->field_of_study ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Institution Name</td>
-                            <td>{{ $application->institution_name ?? 'N/A' }}</td>
+                            <td>{{ __('admin.institution_name') }}</td>
+                            <td>{{ $application->institution_name ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Year of Graduation</td>
-                            <td>{{ $application->graduation_year ?? 'N/A' }}</td>
+                            <td>{{ __('admin.graduation_year') }}</td>
+                            <td>{{ $application->graduation_year ?? __('admin.na') }}</td>
                         </tr>
                         <tr>
-                            <td>Work Experience</td>
-                            <td>{{ $application->has_work_experience ?? 'N/A' }}</td>
+                            <td>{{ __('admin.work_experience') }}</td>
+                            <td>{{ $application->has_work_experience ?? __('admin.na') }}</td>
                         </tr>
                         @if($application->has_work_experience == 'Yes')
                         @foreach($application->experiences as $exp)
@@ -271,7 +271,7 @@
                                 {{ $exp->organization ?? '-' }} — {{ $exp->position ?? '-' }}<br>
                                 <small>{{ $exp->start_date_bs ?? '-' }} to {{ $exp->end_date_bs ?? 'Present' }}{{ $exp->years ? ' (' . $exp->years . ' yrs)' : '' }}</small>
                                 @if($exp->document)
-                                    <br><a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="small">View Document</a>
+                                    <br><a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="small">{{ __('admin.view_document') }}</a>
                                 @endif
                             </td>
                         </tr>
@@ -287,16 +287,16 @@
             <!-- Application Status -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-info-circle me-2"></i>Application Status
+                    <i class="bi bi-info-circle me-2"></i>{{ __('admin.status') }}
                 </div>
                 <div class="detail-card-body">
                     <table class="detail-table">
                         <tr>
-                            <td>Status</td>
-                            <td><span class="status-badge status-{{ $application->status }}">{{ ucfirst(str_replace('_', ' ', $application->status)) }}</span></td>
+                            <td>{{ __('admin.status') }}</td>
+                            <td><span class="status-badge status-{{ $application->status }}">{{ __('admin.' . $application->status) }}</span></td>
                         </tr>
                         <tr>
-                            <td>Applied On</td>
+                            <td>{{ __('admin.applied_date') }}</td>
                             <td>
                                 <div class="nepali-date-bs" data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
                                     <i class="bi bi-hourglass-split"></i> Converting...
@@ -305,7 +305,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Last Updated</td>
+                            <td>{{ __('admin.last_updated') }}</td>
                             <td>
                                 <div class="nepali-date-bs" data-ad-date="{{ $application->updated_at->format('Y-m-d') }}">
                                     <i class="bi bi-hourglass-split"></i> Converting...
@@ -320,22 +320,22 @@
             <!-- Reviewer Information -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-person-check me-2"></i>Reviewer
+                    <i class="bi bi-person-check me-2"></i>{{ __('admin.assigned_reviewer') }}
                 </div>
                 <div class="detail-card-body">
                     @if($application->reviewer)
                         <table class="detail-table">
                             <tr>
-                                <td>Name</td>
+                                <td>{{ __('admin.name') }}</td>
                                 <td>{{ $application->reviewer->name }}</td>
                             </tr>
                             <tr>
-                                <td>Email</td>
+                                <td>{{ __('admin.email') }}</td>
                                 <td>{{ $application->reviewer->email }}</td>
                             </tr>
                         </table>
                     @else
-                        <p class="text-muted mb-0">No reviewer assigned</p>
+                        <p class="text-muted mb-0">{{ __('admin.no_reviewer_assigned') }}</p>
                     @endif
                 </div>
             </div>
@@ -343,13 +343,13 @@
             <!-- Documents -->
             <div class="detail-card">
                 <div class="detail-card-header">
-                    <i class="bi bi-file-earmark-text me-2"></i>Documents
+                    <i class="bi bi-file-earmark-text me-2"></i>{{ __('admin.uploaded_documents') }}
                 </div>
                 <div class="detail-card-body">
                     <div class="d-grid gap-2">
                         @if($application->passport_size_photo)
                             <a href="{{ asset('storage/' . $application->passport_size_photo) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-image"></i> View Photo
+                                <i class="bi bi-image"></i> {{ __('admin.passport_photo') }}
                             </a>
                         @endif
                         @if($application->citizenship_front)
@@ -371,23 +371,23 @@
     <!-- Application Status History -->
     <div class="detail-card">
         <div class="detail-card-header">
-            Application Status History
+            {{ __('admin.application_status_history') }}
         </div>
         <div class="detail-card-body">
             @php $histories = $application->statusHistories; @endphp
 
             @if($histories->isEmpty())
-                <p class="text-muted mb-0">No history available yet.</p>
+                <p class="text-muted mb-0">{{ __('admin.no_history') }}</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th style="width:50px">S.N</th>
-                                <th>Stage Name</th>
-                                <th>Done By</th>
-                                <th>Date &amp; Time</th>
-                                <th>Remarks</th>
+                                <th style="width:50px">{{ __('admin.sn') }}</th>
+                                <th>{{ __('admin.stage_name') }}</th>
+                                <th>{{ __('admin.done_by') }}</th>
+                                <th>{{ __('admin.date_time') }}</th>
+                                <th>{{ __('admin.remarks') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -431,25 +431,25 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Update Application Status</h5>
+                <h5 class="modal-title">{{ __('admin.update_application_status') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.applications.updateStatus', $application->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Status</label>
+                        <label class="form-label">{{ __('admin.status') }}</label>
                         <select name="status" class="form-select" required>
-                            <option value="pending" {{ $application->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="under_review" {{ $application->status == 'under_review' ? 'selected' : '' }}>Under Review</option>
-                            <option value="approved" {{ $application->status == 'approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                            <option value="pending" {{ $application->status == 'pending' ? 'selected' : '' }}>{{ __('admin.pending') }}</option>
+                            <option value="under_review" {{ $application->status == 'under_review' ? 'selected' : '' }}>{{ __('admin.under_review') }}</option>
+                            <option value="approved" {{ $application->status == 'approved' ? 'selected' : '' }}>{{ __('admin.approved') }}</option>
+                            <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>{{ __('admin.rejected') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Status</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('admin.update_status') }}</button>
                 </div>
             </form>
         </div>
@@ -461,16 +461,16 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Assign Reviewer</h5>
+                <h5 class="modal-title">{{ __('admin.assign_reviewer') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.applications.assignReviewer', $application->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Select Reviewer</label>
+                        <label class="form-label">{{ __('admin.select_reviewer') }}</label>
                         <select name="reviewer_id" class="form-select" required>
-                            <option value="">-- Select Reviewer --</option>
+                            <option value="">-- {{ __('admin.select_reviewer') }} --</option>
                             @foreach($reviewers ?? [] as $reviewer)
                                 <option value="{{ $reviewer->id }}" {{ $application->reviewer_id == $reviewer->id ? 'selected' : '' }}>
                                     {{ $reviewer->name }} ({{ $reviewer->email }})
@@ -480,8 +480,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Assign</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('admin.assign') }}</button>
                 </div>
             </form>
         </div>

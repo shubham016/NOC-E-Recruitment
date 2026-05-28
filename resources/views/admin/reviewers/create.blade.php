@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Create Reviewer')
+@section('title', __('admin.create_reviewer'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -294,20 +294,20 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #10b981;">Dashboard</a>
+                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" style="color: #10b981;">{{ __('admin.dashboard') }}</a>
                 </li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.reviewers.index') }}"
-                        style="color: #10b981;">Reviewers</a></li>
-                <li class="breadcrumb-item active">Create New</li>
+                        style="color: #10b981;">{{ __('admin.reviewers') }}</a></li>
+                <li class="breadcrumb-item active">{{ __('admin.create_new') }}</li>
             </ol>
         </nav>
 
         <!-- Page Header -->
         <div class="mb-4">
             <h2 class="fw-bold mb-2" style="color: #065f46;">
-                <i class="bi bi-person-plus-fill me-2"></i>Create New Reviewer
+                <i class="bi bi-person-plus-fill me-2"></i>{{ __('admin.add_new_reviewer') }}
             </h2>
-            <p class="text-muted mb-0">Add a new reviewer account to review and evaluate applications</p>
+            <p class="text-muted mb-0">{{ __('admin.add_new_reviewer_subtitle') }}</p>
         </div>
 
         <form action="{{ route('admin.reviewers.store') }}" method="POST" enctype="multipart/form-data">
@@ -323,24 +323,24 @@
                             <div class="section-icon">
                                 <i class="bi bi-person-circle"></i>
                             </div>
-                            <h3 class="section-title">Personal Information</h3>
+                            <h3 class="section-title">{{ __('admin.personal_information') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">
-                                    Full Name<span class="required-star">*</span>
+                                    {{ __('admin.full_name') }}<span class="required-star">*</span>
                                 </label>
                                 <input type="text" name="name" id="name"
                                     class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
-                                    placeholder="Enter full name" required>
+                                    placeholder="{{ __('admin.ph_full_name') }}" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Phone Number</label>
+                                <label class="form-label">{{ __('admin.phone_number') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-telephone"></i>
@@ -355,7 +355,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Department</label>
+                                <label class="form-label">{{ __('admin.department') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-building"></i>
@@ -370,7 +370,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Designation</label>
+                                <label class="form-label">{{ __('admin.designation') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
                                         <i class="bi bi-briefcase"></i>
@@ -392,13 +392,13 @@
                             <div class="section-icon">
                                 <i class="bi bi-shield-lock"></i>
                             </div>
-                            <h3 class="section-title">Account Credentials</h3>
+                            <h3 class="section-title">{{ __('admin.account_credentials') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label">
-                                    Email Address<span class="required-star">*</span>
+                                    {{ __('admin.email_address') }}<span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
@@ -418,7 +418,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">
-                                    Password<span class="required-star">*</span>
+                                    {{ __('admin.password') }}<span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
@@ -441,7 +441,7 @@
                                 <!-- Password Strength Indicator -->
                                 <div class="password-strength" id="passwordStrength">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <small class="text-muted">Password Strength:</small>
+                                        <small class="text-muted">{{ __('admin.password_strength') }}:</small>
                                         <small class="fw-bold" id="strengthText"></small>
                                     </div>
                                     <div class="strength-bar">
@@ -452,7 +452,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">
-                                    Confirm Password<span class="required-star">*</span>
+                                    {{ __('admin.confirm_password') }}<span class="required-star">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text input-icon">
@@ -475,20 +475,20 @@
                             <div class="section-icon">
                                 <i class="bi bi-toggle-on"></i>
                             </div>
-                            <h3 class="section-title">Account Status</h3>
+                            <h3 class="section-title">{{ __('admin.account_status') }}</h3>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label">
-                                    Initial Status<span class="required-star">*</span>
+                                    {{ __('admin.initial_status') }}<span class="required-star">*</span>
                                 </label>
                                 <select name="status" class="form-select @error('status') is-invalid @enderror" required>
                                     <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>
-                                        ✓ Active - Can login immediately
+                                        {{ __('admin.active_can_login') }}
                                     </option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
-                                        ✗ Inactive - Cannot login until activated
+                                        {{ __('admin.inactive_cannot_login') }}
                                     </option>
                                 </select>
                                 @error('status')
@@ -509,7 +509,7 @@
                             <div class="section-icon">
                                 <i class="bi bi-image"></i>
                             </div>
-                            <h3 class="section-title">Profile Photo</h3>
+                            <h3 class="section-title">{{ __('admin.profile_photo') }}</h3>
                         </div>
 
                         <div class="photo-upload-container" id="photoUploadContainer">
@@ -526,7 +526,7 @@
                                 <div class="upload-icon">
                                     <i class="bi bi-cloud-arrow-up"></i>
                                 </div>
-                                <div class="upload-text">Upload Profile Photo</div>
+                                <div class="upload-text">{{ __('admin.upload_profile_photo') }}</div>
                                 <div class="upload-subtext">
                                     Drag and drop or click to browse
                                 </div>
@@ -564,15 +564,15 @@
                     <div class="info-box">
                         <div class="info-box-title">
                             <i class="bi bi-shield-check"></i>
-                            Default Permissions
+                            {{ __('admin.default_permissions') }}
                         </div>
-                        <p class="small mb-2" style="color: #065f46;">This Reviewer will have access to:</p>
+                        <p class="small mb-2" style="color: #065f46;">{{ __('admin.reviewer_has_access_to') }}</p>
                         <ul class="mb-0">
-                            <li>View assigned applications</li>
-                            <li>Review application documents</li>
-                            <li>Update application status</li>
-                            <li>Add review comments</li>
-                            <li>Approve/reject applications</li>
+                            <li>{{ __('admin.perm_view_assigned') }}</li>
+                            <li>{{ __('admin.perm_review_documents') }}</li>
+                            <li>{{ __('admin.perm_update_status') }}</li>
+                            <li>{{ __('admin.perm_add_comments') }}</li>
+                            <li>{{ __('admin.perm_approve_reject') }}</li>
                         </ul>
                     </div>
 
@@ -582,10 +582,10 @@
             <!-- Form Actions -->
             <div class="d-flex gap-3 justify-content-end mt-4">
                 <a href="{{ route('admin.reviewers.index') }}" class="btn btn-custom btn-secondary-custom">
-                    <i class="bi bi-x-circle me-2"></i>Cancel
+                    <i class="bi bi-x-circle me-2"></i>{{ __('admin.cancel') }}
                 </a>
                 <button type="submit" class="btn btn-custom btn-primary-custom">
-                    <i class="bi bi-check-circle me-2"></i>Create Reviewer
+                    <i class="bi bi-check-circle me-2"></i>{{ __('admin.create') }}
                 </button>
             </div>
         </form>
@@ -642,14 +642,14 @@
             // Validate file type
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
             if (!validTypes.includes(file.type)) {
-                alert('Please select a valid image file (JPG or PNG)');
+                alert('{{ __('admin.val_photo_type') }}');
                 photoInput.value = '';
                 return;
             }
 
             // Validate file size (2MB)
             if (file.size > 2 * 1024 * 1024) {
-                alert('File size must be less than 2MB');
+                alert('{{ __('admin.val_photo_size') }}');
                 photoInput.value = '';
                 return;
             }
@@ -753,19 +753,19 @@
 
             if (password !== passwordConfirm) {
                 e.preventDefault();
-                alert('Passwords do not match!');
+                alert('{{ __('admin.val_passwords_mismatch') }}');
                 return false;
             }
 
             if (password.length < 8) {
                 e.preventDefault();
-                alert('Password must be at least 8 characters long!');
+                alert('{{ __('admin.val_password_min_8') }}');
                 return false;
             }
 
             if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
                 e.preventDefault();
-                alert('Password must contain both letters and numbers!');
+                alert('{{ __('admin.val_password_letters_nums') }}');
                 return false;
             }
         });

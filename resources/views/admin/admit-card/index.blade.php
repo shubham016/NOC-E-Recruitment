@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Admit Card Management')
-@section('portal-name', 'Admin Portal')
+@section('title', __('admin.admit_card_management'))
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
@@ -17,8 +17,8 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Admit Card Management</h4>
-            <p class="text-muted mb-0">Bulk assign exam details and roll numbers by vacancy.</p>
+            <h4 class="fw-bold mb-1">{{ __('admin.admit_card_management') }}</h4>
+            <p class="text-muted mb-0">{{ __('admin.bulk_assign_exam') }}</p>
         </div>
     </div>
 
@@ -38,27 +38,27 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3">
-            <h6 class="fw-bold mb-0">Vacancies with Approved Applications</h6>
+            <h6 class="fw-bold mb-0">{{ __('admin.vacancies_with_approved') }}</h6>
         </div>
         <div class="card-body p-0">
             @if($groups->isEmpty())
                 <div class="text-center py-5 text-muted">
-                    <p class="mb-0">No approved applications available for admit card assignment.</p>
+                    <p class="mb-0">{{ __('admin.no_approved_for_admit') }}</p>
                 </div>
             @else
                 <div class="table-responsive">
                     <table class="table table-bordered mb-0 align-middle text-center" style="font-size:0.9rem;">
                         <thead style="background:#f9fafb;">
                             <tr>
-                                <th>Notice No.</th>
-                                <th>Advertisement No.</th>
-                                <th>Position / Level</th>
-                                <th>Service / Group</th>
-                                <th>Total Candidates</th>
-                                <th>Admit Cards Assigned</th>
-                                <th>Exam Date</th>
-                                <th>Venue</th>
-                                <th>Actions</th>
+                                <th>{{ __('admin.notice_no') }}</th>
+                                <th>{{ __('admin.adv_no') }}</th>
+                                <th>{{ __('admin.position_level') }}</th>
+                                <th>{{ __('admin.service_group') }}</th>
+                                <th>{{ __('admin.total_applications') }}</th>
+                                <th>{{ __('admin.admit_cards_assigned') }}</th>
+                                <th>{{ __('admin.exam_date') }}</th>
+                                <th>{{ __('admin.venue') }}</th>
+                                <th>{{ __('admin.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,12 +84,12 @@
                                     <td>
                                         <a href="{{ route('admin.admit-card.assign', $group->job_posting_id) }}"
                                            class="btn btn-sm" style="background:#c9a84c; color:#fff; border:none;">
-                                            {{ $allAssigned ? 'Re-assign' : 'Assign Admit Cards' }}
+                                            {{ $allAssigned ? __('admin.reassign') : __('admin.assign_admit_cards') }}
                                         </a>
                                         @if($group->assigned_count > 0)
                                             <a href="{{ route('admin.admit-card.preview', $group->job_posting_id) }}"
                                                class="btn btn-sm btn-outline-secondary ms-1">
-                                                Preview
+                                                {{ __('admin.preview') }}
                                             </a>
                                         @endif
                                     </td>

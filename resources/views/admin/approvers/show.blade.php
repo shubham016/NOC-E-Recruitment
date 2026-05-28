@@ -1,7 +1,6 @@
 @extends('layouts.approver')
 
-@section('title', 'Application Details')
-@section('title', 'Approver Dashboard')
+@section('title', __('admin.application_details'))
 @section('portal-name', 'Approver Portal')
 @section('brand-icon', 'bi bi-person-check')
 @section('dashboard-route', route('approver.dashboard'))
@@ -282,10 +281,10 @@
                 <a href="{{ route('approver.assignedtome') }}" 
                 class="text-dark text-decoration-none mb-2 d-inline-block no-print">
                     <i class="bi bi-arrow-left me-2"></i>
-                    Back to Applications
+                    {{ __('admin.back_to_applications') }}
                 </a>
 
-                <h2 class="mb-1 fw-bold">Application Review</h2>
+                <h2 class="mb-1 fw-bold">{{ __('admin.application_review') }}</h2>
             </div>
             <div class="text-end">
                 @php
@@ -300,7 +299,7 @@
 
                 @endphp
                 <span class="status-badge {{ $statusColor }} fs-5 d-block mb-2">
-                    <i class=" me-1"></i>{{ ucfirst($application->status) }}
+                    <i class=" me-1"></i>{{ __('admin.' . $application->status) }}
                 </span>
                 @if($application->manual_priority)
                     <span class="priority-badge {{ $priorityColors[$application->manual_priority] ?? 'bg-secondary text-white' }}">
@@ -361,7 +360,7 @@
 
             <!-- Vacancy Information -->
             <div class="info-card">
-                <h5>Vacancy Information</h5>
+                <h5>{{ __('admin.vacancy_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -399,7 +398,7 @@
                                         $deadlineBS = $application->jobPosting->deadline_bs ?: adToBS($application->jobPosting->deadline->format('Y-m-d')); 
                                     @endphp
                                     <span class="d-block">{{ $deadlineBS }} (BS)</span>
-                                    <span class="text-muted">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
+                                    <span class="text-muted">{{ $application->jobPosting->deadline->format('F d, Y') }} {{ __('admin.ad_suffix') }}</span>
                                 @else
                                     N/A
                                 @endif
@@ -413,7 +412,7 @@
 
             <!-- Personal Information -->
            <div class="info-card">
-                <h5>Personal Information</h5>
+                <h5>{{ __('admin.personal_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -426,11 +425,11 @@
                             <div class="info-value">{{ $application->name_nepali ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Birth Date (AD):</div>
+                            <div class="info-label">{{ __('admin.birth_date_ad') }}:</div>
                             <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Birth Date (BS):</div>
+                            <div class="info-label">{{ __('admin.birth_date_bs') }}:</div>
                             <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
@@ -479,7 +478,7 @@
 
             <!-- Citizenship Information -->
             <div class="info-card">
-                <h5>Citizenship Information</h5>
+                <h5>{{ __('admin.citizenship_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -488,7 +487,7 @@
                             <div class="info-value">{{ $application->citizenship_number ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Issue Date (AD):</div>
+                            <div class="info-label">{{ __('admin.issue_date_ad') }}:</div>
                             <div class="info-value">
                                 {{ $application->citizenship_issue_date_ad 
                                     ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') 
@@ -514,7 +513,7 @@
 
             <!-- Community & Ethnic Information -->
             <div class="info-card">
-                <h5>Community & Ethnic Information</h5>
+                <h5>{{ __('admin.community_ethnic') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -560,7 +559,7 @@
 
             <!-- Disability & Employment Information -->
             <div class="info-card">
-                <h5>Employment & Disability Status</h5>
+                <h5>{{ __('admin.employment_disability_status') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -591,9 +590,9 @@
                         </div>
                         @endif
                         <div class="info-row">
-                            <div class="info-label">NOC Employee:</div>
+                            <div class="info-label">{{ __('admin.noc_employee') }}:</div>
                             <div class="info-value">
-                                {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
+                                {{ $application->noc_employee == 'yes' ? __('admin.yes') : __('admin.no') }}
                                 @if($application->noc_employee == 'yes' && $application->noc_id_card)
                                     <span class="badge bg-info ms-2">ID: {{ $application->noc_id_card }}</span>
                                 @endif
@@ -607,11 +606,11 @@
 
             <!-- Address Information -->
           <div class="info-card">
-                <h5>Address Information</h5>
+                <h5>{{ __('admin.address_information') }}</h5>
                 <div class="row">
                     <!-- Left Column: Permanent Address -->
                     <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">Permanent Address</h6>
+                        <h6 class="text-dark mt-2 mb-2">{{ __('admin.permanent_address') }}</h6>
                         <div class="info-row">
                             <div class="info-label">Province:</div>
                             <div class="info-value">{{ $application->permanent_province ?? 'N/A' }}</div>
@@ -640,10 +639,10 @@
 
                     <!-- Right Column: Mailing/Temporary Address -->
                     <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">Mailing/Temporary Address</h6>
+                        <h6 class="text-dark mt-2 mb-2">{{ __('admin.mailing_temp_address') }}</h6>
                         @if($application->same_as_permanent == 'yes')
                             <div class="alert alert-info-custom">
-                                Same as Permanent Address
+                                {{ __('admin.same_as_permanent_address') }}
                             </div>
                         @else
                             <div class="info-row">
@@ -679,7 +678,7 @@
 
             <!-- Education -->
             <div class="info-card">
-                <h5>Educational Background</h5>
+                <h5>{{ __('admin.educational_background') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -709,12 +708,12 @@
 
              <!-- Work Experience -->
                 <div class="info-card">
-                    <h5>Work Experience</h5>
+                    <h5>{{ __('admin.work_experience') }}</h5>
 
                     @if(strtolower($application->has_work_experience ?? '') == 'yes')
 
                         <div class="mb-3">
-                            <strong>Has Work Experience:</strong>
+                            <strong>{{ __('admin.has_work_experience') }}:</strong>
                             <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
                         </div>
 
@@ -787,7 +786,7 @@
 
             <!-- Payment Information -->
             <div class="info-card">
-                <h5>Payment Information</h5>
+                <h5>{{ __('admin.payment_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -822,7 +821,7 @@
             <!-- Cover Letter -->
             <!-- @if($application->cover_letter)
             <div class="info-card">
-                <h5><i class=""></i>Cover Letter</h5>
+                <h5>{{ __('admin.cover_letter') }}</h5>
                 <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                     <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
                 </div>
@@ -833,7 +832,7 @@
 
              <!-- Uploaded Documents -->
             <div class="info-card">
-            <h5><i class=""></i>Uploaded Documents</h5>
+            <h5>{{ __('admin.uploaded_documents') }}</h5>
 
 
              @if($application->passport_size_photo)
@@ -1051,9 +1050,9 @@
             <!-- Admin Notes (if any) -->
             @if($application->admin_notes)
             <div class="info-card">
-                <h5>Admin Notes</h5>
+                <h5>{{ __('admin.admin_notes_only') }}</h5>
                 <div class="alert alert-info-custom">
-                    <p class="mb-0"><strong>Admin's Note:</strong></p>
+                    <p class="mb-0"><strong>{{ __('admin.admins_note_colon') }}</strong></p>
                     <p class="mb-0 mt-2">{{ $application->admin_notes }}</p>
                 </div>
             </div>
@@ -1061,7 +1060,7 @@
 
             @if($application->priority_note)
             <div class="info-card">
-                <h5>Priority Note</h5>
+                <h5>{{ __('admin.priority_note') }}</h5>
                 <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
                     <p class="mb-0">{{ $application->priority_note }}</p>
                 </div>
@@ -1075,35 +1074,35 @@
             @if($application->status !== 'approved' && $application->status !== 'rejected')
             <div class="info-card">
                 <h5>
-                    <i class="text-secondary me-2"></i>Actions
+                    <i class="text-secondary me-2"></i>{{ __('admin.actions') }}
                 </h5>
                 <form action="{{ route('approver.applications.updateStatus', $application->id) }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Decision</label>
+                        <label class="form-label fw-semibold">{{ __('admin.decision') }}</label>
                         <select name="status" class="form-select" required>
-                            <option value="">Select Decision</option>
-                            <option value="approved">Approve</option>
-                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
-                            <option value="rejected">Reject</option>
+                            <option value="">{{ __('admin.select_decision') }}</option>
+                            <option value="approved">{{ __('admin.approve') }}</option>
+                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>{{ __('admin.send_back_for_edit') }}</option>
+                            <option value="rejected">{{ __('admin.reject') }}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Remarks <span class="text-danger">*</span></label>
-                        <textarea name="approver_notes" class="form-control" rows="4" placeholder="Add your remarks here..." required></textarea>
+                        <label class="form-label fw-semibold">{{ __('admin.remarks') }} <span class="text-danger">*</span></label>
+                        <textarea name="approver_notes" class="form-control" rows="4" placeholder="{{ __('admin.ph_add_remarks') }}" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-gold w-100">
-                        <i class="bi bi-check-circle me-1"></i>Submit Decision
+                        <i class="bi bi-check-circle me-1"></i>{{ __('admin.submit_decision') }}
                     </button>
                 </form>
             </div>
             @else
             <div class="info-card">
                 <h5>
-                    <i class="bi bi-info-circle text-info me-2"></i>Status
+                    <i class="bi bi-info-circle text-info me-2"></i>{{ __('admin.status') }}
                 </h5>
                 <div class="alert alert-{{ $application->status === 'approved' ? 'success' : 'danger' }} mb-0">
-                    This application has been <strong>{{ $application->status }}</strong>.
+                    {{ __('admin.this_application_has_been') }} <strong>{{ $application->status }}</strong>.
                 </div>
             </div>
             @endif

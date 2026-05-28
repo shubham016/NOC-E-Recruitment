@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Candidates Report — Preview')
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -115,16 +115,16 @@
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th>S.N.</th>
-                    <th>Full Name</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th>Gender</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Status</th>
-                    <th>Registered On</th>
+                    <th>{{ __('admin.sn') }}</th>
+                    <th>{{ __('admin.full_name') }}</th>
+                    <th>{{ __('admin.username') }}</th>
+                    <th>{{ __('admin.email') }}</th>
+                    <th>{{ __('admin.mobile') }}</th>
+                    <th>{{ __('admin.gender') }}</th>
+                    <th>{{ __('admin.city') }}</th>
+                    <th>{{ __('admin.state') }}</th>
+                    <th>{{ __('admin.status') }}</th>
+                    <th>{{ __('admin.registered_on') }}</th>
                 </tr>
             </thead>
             <tbody>

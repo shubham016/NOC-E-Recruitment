@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Assign Admit Cards')
-@section('portal-name', 'Admin Portal')
+@section('title', __('admin.assign_admit_cards_title'))
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
@@ -17,14 +17,14 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Assign Admit Cards</h4>
+            <h4 class="fw-bold mb-1">{{ __('admin.assign_admit_cards_title') }}</h4>
             <p class="text-muted mb-0">
-                Advertisement No: <strong>{{ $job->advertisement_no }}</strong>
+                {{ __('admin.adv_no_colon') }} <strong>{{ $job->advertisement_no }}</strong>
                 &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
                 @if($job->service_group) &nbsp;/ {{ $job->service_group }} @endif
             </p>
         </div>
-        <a href="{{ route('admin.admit-card.index') }}" class="btn btn-outline-secondary btn-sm">Back</a>
+        <a href="{{ route('admin.admit-card.index') }}" class="btn btn-outline-secondary btn-sm">{{ __('admin.back') }}</a>
     </div>
 
     @if($errors->any())
@@ -44,14 +44,14 @@
         {{-- Exam Details --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white py-3">
-                <h6 class="fw-bold mb-0">Exam Details <small class="text-muted fw-normal">(applied to all candidates below)</small></h6>
+                <h6 class="fw-bold mb-0">{{ __('admin.exam_details') }} <small class="text-muted fw-normal">({{ __('admin.applied_to_all_candidates') }})</small></h6>
             </div>
             <div class="card-body">
                 <div class="row g-3">
 
                     {{-- Row 1: Organization Name | पद / तह | सेवा / समूह --}}
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Organization Name <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.organization_name') }} <span class="text-danger">*</span></label>
                         @php
                             $orgDefault = ($existing->organization_name && $existing->organization_name !== 'Online Recruitment Management System')
                                 ? $existing->organization_name
@@ -95,9 +95,9 @@
                                required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Exam Venue (First Paper) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.exam_venue_first') }} <span class="text-danger">*</span></label>
                         <input type="text" name="exam_venue_first" class="form-control"
-                               placeholder="Exam center name and address"
+                               placeholder="{{ __('admin.ph_exam_center') }}"
                                value="{{ old('exam_venue_first', $existing->exam_venue_first ?? '') }}"
                                required>
                     </div>
@@ -121,9 +121,9 @@
                                value="{{ old('exam_time_second', $existing->exam_time_second ?? '') }}">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Exam Venue (Second Paper)</label>
+                        <label class="form-label fw-semibold">{{ __('admin.exam_venue_second') }}</label>
                         <input type="text" name="exam_venue_second" class="form-control"
-                               placeholder="Exam center name and address"
+                               placeholder="{{ __('admin.ph_exam_center') }}"
                                value="{{ old('exam_venue_second', $existing->exam_venue_second ?? '') }}">
                     </div>
 
@@ -133,14 +133,14 @@
                         @if($job->official_signature)
                             <div class="mb-2">
                                 <img src="{{ asset('storage/' . $job->official_signature) }}" alt="Official Signature" style="max-height:60px; border:1px solid #ddd; padding:4px; background:#fff;">
-                                <div class="form-text text-success">Signature already uploaded. Upload new to replace.</div>
+                                <div class="form-text text-success">{{ __('admin.signature_already_uploaded') }}</div>
                             </div>
                         @endif
                         <input type="file" name="official_signature" class="form-control" accept="image/*">
-                        <div class="form-text">Accepts JPG, PNG, GIF. Displayed on candidate admit card.</div>
+                        <div class="form-text">{{ __('admin.accepts_jpg_png_gif') }}</div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Roll Number Prefix <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.roll_number_prefix') }} <span class="text-danger">*</span></label>
                         @php
                             preg_match('/(\d+)\/(\d{4})-\d+/', $job->advertisement_no, $m);
                             $defaultPrefix = isset($m[2], $m[1]) ? $m[2] . '-' . $m[1] : preg_replace('/[^a-zA-Z0-9]/', '-', $job->advertisement_no);
@@ -148,14 +148,14 @@
                         <input type="text" name="roll_prefix" class="form-control"
                                value="{{ old('roll_prefix', $defaultPrefix) }}"
                                placeholder="e.g. 2082-35" required>
-                        <div class="form-text">Preview: <strong id="rollPreview">{{ $defaultPrefix }}-001</strong>, <strong>{{ $defaultPrefix }}-002</strong>, ...</div>
+                        <div class="form-text">{{ __('admin.preview') }}: <strong id="rollPreview">{{ $defaultPrefix }}-001</strong>, <strong>{{ $defaultPrefix }}-002</strong>, ...</div>
                     </div>
 
                     {{-- Row 5: Exam Instructions --}}
                     <div class="col-12">
-                        <label class="form-label fw-semibold">Exam Instructions <small class="text-muted">(optional)</small></label>
+                        <label class="form-label fw-semibold">{{ __('admin.exam_instructions') }} <small class="text-muted">(optional)</small></label>
                         <textarea name="exam_instructions" class="form-control" rows="4"
-                                  placeholder="Instructions for candidates...">{{ old('exam_instructions', $existing->exam_instructions ?? '') }}</textarea>
+                                  placeholder="{{ __('admin.ph_instructions') }}">{{ old('exam_instructions', $existing->exam_instructions ?? '') }}</textarea>
                     </div>
 
                 </div>
@@ -165,20 +165,20 @@
         {{-- Candidates Table --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold mb-0">Candidates <span class="badge bg-primary ms-2">{{ $applications->count() }}</span></h6>
-                <small class="text-muted">Already-assigned roll numbers are preserved.</small>
+                <h6 class="fw-bold mb-0">{{ __('admin.candidates') }} <span class="badge bg-primary ms-2">{{ $applications->count() }}</span></h6>
+                <small class="text-muted">{{ __('admin.already_assigned_preserved') }}</small>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-bordered mb-0 align-middle text-center" style="font-size:0.88rem;">
                         <thead style="background:#f9fafb;">
                             <tr>
-                                <th>S.N.</th>
-                                <th>Name</th>
-                                <th>Citizenship No.</th>
-                                <th>Applied Category</th>
-                                <th>Status</th>
-                                <th>Roll No.</th>
+                                <th>{{ __('admin.sn') }}</th>
+                                <th>{{ __('admin.name') }}</th>
+                                <th>{{ __('admin.citizenship_no') }}</th>
+                                <th>{{ __('admin.applied_category') }}</th>
+                                <th>{{ __('admin.status') }}</th>
+                                <th>{{ __('admin.roll_no') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -218,15 +218,15 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ $app->status === 'assigned' ? 'info text-dark' : ($app->status === 'approved' ? 'success' : 'warning text-dark') }}">
-                                            {{ ucfirst($app->status) }}
+                                            {{ __('admin.' . $app->status) }}
                                         </span>
                                     </td>
                                     <td>
                                         @if($app->roll_number)
                                             <span class="badge bg-info text-dark">{{ $app->roll_number }}</span>
-                                            <small class="text-muted d-block">(preserved)</small>
+                                            <small class="text-muted d-block">({{ __('admin.preserved') }})</small>
                                         @else
-                                            <span class="text-muted">Auto</span>
+                                            <span class="text-muted">{{ __('admin.auto_roll') }}</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -239,9 +239,9 @@
 
         <div class="d-flex gap-2">
             <button type="submit" class="btn px-4 fw-semibold" style="background:#c9a84c; color:#fff; border:none;">
-                Assign Admit Card
+                {{ __('admin.assign_admit_cards') }}
             </button>
-            <a href="{{ route('admin.admit-card.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <a href="{{ route('admin.admit-card.index') }}" class="btn btn-outline-secondary px-4">{{ __('admin.cancel') }}</a>
         </div>
 
     </form>

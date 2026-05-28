@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Reviewer Details')
+@section('title', __('admin.reviewer_details'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -511,7 +511,7 @@
                 <div class="reviewer-meta">
                     <span class="status-badge {{ $reviewer->status === 'active' ? 'status-active' : 'status-inactive' }}">
                         <i class="bi bi-{{ $reviewer->status === 'active' ? 'check-circle-fill' : 'x-circle-fill' }} me-1"></i>
-                        {{ ucfirst($reviewer->status) }}
+                        {{ __('admin.' . $reviewer->status) }}
                     </span>
                     <!-- <span class="reviewer-id-badge">
                         <i class="bi bi-hash"></i>{{ str_pad($reviewer->id, 4, '0', STR_PAD_LEFT) }}
@@ -522,7 +522,7 @@
             <!-- Back Button -->
             <div>
                 <a href="{{ route('admin.reviewers.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Reviewers
+                    <i class="bi bi-arrow-left me-1"></i> {{ __('admin.back') }}
                 </a>
             </div>
         </div>
@@ -533,7 +533,7 @@
                     <i class="bi bi-envelope-fill"></i>
                 </div>
                 <div class="info-details">
-                    <h6>Email Address</h6>
+                    <h6>{{ __('admin.email_address') }}</h6>
                     <p>{{ $reviewer->email }}</p>
                 </div>
             </div>
@@ -543,8 +543,8 @@
                     <i class="bi bi-telephone-fill"></i>
                 </div>
                 <div class="info-details">
-                    <h6>Phone Number</h6>
-                    <p>{{ $reviewer->phone ?? 'Not provided' }}</p>
+                    <h6>{{ __('admin.phone_number') }}</h6>
+                    <p>{{ $reviewer->phone ?? __('admin.not_provided') }}</p>
                 </div>
             </div>
 
@@ -553,8 +553,8 @@
                     <i class="bi bi-building"></i>
                 </div>
                 <div class="info-details">
-                    <h6>Department</h6>
-                    <p>{{ $reviewer->department ?? 'Not assigned' }}</p>
+                    <h6>{{ __('admin.department') }}</h6>
+                    <p>{{ $reviewer->department ?? __('admin.not_assigned') }}</p>
                 </div>
             </div>
 
@@ -563,8 +563,8 @@
                     <i class="bi bi-award-fill"></i>
                 </div>
                 <div class="info-details">
-                    <h6>Designation</h6>
-                    <p>{{ $reviewer->designation ?? 'Not specified' }}</p>
+                    <h6>{{ __('admin.designation') }}</h6>
+                    <p>{{ $reviewer->designation ?? __('admin.not_specified') }}</p>
                 </div>
             </div>
         </div>
@@ -574,22 +574,22 @@
     <div class="stats-row">
         <div class="stat-card blue">
             <div class="stat-number">{{ $stats['total'] }}</div>
-            <div class="stat-label">Total Applications</div>
+            <div class="stat-label">{{ __('admin.total_applications') }}</div>
         </div>
 
         <div class="stat-card orange">
             <div class="stat-number">{{ $stats['pending'] }}</div>
-            <div class="stat-label">Pending Review</div>
+            <div class="stat-label">{{ __('admin.pending_review') }}</div>
         </div>
 
         <div class="stat-card green">
             <div class="stat-number">{{ $stats['reviewed'] }}</div>
-            <div class="stat-label">Reviewed</div>
+            <div class="stat-label">{{ __('admin.reviewed') }}</div>
         </div>
 
         <div class="stat-card red">
             <div class="stat-number">{{ $stats['rejected'] }}</div>
-            <div class="stat-label">Rejected</div>
+            <div class="stat-label">{{ __('admin.rejected') }}</div>
         </div>
     </div>
 
@@ -598,7 +598,7 @@
         <div class="section-header">
             <h3>
                 <i class="bi bi-clock-history"></i>
-                Recent Applications ({{ $recentApplications->count() }})
+                {{ __('admin.recent_applications') }} ({{ $recentApplications->count() }})
             </h3>
         </div>
         <div class="section-body p-0">
@@ -607,13 +607,13 @@
                     <table class="applications-table">
                         <thead>
                             <tr>
-                                <th>S.N</th>
-                                <th>Vacancy Title</th>
-                                <th>Candidate Name</th>
-                                <th>Email</th>
-                                <th>Applied On</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>{{ __('admin.sn') }}</th>
+                                <th>{{ __('admin.vacancy_title') }}</th>
+                                <th>{{ __('admin.candidate_name') }}</th>
+                                <th>{{ __('admin.email') }}</th>
+                                <th>{{ __('admin.applied_on') }}</th>
+                                <th>{{ __('admin.status') }}</th>
+                                <th>{{ __('admin.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -638,7 +638,7 @@
                                             };
                                         @endphp
                                         <span class="app-status-badge {{ $statusClass }}">
-                                            {{ ucfirst($application->status) }}
+                                            {{ __('admin.' . $application->status) }}
                                         </span>
                                     </td>
                                     <td>
@@ -655,8 +655,8 @@
             @else
                 <div class="empty-state">
                     <i class="bi bi-inbox"></i>
-                    <h5>No Applications Yet</h5>
-                    <p>This reviewer hasn't been assigned any applications.</p>
+                    <h5>{{ __('admin.no_apps_yet') }}</h5>
+                    <p>{{ __('admin.reviewer_no_apps') }}</p>
                 </div>
             @endif
         </div>
@@ -669,41 +669,41 @@
             <div class="section-header">
                 <h3>
                     <i class="bi bi-person-vcard"></i>
-                    Account Information
+                    {{ __('admin.account_information') }}
                 </h3>
             </div>
             <div class="section-body">
                 <table class="info-table">
                     <tr>
-                        <td class="table-label">Full Name</td>
+                        <td class="table-label">{{ __('admin.name') }}</td>
                         <td class="table-value">{{ $reviewer->name }}</td>
                     </tr>
                     <tr>
-                        <td class="table-label">Email</td>
+                        <td class="table-label">{{ __('admin.email') }}</td>
                         <td class="table-value">{{ $reviewer->email }}</td>
                     </tr>
                     <tr>
-                        <td class="table-label">Phone</td>
-                        <td class="table-value">{{ $reviewer->phone ?? 'N/A' }}</td>
+                        <td class="table-label">{{ __('admin.phone') }}</td>
+                        <td class="table-value">{{ $reviewer->phone ?? __('admin.na') }}</td>
                     </tr>
                     <tr>
-                        <td class="table-label">Department</td>
-                        <td class="table-value">{{ $reviewer->department ?? 'N/A' }}</td>
+                        <td class="table-label">{{ __('admin.department') }}</td>
+                        <td class="table-value">{{ $reviewer->department ?? __('admin.na') }}</td>
                     </tr>
                     <tr>
-                        <td class="table-label">Designation</td>
-                        <td class="table-value">{{ $reviewer->designation ?? 'N/A' }}</td>
+                        <td class="table-label">{{ __('admin.designation') }}</td>
+                        <td class="table-value">{{ $reviewer->designation ?? __('admin.na') }}</td>
                     </tr>
                     <tr>
-                        <td class="table-label">Status</td>
+                        <td class="table-label">{{ __('admin.status') }}</td>
                         <td class="table-value">
                             <span class="status-badge {{ $reviewer->status === 'active' ? 'status-active' : 'status-inactive' }}">
-                                {{ ucfirst($reviewer->status) }}
+                                {{ __('admin.' . $reviewer->status) }}
                             </span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-label">Joined</td>
+                        <td class="table-label">{{ __('admin.joined') }}</td>
                         <td class="table-value">{{ $reviewer->created_at->format('F d, Y') }}</td>
                     </tr>
                 </table>
@@ -715,30 +715,30 @@
             <div class="section-header">
                 <h3>
                     <i class="bi bi-gear-fill"></i>
-                    Actions
+                    {{ __('admin.actions') }}
                 </h3>
             </div>
             <div class="section-body">
                 <div class="action-buttons">
                     <a href="{{ route('admin.reviewers.edit', $reviewer->id) }}" class="action-btn action-btn-primary">
                         <i class="bi bi-pencil-square"></i>
-                        Edit Profile
+                        {{ __('admin.edit') }}
                     </a>
 
                     <button type="button" class="action-btn action-btn-warning" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
                         <i class="bi bi-key-fill"></i>
-                        Reset Password
+                        {{ __('admin.reset_password') }}
                     </button>
 
                     <button type="button" class="action-btn {{ $reviewer->status === 'active' ? 'action-btn-warning' : 'action-btn-success' }}"
                         data-bs-toggle="modal" data-bs-target="#toggleStatusModal">
                         <i class="bi bi-{{ $reviewer->status === 'active' ? 'pause-circle-fill' : 'play-circle-fill' }}"></i>
-                        {{ $reviewer->status === 'active' ? 'Deactivate' : 'Activate' }}
+                        {{ $reviewer->status === 'active' ? __('admin.deactivate') : __('admin.activate') }}
                     </button>
 
                     <button type="button" class="action-btn action-btn-danger" onclick="confirmDelete()">
                         <i class="bi bi-trash-fill"></i>
-                        Delete Account
+                        {{ __('admin.delete') }}
                     </button>
                 </div>
             </div>
@@ -752,26 +752,25 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Reset Reviewer Password</h5>
+                <h5 class="modal-title">{{ __('admin.reset_reviewer_password') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.reviewers.reset-password', $reviewer->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">New Password</label>
+                        <label class="form-label">{{ __('admin.new_password') }}</label>
                         <input type="password" name="password" class="form-control" required minlength="8">
-                        <small class="text-muted">Minimum 8 characters with letters and numbers</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
+                        <label class="form-label">{{ __('admin.confirm_password') }}</label>
                         <input type="password" name="password_confirmation" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                     <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-key-fill me-1"></i> Reset Password
+                        <i class="bi bi-key-fill me-1"></i> {{ __('admin.reset_password') }}
                     </button>
                 </div>
             </form>
@@ -784,24 +783,24 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Change Reviewer Status</h5>
+                <h5 class="modal-title">{{ __('admin.change_reviewer_status') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.reviewers.toggle-status', $reviewer->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
-                    <p>Are you sure you want to <strong>{{ $reviewer->status === 'active' ? 'deactivate' : 'activate' }}</strong> {{ $reviewer->name }}?</p>
+                    <p>{{ __('admin.deactivate_confirm', ['action' => $reviewer->status === 'active' ? __('admin.deactivate') : __('admin.activate'), 'name' => $reviewer->name]) }}</p>
                     @if($reviewer->status === 'active')
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle me-2"></i>
-                            This reviewer will not be able to log in once deactivated.
+                            {{ __('admin.deactivate_warning') }}
                         </div>
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                     <button type="submit" class="btn btn-{{ $reviewer->status === 'active' ? 'warning' : 'success' }}">
-                        {{ $reviewer->status === 'active' ? 'Deactivate' : 'Activate' }}
+                        {{ $reviewer->status === 'active' ? __('admin.deactivate') : __('admin.activate') }}
                     </button>
                 </div>
             </form>
@@ -820,7 +819,7 @@
 @section('scripts')
 <script>
     function confirmDelete() {
-        if (confirm('⚠️ Are you sure you want to delete this reviewer?\n\nThis action cannot be undone.')) {
+        if (confirm('{{ __('admin.delete_reviewer_confirm') }}')) {
             document.getElementById('deleteForm').submit();
         }
     }

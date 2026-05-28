@@ -680,13 +680,23 @@
             <div class="navbar-company-header">
                 <img src="/images/images.png" alt="Nepal Oil Corporation" class="navbar-company-logo">
                 <div class="navbar-company-info">
-                    <h2>NEPAL OIL CORPORATION LTD.</h2>
-                    <p>Babarmahal, Kathmandu</p>
-                    <small>Online Recruitment Management System</small>
+                    <h2>{{ __('admin.company_name') }}</h2>
+                    <p>{{ __('admin.company_address') }}</p>
+                    <small>{{ __('admin.company_system') }}</small>
                 </div>
             </div>
 
             <div class="navbar-right-section">
+                <!-- Language Switcher -->
+                <form method="POST" action="{{ route('language.switch') }}" style="display:inline;">
+                    @csrf
+                    <select name="locale" onchange="this.form.submit()"
+                        style="height:32px;padding:0 8px;font-size:0.8rem;border:1px solid #c9a84c;border-radius:6px;background:#fff;color:#1a2a4a;cursor:pointer;outline:none;">
+                        <option value="en" {{ app()->getLocale() === 'en' ? 'selected' : '' }}>EN</option>
+                        <option value="ne" {{ app()->getLocale() === 'ne' ? 'selected' : '' }}>नेपाली</option>
+                    </select>
+                </form>
+
                 <!-- Notifications -->
                 @if(request()->is('admin/*'))
                     <a class="nav-link text-dark position-relative notification-link" href="{{ route('admin.notifications.index') }}" title="Notifications">
@@ -722,12 +732,12 @@
                         @if(request()->is('admin/*'))
                             <li>
                                 <a class="dropdown-item" href="{{ route('admin.profile') }}">
-                                    <i class="bi bi-person me-2"></i> My Profile
+                                    <i class="bi bi-person me-2"></i> {{ __('admin.my_profile') }}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('admin.change-password') }}">
-                                    <i class="bi bi-lock me-2"></i> Change Password
+                                    <i class="bi bi-lock me-2"></i> {{ __('admin.change_password') }}
                                 </a>
                             </li>
                         @endif
@@ -736,7 +746,7 @@
                             <form method="POST" action="@yield('logout-route')" class="d-inline w-100">
                                 @csrf
                                 <button class="dropdown-item text-danger" type="submit">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Log Out
+                                    <i class="bi bi-box-arrow-right me-2"></i> {{ __('admin.log_out') }}
                                 </button>
                             </form>
                         </li>
@@ -752,7 +762,7 @@
         <!-- Footer -->
        <footer id="footer">
             <div class="container text-center">
-                <p class="mb-0">Copyright &copy; {{ date('Y') }}. Nepal Oil Corporation</p>
+                <p class="mb-0">{{ __('admin.copyright') }} &copy; {{ date('Y') }}. Nepal Oil Corporation</p>
             </div>
         </footer>
     </div>
@@ -1070,6 +1080,7 @@
             }
         });
     </script>
+
 
     @yield('scripts')
 </body>

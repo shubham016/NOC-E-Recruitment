@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Candidate Profile - Nepal Oil Nigam')
+@section('title', __('admin.candidate_profile_title'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -556,7 +556,7 @@
         <!-- Back Button -->
         <a href="{{ route('admin.candidates.index') }}" class="nav-back">
             <i class="bi bi-arrow-left"></i>
-            Back to Candidates
+            {{ __('admin.back') }}
         </a>
 
         <!-- Alerts -->
@@ -596,19 +596,19 @@
                         @if($candidate->status === 'active')
                             <span class="badge badge-active">
                                 <i class="bi bi-check-circle-fill"></i>
-                                Active
+                                {{ __('admin.active') }}
                             </span>
                         @else
                             <span class="badge badge-inactive">
                                 <i class="bi bi-x-circle-fill"></i>
-                                Inactive
+                                {{ __('admin.inactive') }}
                             </span>
                         @endif
                     </div>
                 </div>
 
                 <div class="profile-id">
-                    <div class="profile-id-label">Candidate ID</div>
+                    <div class="profile-id-label">{{ __('admin.candidate_id') }}</div>
                     <div class="profile-id-value">{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</div>
                 </div>
             </div>
@@ -619,7 +619,7 @@
                         <i class="bi bi-credit-card-2-front"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Citizenship Number</div>
+                        <div class="info-label">{{ __('admin.citizenship_number') }}</div>
                         <div class="info-value">{{ $candidate->username }}</div>
                     </div>
                 </div>
@@ -629,7 +629,7 @@
                         <i class="bi bi-envelope"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Email</div>
+                        <div class="info-label">{{ __('admin.email') }}</div>
                         <div class="info-value">{{ $candidate->email }}</div>
                     </div>
                 </div>
@@ -639,7 +639,7 @@
                         <i class="bi bi-telephone"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Mobile</div>
+                        <div class="info-label">{{ __('admin.mobile') }}</div>
                         <div class="info-value">{{ $candidate->mobile_number }}</div>
                     </div>
                 </div>
@@ -649,7 +649,7 @@
                         <i class="bi bi-calendar"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Registered</div>
+                        <div class="info-label">{{ __('admin.registered') }}</div>
                         <div class="info-value">
                             <div class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
                                 <i class="bi bi-hourglass-split"></i> Converting...
@@ -665,22 +665,22 @@
         <div class="stats-section">
             <div class="stat-box blue">
                 <div class="stat-number">{{ $applicationStats['total'] }}</div>
-                <div class="stat-label">Total Applications</div>
+                <div class="stat-label">{{ __('admin.total_applications') }}</div>
             </div>
 
             <div class="stat-box orange">
                 <div class="stat-number">{{ $applicationStats['pending'] }}</div>
-                <div class="stat-label">Pending Review</div>
+                <div class="stat-label">{{ __('admin.pending_review') }}</div>
             </div>
 
             <div class="stat-box green">
                 <div class="stat-number">{{ $applicationStats['approved'] }}</div>
-                <div class="stat-label">Approved</div>
+                <div class="stat-label">{{ __('admin.approved') }}</div>
             </div>
 
             <div class="stat-box red">
                 <div class="stat-number">{{ $applicationStats['rejected'] }}</div>
-                <div class="stat-label">Rejected</div>
+                <div class="stat-label">{{ __('admin.rejected') }}</div>
             </div>
         </div>
 
@@ -691,27 +691,27 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-person-vcard"></i>
-                        Personal Information
+                        {{ __('admin.personal_information') }}
                     </h3>
                 </div>
                 <div class="card-body">
                     <table class="info-table">
                         <tr>
-                            <td class="label">First Name</td>
+                            <td class="label">{{ __('admin.first_name') }}</td>
                             <td class="value">{{ $candidate->first_name }}</td>
                         </tr>
                         @if($candidate->middle_name)
                             <tr>
-                                <td class="label">Middle Name</td>
+                                <td class="label">{{ __('admin.middle_name') }}</td>
                                 <td class="value">{{ $candidate->middle_name }}</td>
                             </tr>
                         @endif
                         <tr>
-                            <td class="label">Last Name</td>
+                            <td class="label">{{ __('admin.last_name') }}</td>
                             <td class="value">{{ $candidate->last_name }}</td>
                         </tr>
                         <tr>
-                            <td class="label">Full Name</td>
+                            <td class="label">{{ __('admin.full_name') }}</td>
                             <td class="value"><strong>{{ $candidate->name }}</strong></td>
                         </tr>
                     </table>
@@ -729,13 +729,13 @@
                 <div class="card-body">
                     <table class="info-table">
                         <tr>
-                            <td class="label">Email</td>
+                            <td class="label">{{ __('admin.email') }}</td>
                             <td class="value">
                                 <a href="mailto:{{ $candidate->email }}">{{ $candidate->email }}</a>
                             </td>
                         </tr>
                         <tr>
-                            <td class="label">Mobile</td>
+                            <td class="label">{{ __('admin.mobile') }}</td>
                             <td class="value">
                                 <a href="tel:{{ $candidate->mobile_number }}">{{ $candidate->mobile_number }}</a>
                             </td>
@@ -751,29 +751,29 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-shield-check"></i>
-                        Account Status
+                        {{ __('admin.account_status') }}
                     </h3>
                 </div>
                 <div class="card-body">
                     <table class="info-table">
                         <tr>
-                            <td class="label">Status</td>
+                            <td class="label">{{ __('admin.status') }}</td>
                             <td class="value">
                                 @if($candidate->status === 'active')
                                     <span class="badge badge-active">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        Active
+                                        {{ __('admin.active') }}
                                     </span>
                                 @else
                                     <span class="badge badge-inactive">
                                         <i class="bi bi-x-circle-fill"></i>
-                                        Inactive
+                                        {{ __('admin.inactive') }}
                                     </span>
                                 @endif
                             </td>
                         </tr>
                         <tr>
-                            <td class="label">Registered</td>
+                            <td class="label">{{ __('admin.registered') }}</td>
                             <td class="value">
                                 <strong class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
                                     <i class="bi bi-hourglass-split"></i> Converting...
@@ -787,7 +787,7 @@
                             <td class="value">{{ $candidate->updated_at->format('F d, Y h:i A') }}</td>
                         </tr>
                         <tr>
-                            <td class="label">Applications</td>
+                            <td class="label">{{ __('admin.total_applications') }}</td>
                             <td class="value"><strong>{{ $candidate->applications_count }}</strong> submitted</td>
                         </tr>
                     </table>
@@ -830,7 +830,7 @@
 
                         <!-- Delete Button -->
                         <form method="POST" action="{{ route('admin.candidates.destroy', $candidate->id) }}"
-                            onsubmit="return confirm('Are you sure you want to delete this candidate? This action cannot be undone.')">
+                            onsubmit="return confirm('{{ __('admin.delete_candidate_confirm') }}')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">
@@ -902,8 +902,8 @@
                 @else
                     <div class="empty-state">
                         <i class="bi bi-inbox"></i>
-                        <h5>No Applications</h5>
-                        <p>This candidate hasn't submitted any applications yet.</p>
+                        <h5>{{ __('admin.no_applications') }}</h5>
+                        <p>{{ __('admin.candidate_no_apps') }}</p>
                     </div>
                 @endif
             </div>

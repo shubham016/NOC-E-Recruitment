@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Approvers Report — Preview')
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -115,13 +115,13 @@
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th>S.N.</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Approved</th>
-                    <th>Rejected</th>
-                    <th>Total Actioned</th>
+                    <th>{{ __('admin.sn') }}</th>
+                    <th>{{ __('admin.name') }}</th>
+                    <th>{{ __('admin.email') }}</th>
+                    <th>{{ __('admin.status') }}</th>
+                    <th>{{ __('admin.approved') }}</th>
+                    <th>{{ __('admin.rejected') }}</th>
+                    <th>{{ __('admin.total_actioned') }}</th>
                 </tr>
             </thead>
             <tbody>

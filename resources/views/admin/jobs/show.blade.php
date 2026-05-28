@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Vacancy Details')
+@section('title', __('admin.vacancy_details'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -335,15 +335,15 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <div class="govt-badge">
-                    <span>नेपाल सरकार | Government of Nepal</span>
+                    <span>{{ __('admin.govt_of_nepal_label') }}</span>
                 </div>
                 <h3 class="fw-bold mb-2">
-                    Vacancy Details
+                    {{ __('admin.vacancy_information') }}
                 </h3>
                 <p class="mb-0 opacity-90">विज्ञापन विवरण</p>
             </div>
             <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
-                Back to List
+                {{ __('admin.back') }}
             </a>
         </div>
     </div>
@@ -378,18 +378,18 @@
                 <div class="detail-header">
                     <div class="d-flex justify-content-between align-items-start">
                         <h5 class="fw-bold text-danger mb-0">
-                            Vacancy Information
+                            {{ __('admin.vacancy_information') }}
                         </h5>
                         <span
                             class="status-badge {{ $job->status == 'active' ? 'bg-success text-white' : ($job->status == 'draft' ? 'bg-warning text-dark' : 'bg-danger text-white') }}">
-                            {{ ucfirst($job->status) }}
+                            {{ __('admin.' . $job->status) }}
                         </span>
                     </div>
                 </div>
 
                 @if($job->notice_no)
                 <div class="detail-row">
-                    <div class="detail-label">Notice No.</div>
+                    <div class="detail-label">{{ __('admin.notice_no') }}</div>
                     <div class="detail-value">
                         {{ $job->notice_no }}
                     </div>
@@ -397,24 +397,24 @@
                 @endif
 
                 <div class="detail-row">
-                    <div class="detail-label">Advertisement No.</div>
+                    <div class="detail-label">{{ __('admin.advertisement_no') }}</div>
                     <div class="detail-value">
                         {{ $job->advertisement_no }}
                     </div>
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Position / Level</div>
+                    <div class="detail-label">{{ __('admin.position_level') }}</div>
                     <div class="detail-value">{{ $job->position }} / {{ $job->level ?: '-' }}</div>
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Service / Group</div>
+                    <div class="detail-label">{{ __('admin.service_slash_group') }}</div>
                     <div class="detail-value">{{ $job->service_group }}</div>
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Demand Post (Number)</div>
+                    <div class="detail-label">{{ __('admin.demand_post') }}</div>
                     <div class="detail-value">
                         {{ $job->number_of_posts }}
                     </div>
@@ -434,7 +434,7 @@
                 </div> --}}
 
                 <div class="detail-row">
-                    <div class="detail-label">Category / Type</div>
+                    <div class="detail-label">{{ __('admin.category_type') }}</div>
                     <div class="detail-value">
                         <div class="d-flex flex-wrap gap-2">
                             @if($job->category == 'internal_appraisal')
@@ -477,7 +477,7 @@
                 </div>
 
                 <div class="detail-row">
-                    <div class="detail-label">Deadline</div>
+                    <div class="detail-label">{{ __('admin.deadline') }}</div>
                     <div class="detail-value">
                         <div>
                             {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
@@ -493,7 +493,7 @@
 
                 @if($job->double_dastur_date)
                 <div class="detail-row">
-                    <div class="detail-label">Double Dastur Deadline</div>
+                    <div class="detail-label">{{ __('admin.double_dastur_date') }}</div>
                     <div class="detail-value">
                         <div>
                             <strong class="d-block nepali-date-bs text-danger"
@@ -531,7 +531,7 @@
                         <div class="detail-row">
                             <div class="detail-label">{{ $feeLabels[$feeKey] ?? ucwords(str_replace('_', ' ', $feeKey)) }}</div>
                             <div class="detail-value">
-                                NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
+                                {{ __('admin.npr') }} {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
                             </div>
                         </div>
                     @endforeach
@@ -541,7 +541,7 @@
                     <div class="detail-label">Total Application Fee</div>
                     <div class="detail-value">
                         @if($job->application_fee)
-                            <strong>NPR {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
+                            <strong>{{ __('admin.npr') }} {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
                         @else
                             <span class="text-muted">Not set</span>
                         @endif
@@ -549,10 +549,10 @@
                 </div> --}}
 
                 <div class="detail-row">
-                    <div class="detail-label">Double Dastur Fee</div>
+                    <div class="detail-label">{{ __('admin.double_dastur_fee') }}</div>
                     <div class="detail-value">
                         @if($job->double_dastur_fee)
-                            NPR {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
+                            {{ __('admin.npr') }} {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
                         @else
                             <span class="text-muted">Not set</span>
                         @endif
@@ -560,7 +560,7 @@
                 </div>
 
                 <div class="detail-row no-print">
-                    <div class="detail-label">Posted On</div>
+                    <div class="detail-label">{{ __('admin.posted_date') }}</div>
                     <div class="detail-value">
                         {{ $job->created_at->format('F d, Y') }}
                         <small class="text-muted">({{ $job->created_at->diffForHumans() }})</small>
@@ -569,7 +569,7 @@
 
                 @if($job->postedBy)
                     <div class="detail-row no-print">
-                        <div class="detail-label">Posted By</div>
+                        <div class="detail-label">{{ __('admin.posted_by') }}</div>
                         <div class="detail-value">
                             {{ $job->postedBy->name }}
                         </div>
@@ -578,13 +578,13 @@
 
                 @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
                 <div class="print-only mt-3">
-                    <div style="font-weight:600; margin-bottom:4px;">Age Limit <small style="font-weight:400;">उमेर हद</small></div>
+                    <div style="font-weight:600; margin-bottom:4px;">{{ __('admin.age_limit') }} <small style="font-weight:400;">उमेर हद</small></div>
                     <table style="width:100%; border-collapse:collapse; font-size:13px;">
                         <thead>
                             <tr style="background:#f3f4f6;">
-                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:left;">Category</th>
-                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">Minimum Age</th>
-                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">Maximum Age</th>
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:left;">{{ __('admin.category') }}</th>
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ __('admin.min_age') }}</th>
+                                <th style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ __('admin.max_age') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -613,7 +613,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h5 class="fw-bold text-danger mb-0">
-                        Minimum Educational Qualification
+                        {{ __('admin.min_qualification') }}
                     </h5>
                     <small class="text-muted">आवश्यक शिक्षक योग्यता</small>
                 </div>
@@ -651,16 +651,16 @@
             @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
             <div class="detail-card no-print">
                 <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">Age Limit</h5>
+                    <h5 class="fw-bold text-danger mb-0">{{ __('admin.age_limit') }}</h5>
                     <small class="text-muted">उमेर हद</small>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered mb-0" style="font-size:14px;">
                         <thead style="background:#f3f4f6;">
                             <tr>
-                                <th style="width:34%;">Category</th>
-                                <th style="width:33%;">Minimum Age</th>
-                                <th style="width:33%;">Maximum Age</th>
+                                <th style="width:34%;">{{ __('admin.category') }}</th>
+                                <th style="width:33%;">{{ __('admin.min_age') }}</th>
+                                <th style="width:33%;">{{ __('admin.max_age') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -693,7 +693,7 @@
                 <div class="detail-card">
                     <div class="detail-header">
                         <h5 class="fw-bold text-danger mb-0">
-                            Recent Applications
+                            {{ __('admin.applications') }}
                         </h5>
                     </div>
 
@@ -702,11 +702,11 @@
                             style="table-layout: auto; white-space: nowrap;">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="text-center text-uppercase">S.N</th>
-                                    <th class="text-center text-uppercase">Candidate</th>
-                                    <th class="text-center text-uppercase">Applied Date</th>
-                                    <th class="text-center text-uppercase">Status</th>
-                                    <th class="text-center text-uppercase">Actions</th>
+                                    <th class="text-center text-uppercase">{{ __('admin.sn') }}</th>
+                                    <th class="text-center text-uppercase">{{ __('admin.applicant_name') }}</th>
+                                    <th class="text-center text-uppercase">{{ __('admin.posted_date') }}</th>
+                                    <th class="text-center text-uppercase">{{ __('admin.status') }}</th>
+                                    <th class="text-center text-uppercase">{{ __('admin.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center align-middle">
@@ -733,7 +733,7 @@
                                                 @endif
                                                 <div class="text-start">
                                                     <div class="fw-bold">{{ $application->name_english ?? 'N/A' }}</div>
-                                                    <small class="text-muted">Application ID: {{ $application->id }}</small>
+                                                    <small class="text-muted">{{ __('admin.application_id_label') }} {{ $application->id }}</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -745,7 +745,7 @@
                                             <small class="text-muted">{{ $application->created_at->format('M d, Y') }}</small>
                                         </td>
                                         <td>
-                                            {{ ucfirst(str_replace('_', ' ', $application->status)) }}
+                                            {{ __('admin.' . $application->status) }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -756,7 +756,7 @@
                                                 </a>
                                                 <button type="button"
                                                         class="btn btn-outline-danger"
-                                                        title="Delete"
+                                                        title="{{ __('admin.delete') }}"
                                                         onclick="confirmDelete({{ $application->id }})">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -766,7 +766,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center text-muted py-4">
-                                            No applications yet
+                                            {{ __('admin.no_applications_yet') }}
                                         </td>
                                     </tr>
                                 @endforelse
@@ -796,23 +796,23 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        Quick Actions
+                        {{ __('admin.actions') }}
                     </h6>
                 </div>
 
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-outline-dark action-btn" onclick="printVacancy()">
-                        Print Vacancy
+                        {{ __('admin.print') }} {{ __('admin.vacancy_list') }}
                     </button>
 
                     <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-danger action-btn">
-                        Edit Vacancy
+                        {{ __('admin.edit') }} {{ __('admin.vacancy_list') }}
                     </a>
 
                     <form action="{{ route('admin.jobs.duplicate', $job->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-outline-secondary action-btn w-100">
-                            Duplicate Vacancy
+                            {{ __('admin.create') }} {{ __('admin.vacancy_list') }}
                         </button>
                     </form>
 
@@ -822,8 +822,8 @@
                             @csrf
                             <input type="hidden" name="status" value="active">
                             <button type="submit" class="btn btn-outline-success action-btn w-100"
-                                onclick="return confirm('Reopen this vacancy?')">
-                                Reopen Vacancy
+                                onclick="return confirm('{{ __('admin.reopen_vacancy_confirm') }}')">
+                                {{ __('admin.reopen_vacancy') }}
                             </button>
                         </form>
                     @endif
@@ -832,8 +832,8 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger action-btn w-100"
-                            onclick="return confirm('⚠️ Are you sure? This action cannot be undone!')">
-                            Delete Vacancy
+                            onclick="return confirm('{{ __('admin.delete_vacancy_confirm') }}')">
+                            {{ __('admin.delete_vacancy') }}
                         </button>
                     </form>
                 </div>
@@ -843,7 +843,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        Application Statistics
+                        {{ __('admin.total_applications') }}
                     </h6>
                 </div>
 
@@ -851,37 +851,37 @@
                     <div class="col-6">
                         <div class="text-center p-3 bg-light rounded">
                             <div class="fs-3 fw-bold text-danger">{{ $applicationStats['total'] ?? 0 }}</div>
-                            <small class="text-muted">Total Applied</small>
+                            <small class="text-muted">{{ __('admin.applied') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-info bg-opacity-10 rounded">
                             <div class="fs-3 fw-bold text-info">{{ $applicationStats['assigned'] ?? 0 }}</div>
-                            <small class="text-muted">Assigned</small>
+                            <small class="text-muted">{{ __('admin.assign') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-primary bg-opacity-10 rounded">
                             <div class="fs-3 fw-bold text-primary">{{ $applicationStats['reviewed'] ?? 0 }}</div>
-                            <small class="text-muted">Reviewed</small>
+                            <small class="text-muted">{{ __('admin.reviewed') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
                             <div class="fs-3 fw-bold text-warning">{{ $applicationStats['edit_access'] ?? 0 }}</div>
-                            <small class="text-muted">Edit Access</small>
+                            <small class="text-muted">{{ __('admin.edit_access') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-success bg-opacity-10 rounded">
                             <div class="fs-3 fw-bold text-success">{{ $applicationStats['approved'] ?? 0 }}</div>
-                            <small class="text-muted">Approved</small>
+                            <small class="text-muted">{{ __('admin.approved') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-center p-3 bg-danger bg-opacity-10 rounded">
                             <div class="fs-3 fw-bold text-danger">{{ $applicationStats['rejected'] ?? 0 }}</div>
-                            <small class="text-muted">Rejected</small>
+                            <small class="text-muted">{{ __('admin.rejected') }}</small>
                         </div>
                     </div>
                 </div>
@@ -913,7 +913,7 @@
                                 'pending' => 'bg-secondary',
                                 default => 'bg-secondary'
                             };
-                            $statusText = ucfirst(str_replace('_', ' ', $activity->status));
+                            $statusText = __('admin.' . $activity->status);
                             $timelineCount++;
                         @endphp
                         <div class="timeline-item">
@@ -933,7 +933,7 @@
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <div>
-                            <strong class="d-block">Vacancy Posted</strong>
+                            <strong class="d-block">{{ __('admin.vacancy_posted') }}</strong>
                             <small class="text-muted">{{ $job->created_at->format('M d, Y h:i A') }}</small>
                         </div>
                     </div>
@@ -1117,7 +1117,7 @@
         // DELETE APPLICATION CONFIRMATION
         // ========================================
         function confirmDelete(applicationId) {
-            if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+            if (confirm('{{ __('admin.delete_app_confirm') }}')) {
                 const form = document.getElementById('deleteApplicationForm');
                 form.action = `/admin/applications/${applicationId}`;
                 form.submit();

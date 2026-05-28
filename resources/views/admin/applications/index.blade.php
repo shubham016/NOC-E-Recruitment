@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Applications Management - NOC E-Recruitment')
+@section('title', __('admin.applications_management'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -474,13 +474,13 @@
     <div class="gov-page-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="gov-page-title">Applications Management</h1>
-                <p class="gov-page-subtitle">Nepal Oil Corporation - E-Recruitment System</p>
+                <h1 class="gov-page-title">{{ __('admin.applications_management') }}</h1>
+                <p class="gov-page-subtitle">{{ __('admin.system_subtitle') }}</p>
             </div>
             <div style="position: relative; z-index: 10;">
                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#bulkActionModal"
                    style="border: 2px solid white; color: white; padding: 0.5rem 1.5rem; font-weight: 600; border-radius: 6px; transition: all 0.2s; cursor: pointer; background: transparent;">
-                    <i class="bi bi-lightning-fill me-1"></i> Bulk Actions
+                    <i class="bi bi-lightning-fill me-1"></i> {{ __('admin.bulk_actions') }}
                 </button>
             </div>
         </div>
@@ -512,7 +512,7 @@
                     <i class="bi bi-file-earmark-text" style="color: white;"></i>
                 </div>
                 <h3 class="gov-stats-number">{{ $stats['total'] }}</h3>
-                <p class="gov-stats-label">Total Applications</p>
+                <p class="gov-stats-label">{{ __('admin.total') }} {{ __('admin.applications_label') }}</p>
             </div>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-6">
@@ -521,7 +521,7 @@
                     <i class="bi bi-clock-history" style="color: white;"></i>
                 </div>
                 <h3 class="gov-stats-number">{{ $stats['pending'] }}</h3>
-                <p class="gov-stats-label">Pending Review</p>
+                <p class="gov-stats-label">{{ __('admin.pending_review') }}</p>
             </div>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-6">
@@ -530,7 +530,7 @@
                     <i class="bi bi-check-circle-fill" style="color: white;"></i>
                 </div>
                 <h3 class="gov-stats-number">{{ $stats['approved'] ?? 0 }}</h3>
-                <p class="gov-stats-label">Approved</p>
+                <p class="gov-stats-label">{{ __('admin.approved') }}</p>
             </div>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-6">
@@ -539,7 +539,7 @@
                     <i class="bi bi-x-circle" style="color: white;"></i>
                 </div>
                 <h3 class="gov-stats-number">{{ $stats['rejected'] }}</h3>
-                <p class="gov-stats-label">Rejected</p>
+                <p class="gov-stats-label">{{ __('admin.rejected') }}</p>
             </div>
         </div>
     </div>
@@ -548,22 +548,22 @@
     <div class="gov-card">
         <div class="gov-card-header">
             <i class="bi bi-funnel"></i>
-            <span>Filter Applications</span>
+            <span>{{ __('admin.filter_applications') }}</span>
         </div>
         <div class="gov-card-body">
             <form action="{{ route('admin.applications.index') }}" method="GET">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-3">
-                        <label class="gov-form-label d-block mb-2">Search</label>
+                        <label class="gov-form-label d-block mb-2">{{ __('admin.search') }}</label>
                         <input type="text" name="search" class="form-control gov-form-control"
-                               placeholder="Name, email, vacancy title..."
+                               placeholder="{{ __('admin.ph_search_applications') }}"
                                value="{{ request('search') }}"
                                style="height: 45px;">
                     </div>
                     <div class="col-lg-2">
-                        <label class="gov-form-label d-block mb-2">Status</label>
+                        <label class="gov-form-label d-block mb-2">{{ __('admin.status') }}</label>
                         <select name="status" class="form-select" style="height: 45px;">
-                            <option value="">All Status</option>
+                            <option value="">{{ __('admin.all_status') }}</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
                                     {{ ucfirst(str_replace('_', ' ', $status)) }}
@@ -572,9 +572,9 @@
                         </select>
                     </div>
                     <div class="col-lg-3">
-                        <label class="gov-form-label d-block mb-2">Vacancy Position</label>
+                        <label class="gov-form-label d-block mb-2">{{ __('admin.vacancy_position') }}</label>
                         <select name="job_id" class="form-select" style="height: 45px;">
-                            <option value="">All Positions</option>
+                            <option value="">{{ __('admin.all_positions') }}</option>
                             @foreach($vacancies as $vacancy)
                                 <option value="{{ $vacancy->id }}" {{ request('job_id') == $vacancy->id ? 'selected' : '' }}>
                                     {{ $vacancy->title }}
@@ -583,9 +583,9 @@
                         </select>
                     </div>
                     <div class="col-lg-2">
-                        <label class="gov-form-label d-block mb-2">Reviewer</label>
+                        <label class="gov-form-label d-block mb-2">{{ __('admin.assigned_reviewer') }}</label>
                         <select name="reviewer_id" class="form-select" style="height: 45px;">
-                            <option value="">All Reviewers</option>
+                            <option value="">{{ __('admin.all_reviewers') }}</option>
                             @foreach($reviewers as $reviewer)
                                 <option value="{{ $reviewer->id }}" {{ request('reviewer_id') == $reviewer->id ? 'selected' : '' }}>
                                     {{ $reviewer->name }}
@@ -597,7 +597,7 @@
                         <label class="gov-form-label d-block mb-2">&nbsp;</label>
                         <div class="d-flex gap-2">
                             <button type="submit" class="gov-btn gov-btn-primary flex-grow-1" style="height: 45px;">
-                                <i class="bi bi-search"></i> Search
+                                <i class="bi bi-search"></i> {{ __('admin.search') }}
                             </button>
                             <!-- <a href="{{ route('admin.applications.index') }}" class="gov-btn gov-btn-secondary" style="height: 45px; width: 45px; display: flex; align-items: center; justify-content: center; padding: 0;">
                                 <i class="bi bi-arrow-clockwise"></i>
@@ -619,15 +619,15 @@
                         <span id="selectedCount">0</span> application(s) selected
                     </span>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                        <i class="bi bi-x-circle me-1"></i>Clear Selection
+                        <i class="bi bi-x-circle me-1"></i>{{ __('admin.clear_selection') }}
                     </button>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
-                        <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
+                        <i class="bi bi-file-earmark-excel me-1"></i>{{ __('admin.export_to_excel') }}
                     </button>
                     <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>Export to PDF
+                        <i class="bi bi-file-earmark-pdf me-1"></i>{{ __('admin.export_to_pdf') }}
                     </button>
                 </div>
             </div>
@@ -638,8 +638,8 @@
     <div class="gov-card">
         <div class="gov-card-header">
             <div class="d-flex justify-content-between align-items-center w-100">
-                <span><i class="bi bi-table"></i> Applications List</span>
-                <span class="gov-badge gov-badge-primary">{{ $applications->total() }} Total</span>
+                <span><i class="bi bi-table"></i> {{ __('admin.applications_list') }}</span>
+                <span class="gov-badge gov-badge-primary">{{ $applications->total() }} {{ __('admin.total') }}</span>
             </div>
         </div>
         <div class="gov-card-body-no-padding">
@@ -651,17 +651,17 @@
                                 <th class="text-center text-uppercase">
                                     <input type="checkbox" id="selectAll" class="form-check-input">
                                 </th>
-                                <th class="text-center text-uppercase">S.N</th>
-                                <th class="text-center text-uppercase">Candidate Information</th>
-                                <th class="text-center text-uppercase">Vacancy Applied For</th>
-                                <th class="text-center text-uppercase">Contact Details</th>
-                                <th class="text-center text-uppercase">Application Date</th>
-                                <th class="text-center text-uppercase compact-col-noc">NOC Employee</th>
-                                <th class="text-center text-uppercase compact-col-code">Employee Code</th>
-                                <th class="text-center text-uppercase">Assigned Reviewer</th>
-                                <th class="text-center text-uppercase">Assigned Approver</th>
-                                <th class="text-center text-uppercase">Status</th>
-                                <th class="text-center text-uppercase">Actions</th>
+                                <th class="text-center text-uppercase">{{ __('admin.sn') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.candidate_information') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.vacancy_applied_for') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.contact_details') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.applied_date') }}</th>
+                                <th class="text-center text-uppercase compact-col-noc">{{ __('admin.noc_employee') }}</th>
+                                <th class="text-center text-uppercase compact-col-code">{{ __('admin.employee_code') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.assigned_reviewer') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.assigned_approver') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.status') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="text-center align-middle">
@@ -691,7 +691,7 @@
                                                     {{ $application->name_english ?? '-' }}
                                                 </div>
                                                 <small class="gov-text-sm" style="color: #6b7280;">
-                                                    Application ID: {{ $application->id }}
+                                                    {{ __('admin.application_id_label') }} {{ $application->id }}
                                                 </small>
                                             </div>
                                         </div>
@@ -726,7 +726,7 @@
                                         @php
                                             $nocVal = strtolower($application->candidateRegistration->noc_employee ?? $application->noc_employee ?? 'no');
                                         @endphp
-                                        {{ $nocVal === 'yes' ? 'Yes' : 'No' }}
+                                        {{ $nocVal === 'yes' ? __('admin.yes') : __('admin.no') }}
                                     </td>
                                     <td class="compact-col-code">
                                         {{ $nocVal === 'yes' ? ($application->candidateRegistration->employee_id ?? '-') : '-' }}
@@ -740,7 +740,7 @@
                                                 {{ Str::limit($application->reviewer->email, 20) }}
                                             </small>
                                         @else
-                                            <span class="gov-badge gov-badge-secondary">Not Assigned</span>
+                                            <span class="gov-badge gov-badge-secondary">{{ __('admin.not_assigned') }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -752,7 +752,7 @@
                                                 {{ Str::limit($application->approver->email, 20) }}
                                             </small>
                                         @else
-                                            <span class="gov-badge gov-badge-secondary">Not Assigned</span>
+                                            <span class="gov-badge gov-badge-secondary">{{ __('admin.not_assigned') }}</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
@@ -764,14 +764,14 @@
                                         <div class="d-flex justify-content-center gap-2">
                                             <button type="button"
                                                class="gov-action-btn"
-                                               title="View Details"
+                                               title="{{ __('admin.view_details') }}"
                                                onclick="viewApplication({{ $application->id }})">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             @if($application->reviewer_id)
                                                 <button type="button"
                                                         class="gov-action-btn gov-action-btn-success"
-                                                        title="Reviewer already assigned: {{ $application->reviewer->name ?? 'N/A' }}"
+                                                        title="{{ __('admin.reviewer_already_assigned') }} {{ $application->reviewer->name ?? 'N/A' }}"
                                                         disabled style="opacity:0.45; cursor:not-allowed;">
                                                     <i class="bi bi-person-check"></i>
                                                 </button>
@@ -780,7 +780,7 @@
                                                         class="gov-action-btn gov-action-btn-success"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#assignModal{{ $application->id }}"
-                                                        title="Assign Reviewer">
+                                                        title="{{ __('admin.assign_reviewer') }}">
                                                     <i class="bi bi-person-plus"></i>
                                                 </button>
                                             @endif
@@ -788,7 +788,7 @@
                                             @if($application->approver_id)
                                                 <button type="button"
                                                         class="gov-action-btn gov-action-btn-success"
-                                                        title="Approver already assigned: {{ $application->approver->name ?? 'N/A' }}"
+                                                        title="{{ __('admin.approver_already_assigned') }} {{ $application->approver->name ?? 'N/A' }}"
                                                         disabled style="opacity:0.45; cursor:not-allowed;">
                                                     <i class="bi bi-person-check"></i>
                                                 </button>
@@ -797,7 +797,7 @@
                                                         class="gov-action-btn gov-action-btn-success"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#assignApproverModal{{ $application->id }}"
-                                                        title="Assign Approver">
+                                                        title="{{ __('admin.assign_approver') }}">
                                                     <i class="bi bi-person-check"></i>
                                                 </button>
                                             @endif
@@ -805,13 +805,13 @@
                                                     class="gov-action-btn"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#statusModal{{ $application->id }}"
-                                                    title="Update Status">
+                                                    title="{{ __('admin.update_status') }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <button type="button"
                                                     class="gov-action-btn gov-action-btn-danger"
                                                     onclick="deleteApplication({{ $application->id }})"
-                                                    title="Delete">
+                                                    title="{{ __('admin.delete') }}">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -826,13 +826,13 @@
                                                 @csrf
                                                 <div class="modal-header" style="background: linear-gradient(to bottom, white 0%, #f9fafb 100%); border-bottom: 2px solid #e5e7eb; padding: 1.5rem;">
                                                     <h5 class="modal-title fw-bold" style="color: #1f2937;">
-                                                        <i class="bi bi-pencil-square me-2" style="color: #1e40af;"></i>Update Application Status
+                                                        <i class="bi bi-pencil-square me-2" style="color: #1e40af;"></i>{{ __('admin.update_application_status') }}
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body p-4">
                                                     <div class="mb-3">
-                                                        <label class="gov-form-label">Select New Status</label>
+                                                        <label class="gov-form-label">{{ __('admin.select_new_status') }}</label>
                                                         <select name="status" class="form-select gov-form-select" required style="height: 50px;">
                                                             @foreach($statuses as $status)
                                                                 <option value="{{ $status }}" {{ $application->status == $status ? 'selected' : '' }}>
@@ -842,15 +842,15 @@
                                                         </select>
                                                     </div>
                                                     <div>
-                                                        <label class="gov-form-label">Admin Notes (Optional)</label>
+                                                        <label class="gov-form-label">{{ __('admin.admin_notes') }}</label>
                                                         <textarea name="admin_notes" class="form-control gov-form-control" rows="4"
-                                                                  placeholder="Add your review notes here..."></textarea>
+                                                                  placeholder="{{ __('admin.ph_remarks') }}"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
-                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                                                     <button type="submit" class="gov-btn gov-btn-primary">
-                                                        <i class="bi bi-check-circle"></i> Update Status
+                                                        <i class="bi bi-check-circle"></i> {{ __('admin.update_status') }}
                                                     </button>
                                                 </div>
                                             </form>
@@ -866,15 +866,15 @@
                                                 @csrf
                                                 <div class="modal-header" style="background: linear-gradient(to bottom, white 0%, #f9fafb 100%); border-bottom: 2px solid #e5e7eb; padding: 1.5rem;">
                                                     <h5 class="modal-title fw-bold" style="color: #1f2937;">
-                                                        <i class="bi bi-person-plus me-2" style="color: #059669;"></i>Assign Reviewer
+                                                        <i class="bi bi-person-plus me-2" style="color: #059669;"></i>{{ __('admin.assign_reviewer') }}
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body p-4">
                                                     <div class="mb-3">
-                                                        <label class="gov-form-label">Select Reviewer</label>
+                                                        <label class="gov-form-label">{{ __('admin.assigned_reviewer') }}</label>
                                                         <select name="reviewer_id" class="form-select gov-form-select" required style="height: 50px;">
-                                                            <option value="">-- Choose Reviewer --</option>
+                                                            <option value="">{{ __('admin.choose_reviewer') }}</option>
                                                             @foreach($reviewers as $reviewer)
                                                                 <option value="{{ $reviewer->id }}" {{ $application->reviewer_id == $reviewer->id ? 'selected' : '' }}>
                                                                     {{ $reviewer->name }} ({{ $reviewer->email }})
@@ -884,9 +884,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
-                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                                                     <button type="submit" class="gov-btn gov-btn-primary">
-                                                        <i class="bi bi-person-check"></i> Assign Reviewer
+                                                        <i class="bi bi-person-check"></i> {{ __('admin.assign_reviewer') }}
                                                     </button>
                                                 </div>
                                             </form>
@@ -902,15 +902,15 @@
                                                 @csrf
                                                 <div class="modal-header" style="background: linear-gradient(to bottom, white 0%, #f9fafb 100%); border-bottom: 2px solid #e5e7eb; padding: 1.5rem;">
                                                     <h5 class="modal-title fw-bold" style="color: #1f2937;">
-                                                        <i class="bi bi-person-check-fill me-2" style="color: #7c3aed;"></i>Assign Approver
+                                                        <i class="bi bi-person-check-fill me-2" style="color: #7c3aed;"></i>{{ __('admin.assign_approver') }}
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body p-4">
                                                     <div class="mb-3">
-                                                        <label class="gov-form-label">Select Approver</label>
+                                                        <label class="gov-form-label">{{ __('admin.assigned_approver') }}</label>
                                                         <select name="approver_id" class="form-select gov-form-select" required style="height: 50px;">
-                                                            <option value="">-- Choose Approver --</option>
+                                                            <option value="">{{ __('admin.choose_approver') }}</option>
                                                             @foreach($approvers as $approver)
                                                                 <option value="{{ $approver->id }}" {{ $application->approver_id == $approver->id ? 'selected' : '' }}>
                                                                     {{ $approver->name }} ({{ $approver->email }})
@@ -920,9 +920,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
-                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                                                     <button type="submit" class="gov-btn gov-btn-primary" style="background-color: #7c3aed; border-color: #7c3aed;">
-                                                        <i class="bi bi-person-check-fill"></i> Assign Approver
+                                                        <i class="bi bi-person-check-fill"></i> {{ __('admin.assign_approver') }}
                                                     </button>
                                                 </div>
                                             </form>
@@ -938,9 +938,9 @@
                 <div class="gov-pagination-footer">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="gov-text-md" style="color: #6b7280;">
-                            Showing <strong style="color: #1f2937;">{{ $applications->firstItem() }}</strong> to
-                            <strong style="color: #1f2937;">{{ $applications->lastItem() }}</strong> of
-                            <strong style="color: #1f2937;">{{ $applications->total() }}</strong> applications
+                            {{ __('admin.showing') }} <strong style="color: #1f2937;">{{ $applications->firstItem() }}</strong> {{ __('admin.to') }}
+                            <strong style="color: #1f2937;">{{ $applications->lastItem() }}</strong> {{ __('admin.of') }}
+                            <strong style="color: #1f2937;">{{ $applications->total() }}</strong> {{ __('admin.applications_label') }}
                         </div>
                         <div>
                             {{ $applications->links('pagination::bootstrap-5') }}
@@ -953,19 +953,19 @@
                     <div class="gov-empty-state-icon">
                         <i class="bi bi-inbox"></i>
                     </div>
-                    <h4 class="gov-empty-state-title">No Applications Found</h4>
+                    <h4 class="gov-empty-state-title">{{ __('admin.no_applications_found') }}</h4>
                     <p class="gov-empty-state-text">
                         @if(request()->hasAny(['search', 'status', 'job_id', 'reviewer_id']))
-                            No applications match your current filter criteria.<br>
-                            Try adjusting your filters or search terms.
+                            {{ __('admin.no_apps_filter_msg') }}<br>
+                            {{ __('admin.no_apps_filter_hint') }}
                         @else
-                            There are no job applications in the system yet.<br>
-                            Applications will appear here once candidates start applying.
+                            {{ __('admin.no_apps_system_msg') }}<br>
+                            {{ __('admin.no_apps_system_hint') }}
                         @endif
                     </p>
                     @if(request()->hasAny(['search', 'status', 'job_id', 'reviewer_id']))
                         <a href="{{ route('admin.applications.index') }}" class="gov-btn gov-btn-primary">
-                            <i class="bi bi-arrow-clockwise"></i> Clear All Filters
+                            <i class="bi bi-arrow-clockwise"></i> {{ __('admin.clear_all_filters') }}
                         </a>
                     @endif
                 </div>
@@ -982,14 +982,14 @@
                 @csrf
                 <div class="modal-header" style="background: linear-gradient(to bottom, white 0%, #f9fafb 100%); border-bottom: 2px solid #e5e7eb; padding: 1.5rem;">
                     <h5 class="modal-title fw-bold" style="color: #1f2937;">
-                        <i class="bi bi-check2-square me-2" style="color: #1e40af;"></i>Bulk Actions
+                        <i class="bi bi-check2-square me-2" style="color: #1e40af;"></i>{{ __('admin.bulk_actions') }}
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     @if($errors->any())
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Validation Error:</strong>
+                            <strong>{{ __('admin.validation_error') }}</strong>
                             <ul class="mb-0">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -1000,17 +1000,17 @@
                     @endif
 
                     <div class="mb-3">
-                        <label class="gov-form-label">Select Action Type</label>
+                        <label class="gov-form-label">{{ __('admin.select_action_type') }}</label>
                         <select name="action" id="bulkAction" class="form-select gov-form-select" required style="height: 50px;">
-                            <option value="">-- Choose Action --</option>
-                            <option value="update_status">Update Status</option>
-                            <option value="assign_reviewer">Assign Reviewer</option>
-                            <option value="assign_approver">Assign Approver</option>
+                            <option value="">{{ __('admin.choose_action') }}</option>
+                            <option value="update_status">{{ __('admin.update_status') }}</option>
+                            <option value="assign_reviewer">{{ __('admin.assign_reviewer') }}</option>
+                            <option value="assign_approver">{{ __('admin.assign_approver') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3 d-none" id="statusSelection">
-                        <label class="gov-form-label">New Status</label>
+                        <label class="gov-form-label">{{ __('admin.new_status') }}</label>
                         <select name="status" class="form-select gov-form-select">
                             @foreach($statuses as $status)
                                 <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
@@ -1019,9 +1019,9 @@
                     </div>
 
                     <div class="mb-3 d-none" id="reviewerSelection">
-                        <label class="gov-form-label">Assign to Reviewer</label>
+                        <label class="gov-form-label">{{ __('admin.assign_to_reviewer') }}</label>
                         <select name="reviewer_id" class="form-select gov-form-select">
-                            <option value="">-- Select Reviewer --</option>
+                            <option value="">{{ __('admin.choose_reviewer') }}</option>
                             @foreach($reviewers as $reviewer)
                                 <option value="{{ $reviewer->id }}">{{ $reviewer->name }} ({{ $reviewer->email }})</option>
                             @endforeach
@@ -1029,9 +1029,9 @@
                     </div>
 
                     <div class="mb-3 d-none" id="approverSelection">
-                        <label class="gov-form-label">Assign to Approver</label>
+                        <label class="gov-form-label">{{ __('admin.assign_to_approver') }}</label>
                         <select name="approver_id" class="form-select gov-form-select">
-                            <option value="">-- Select Approver --</option>
+                            <option value="">{{ __('admin.choose_approver') }}</option>
                             @foreach($approvers as $approver)
                                 <option value="{{ $approver->id }}">{{ $approver->name }} ({{ $approver->email }})</option>
                             @endforeach
@@ -1041,17 +1041,17 @@
                     {{-- Advertisement Number assignment — shown when reviewer or approver is selected --}}
                     <div class="mb-3 d-none" id="advertisementSelection">
                         <hr class="my-3">
-                        <label class="gov-form-label fw-bold">Assign by Advertisement Number</label>
-                        <small class="d-block text-muted mb-2">Select an advertisement to assign <strong>all its applications</strong> to the person above.</small>
+                        <label class="gov-form-label fw-bold">{{ __('admin.assign_by_adv_no') }}</label>
+                        <small class="d-block text-muted mb-2">{{ __('admin.select_adv_to_assign') }} <strong>{{ __('admin.all_its_applications') }}</strong> to the person above.</small>
                         <select name="job_posting_id" id="jobPostingSelect" class="form-select gov-form-select">
-                            <option value="">-- Select Advertisement Number --</option>
+                            <option value="">{{ __('admin.select_adv_no') }}</option>
                             @foreach($vacancies as $vacancy)
                                 <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->group_applications_count }}">
                                     {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - Level ' . $vacancy->level : '' }}
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted mt-1 d-block">Leave blank to use checkbox selection instead.</small>
+                        <small class="text-muted mt-1 d-block">{{ __('admin.leave_blank_checkbox') }}</small>
                     </div>
 
                     <div class="gov-alert gov-alert-info mb-0" id="modalInfoAlert">
@@ -1060,9 +1060,9 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
-                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
                     <button type="submit" class="gov-btn gov-btn-primary">
-                        <i class="bi bi-check-circle"></i> Apply Action
+                        <i class="bi bi-check-circle"></i> {{ __('admin.apply_action') }}
                     </button>
                 </div>
             </form>
@@ -1075,17 +1075,17 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Application Details</h5>
+                <h5 class="modal-title">{{ __('admin.application_details') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="applicationDetailBody">
                 <div class="app-modal-loading">
                     <div class="spinner-border" role="status"></div>
-                    <span>Loading application details...</span>
+                    <span>{{ __('admin.loading_application') }}</span>
                 </div>
             </div>
             <div class="app-modal-footer">
-                <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="gov-btn gov-btn-secondary" data-bs-dismiss="modal">{{ __('admin.close') }}</button>
             </div>
         </div>
     </div>
@@ -1103,6 +1103,78 @@
 
 @section('scripts')
 <script>
+    // PHP → JS translation map (server-side locale applied)
+    const _t = {
+        vacancy_information:    "{{ __('admin.vacancy_information') }}",
+        personal_information:   "{{ __('admin.personal_information') }}",
+        family_details:         "{{ __('admin.family_details') }}",
+        address_information:    "{{ __('admin.address_information') }}",
+        educational_background: "{{ __('admin.educational_background') }}",
+        work_experience:        "{{ __('admin.work_experience') }}",
+        assignment_timeline:    "{{ __('admin.assignment_timeline') }}",
+        uploaded_documents:     "{{ __('admin.uploaded_documents') }}",
+        application_status_history: "{{ __('admin.application_status_history') }}",
+        position:               "{{ __('admin.position') }}",
+        advertisement_no:       "{{ __('admin.advertisement_no') }}",
+        department:             "{{ __('admin.department') }}",
+        citizenship_no:         "{{ __('admin.citizenship_no') }}",
+        issue_district:         "{{ __('admin.issue_district') }}",
+        nationality:            "{{ __('admin.nationality') }}",
+        religion:               "{{ __('admin.religion') }}",
+        community:              "{{ __('admin.community') }}",
+        noc_employee:           "{{ __('admin.noc_employee') }}",
+        marital_status:         "{{ __('admin.marital_status') }}",
+        father:                 "{{ __('admin.father') }}",
+        mother:                 "{{ __('admin.mother') }}",
+        grandfather:            "{{ __('admin.grandfather') }}",
+        spouse:                 "{{ __('admin.spouse') }}",
+        permanent_address:      "{{ __('admin.permanent_address') }}",
+        mailing_address:        "{{ __('admin.mailing_address') }}",
+        education_level:        "{{ __('admin.education_level') }}",
+        field_of_study:         "{{ __('admin.field_of_study') }}",
+        institution:            "{{ __('admin.institution') }}",
+        university:             "{{ __('admin.university') }}",
+        graduation_year:        "{{ __('admin.graduation_year') }}",
+        reviewer:               "{{ __('admin.reviewer') }}",
+        approver:               "{{ __('admin.approver') }}",
+        applied_on:             "{{ __('admin.applied_on_col') }}",
+        last_updated:           "{{ __('admin.last_updated') }}",
+        view_document:          "{{ __('admin.view_document') }}",
+        sn:                     "{{ __('admin.sn') }}",
+        stage_name:             "{{ __('admin.stage_name') }}",
+        done_by:                "{{ __('admin.done_by') }}",
+        date_time:              "{{ __('admin.date') }}",
+        remarks:                "{{ __('admin.remarks') }}",
+        no_history:             "{{ __('admin.no_history') }}",
+        dob_bs:                 "{{ __('admin.dob_bs_short') }}",
+        dob_ad:                 "{{ __('admin.dob_ad_short') }}",
+        experience:             "{{ __('admin.experience_n') }}",
+        // alert / confirm / inline strings
+        failed_load_details:    "{{ __('admin.failed_load_details') }}",
+        delete_app_confirm:     "{{ __('admin.delete_app_confirm') }}",
+        select_adv_or_app:      "{{ __('admin.select_adv_or_app') }}",
+        update_status_select:   "{{ __('admin.update_status_select_one') }}",
+        exporting:              "{{ __('admin.exporting') }}",
+        apps_assigned_from_adv: "{{ __('admin.apps_assigned_from_adv') }}",
+        apps_selected_checkbox: "{{ __('admin.apps_selected_checkbox') }}",
+        will_be_assigned_to:    "{{ __('admin.will_be_assigned_to') }}",
+        ward_prefix:            "{{ __('admin.ward_prefix') }}",
+        present_str:            "{{ __('admin.present_str') }}",
+        id_colon:               "{{ __('admin.id_colon') }}",
+        age_colon:              "{{ __('admin.age_colon') }}",
+        pdf_label:              "{{ __('admin.pdf_label') }}",
+        select_app_export:      "{{ __('admin.select_app_export') }}",
+        // document labels
+        doc_passport_photo:         "{{ __('admin.doc_passport_photo') }}",
+        doc_citizenship:            "{{ __('admin.doc_citizenship') }}",
+        doc_noc_id_card:            "{{ __('admin.doc_noc_id_card') }}",
+        doc_ethnic_certificate:     "{{ __('admin.doc_ethnic_certificate') }}",
+        doc_disability_certificate: "{{ __('admin.doc_disability_certificate') }}",
+        doc_signature:              "{{ __('admin.doc_signature') }}",
+        doc_transcript:             "{{ __('admin.doc_transcript') }}",
+        doc_character_certificate:  "{{ __('admin.doc_character_certificate') }}",
+    };
+
     // Function to open bulk action modal
     function openBulkActionModal() {
         console.log('openBulkActionModal() called');
@@ -1239,7 +1311,7 @@
         });
 
         if (selected.length === 0) {
-            alert('Please select at least one application to export.');
+            alert(_t.select_app_export);
             return;
         }
 
@@ -1311,13 +1383,13 @@
 
         if (jobCount !== null) {
             const advLabel = selectedOption.text.trim();
-            let msg = '<strong>' + jobCount + '</strong> applications will be assigned from advertisement <strong>' + advLabel + '</strong>';
-            if (assigneeName) msg += ' to <strong>' + assigneeName + '</strong>';
+            let msg = '<strong>' + jobCount + '</strong> ' + _t.apps_assigned_from_adv + ' <strong>' + advLabel + '</strong>';
+            if (assigneeName) msg += ' ' + _t.will_be_assigned_to + ' <strong>' + assigneeName + '</strong>';
             infoText.innerHTML = msg;
         } else {
             const checkboxCount = document.querySelectorAll('.application-checkbox:checked').length;
-            let msg = '<span id="modalSelectedCount">' + checkboxCount + '</span> applications selected via checkboxes';
-            if (assigneeName) msg += ' — will be assigned to <strong>' + assigneeName + '</strong>';
+            let msg = '<span id="modalSelectedCount">' + checkboxCount + '</span> ' + _t.apps_selected_checkbox;
+            if (assigneeName) msg += ' — ' + _t.will_be_assigned_to + ' <strong>' + assigneeName + '</strong>';
             infoText.innerHTML = msg;
         }
     }
@@ -1339,7 +1411,7 @@
             if ((action === 'assign_reviewer' || action === 'assign_approver')) {
                 if (!jobPostingId && selected.length === 0) {
                     e.preventDefault();
-                    alert('Please select an advertisement number OR check at least one application.');
+                    alert(_t.select_adv_or_app);
                     return false;
                 }
                 // If advertisement number chosen, no need to append checkbox IDs
@@ -1351,7 +1423,7 @@
             // For update_status: checkboxes required
             if (action === 'update_status' && selected.length === 0) {
                 e.preventDefault();
-                alert('Please select at least one application to update status.');
+                alert(_t.update_status_select);
                 return false;
             }
 
@@ -1368,7 +1440,7 @@
 
     // Delete Single
     function deleteApplication(id) {
-        if (confirm('Are you sure you want to permanently delete this application? This action cannot be undone.')) {
+        if (confirm(_t.delete_app_confirm)) {
             const form = document.getElementById('deleteForm' + id);
             if (form) form.submit();
         }
@@ -1405,7 +1477,7 @@
         // Show loading indicator
         const btn = document.getElementById('exportDataButton');
         const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Exporting...';
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ' + _t.exporting;
         btn.disabled = true;
 
         // Redirect to export URL (will download file)
@@ -1453,7 +1525,7 @@
         const body = document.getElementById('applicationDetailBody');
 
         // Show loading
-        body.innerHTML = '<div class="app-modal-loading"><div class="spinner-border" role="status"></div><span>Loading application details...</span></div>';
+        body.innerHTML = '<div class="app-modal-loading"><div class="spinner-border" role="status"></div><span>{{ __('admin.loading_application') }}</span></div>';
         modal.show();
 
         fetch('/admin/applications/' + id, {
@@ -1464,7 +1536,7 @@
             body.innerHTML = renderApplicationDetail(d);
         })
         .catch(() => {
-            body.innerHTML = '<div class="app-modal-loading"><i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#ef4444;"></i><span style="margin-top:0.5rem;">Failed to load application details.</span></div>';
+            body.innerHTML = '<div class="app-modal-loading"><i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#ef4444;"></i><span style="margin-top:0.5rem;">' + _t.failed_load_details + '</span></div>';
         });
     }
 
@@ -1485,14 +1557,14 @@
         const isImage = (url) => url && imgExts.some(ext => url.toLowerCase().split('?')[0].endsWith('.' + ext));
 
         const docMap = [
-            ['passport_size_photo',    'Passport Photo'],
-            ['citizenship_id_document','Citizenship'],
-            ['noc_id_card',            'NOC ID Card'],
-            ['ethnic_certificate',     'Ethnic Certificate'],
-            ['disability_certificate', 'Disability Certificate'],
-            ['signature',              'Signature'],
-            ['transcript',             'Transcript'],
-            ['character',              'Character Certificate'],
+            ['passport_size_photo',    _t.doc_passport_photo],
+            ['citizenship_id_document',_t.doc_citizenship],
+            ['noc_id_card',            _t.doc_noc_id_card],
+            ['ethnic_certificate',     _t.doc_ethnic_certificate],
+            ['disability_certificate', _t.doc_disability_certificate],
+            ['signature',              _t.doc_signature],
+            ['transcript',             _t.doc_transcript],
+            ['character',              _t.doc_character_certificate],
         ];
 
         let docsHtml = '';
@@ -1501,7 +1573,7 @@
             const url = d[key];
             const preview = isImage(url)
                 ? `<img src="${url}" class="app-modal-doc-preview" alt="${label}" loading="lazy">`
-                : `<div class="app-modal-doc-preview-icon">PDF</div>`;
+                : `<div class="app-modal-doc-preview-icon">${_t.pdf_label}</div>`;
             docsHtml += `
                 <div class="app-modal-doc-card">
                     <a href="${url}" target="_blank">${preview}</a>
@@ -1519,26 +1591,26 @@
             let expItems = '';
             experiences.forEach((exp, i) => {
                 if (!exp.organization) return;
-                const period = [exp.start_date_bs, exp.end_date_bs || 'Present'].filter(Boolean).join(' – ');
+                const period = [exp.start_date_bs, exp.end_date_bs || _t.present_str].filter(Boolean).join(' – ');
                 expItems += `<div class="app-modal-field">
-                    <span class="app-modal-field-label">Experience ${i + 1}</span>
+                    <span class="app-modal-field-label">${_t.experience_n} ${i + 1}</span>
                     <span class="app-modal-field-value">${exp.position ? exp.position + ', ' : ''}${exp.organization}<br>
                     <small style="color:#9ca3af;">${period}${exp.years ? ' (' + exp.years + ' yrs)' : ''}</small>
-                    ${exp.document ? `<br><a href="${exp.document}" target="_blank" class="small">View Document</a>` : ''}
+                    ${exp.document ? `<br><a href="${exp.document}" target="_blank" class="small">${_t.view_document}</a>` : ''}
                     </span>
                 </div>`;
             });
             if (expItems) {
                 expHtml = `<div class="app-modal-section">
-                    <div class="app-modal-section-title">Work Experience</div>
+                    <div class="app-modal-section-title">${_t.work_experience}</div>
                     <div class="app-modal-grid app-modal-grid-2">${expItems}</div>
                 </div>`;
             }
         }
 
         // ── Address helpers ──
-        const permAddr = [d.permanent_tole, d.permanent_municipality, d.permanent_ward ? 'Ward-'+d.permanent_ward : '', d.permanent_district, d.permanent_province].filter(Boolean).join(', ');
-        const mailAddr = [d.mailing_tole, d.mailing_municipality, d.mailing_ward ? 'Ward-'+d.mailing_ward : '', d.mailing_district, d.mailing_province].filter(Boolean).join(', ');
+        const permAddr = [d.permanent_tole, d.permanent_municipality, d.permanent_ward ? _t.ward_prefix+d.permanent_ward : '', d.permanent_district, d.permanent_province].filter(Boolean).join(', ');
+        const mailAddr = [d.mailing_tole, d.mailing_municipality, d.mailing_ward ? _t.ward_prefix+d.mailing_ward : '', d.mailing_district, d.mailing_province].filter(Boolean).join(', ');
 
         return `
         <div class="app-modal-profile">
@@ -1551,11 +1623,11 @@
             <div class="app-modal-name">${val(d.name_english)}</div>
             ${d.name_nepali ? `<div class="app-modal-name-np">${d.name_nepali}</div>` : ''}
             <div class="app-modal-meta">
-                <span>ID : ${d.id}</span>
+                <span>${_t.id_colon} ${d.id}</span>
                 <span>${val(d.email)}</span>
                 <span>${val(d.phone)}</span>
                 ${d.gender ? `<span>${d.gender}</span>` : ''}
-                ${d.age    ? `<span>Age: ${d.age}</span>` : ''}
+                ${d.age    ? `<span>${_t.age_colon} ${d.age}</span>` : ''}
             </div>
             <div class="app-modal-badges">
                 <span class="app-modal-status ${d.status}">${statusLabel}</span>
@@ -1566,78 +1638,78 @@
         <div class="app-modal-sections">
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Vacancy Information</div>
+                <div class="app-modal-section-title">${_t.vacancy_information}</div>
                 <div class="app-modal-grid">
-                    <div class="app-modal-field"><span class="app-modal-field-label">Position</span><span class="app-modal-field-value">${val(d.applying_position)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Advertisement No.</span><span class="app-modal-field-value">${val(d.advertisement_no)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Department</span><span class="app-modal-field-value">${val(d.vacancy_department)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.position}</span><span class="app-modal-field-value">${val(d.applying_position)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.advertisement_no}</span><span class="app-modal-field-value">${val(d.advertisement_no)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.department}</span><span class="app-modal-field-value">${val(d.vacancy_department)}</span></div>
                 </div>
             </div>
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Personal Information</div>
+                <div class="app-modal-section-title">${_t.personal_information}</div>
                 <div class="app-modal-grid">
-                    <div class="app-modal-field"><span class="app-modal-field-label">DOB (BS)</span><span class="app-modal-field-value">${val(d.birth_date_bs)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">DOB (AD)</span><span class="app-modal-field-value">${val(d.birth_date_ad)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Marital Status</span><span class="app-modal-field-value">${val(d.marital_status)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Citizenship No.</span><span class="app-modal-field-value">${val(d.citizenship_number)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Issue District</span><span class="app-modal-field-value">${val(d.citizenship_issue_district)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Nationality</span><span class="app-modal-field-value">${val(d.nationality)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Religion</span><span class="app-modal-field-value">${val(d.religion)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Community</span><span class="app-modal-field-value">${val(d.community)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">NOC Employee</span><span class="app-modal-field-value">${val(d.noc_employee)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.dob_bs}</span><span class="app-modal-field-value">${val(d.birth_date_bs)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.dob_ad}</span><span class="app-modal-field-value">${val(d.birth_date_ad)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.marital_status}</span><span class="app-modal-field-value">${val(d.marital_status)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.citizenship_no}</span><span class="app-modal-field-value">${val(d.citizenship_number)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.issue_district}</span><span class="app-modal-field-value">${val(d.citizenship_issue_district)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.nationality}</span><span class="app-modal-field-value">${val(d.nationality)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.religion}</span><span class="app-modal-field-value">${val(d.religion)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.community}</span><span class="app-modal-field-value">${val(d.community)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.noc_employee}</span><span class="app-modal-field-value">${val(d.noc_employee)}</span></div>
                 </div>
             </div>
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Family Details</div>
+                <div class="app-modal-section-title">${_t.family_details}</div>
                 <div class="app-modal-grid">
-                    <div class="app-modal-field"><span class="app-modal-field-label">Father</span><span class="app-modal-field-value">${val(d.father_name_english)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Mother</span><span class="app-modal-field-value">${val(d.mother_name_english)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Grandfather</span><span class="app-modal-field-value">${val(d.grandfather_name_english)}</span></div>
-                    ${d.spouse_name_english ? `<div class="app-modal-field"><span class="app-modal-field-label">Spouse</span><span class="app-modal-field-value">${d.spouse_name_english}</span></div>` : ''}
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.father}</span><span class="app-modal-field-value">${val(d.father_name_english)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.mother}</span><span class="app-modal-field-value">${val(d.mother_name_english)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.grandfather}</span><span class="app-modal-field-value">${val(d.grandfather_name_english)}</span></div>
+                    ${d.spouse_name_english ? `<div class="app-modal-field"><span class="app-modal-field-label">${_t.spouse}</span><span class="app-modal-field-value">${d.spouse_name_english}</span></div>` : ''}
                 </div>
             </div>
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Address</div>
+                <div class="app-modal-section-title">${_t.address_information}</div>
                 <div class="app-modal-grid app-modal-grid-2">
-                    <div class="app-modal-field"><span class="app-modal-field-label">Permanent Address</span><span class="app-modal-field-value">${permAddr || na}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Mailing Address</span><span class="app-modal-field-value">${mailAddr || na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.permanent_address}</span><span class="app-modal-field-value">${permAddr || na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.mailing_address}</span><span class="app-modal-field-value">${mailAddr || na}</span></div>
                 </div>
             </div>
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Education</div>
+                <div class="app-modal-section-title">${_t.educational_background}</div>
                 <div class="app-modal-grid">
-                    <div class="app-modal-field"><span class="app-modal-field-label">Level</span><span class="app-modal-field-value">${val(d.education_level)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Field of Study</span><span class="app-modal-field-value">${val(d.field_of_study)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Institution</span><span class="app-modal-field-value">${val(d.institution_name)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">University</span><span class="app-modal-field-value">${val(d.university)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Graduation Year</span><span class="app-modal-field-value">${val(d.graduation_year)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.education_level}</span><span class="app-modal-field-value">${val(d.education_level)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.field_of_study}</span><span class="app-modal-field-value">${val(d.field_of_study)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.institution}</span><span class="app-modal-field-value">${val(d.institution_name)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.university}</span><span class="app-modal-field-value">${val(d.university)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.graduation_year}</span><span class="app-modal-field-value">${val(d.graduation_year)}</span></div>
                 </div>
             </div>
 
             ${expHtml}
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Assignment & Timeline</div>
+                <div class="app-modal-section-title">${_t.assignment_timeline}</div>
                 <div class="app-modal-grid">
-                    <div class="app-modal-field"><span class="app-modal-field-label">Reviewer</span><span class="app-modal-field-value">${d.reviewer_name ? `${d.reviewer_name}<br><small style="color:#9ca3af;">${d.reviewer_email||''}</small>` : na}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Approver</span><span class="app-modal-field-value">${d.approver_name ? `${d.approver_name}<br><small style="color:#9ca3af;">${d.approver_email||''}</small>` : na}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Applied On</span><span class="app-modal-field-value">${val(d.created_at)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">Last Updated</span><span class="app-modal-field-value">${val(d.updated_at)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.reviewer}</span><span class="app-modal-field-value">${d.reviewer_name ? `${d.reviewer_name}<br><small style="color:#9ca3af;">${d.reviewer_email||''}</small>` : na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.approver}</span><span class="app-modal-field-value">${d.approver_name ? `${d.approver_name}<br><small style="color:#9ca3af;">${d.approver_email||''}</small>` : na}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.applied_on}</span><span class="app-modal-field-value">${val(d.created_at)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.last_updated}</span><span class="app-modal-field-value">${val(d.updated_at)}</span></div>
                 </div>
             </div>
 
             ${docsHtml ? `
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Uploaded Documents</div>
+                <div class="app-modal-section-title">${_t.uploaded_documents}</div>
                 <div class="app-modal-docs-grid">${docsHtml}</div>
             </div>` : ''}
 
             <div class="app-modal-section">
-                <div class="app-modal-section-title">Application Status History</div>
+                <div class="app-modal-section-title">${_t.application_status_history}</div>
                 ${(Array.isArray(d.status_histories) && d.status_histories.length > 0) ? (() => {
                     const badgeMap = {
                         'Approved': 'bg-success',
@@ -1661,17 +1733,17 @@
                         <table class="table table-bordered table-hover align-middle mb-0" style="font-size:0.85rem;">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width:40px">S.N</th>
-                                    <th>Stage Name</th>
-                                    <th>Done By</th>
-                                    <th>Date &amp; Time</th>
-                                    <th>Remarks</th>
+                                    <th style="width:40px">${_t.sn}</th>
+                                    <th>${_t.stage_name}</th>
+                                    <th>${_t.done_by}</th>
+                                    <th>${_t.date_time}</th>
+                                    <th>${_t.remarks}</th>
                                 </tr>
                             </thead>
                             <tbody>${rows}</tbody>
                         </table>
                     </div>`;
-                })() : `<p style="color:#9ca3af;font-style:italic;margin:0;">No history available yet.</p>`}
+                })() : `<p style="color:#9ca3af;font-style:italic;margin:0;">${_t.no_history}</p>`}
             </div>
 
         </div>`;

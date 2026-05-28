@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Reports')
-@section('portal-name', 'Admin Portal')
+@section('title', __('admin.reports'))
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -111,44 +111,44 @@
 
 @section('content')
 <div class="page-header">
-    <h4 class="mb-1 fw-bold">Reports</h4>
-    <p class="mb-0 opacity-75" style="font-size:0.9rem;">Apply filters, preview the data, then download as PDF</p>
+    <h4 class="mb-1 fw-bold">{{ __('admin.reports') }}</h4>
+    <p class="mb-0 opacity-75" style="font-size:0.9rem;">{{ __('admin.reports_subtitle') }}</p>
 </div>
 
 {{-- Applications --}}
 <div class="report-card">
     <div class="report-card-header">
-        <h6>Applications Report</h6>
+        <h6>{{ __('admin.applications_report') }}</h6>
         <span class="total-badge">{{ number_format($summary['total_applications']) }} total</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.applications') }}" target="_blank">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Name, email, adv. no., position...">
+                    <label>{{ __('admin.search') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.ph_search_reports') }}">
                 </div>
                 <div class="filter-group">
-                    <label>Status</label>
+                    <label>{{ __('admin.status') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="under_review">Under Review</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="">{{ __('admin.all_status') }}</option>
+                        <option value="pending">{{ __('admin.pending') }}</option>
+                        <option value="under_review">{{ __('admin.under_review') }}</option>
+                        <option value="approved">{{ __('admin.approved') }}</option>
+                        <option value="rejected">{{ __('admin.rejected') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>From Date</label>
+                    <label>{{ __('admin.from_date') }}</label>
                     <input type="date" name="from" class="form-control">
                 </div>
                 <div class="filter-group">
-                    <label>To Date</label>
+                    <label>{{ __('admin.to_date') }}</label>
                     <input type="date" name="to" class="form-control">
                 </div>
                 <div class="filter-group">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn-preview">Preview &amp; Download</button>
+                    <button type="submit" class="btn-preview">{{ __('admin.preview_download') }}</button>
                 </div>
             </div>
         </form>
@@ -158,36 +158,36 @@
 {{-- Candidates --}}
 <div class="report-card">
     <div class="report-card-header">
-        <h6>Registered Candidates Report</h6>
+        <h6>{{ __('admin.candidates_report') }}</h6>
         <span class="total-badge">{{ number_format($summary['total_candidates']) }} total</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.candidates') }}" target="_blank">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Name, email, username, mobile...">
+                    <label>{{ __('admin.search') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.ph_search_candidates') }}">
                 </div>
                 <div class="filter-group">
-                    <label>Gender</label>
+                    <label>{{ __('admin.gender') }}</label>
                     <select name="gender" class="form-select">
-                        <option value="">All Genders</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="">{{ __('admin.all_genders') }}</option>
+                        <option value="male">{{ __('admin.male') }}</option>
+                        <option value="female">{{ __('admin.female') }}</option>
+                        <option value="other">{{ __('admin.other') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>From Date</label>
+                    <label>{{ __('admin.from_date') }}</label>
                     <input type="date" name="from" class="form-control">
                 </div>
                 <div class="filter-group">
-                    <label>To Date</label>
+                    <label>{{ __('admin.to_date') }}</label>
                     <input type="date" name="to" class="form-control">
                 </div>
                 <div class="filter-group">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn-preview">Preview &amp; Download</button>
+                    <button type="submit" class="btn-preview">{{ __('admin.preview_download') }}</button>
                 </div>
             </div>
         </form>
@@ -197,37 +197,37 @@
 {{-- Vacancies --}}
 <div class="report-card">
     <div class="report-card-header">
-        <h6>Vacancies Report</h6>
+        <h6>{{ __('admin.vacancies_report') }}</h6>
         <span class="total-badge">{{ number_format($summary['total_vacancies']) }} total</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.vacancies') }}" target="_blank">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Position, adv. no., service/group...">
+                    <label>{{ __('admin.search') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.ph_position_adv') }}">
                 </div>
                 <div class="filter-group">
-                    <label>Status</label>
+                    <label>{{ __('admin.status') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="draft">Draft</option>
-                        <option value="closed">Closed</option>
+                        <option value="">{{ __('admin.all_status') }}</option>
+                        <option value="active">{{ __('admin.active') }}</option>
+                        <option value="inactive">{{ __('admin.inactive') }}</option>
+                        <option value="draft">{{ __('admin.draft') }}</option>
+                        <option value="closed">{{ __('admin.closed') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>From Date</label>
+                    <label>{{ __('admin.from_date') }}</label>
                     <input type="date" name="from" class="form-control">
                 </div>
                 <div class="filter-group">
-                    <label>To Date</label>
+                    <label>{{ __('admin.to_date') }}</label>
                     <input type="date" name="to" class="form-control">
                 </div>
                 <div class="filter-group">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn-preview">Preview &amp; Download</button>
+                    <button type="submit" class="btn-preview">{{ __('admin.preview_download') }}</button>
                 </div>
             </div>
         </form>
@@ -237,27 +237,27 @@
 {{-- Reviewers --}}
 <div class="report-card">
     <div class="report-card-header">
-        <h6>Reviewers Report</h6>
+        <h6>{{ __('admin.reviewers_report') }}</h6>
         <span class="total-badge">{{ number_format($summary['total_reviewers']) }} total</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.reviewers') }}" target="_blank">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Name or email...">
+                    <label>{{ __('admin.search') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.ph_name_email') }}">
                 </div>
                 <div class="filter-group">
-                    <label>Status</label>
+                    <label>{{ __('admin.status') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
+                        <option value="">{{ __('admin.all_status') }}</option>
+                        <option value="active">{{ __('admin.active') }}</option>
+                        <option value="inactive">{{ __('admin.inactive') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn-preview">Preview &amp; Download</button>
+                    <button type="submit" class="btn-preview">{{ __('admin.preview_download') }}</button>
                 </div>
             </div>
         </form>
@@ -267,27 +267,27 @@
 {{-- Approvers --}}
 <div class="report-card">
     <div class="report-card-header">
-        <h6>Approvers Report</h6>
+        <h6>{{ __('admin.approvers_report') }}</h6>
         <span class="total-badge">{{ number_format($summary['total_approvers']) }} total</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.approvers') }}" target="_blank">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Name or email...">
+                    <label>{{ __('admin.search') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.ph_name_email') }}">
                 </div>
                 <div class="filter-group">
-                    <label>Status</label>
+                    <label>{{ __('admin.status') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
+                        <option value="">{{ __('admin.all_status') }}</option>
+                        <option value="active">{{ __('admin.active') }}</option>
+                        <option value="inactive">{{ __('admin.inactive') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn-preview">Preview &amp; Download</button>
+                    <button type="submit" class="btn-preview">{{ __('admin.preview_download') }}</button>
                 </div>
             </div>
         </form>

@@ -36,6 +36,15 @@ use App\Http\Controllers\Approver\MyProfileController as ApproverMyProfileContro
 |--------------------------------------------------------------------------
 */
 
+// Language Switcher
+Route::post('/language/switch', function (\Illuminate\Http\Request $request) {
+    $locale = $request->input('locale', 'en');
+    if (in_array($locale, ['en', 'ne'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('language.switch');
+
 // Root route - Redirect to Admin Login
 Route::get('/', function () {
     return redirect()->route('admin.login');

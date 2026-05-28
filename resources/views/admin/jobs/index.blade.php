@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Post New Vacancy')
+@section('title', __('admin.post_new_vacancy'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()?->name ?? 'Guest')
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', Auth::guard('admin')->user() ? strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) : 'G')
 @section('logout-route', route('admin.logout'))
 
@@ -124,13 +124,13 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="fw-bold mb-1">
-                    <i class="bi bi-briefcase me-2"></i>Vacancy Management
+                    <i class="bi bi-briefcase me-2"></i>{{ __('admin.vacancy_management') }}
                 </h4>
-                <p class="mb-0 opacity-90">Create and manage Vacancies</p>
+                <p class="mb-0 opacity-90">{{ __('admin.create_manage_vacancies') }}</p>
             </div>
             <div>
                 <a href="{{ route('admin.jobs.create') }}" class="btn btn-light">
-                    <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
+                    <i class="bi bi-plus-circle me-2"></i>{{ __('admin.post_new_vacancy') }}
                 </a>
             </div>
         </div>
@@ -161,7 +161,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                        <small class="text-muted">Total Vacancy</small>
+                        <small class="text-muted">{{ __('admin.total_vacancy') }}</small>
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['active'] }}</h3>
-                        <small class="text-muted">Active Vacancy</small>
+                        <small class="text-muted">{{ __('admin.active_vacancy') }}</small>
                     </div>
                 </div>
             </div>
@@ -187,7 +187,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['closed'] }}</h3>
-                        <small class="text-muted">Closed Vacancy</small>
+                        <small class="text-muted">{{ __('admin.closed_vacancy') }}</small>
                     </div>
                 </div>
             </div>
@@ -200,7 +200,7 @@
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0">{{ $stats['draft'] }}</h3>
-                        <small class="text-muted">Draft Vacancy</small>
+                        <small class="text-muted">{{ __('admin.draft_vacancy') }}</small>
                     </div>
                 </div>
             </div>
@@ -213,22 +213,22 @@
             <form method="GET" action="{{ route('admin.jobs.index') }}">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <input type="text" class="form-control" name="search" placeholder="Search Vacancies..."
+                        <input type="text" class="form-control" name="search" placeholder="{{ __('admin.ph_search_vacancies') }}"
                             value="{{ request('search') }}">
                     </div>
                     <div class="col-md-4">
                         <select class="form-select" name="status">
-                            <option value="">All Status</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
-                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="">{{ __('admin.all_status') }}</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('admin.active') }}</option>
+                            <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>{{ __('admin.closed') }}</option>
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>{{ __('admin.draft') }}</option>
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="bi bi-search me-2"></i>Search
+                                <i class="bi bi-search me-2"></i>{{ __('admin.search') }}
                             </button>
                             @if(request()->hasAny(['search', 'status']))
                                 <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-secondary">
@@ -247,10 +247,9 @@
         <div class="card-header bg-white py-3 ps-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <!-- <i class="bi bi-list-ul text-primary me-2"></i> -->
-                    Vacancy List
+                    {{ __('admin.vacancy_list') }}
                 </h6>
-                <span class="badge bg-primary ms-2"> Total {{ $jobs->total() }}</span>
+                <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $jobs->total() }}</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -261,15 +260,15 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-2">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                                    <i class="bi bi-x-circle me-1"></i>Clear Selection
+                                    <i class="bi bi-x-circle me-1"></i>{{ __('admin.clear_selection') }}
                                 </button>
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
-                                    <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
+                                    <i class="bi bi-file-earmark-excel me-1"></i>{{ __('admin.export_to_excel') }}
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
-                                    <i class="bi bi-file-earmark-pdf me-1"></i>Export to PDF
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>{{ __('admin.export_to_pdf') }}
                                 </button>
                             </div>
                         </div>
@@ -282,22 +281,22 @@
                     style="table-layout: auto; white-space: nowrap; border: none;">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center text-uppercase" style="border: none;">Notice No.</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.notice_no') }}</th>
                             <th class="text-center text-uppercase" style="border: none; width: 50px;">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th class="text-center text-uppercase" style="border: none;">S.N</th>
-                            <th class="text-center text-uppercase" style="border: none;">Advertisement No.</th>
-                            <th class="text-center text-uppercase" style="border: none;">Position / Level</th>
-                            <th class="text-center text-uppercase" style="border: none;">Service / Group</th>
-                            <th class="text-center text-uppercase" style="border: none;">Type</th>
-                            <th class="text-center text-uppercase" style="border: none;">Demand</th>
-                            <th class="text-center text-uppercase" style="border: none;">Qualifications</th>
-                            <th class="text-center text-uppercase" style="border: none;">Total Fee</th>
-                            <th class="text-center text-uppercase" style="border: none;">Deadline</th>
-                            <th class="text-center text-uppercase" style="border: none;">Double Dastur</th>
-                            <th class="text-center text-uppercase" style="border: none;">Status</th>
-                            <th class="text-center text-uppercase" style="border: none;">Actions</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.sn') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.advertisement_no') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.position_level') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.service_slash_group') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.category_type') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.demand') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.qualifications') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.application_fee') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.deadline') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.double_dastur') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.status') }}</th>
+                            <th class="text-center text-uppercase" style="border: none;">{{ __('admin.actions') }}</th>
                         </tr>
                     </thead>
 
@@ -487,7 +486,7 @@
                                         @if($i > 0)<div style="border-top:1px solid #e5e7eb;margin:4px -8px;"></div>@endif
                                         <span style="white-space:nowrap;display:block;">
                                             @if($feeAmt !== null && $feeAmt > 0)
-                                                NPR {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
+                                                {{ __('admin.npr') }} {{ number_format($feeAmt, ($feeAmt == floor($feeAmt) ? 0 : 2)) }}
                                             @else
                                                 -
                                             @endif
@@ -502,7 +501,7 @@
                                         style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
                                         <small class="d-block fw-semibold nepali-date-bs"
                                             data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
-                                            Converting...
+                                            {{ __('admin.converting') }}
                                         </small>
                                         <small>{{ $job->deadline->format('Y-m-d') }}</small>
                                     </td>
@@ -516,7 +515,7 @@
                                         @if($job->double_dastur_date)
                                             <small class="d-block fw-semibold nepali-date-bs"
                                                 data-ad-date="{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}">
-                                                Converting...
+                                                {{ __('admin.converting') }}
                                             </small>
                                             <small>{{ \Carbon\Carbon::parse($job->double_dastur_date)->format('Y-m-d') }}</small>
                                         @else
@@ -532,10 +531,10 @@
                                         <select name="status" class="form-select form-select-sm border"
                                             onchange="this.form.submit()"
                                             style="font-weight: 600; cursor: pointer; width: auto; padding-right: 2rem;">
-                                            <option value="draft" {{ $job->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                            <option value="active" {{ $job->status == 'active' ? 'selected' : '' }}>Active
+                                            <option value="draft" {{ $job->status == 'draft' ? 'selected' : '' }}>{{ __('admin.draft') }}</option>
+                                            <option value="active" {{ $job->status == 'active' ? 'selected' : '' }}>{{ __('admin.active') }}
                                             </option>
-                                            <option value="closed" {{ $job->status == 'closed' ? 'selected' : '' }}>Closed
+                                            <option value="closed" {{ $job->status == 'closed' ? 'selected' : '' }}>{{ __('admin.closed') }}
                                             </option>
                                         </select>
                                     </form>
@@ -544,15 +543,15 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary"
-                                            title="View">
+                                            title="{{ __('admin.view') }}">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-secondary"
-                                            title="Edit">
+                                            title="{{ __('admin.edit') }}">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <button type="button" class="btn btn-outline-danger"
-                                            onclick="confirmDelete({{ $job->id }})" title="Delete">
+                                            onclick="confirmDelete({{ $job->id }})" title="{{ __('admin.delete') }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -562,10 +561,10 @@
                             <tr>
                                 <td colspan="14" class="text-center py-5">
                                     <i class="bi bi-inbox display-1 text-muted"></i>
-                                    <h5 class="text-muted mt-3">No Vacancy Found</h5>
-                                    <p class="text-muted">Start by posting your first Vacancy!</p>
+                                    <h5 class="text-muted mt-3">{{ __('admin.no_vacancy_found') }}</h5>
+                                    <p class="text-muted">{{ __('admin.start_post_vacancy') }}</p>
                                     <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary mt-2">
-                                        <i class="bi bi-plus-circle me-2"></i>Post New Vacancy
+                                        <i class="bi bi-plus-circle me-2"></i>{{ __('admin.post_new_vacancy') }}
                                     </a>
                                 </td>
                             </tr>
@@ -579,7 +578,7 @@
             <div class="card-footer bg-white py-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="text-muted small">
-                        Showing {{ $jobs->firstItem() }} to {{ $jobs->lastItem() }} of {{ $jobs->total() }}
+                        {{ __('admin.showing') }} {{ $jobs->firstItem() }} {{ __('admin.to') }} {{ $jobs->lastItem() }} {{ __('admin.of') }} {{ $jobs->total() }}
                     </div>
                     <div>
                         {{ $jobs->links('pagination::bootstrap-5') }}
@@ -607,7 +606,7 @@
         }
 
         function confirmDelete(jobId) {
-            if (confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            if (confirm('{{ __('admin.delete_job_confirm') }}')) {
                 const form = document.getElementById('deleteForm');
                 form.action = `/admin/jobs/${jobId}`;
                 form.submit();
@@ -758,7 +757,7 @@
             });
 
             if (selected.length === 0) {
-                alert('Please select at least one vacancy to export.');
+                alert('{{ __('admin.select_vacancy_export') }}');
                 return;
             }
 

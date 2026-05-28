@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Vacancies Report — Preview')
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -125,15 +125,15 @@
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th>S.N.</th>
-                    <th>Adv. No.</th>
-                    <th>Position / Level</th>
-                    <th>Service / Group</th>
-                    <th>Status</th>
-                    <th>Demand</th>
-                    <th>Applications</th>
-                    <th>Deadline</th>
-                    <th>Posted On</th>
+                    <th>{{ __('admin.sn') }}</th>
+                    <th>{{ __('admin.adv_no') }}</th>
+                    <th>{{ __('admin.position_level') }}</th>
+                    <th>{{ __('admin.service_slash_group') }}</th>
+                    <th>{{ __('admin.status') }}</th>
+                    <th>{{ __('admin.demand') }}</th>
+                    <th>{{ __('admin.applications') }}</th>
+                    <th>{{ __('admin.deadline') }}</th>
+                    <th>{{ __('admin.posted_on') }}</th>
                 </tr>
             </thead>
             <tbody>

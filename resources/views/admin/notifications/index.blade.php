@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Notifications')
+@section('title', __('admin.notifications'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -68,16 +68,16 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                Notifications
+                {{ __('admin.notifications') }}
                 <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">ADMIN PORTAL</span>
             </h2>
-            <p class="text-muted mb-0">View and manage your notifications</p>
+            <p class="text-muted mb-0">{{ __('admin.view_manage_notifications') }}</p>
         </div>
         @if($notifications->where('is_read', false)->count() > 0)
             <form method="POST" action="{{ route('admin.notifications.markAllAsRead') }}" class="d-inline">
                 @csrf
                 <button type="submit" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-check2-all"></i> Mark All as Read
+                    <i class="bi bi-check2-all"></i> {{ __('admin.mark_all_as_read') }}
                 </button>
             </form>
         @endif
@@ -120,7 +120,7 @@
                                         <h6 class="mb-0 fw-semibold">{{ $notification->title }}</h6>
                                         <div class="d-flex gap-2 align-items-center">
                                             @if(!$notification->is_read)
-                                                <span class="badge bg-warning text-dark">New</span>
+                                                <span class="badge bg-warning text-dark">{{ __('admin.new') }}</span>
                                             @endif
                                             <span class="notification-time">
                                                 {{ $notification->created_at->diffForHumans() }}
@@ -134,7 +134,7 @@
                                         @if($notification->related_type === 'application' && $notification->related_id)
                                             <a href="{{ route('admin.applications.show', $notification->related_id) }}"
                                                class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i> View Application
+                                                <i class="bi bi-eye"></i> {{ __('admin.view_application') }}
                                             </a>
                                         @endif
 
@@ -142,17 +142,17 @@
                                             <form method="POST" action="{{ route('admin.notifications.markAsRead', $notification->id) }}" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success">
-                                                    <i class="bi bi-check"></i> Mark as Read
+                                                    <i class="bi bi-check"></i> {{ __('admin.mark_as_read') }}
                                                 </button>
                                             </form>
                                         @endif
 
                                         <form method="POST" action="{{ route('admin.notifications.destroy', $notification->id) }}" class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to delete this notification?')">
+                                              onsubmit="return confirm('{{ __('admin.delete_notification_confirm') }}')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Delete
+                                                <i class="bi bi-trash"></i> {{ __('admin.delete') }}
                                             </button>
                                         </form>
                                     </div>
@@ -173,10 +173,10 @@
         <div class="card shadow-sm">
             <div class="card-body text-center py-5">
                 <i class="bi bi-bell-slash display-1 text-muted mb-3"></i>
-                <h4 class="text-muted">No Notifications Available</h4>
-                <p class="text-secondary">You don't have any notifications at the moment.</p>
+                <h4 class="text-muted">{{ __('admin.no_notifications') }}</h4>
+                <p class="text-secondary">{{ __('admin.no_notifications_now') }}</p>
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-primary mt-3">
-                    <i class="bi bi-house-door"></i> Back to Dashboard
+                    <i class="bi bi-house-door"></i> {{ __('admin.back_to_dashboard') }}
                 </a>
             </div>
         </div>

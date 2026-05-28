@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Approver')
+@section('title', __('admin.edit_approver'))
 
-@section('portal-name', 'Admin Portal')
+@section('portal-name', __('admin.portal_name'))
 @section('brand-icon', 'bi bi-shield-check')
 @section('dashboard-route', route('admin.dashboard'))
 @section('user-name', Auth::guard('admin')->user()->name)
-@section('user-role', 'System Administrator')
+@section('user-role', __('admin.system_administrator'))
 @section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
 @section('logout-route', route('admin.logout'))
 
@@ -21,11 +21,11 @@
         <div class="card-body text-white p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="mb-2 fw-bold"><i class="bi bi-pencil me-2"></i>Edit Approver</h2>
-                    <p class="mb-0 opacity-90">Update approver information</p>
+                    <h2 class="mb-2 fw-bold"><i class="bi bi-pencil me-2"></i>{{ __('admin.edit_approver') }}</h2>
+                    <p class="mb-0 opacity-90">{{ __('admin.update_approver_info') }}</p>
                 </div>
                 <a href="{{ route('admin.approvers.index') }}" class="btn btn-light">
-                    <i class="bi bi-arrow-left me-2"></i>Back to List
+                    <i class="bi bi-arrow-left me-2"></i>{{ __('admin.back_to_list') }}
                 </a>
             </div>
         </div>
@@ -41,7 +41,7 @@
                 <div class="row g-3">
                     <!-- Employee ID -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Employee ID <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.employee_id') }} <span class="text-danger">*</span></label>
                         <input type="text" name="employee_id" class="form-control @error('employee_id') is-invalid @enderror"
                                value="{{ old('employee_id', $approver->employee_id) }}" required>
                         @error('employee_id')
@@ -51,7 +51,7 @@
 
                     <!-- Name -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.full_name') }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                value="{{ old('name', $approver->name) }}" required>
                         @error('name')
@@ -61,7 +61,7 @@
 
                     <!-- Email -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.email_address') }} <span class="text-danger">*</span></label>
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                value="{{ old('email', $approver->email) }}" required>
                         @error('email')
@@ -71,7 +71,7 @@
 
                     <!-- Phone Number -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Phone Number</label>
+                        <label class="form-label fw-semibold">{{ __('admin.phone_number') }}</label>
                         <input type="text" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror"
                                value="{{ old('phone_number', $approver->phone_number) }}">
                         @error('phone_number')
@@ -81,7 +81,7 @@
 
                     <!-- Department -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.department') }} <span class="text-danger">*</span></label>
                         <input type="text" name="department" class="form-control @error('department') is-invalid @enderror"
                                value="{{ old('department', $approver->department) }}" required>
                         @error('department')
@@ -91,7 +91,7 @@
 
                     <!-- Designation -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Designation</label>
+                        <label class="form-label fw-semibold">{{ __('admin.designation') }}</label>
                         <input type="text" name="designation" class="form-control @error('designation') is-invalid @enderror"
                                value="{{ old('designation', $approver->designation) }}">
                         @error('designation')
@@ -101,10 +101,10 @@
 
                     <!-- Status -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">{{ __('admin.status') }} <span class="text-danger">*</span></label>
                         <select name="status" class="form-select @error('status') is-invalid @enderror" required>
-                            <option value="active" {{ old('status', $approver->status) == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status', $approver->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="active" {{ old('status', $approver->status) == 'active' ? 'selected' : '' }}>{{ __('admin.active') }}</option>
+                            <option value="inactive" {{ old('status', $approver->status) == 'inactive' ? 'selected' : '' }}>{{ __('admin.inactive') }}</option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -114,7 +114,7 @@
                     <!-- Current Photo -->
                     @if($approver->photo)
                     <div class="col-md-12">
-                        <label class="form-label fw-semibold">Current Photo</label>
+                        <label class="form-label fw-semibold">{{ __('admin.current_photo') }}</label>
                         <div>
                             <img src="{{ asset('storage/' . $approver->photo) }}" alt="Approver Photo"
                                  class="img-thumbnail" style="max-width: 200px;">
@@ -124,21 +124,21 @@
 
                     <!-- Photo -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Change Photo</label>
+                        <label class="form-label fw-semibold">{{ __('admin.change_photo') }}</label>
                         <input type="file" name="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
                         @error('photo')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Max 2MB (JPG, PNG) - Leave blank to keep current photo</small>
+                        <small class="text-muted">{{ __('admin.leave_blank_photo') }}</small>
                     </div>
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-save me-2"></i>Update Approver
+                        <i class="bi bi-save me-2"></i>{{ __('admin.update_approver') }}
                     </button>
                     <a href="{{ route('admin.approvers.index') }}" class="btn btn-outline-secondary btn-lg">
-                        <i class="bi bi-x-circle me-2"></i>Cancel
+                        <i class="bi bi-x-circle me-2"></i>{{ __('admin.cancel') }}
                     </a>
                 </div>
             </form>
@@ -147,23 +147,23 @@
             <hr class="my-4">
             <div class="card border-warning">
                 <div class="card-header bg-warning bg-opacity-10">
-                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>Reset Password</h5>
+                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>{{ __('admin.reset_password') }}</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.approvers.reset-password', $approver->id) }}" method="POST">
                         @csrf
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">New Password</label>
+                                <label class="form-label fw-semibold">{{ __('admin.new_password') }}</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Confirm Password</label>
+                                <label class="form-label fw-semibold">{{ __('admin.confirm_password') }}</label>
                                 <input type="password" name="password_confirmation" class="form-control" required>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-warning mt-3">
-                            <i class="bi bi-shield-lock me-2"></i>Reset Password
+                            <i class="bi bi-shield-lock me-2"></i>{{ __('admin.reset_password') }}
                         </button>
                     </form>
                 </div>
