@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - NOC E-Recruitment System</title>
+    <title>@yield('title') - {{ __('admin.system_title') }}</title>
     <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
 
     <!-- Bootstrap 5 CSS -->
@@ -762,7 +762,7 @@
         <!-- Footer -->
        <footer id="footer">
             <div class="container text-center">
-                <p class="mb-0">{{ __('admin.copyright') }} &copy; {{ date('Y') }}. Nepal Oil Corporation</p>
+                <p class="mb-0">{{ __('admin.copyright') }} &copy; {{ date('Y') }}. {{ __('admin.company_name') }}</p>
             </div>
         </footer>
     </div>
@@ -1083,6 +1083,79 @@
 
 
     @yield('scripts')
+
+    @if(app()->getLocale() === 'ne')
+    <script>
+    (function() {
+        const NP = ['०','१','२','३','४','५','६','७','८','९'];
+        function toNP(s) { return s.replace(/[0-9]/g, d => NP[+d]); }
+
+        // Month, day, meridiem translation maps
+        const MONTHS_FULL = {
+            'January':'जनवरी','February':'फेब्रुवरी','March':'मार्च',
+            'April':'अप्रिल','May':'मे','June':'जुन',
+            'July':'जुलाई','August':'अगस्त','September':'सेप्टेम्बर',
+            'October':'अक्टोबर','November':'नोभेम्बर','December':'डिसेम्बर'
+        };
+        const MONTHS_SHORT = {
+            'Jan':'जन','Feb':'फेब','Mar':'मार्च',
+            'Apr':'अप्र','Jun':'जुन','Jul':'जुल',
+            'Aug':'अग','Sep':'सेप','Oct':'अक्ट',
+            'Nov':'नोभ','Dec':'डिस'
+        };
+        const DAYS = {
+            'Monday':'सोमबार','Tuesday':'मंगलबार','Wednesday':'बुधबार',
+            'Thursday':'बिहीबार','Friday':'शुक्रबार','Saturday':'शनिबार','Sunday':'आइतबार'
+        };
+
+        function translateText(s) {
+            // Replace full month names
+            s = s.replace(/\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/g,
+                m => MONTHS_FULL[m] || m);
+            // Replace short month names (only if NOT followed by a letter, to avoid partial matches)
+            s = s.replace(/\b(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g,
+                m => MONTHS_SHORT[m] || m);
+            // Replace day names
+            s = s.replace(/\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/g,
+                d => DAYS[d] || d);
+            // Replace AM/PM
+            s = s.replace(/\bAM\b/g, 'बिहान').replace(/\bPM\b/g, 'साँझ');
+            // Convert digits
+            s = toNP(s);
+            return s;
+        }
+
+        function convertNodes(root) {
+            const skip = new Set(['SCRIPT','STYLE','CODE','PRE','TEXTAREA','INPUT','SELECT','OPTION']);
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            let n;
+            while ((n = walker.nextNode())) {
+                if (!n.parentElement || skip.has(n.parentElement.tagName)) continue;
+                if (n.textContent.includes('@')) continue; // skip emails
+                if (/[0-9]|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|\bAM\b|\bPM\b/.test(n.textContent)) nodes.push(n);
+            }
+            nodes.forEach(n => { n.textContent = translateText(n.textContent); });
+
+            // Convert placeholders on non-email/password inputs
+            root.querySelectorAll && root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el => {
+                if (el.type === 'email' || el.type === 'password') return;
+                if (/[0-9]/.test(el.placeholder)) el.placeholder = toNP(el.placeholder);
+            });
+        }
+
+        window._convertToNepaliNum = convertNodes;
+        window._toNP = toNP;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            convertNodes(document.body);
+            // Re-run after async date conversions (nepali-date-bs)
+            setTimeout(function() { convertNodes(document.body); }, 600);
+            setTimeout(function() { convertNodes(document.body); }, 1500);
+        });
+    })();
+    </script>
+    @endif
 </body>
 
 </html>

@@ -225,7 +225,7 @@
                             <td>{{ __('admin.permanent_address') }}</td>
                             <td>
                                 @if($application->permanent_province || $application->permanent_district)
-                                    {{ $application->permanent_municipality }}, Ward-{{ $application->permanent_ward }},
+                                    {{ $application->permanent_municipality }}, {{ __('admin.ward_prefix') }}{{ $application->permanent_ward }},
                                     {{ $application->permanent_district }}, {{ $application->permanent_province }}
                                 @else
                                     {{ __('admin.na') }}
@@ -267,9 +267,9 @@
                         @foreach($application->experiences as $exp)
                         <tr>
                             <td colspan="2">
-                                <strong>Experience {{ $exp->exp_number }}</strong><br>
+                                <strong>{{ __('admin.experience_n') }} {{ $exp->exp_number }}</strong><br>
                                 {{ $exp->organization ?? '-' }} — {{ $exp->position ?? '-' }}<br>
-                                <small>{{ $exp->start_date_bs ?? '-' }} to {{ $exp->end_date_bs ?? 'Present' }}{{ $exp->years ? ' (' . $exp->years . ' yrs)' : '' }}</small>
+                                <small>{{ $exp->start_date_bs ?? '-' }} {{ __('admin.to') }} {{ $exp->end_date_bs ?? __('admin.present_str') }}{{ $exp->years ? ' (' . $exp->years . ' yrs)' : '' }}</small>
                                 @if($exp->document)
                                     <br><a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="small">{{ __('admin.view_document') }}</a>
                                 @endif
@@ -299,7 +299,7 @@
                             <td>{{ __('admin.applied_date') }}</td>
                             <td>
                                 <div class="nepali-date-bs" data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
-                                    <i class="bi bi-hourglass-split"></i> Converting...
+                                    <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                                 </div>
                                 <small style="color: #718096;">{{ $application->created_at->format('M d, Y h:i A') }}</small>
                             </td>
@@ -308,7 +308,7 @@
                             <td>{{ __('admin.last_updated') }}</td>
                             <td>
                                 <div class="nepali-date-bs" data-ad-date="{{ $application->updated_at->format('Y-m-d') }}">
-                                    <i class="bi bi-hourglass-split"></i> Converting...
+                                    <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                                 </div>
                                 <small style="color: #718096;">{{ $application->updated_at->format('M d, Y h:i A') }}</small>
                             </td>
@@ -354,12 +354,12 @@
                         @endif
                         @if($application->citizenship_front)
                             <a href="{{ asset('storage/' . $application->citizenship_front) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-file-pdf"></i> Citizenship (Front)
+                                <i class="bi bi-file-pdf"></i> {{ __('admin.citizenship_front_label') }}
                             </a>
                         @endif
                         @if($application->citizenship_back)
                             <a href="{{ asset('storage/' . $application->citizenship_back) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-file-pdf"></i> Citizenship (Back)
+                                <i class="bi bi-file-pdf"></i> {{ __('admin.citizenship_back_label') }}
                             </a>
                         @endif
                     </div>
@@ -379,6 +379,27 @@
             @if($histories->isEmpty())
                 <p class="text-muted mb-0">{{ __('admin.no_history') }}</p>
             @else
+                @php
+                    $stageMap = [
+                        'Assigned to Reviewer' => __('admin.stage_assigned_reviewer'),
+                        'Assigned to Approver' => __('admin.stage_assigned_approver'),
+                        'Allow Edit'           => __('admin.stage_allow_edit'),
+                        'Approved'             => __('admin.approved'),
+                        'Rejected'             => __('admin.rejected'),
+                        'Pending'              => __('admin.pending'),
+                        'Verified'             => __('admin.verified'),
+                        'Reviewed'             => __('admin.reviewed'),
+                        'Edited'               => __('admin.edited'),
+                        'Submitted'            => __('admin.submitted'),
+                        'Assigned'             => __('admin.assigned'),
+                    ];
+                    $roleMap = [
+                        'admin'     => __('admin.role_admin'),
+                        'reviewer'  => __('admin.role_reviewer'),
+                        'approver'  => __('admin.role_approver'),
+                        'candidate' => __('admin.role_candidate'),
+                    ];
+                @endphp
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -405,13 +426,13 @@
                                             };
                                         @endphp
                                         <span class="badge {{ $badgeClass }}">
-                                            {{ $history->stage_name }}
+                                            {{ $stageMap[$history->stage_name] ?? $history->stage_name }}
                                         </span>
                                     </td>
                                     <td>
                                         {{ $history->done_by }}
                                         <small class="d-block text-muted">
-                                            {{ ucfirst($history->done_by_type) }}
+                                            {{ $roleMap[$history->done_by_type] ?? ucfirst($history->done_by_type) }}
                                         </small>
                                     </td>
                                     <td>{{ $history->created_at->format('F d, Y') }}</td>

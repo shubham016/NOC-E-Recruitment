@@ -433,7 +433,7 @@
                                     @enderror
                                 </div>
                                 <small class="helper-text">
-                                    <i class="bi bi-info-circle"></i> This email will be used for login credentials
+                                    <i class="bi bi-info-circle"></i> {{ __('admin.email_login_hint') }}
                                 </small>
                             </div>
                         </div>
@@ -471,7 +471,7 @@
                                     @enderror
                                 </div>
                                 <small class="helper-text">
-                                    <i class="bi bi-shield-check"></i> Minimum 8 characters with letters and numbers
+                                    <i class="bi bi-shield-check"></i> {{ __('admin.password_min_hint') }}
                                 </small>
 
                                 <!-- Password Strength Indicator -->
@@ -564,28 +564,28 @@
                                 </div>
                                 <div class="upload-text">{{ __('admin.upload_profile_photo') }}</div>
                                 <div class="upload-subtext">
-                                    Drag and drop or click to browse
+                                    {{ __('admin.drag_drop_browse') }}
                                 </div>
                                 <button type="button" class="upload-button"
                                     onclick="document.getElementById('photoInput').click()">
-                                    <i class="bi bi-folder2-open me-2"></i>Choose File
+                                    <i class="bi bi-folder2-open me-2"></i>{{ __('admin.choose_file') }}
                                 </button>
                             </div>
 
                             <button type="button" class="remove-photo-btn {{ $reviewer->photo ? 'active' : '' }}"
                                 id="removePhotoBtn">
-                                <i class="bi bi-trash me-2"></i>Remove Photo
+                                <i class="bi bi-trash me-2"></i>{{ __('admin.remove_photo') }}
                             </button>
                         </div>
 
                         <div class="mt-3">
                             <small class="text-muted d-block mb-1">
                                 <i class="bi bi-check-circle text-success me-1"></i>
-                                Accepted: JPG, PNG
+                                {{ __('admin.accepted_jpg_png') }}
                             </small>
                             <small class="text-muted d-block">
                                 <i class="bi bi-check-circle text-success me-1"></i>
-                                Max size: 2MB
+                                {{ __('admin.max_size_2mb') }}
                             </small>
                         </div>
 
@@ -777,13 +777,13 @@
             let color = '';
 
             if (strength < 40) {
-                text = 'Weak';
+                text = '{{ __('admin.weak') }}';
                 color = '#ef4444';
             } else if (strength < 70) {
-                text = 'Medium';
+                text = '{{ __('admin.medium') }}';
                 color = '#f59e0b';
             } else {
-                text = 'Strong';
+                text = '{{ __('admin.strong') }}';
                 color = '#c9a84c';
             }
 

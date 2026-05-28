@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Approvers Report</title>
+    <title>{{ __('admin.approvers_report') }}</title>
     <style>
         @page { margin: 10mm 12mm; size: A4 portrait; }
         * { box-sizing: border-box; }
@@ -43,21 +43,21 @@
 </head>
 <body>
     <div class="org-header">
-        <h2>Nepal Oil Corporation Limited</h2>
-        <p class="report-title">Approvers Report</p>
-        <p>Generated: {{ now()->format('Y-m-d H:i') }}</p>
+        <h2>{{ config('app.org_name', 'Nepal Oil Corporation Limited') }}</h2>
+        <p class="report-title">{{ __('admin.approvers_report') }}</p>
+        <p>{{ __('admin.generated') }}: {{ now()->format('Y-m-d H:i') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th class="nowrap center">S.N.</th>
-                <th class="wrap" style="width:22%;">Name</th>
-                <th class="wrap" style="width:28%;">Email</th>
-                <th class="nowrap">Status</th>
-                <th class="nowrap center">Approved</th>
-                <th class="nowrap center">Rejected</th>
-                <th class="nowrap center">Total Actioned</th>
+                <th class="nowrap center">{{ __('admin.sn') }}</th>
+                <th class="wrap" style="width:22%;">{{ __('admin.name') }}</th>
+                <th class="wrap" style="width:28%;">{{ __('admin.email') }}</th>
+                <th class="nowrap">{{ __('admin.status') }}</th>
+                <th class="nowrap center">{{ __('admin.approved') }}</th>
+                <th class="nowrap center">{{ __('admin.rejected') }}</th>
+                <th class="nowrap center">{{ __('admin.total_actioned') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -66,14 +66,14 @@
                     <td class="center nowrap">{{ $i + 1 }}</td>
                     <td class="wrap">{{ $a->name }}</td>
                     <td class="wrap">{{ $a->email }}</td>
-                    <td class="nowrap">{{ ucfirst($a->status ?? 'active') }}</td>
+                    <td class="nowrap">{{ __('admin.' . ($a->status ?? 'active')) }}</td>
                     <td class="center nowrap">{{ $a->approved_count ?? 0 }}</td>
                     <td class="center nowrap">{{ $a->rejected_count ?? 0 }}</td>
                     <td class="center nowrap">{{ ($a->approved_count ?? 0) + ($a->rejected_count ?? 0) }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align:center;padding:12px;">No records found.</td>
+                    <td colspan="7" style="text-align:center;padding:12px;">{{ __('admin.no_records') }}</td>
                 </tr>
             @endforelse
         </tbody>

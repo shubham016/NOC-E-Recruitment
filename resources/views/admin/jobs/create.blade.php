@@ -388,7 +388,7 @@
                                     class="form-control form-control-lg @error('position') is-invalid @enderror"
                                     id="position_input"
                                     name="position"
-                                    placeholder="e.g. Deputy Manager"
+                                    placeholder="{{ __('admin.ph_eg_position') }}"
                                     value="{{ old('position') }}"
                                     required>
                                 @error('position')
@@ -404,7 +404,7 @@
                                     class="form-control form-control-lg @error('level') is-invalid @enderror"
                                     id="level_input"
                                     name="level"
-                                    placeholder="e.g. 7"
+                                    placeholder="{{ __('admin.ph_eg_level') }}"
                                     value="{{ old('level') }}"
                                     min="1" max="99"
                                     required>
@@ -435,7 +435,7 @@
                             class="form-control form-control-lg @error('service_group') is-invalid @enderror"
                             id="service_group" name="service_group"
                             value="{{ old('service_group') }}"
-                            placeholder="e.g. Deputy Manager / Administration"
+                            placeholder="{{ __('admin.ph_eg_service_group') }}"
                             required>
                         @error('service_group')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -815,14 +815,14 @@
                                             <input type="number" class="form-control @error('min_age_male') is-invalid @enderror"
                                                 name="min_age_male" id="min_age_male"
                                                 value="{{ old('min_age_male') }}"
-                                                min="1" max="99" placeholder="e.g. 18">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_18') }}">
                                             @error('min_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                         <td>
                                             <input type="number" class="form-control @error('max_age_male') is-invalid @enderror"
                                                 name="max_age_male" id="max_age_male"
                                                 value="{{ old('max_age_male') }}"
-                                                min="1" max="99" placeholder="e.g. 35">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_35') }}">
                                             @error('max_age_male')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                     </tr>
@@ -832,14 +832,14 @@
                                             <input type="number" class="form-control @error('min_age_female') is-invalid @enderror"
                                                 name="min_age_female" id="min_age_female"
                                                 value="{{ old('min_age_female') }}"
-                                                min="1" max="99" placeholder="e.g. 18">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_18') }}">
                                             @error('min_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                         <td>
                                             <input type="number" class="form-control @error('max_age_female') is-invalid @enderror"
                                                 name="max_age_female" id="max_age_female"
                                                 value="{{ old('max_age_female') }}"
-                                                min="1" max="99" placeholder="e.g. 40">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_40') }}">
                                             @error('max_age_female')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                     </tr>
@@ -849,14 +849,14 @@
                                             <input type="number" class="form-control @error('min_age_disabled') is-invalid @enderror"
                                                 name="min_age_disabled" id="min_age_disabled"
                                                 value="{{ old('min_age_disabled') }}"
-                                                min="1" max="99" placeholder="e.g. 18">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_18') }}">
                                             @error('min_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                         <td>
                                             <input type="number" class="form-control @error('max_age_disabled') is-invalid @enderror"
                                                 name="max_age_disabled" id="max_age_disabled"
                                                 value="{{ old('max_age_disabled') }}"
-                                                min="1" max="99" placeholder="e.g. 45">
+                                                min="1" max="99" placeholder="{{ __('admin.ph_age_45') }}">
                                             @error('max_age_disabled')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </td>
                                     </tr>
@@ -889,7 +889,7 @@
                                 <input type="hidden" name="deadline_bs" id="deadline_bs_hidden">
                                 <small class="form-text text-primary">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Click to open Nepali calendar
+                                    {{ __('admin.click_nepali_calendar') }}
                                 </small>
                             </div>
 
@@ -1171,6 +1171,11 @@
 @endsection
 
 @section('scripts')
+<script>
+    var statusLabelActive = @json(__('admin.active'));
+    var statusLabelClosed = @json(__('admin.closed'));
+    var statusLabelDraft  = @json(__('admin.draft'));
+</script>
 <script>
 (function() {
     'use strict';
@@ -1562,10 +1567,10 @@
                         var html = ads.map(function (ad) {
                             var typesStr = ad.types.length ? ad.types.join(', ') : '-';
                             var statusBadge = ad.status === 'active'
-                                ? '<span style="color:#059669;font-weight:600;">Active</span>'
+                                ? '<span style="color:#059669;font-weight:600;">' + statusLabelActive + '</span>'
                                 : ad.status === 'closed'
-                                    ? '<span style="color:#dc2626;">Closed</span>'
-                                    : '<span style="color:#6b7280;">Draft</span>';
+                                    ? '<span style="color:#dc2626;">' + statusLabelClosed + '</span>'
+                                    : '<span style="color:#6b7280;">' + statusLabelDraft + '</span>';
                             return '<div style="padding:2px 0;">'
                                 + '<strong>' + (ad.advertisement_no || '-') + '</strong>'
                                 + ' &mdash; ' + (ad.position || '-') + (ad.level ? ' / Level ' + ad.level : '')
@@ -1880,7 +1885,7 @@ function initializeCategoryCheckboxes() {
 
         if (hasInternalCheckbox && hasInternalCheckbox.checked) {
             if (hasInternalOpenCheckbox && hasInternalOpenCheckbox.checked) {
-                subcategories.push('Internal Open (All NOC Staff)');
+                subcategories.push('{{ __("admin.internal_open_all_noc_staff") }}');
             }
 
             if (hasInternalInclusiveToggleCheckbox && hasInternalInclusiveToggleCheckbox.checked) {

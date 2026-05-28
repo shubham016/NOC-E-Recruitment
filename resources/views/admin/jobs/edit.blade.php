@@ -391,7 +391,7 @@
                                     name="position"
                                     class="form-control form-control-lg @error('position') is-invalid @enderror"
                                     id="position_input"
-                                    placeholder="e.g. Officer, Director"
+                                    placeholder="{{ __('admin.ph_eg_position') }}"
                                     value="{{ old('position', $job->position) }}"
                                     required>
                                 @error('position')
@@ -407,7 +407,7 @@
                                     name="level"
                                     class="form-control form-control-lg @error('level') is-invalid @enderror"
                                     id="level_input"
-                                    placeholder="e.g. 7"
+                                    placeholder="{{ __('admin.ph_eg_level') }}"
                                     value="{{ old('level', $job->level) }}"
                                     min="1"
                                     max="99"
@@ -424,14 +424,14 @@
                     <!-- Service/Group -->
                     <div class="mb-4">
                         <label for="service_group" class="form-label">
-                            <span>Service / Group <span class="required">*</span></span>
+                            <span>{{ __('admin.service_slash_group') }} <span class="required">*</span></span>
                             <span class="nepali-text">सेवा / समूह</span>
                         </label>
                         <input type="text"
                             class="form-control form-control-lg @error('service_group') is-invalid @enderror"
                             id="service_group" name="service_group"
                             value="{{ old('service_group', $job->service_group) }}"
-                            placeholder="e.g. Non-Technical / Administration"
+                            placeholder="{{ __('admin.ph_eg_service_group') }}"
                             required>
                         @error('service_group')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -680,7 +680,7 @@
                                     </label>
                                     <small class="d-block text-muted ms-4">
                                         <!-- <i class="bi bi-info-circle me-1"></i> -->
-                                        NOC Employees Internal Appraisal
+                                        {{ __('admin.noc_employees_internal_appraisal') }}
                                     </small>
                                 </div>
                             </div>
@@ -1318,7 +1318,7 @@
                                     autocomplete="off">
                                 <input type="hidden" name="deadline_bs" id="deadline_bs_hidden" value="{{ old('deadline_bs', $job->deadline_bs) }}">
                                 <small class="form-text text-primary">
-                                    <i class="bi bi-info-circle me-1"></i>Click to open Nepali calendar
+                                    <i class="bi bi-info-circle me-1"></i>{{ __('admin.click_nepali_calendar') }}
                                 </small>
                             </div>
 
@@ -1606,7 +1606,7 @@
                         </p>
                         <small class="text-muted d-block mt-2">
                             <!-- <strong>Posted :</strong> {{ $job->created_at->format('Y-M-d, \a\t h:i A') }} -->
-                            <strong>Posted :</strong> {{ $job->created_at->format('Y/m/d, h:i A') }}
+                            <strong>{{ __('admin.posted_label') }}</strong> {{ $job->created_at->format('Y/m/d, h:i A') }}
                             <br>
                             <!-- <strong>Posted :</strong>
                             <span class="nepali-date-bs" data-ad-date="{{ $job->created_at->format('Y-m-d') }}">

@@ -652,7 +652,7 @@
                         <div class="info-label">{{ __('admin.registered') }}</div>
                         <div class="info-value">
                             <div class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
-                                <i class="bi bi-hourglass-split"></i> Converting...
+                                <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                             </div>
                             <small style="color: #718096;">{{ $candidate->created_at->format('M d, Y') }}</small>
                         </div>
@@ -723,7 +723,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-telephone"></i>
-                        Contact Information
+                        {{ __('admin.contact_information') }}
                     </h3>
                 </div>
                 <div class="card-body">
@@ -776,19 +776,19 @@
                             <td class="label">{{ __('admin.registered') }}</td>
                             <td class="value">
                                 <strong class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
-                                    <i class="bi bi-hourglass-split"></i> Converting...
+                                    <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                                 </strong>
                                 <br>
                                 <small style="color: #718096;">{{ $candidate->created_at->format('F d, Y') }} ({{ $candidate->created_at->diffForHumans() }})</small>
                             </td>
                         </tr>
                         <tr>
-                            <td class="label">Last Updated</td>
+                            <td class="label">{{ __('admin.last_updated') }}</td>
                             <td class="value">{{ $candidate->updated_at->format('F d, Y h:i A') }}</td>
                         </tr>
                         <tr>
                             <td class="label">{{ __('admin.total_applications') }}</td>
-                            <td class="value"><strong>{{ $candidate->applications_count }}</strong> submitted</td>
+                            <td class="value"><strong>{{ $candidate->applications_count }}</strong> {{ __('admin.submitted') }}</td>
                         </tr>
                     </table>
                 </div>
@@ -799,7 +799,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-gear"></i>
-                        Administrative Actions
+                        {{ __('admin.administrative_actions') }}
                     </h3>
                 </div>
                 <div class="actions-section">
@@ -807,7 +807,7 @@
                         <!-- Edit Button -->
                         <a href="{{ route('admin.candidates.edit', $candidate->id) }}" class="btn btn-primary">
                             <i class="bi bi-pencil-square"></i>
-                            Edit Profile
+                            {{ __('admin.edit_profile') }}
                         </a>
 
                         <!-- Status Toggle -->
@@ -818,14 +818,14 @@
                             <button type="submit"
                                 class="btn {{ $candidate->status === 'active' ? 'btn-warning' : 'btn-success' }}">
                                 <i class="bi bi-{{ $candidate->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
-                                {{ $candidate->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                {{ $candidate->status === 'active' ? __('admin.deactivate') : __('admin.activate') }}
                             </button>
                         </form>
 
                         <!-- Print Button -->
                         <button onclick="window.print()" class="btn btn-secondary">
                             <i class="bi bi-printer"></i>
-                            Print Profile
+                            {{ __('admin.print_profile') }}
                         </button>
 
                         <!-- Delete Button -->
@@ -835,7 +835,7 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">
                                 <i class="bi bi-trash"></i>
-                                Delete Account
+                                {{ __('admin.delete_account') }}
                             </button>
                         </form>
                     </div>
@@ -848,7 +848,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="bi bi-clock-history"></i>
-                    Application History ({{ $applications->count() }})
+                    {{ __('admin.application_history') }} ({{ $applications->count() }})
                 </h3>
             </div>
             <div class="card-body">
@@ -875,26 +875,25 @@
                                         };
                                     @endphp
                                     <span class="badge {{ $badgeClass }}">
-                                        {{ strtoupper(str_replace('_', ' ', $application->status)) }}
+                                        {{ strtoupper(__('admin.' . $application->status)) }}
                                     </span>
                                 </div>
 
                                 <div class="timeline-info">
                                     <div class="timeline-info-item">
-                                        <div class="timeline-info-label">Applied</div>
+                                        <div class="timeline-info-label">{{ __('admin.applied') }}</div>
                                         <div class="timeline-info-value">{{ $application->created_at->format('M d, Y') }}</div>
                                     </div>
                                     @if($application->reviewer)
                                         <div class="timeline-info-item">
-                                            <div class="timeline-info-label">Reviewer</div>
+                                            <div class="timeline-info-label">{{ __('admin.reviewer') }}</div>
                                             <div class="timeline-info-value">{{ $application->reviewer->name }}</div>
                                         </div>
                                     @endif
                                 </div>
 
                                 <a href="{{ route('admin.applications.show', $application->id) }}" class="btn-view">
-                                    <i class="bi bi-eye"></i>
-                                    View Application
+                                    {{ __('admin.view_application') }}
                                 </a>
                             </div>
                         @endforeach

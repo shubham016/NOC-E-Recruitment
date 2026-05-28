@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Candidate;
 
+use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use Illuminate\Http\Request;

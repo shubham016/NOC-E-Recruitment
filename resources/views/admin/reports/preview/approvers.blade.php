@@ -101,12 +101,12 @@
 
 <div class="preview-header">
     <div>
-        <h5>Approvers Report — Preview</h5>
-        <div class="meta">{{ $approvers->count() }} record(s) &nbsp;|&nbsp; Generated: {{ now()->format('d M Y, h:i A') }}</div>
+        <h5>{{ __('admin.report_preview_approvers') }}</h5>
+        <div class="meta">{{ $approvers->count() }} {{ __('admin.record_s') }} &nbsp;|&nbsp; {{ __('admin.generated_label') }} {{ now()->format('d M Y, h:i A') }}</div>
     </div>
     <div class="d-flex gap-2 flex-wrap">
-        <a href="{{ route('admin.reports.index') }}" class="btn-back">Back to Reports</a>
-        <a href="{{ $downloadUrl }}" class="btn-download-pdf">Download PDF</a>
+        <a href="{{ route('admin.reports.index') }}" class="btn-back">{{ __('admin.back_to_reports') }}</a>
+        <a href="{{ $downloadUrl }}" class="btn-download-pdf">{{ __('admin.download_pdf') }}</a>
     </div>
 </div>
 
@@ -130,7 +130,7 @@
                         <td>{{ $i + 1 }}</td>
                         <td>{{ $a->name }}</td>
                         <td class="text-muted-sm">{{ $a->email }}</td>
-                        <td>{{ ucfirst($a->status ?? 'active') }}</td>
+                        <td>{{ __('admin.' . ($a->status ?? 'active')) }}</td>
                         <td>{{ $a->approved_count ?? 0 }}</td>
                         <td>{{ $a->rejected_count ?? 0 }}</td>
                         <td>{{ ($a->approved_count ?? 0) + ($a->rejected_count ?? 0) }}</td>

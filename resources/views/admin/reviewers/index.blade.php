@@ -321,14 +321,10 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to
-                                                        <strong>{{ $reviewer->status == 'active' ? 'deactivate' : 'activate' }}</strong>
-                                                        {{ $reviewer->name }}?
-                                                    </p>
+                                                    <p>{{ __('admin.deactivate_confirm', ['name' => $reviewer->name, 'action' => $reviewer->status == 'active' ? __('admin.deactivate') : __('admin.activate')]) }}</p>
                                                     @if($reviewer->status == 'active')
                                                         <div class="alert alert-warning">
-                                                            <i class="bi bi-exclamation-triangle me-2"></i>
-                                                            This reviewer will not be able to log in once deactivated.
+                                                            {{ __('admin.deactivate_warning') }}
                                                         </div>
                                                     @endif
                                                 </div>

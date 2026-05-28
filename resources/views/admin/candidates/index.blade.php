@@ -219,7 +219,7 @@
                                     </td>
                                     <td>
                                         <div class="nepali-date-bs" data-ad-date="{{ $candidate->created_at->format('Y-m-d') }}">
-                                            <i class="bi bi-hourglass-split"></i> Converting...
+                                            <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                                         </div>
                                         <small style="color: #718096;">{{ $candidate->created_at->format('M d, Y') }}</small>
                                     </td>
@@ -273,6 +273,7 @@
         @csrf
         @method('DELETE')
     </form>
+    </div>{{-- /container-fluid --}}
 @endsection
 
 @section('scripts')

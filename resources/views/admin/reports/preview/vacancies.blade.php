@@ -111,12 +111,12 @@
 
 <div class="preview-header">
     <div>
-        <h5>Vacancies Report — Preview</h5>
-        <div class="meta">{{ $jobs->count() }} record(s) &nbsp;|&nbsp; Generated: {{ now()->format('d M Y, h:i A') }}</div>
+        <h5>{{ __('admin.report_preview_vacancies') }}</h5>
+        <div class="meta">{{ $jobs->count() }} {{ __('admin.record_s') }} &nbsp;|&nbsp; {{ __('admin.generated_label') }} {{ now()->format('d M Y, h:i A') }}</div>
     </div>
     <div class="d-flex gap-2 flex-wrap">
-        <a href="{{ route('admin.reports.index') }}" class="btn-back">Back to Reports</a>
-        <a href="{{ $downloadUrl }}" class="btn-download-pdf">Download PDF</a>
+        <a href="{{ route('admin.reports.index') }}" class="btn-back">{{ __('admin.back_to_reports') }}</a>
+        <a href="{{ $downloadUrl }}" class="btn-download-pdf">{{ __('admin.download_pdf') }}</a>
     </div>
 </div>
 
@@ -141,11 +141,11 @@
                     <tr>
                         <td>{{ $i + 1 }}</td>
                         <td>{{ $job->advertisement_no ?? '-' }}</td>
-                        <td>{{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}</td>
+                        <td>{{ $job->position }}{{ $job->level ? ' / ' . __('admin.level') . ' ' . $job->level : '' }}</td>
                         <td>{{ $job->service_group ?: $job->department ?: '-' }}</td>
                         <td>
                             <span class="status-badge status-{{ $job->status }}">
-                                {{ ucfirst($job->status) }}
+                                {{ __('admin.' . $job->status) }}
                             </span>
                         </td>
                         <td>{{ $job->number_of_posts ?? '-' }}</td>

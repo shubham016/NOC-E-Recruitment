@@ -439,31 +439,31 @@
                         <div class="d-flex flex-wrap gap-2">
                             @if($job->category == 'internal_appraisal')
                                 <span class="badge text-white" style="background-color: #8b5cf6; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                    Internal Appraisal (आन्तरिक बढुवा)
+                                    {{ __('admin.internal_appraisal') }}
                                 </span>
                             @elseif($job->category == 'open')
-                                Open (खुल्ला)
+                                {{ __('admin.open') }}
                             @elseif($job->category == 'inclusive')
                                 @php
                                     $inclusiveTypes = json_decode($job->inclusive_type ?? '[]', true) ?: [];
                                 @endphp
                                 <span class="badge" style="background:#f3f4f6; color:#1f2937; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
                                     @if(count($inclusiveTypes) > 0)
-                                        Inclusive ({{ implode(', ', $inclusiveTypes) }})
+                                        {{ __('admin.inclusive') }} ({{ implode(', ', $inclusiveTypes) }})
                                     @else
-                                        Inclusive (समावेशी)
+                                        {{ __('admin.inclusive') }}
                                     @endif
                                 </span>
                             @elseif($job->category == 'internal')
                                 <span class="badge bg-warning text-dark" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                    Internal (आन्तरिक परीक्षा)
+                                    {{ __('admin.internal') }}
                                 </span>
                                 @php
                                     $internalInclusiveTypes = json_decode($job->internal_inclusive_types ?? '[]', true) ?: [];
                                 @endphp
                                 @foreach($internalInclusiveTypes as $type)
                                     <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                        Internal Inclusive - {{ $type }}
+                                        {{ __('admin.internal') }} {{ __('admin.inclusive') }} - {{ $type }}
                                     </span>
                                 @endforeach
                             @else
@@ -483,7 +483,7 @@
                             {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
                             <strong class="d-block nepali-date-bs text-danger"
                                 data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
-                                Converting...
+                                {{ __('admin.converting') }}
                             </strong>
                             {{-- English Date (AD) --}}
                             <small class="text-muted">{{ $job->deadline->format('F d, Y') }} <span class="no-print">({{ $job->deadline->diffForHumans() }})</span></small>
@@ -498,7 +498,7 @@
                         <div>
                             <strong class="d-block nepali-date-bs text-danger"
                                 data-ad-date="{{ $job->double_dastur_date->format('Y-m-d') }}">
-                                Converting...
+                                {{ __('admin.converting') }}
                             </strong>
                             <small class="text-muted">{{ $job->double_dastur_date->format('F d, Y') }} <span class="no-print">({{ $job->double_dastur_date->diffForHumans() }})</span></small>
                         </div>
@@ -509,22 +509,22 @@
                 @if($job->category_fees && count($job->category_fees))
                     @php
                         $feeLabels = [
-                            'open'                              => 'Open Application Fee',
-                            'inclusive_Women'                   => 'Inclusive (Women) Fee',
-                            'inclusive_A.J'                     => 'Inclusive (A.J) Fee',
-                            'inclusive_Madhesi'                 => 'Inclusive (Madhesi) Fee',
-                            'inclusive_Janajati'                => 'Inclusive (Janajati) Fee',
-                            'inclusive_Apanga'                  => 'Inclusive (Apanga) Fee',
-                            'inclusive_Dalit'                   => 'Inclusive (Dalit) Fee',
-                            'inclusive_Pichadiyeko_Chetra'      => 'Inclusive (Pichadiyeko Chetra) Fee',
-                            'internal_open'                     => 'Internal Open Fee',
-                            'internal_inclusive_Women'          => 'Internal Inclusive (Women) Fee',
-                            'internal_inclusive_A.J'            => 'Internal Inclusive (A.J) Fee',
-                            'internal_inclusive_Madhesi'        => 'Internal Inclusive (Madhesi) Fee',
-                            'internal_inclusive_Janajati'       => 'Internal Inclusive (Janajati) Fee',
-                            'internal_inclusive_Apanga'         => 'Internal Inclusive (Apanga) Fee',
-                            'internal_inclusive_Dalit'          => 'Internal Inclusive (Dalit) Fee',
-                            'internal_inclusive_Pichadiyeko_Chetra' => 'Internal Inclusive (Pichadiyeko Chetra) Fee',
+                            'open'                              => __('admin.fee_open'),
+                            'inclusive_Women'                   => __('admin.fee_inclusive_women'),
+                            'inclusive_A.J'                     => __('admin.fee_inclusive_aj'),
+                            'inclusive_Madhesi'                 => __('admin.fee_inclusive_madhesi'),
+                            'inclusive_Janajati'                => __('admin.fee_inclusive_janajati'),
+                            'inclusive_Apanga'                  => __('admin.fee_inclusive_apanga'),
+                            'inclusive_Dalit'                   => __('admin.fee_inclusive_dalit'),
+                            'inclusive_Pichadiyeko_Chetra'      => __('admin.fee_inclusive_pichadiyeko'),
+                            'internal_open'                     => __('admin.fee_internal_open'),
+                            'internal_inclusive_Women'          => __('admin.fee_internal_incl_women'),
+                            'internal_inclusive_A.J'            => __('admin.fee_internal_incl_aj'),
+                            'internal_inclusive_Madhesi'        => __('admin.fee_internal_incl_madhesi'),
+                            'internal_inclusive_Janajati'       => __('admin.fee_internal_incl_janajati'),
+                            'internal_inclusive_Apanga'         => __('admin.fee_internal_incl_apanga'),
+                            'internal_inclusive_Dalit'          => __('admin.fee_internal_incl_dalit'),
+                            'internal_inclusive_Pichadiyeko_Chetra' => __('admin.fee_internal_incl_pichadiyeko'),
                         ];
                     @endphp
                     @foreach($job->category_fees as $feeKey => $feeAmt)
@@ -543,7 +543,7 @@
                         @if($job->application_fee)
                             <strong>{{ __('admin.npr') }} {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
                         @else
-                            <span class="text-muted">Not set</span>
+                            <span class="text-muted">{{ __('admin.not_set') }}</span>
                         @endif
                     </div>
                 </div> --}}
@@ -554,7 +554,7 @@
                         @if($job->double_dastur_fee)
                             {{ __('admin.npr') }} {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
                         @else
-                            <span class="text-muted">Not set</span>
+                            <span class="text-muted">{{ __('admin.not_set') }}</span>
                         @endif
                     </div>
                 </div>
@@ -589,17 +589,17 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border:1px solid #ccc; padding:6px 10px;">Male (पुरुष)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">{{ __('admin.male') }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_male ?? '—' }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_male ?? '—' }}</td>
                             </tr>
                             <tr>
-                                <td style="border:1px solid #ccc; padding:6px 10px;">Female (महिला)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">{{ __('admin.female') }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_female ?? '—' }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_female ?? '—' }}</td>
                             </tr>
                             <tr>
-                                <td style="border:1px solid #ccc; padding:6px 10px;">Disabled (अपाङ्ग)</td>
+                                <td style="border:1px solid #ccc; padding:6px 10px;">{{ __('admin.disabled_category') }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->min_age_disabled ?? '—' }}</td>
                                 <td style="border:1px solid #ccc; padding:6px 10px; text-align:center;">{{ $job->max_age_disabled ?? '—' }}</td>
                             </tr>
@@ -665,17 +665,17 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Male (पुरुष)</td>
+                                <td>{{ __('admin.male') }}</td>
                                 <td>{{ $job->min_age_male ?? '—' }}</td>
                                 <td>{{ $job->max_age_male ?? '—' }}</td>
                             </tr>
                             <tr>
-                                <td>Female (महिला)</td>
+                                <td>{{ __('admin.female') }}</td>
                                 <td>{{ $job->min_age_female ?? '—' }}</td>
                                 <td>{{ $job->max_age_female ?? '—' }}</td>
                             </tr>
                             <tr>
-                                <td>Disabled (अपाङ्ग)</td>
+                                <td>{{ __('admin.disabled_category') }}</td>
                                 <td>{{ $job->min_age_disabled ?? '—' }}</td>
                                 <td>{{ $job->max_age_disabled ?? '—' }}</td>
                             </tr>
@@ -740,7 +740,7 @@
                                         <td>
                                             <strong class="d-block nepali-date-bs text-danger"
                                                     data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
-                                                Converting...
+                                                {{ __('admin.converting') }}
                                             </strong>
                                             <small class="text-muted">{{ $application->created_at->format('M d, Y') }}</small>
                                         </td>
@@ -891,7 +891,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <h6 class="fw-bold mb-0">
-                        Recent Activities <span class="text-success">(Latest 5)</span>
+                        {{ __('admin.recent_activities') }} <span class="text-success">({{ __('admin.latest_5') }})</span>
                     </h6>
                 </div>
 

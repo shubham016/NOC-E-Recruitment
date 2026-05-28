@@ -625,7 +625,7 @@
                                     <td>{{ $application->email }}</td>
                                     <td>
                                         <div class="nepali-date-bs" data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
-                                            <i class="bi bi-hourglass-split"></i> Converting...
+                                            <i class="bi bi-hourglass-split"></i> {{ __('admin.converting') }}
                                         </div>
                                         <small style="color: #718096;">{{ $application->created_at->format('M d, Y') }}</small>
                                     </td>
@@ -644,7 +644,7 @@
                                     <td>
                                         <a href="{{ route('admin.applications.show', $application->id) }}" class="btn-view-sm">
                                             <i class="bi bi-eye-fill"></i>
-                                            View
+                                            {{ __('admin.view') }}
                                         </a>
                                     </td>
                                 </tr>

@@ -67,7 +67,7 @@
                                 <tr>
                                     <td>{{ $group->notice_no ?? '-' }}</td>
                                     <td class="fw-bold">{{ $group->advertisement_no }}</td>
-                                    <td>{{ $group->position }}{{ $group->level ? ' / Level ' . $group->level : '' }}</td>
+                                    <td>{{ $group->position }}{{ $group->level ? ' / ' . __('admin.level') . ' ' . $group->level : '' }}</td>
                                     <td>{{ $group->service_group ?? '-' }}</td>
                                     <td><span class="badge bg-primary">{{ $group->total_candidates }}</span></td>
                                     <td>

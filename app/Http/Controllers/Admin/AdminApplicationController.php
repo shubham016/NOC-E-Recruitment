@@ -244,15 +244,25 @@ class AdminApplicationController extends Controller
                     $siblingByCategory[$sj->category] = $sj;
                 }
 
+                $catKeyMap = [
+                    'open'                => 'cat_open',
+                    'inclusive'           => 'cat_inclusive',
+                    'internal'            => 'cat_internal',
+                    'internal_open'       => 'cat_internal_open',
+                    'internal_inclusive'  => 'cat_internal_inclusive',
+                    'internal_appraisal'  => 'cat_internal_appraisal',
+                ];
+
                 foreach ($appliedCategories as $cat) {
-                    $label = ucfirst(str_replace('_', ' ', $cat));
+                    $key   = $catKeyMap[$cat] ?? null;
+                    $label = $key ? __('admin.' . $key) : ucfirst(str_replace('_', ' ', $cat));
 
                     if ($cat === 'inclusive') {
                         $siblingInclusive = $siblingByCategory['inclusive'] ?? null;
                         if ($siblingInclusive) {
                             $types = json_decode($siblingInclusive->inclusive_type ?? '[]', true) ?: [];
                             if (!empty($types)) {
-                                $label = 'Inclusive (' . implode(', ', $types) . ')';
+                                $label = __('admin.cat_inclusive') . ' (' . implode(', ', $types) . ')';
                             }
                         }
                     }

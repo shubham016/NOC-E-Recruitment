@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApplicationForm;
 use App\Models\Approver;
 use App\Models\JobPosting;
 use Illuminate\Http\Request;
@@ -107,7 +108,28 @@ class ApproverController extends Controller
     public function show($id)
     {
         $approver = Approver::with('vacancy')->findOrFail($id);
-        return view('admin.approvers.show', compact('approver'));
+
+        // Get approval statistics
+        $stats = [
+            'total'    => ApplicationForm::where('approver_id', $approver->id)->count(),
+            'pending'  => ApplicationForm::where('approver_id', $approver->id)
+                ->whereNull('approver_notes')
+                ->whereNull('approved_at')
+                ->count(),
+            'approved' => ApplicationForm::where('approver_id', $approver->id)
+                ->where('status', 'approved')->count(),
+            'rejected' => ApplicationForm::where('approver_id', $approver->id)
+                ->where('status', 'rejected')->count(),
+        ];
+
+        // Get recent applications assigned to this approver
+        $recentApplications = ApplicationForm::where('approver_id', $approver->id)
+            ->with(['jobPosting'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.approvers.show', compact('approver', 'stats', 'recentApplications'));
     }
 
     /**

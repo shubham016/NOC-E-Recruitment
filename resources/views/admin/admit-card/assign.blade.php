@@ -20,7 +20,7 @@
             <h4 class="fw-bold mb-1">{{ __('admin.assign_admit_cards_title') }}</h4>
             <p class="text-muted mb-0">
                 {{ __('admin.adv_no_colon') }} <strong>{{ $job->advertisement_no }}</strong>
-                &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
+                &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / ' . __('admin.level') . ' ' . $job->level : '' }}
                 @if($job->service_group) &nbsp;/ {{ $job->service_group }} @endif
             </p>
         </div>
@@ -198,17 +198,17 @@
                                             $catLabels = [];
                                             foreach ($cats as $cat) {
                                                 if ($cat === 'open') {
-                                                    $catLabels[] = 'Open';
+                                                    $catLabels[] = __('admin.open');
                                                 } elseif ($cat === 'inclusive') {
                                                     $catLabels[] = !empty($inclusiveTypes)
-                                                        ? 'Inclusive (' . implode(', ', $inclusiveTypes) . ')'
-                                                        : 'Inclusive';
+                                                        ? __('admin.inclusive') . ' (' . implode(', ', $inclusiveTypes) . ')'
+                                                        : __('admin.inclusive');
                                                 } elseif ($cat === 'internal_open') {
-                                                    $catLabels[] = 'Internal Open';
+                                                    $catLabels[] = __('admin.internal_open');
                                                 } elseif ($cat === 'internal_inclusive') {
-                                                    $catLabels[] = 'Internal Inclusive';
+                                                    $catLabels[] = __('admin.internal_inclusive');
                                                 } elseif ($cat === 'internal_appraisal') {
-                                                    $catLabels[] = 'Internal Appraisal';
+                                                    $catLabels[] = __('admin.internal_appraisal');
                                                 } else {
                                                     $catLabels[] = ucfirst(str_replace('_', ' ', $cat));
                                                 }

@@ -444,7 +444,7 @@
                                     <td rowspan="{{ $thisPosRowspan }}"
                                         class="align-middle text-center"
                                         style="border: 0.5px solid #e5e7eb; vertical-align:middle;">
-                                        {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
+                                        {{ $job->position }}{{ $job->level ? ' / ' . __('admin.level') . ' ' . $job->level : '' }}
                                     </td>
                                 @endif
                                 @if($thisPosRowspan > 0)
@@ -457,9 +457,33 @@
 
                                 {{-- Type --}}
                                 <td>
+                                    @php
+                                        $typeMap = [
+                                            'Open'               => __('admin.open'),
+                                            'Inclusive'          => __('admin.inclusive'),
+                                            'Internal'           => __('admin.internal'),
+                                            'Internal Appraisal' => __('admin.internal_appraisal'),
+                                            'Internal/Open'      => __('admin.internal') . '/' . __('admin.open'),
+                                            'Internal/Inclusive' => __('admin.internal') . '/' . __('admin.inclusive'),
+                                            'Women'              => __('admin.cat_incl_women'),
+                                            'A.J'                => __('admin.cat_incl_aj'),
+                                            'Madhesi'            => __('admin.cat_incl_madhesi'),
+                                            'Janajati'           => __('admin.cat_incl_janajati'),
+                                            'Apanga'             => __('admin.cat_incl_apanga'),
+                                            'Dalit'              => __('admin.cat_incl_dalit'),
+                                            'Pichadiyeko Chetra' => __('admin.cat_incl_pichadiyeko'),
+                                            'Internal/Women'              => __('admin.internal') . '/' . __('admin.cat_incl_women'),
+                                            'Internal/A.J'                => __('admin.internal') . '/' . __('admin.cat_incl_aj'),
+                                            'Internal/Madhesi'            => __('admin.internal') . '/' . __('admin.cat_incl_madhesi'),
+                                            'Internal/Janajati'           => __('admin.internal') . '/' . __('admin.cat_incl_janajati'),
+                                            'Internal/Apanga'             => __('admin.internal') . '/' . __('admin.cat_incl_apanga'),
+                                            'Internal/Dalit'              => __('admin.internal') . '/' . __('admin.cat_incl_dalit'),
+                                            'Internal/Pichadiyeko Chetra' => __('admin.internal') . '/' . __('admin.cat_incl_pichadiyeko'),
+                                        ];
+                                    @endphp
                                     @foreach($types as $i => $type)
                                         @if($i > 0)<div style="border-top:1px solid #e5e7eb;margin:4px -8px;"></div>@endif
-                                        <span style="white-space:nowrap;display:block;">{{ $type }}</span>
+                                        <span style="white-space:nowrap;display:block;">{{ $typeMap[$type] ?? $type }}</span>
                                     @endforeach
                                 </td>
 

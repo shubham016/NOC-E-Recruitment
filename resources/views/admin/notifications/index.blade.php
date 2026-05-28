@@ -69,7 +69,7 @@
         <div>
             <h2 class="mb-1">
                 {{ __('admin.notifications') }}
-                <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">ADMIN PORTAL</span>
+                <span class="badge bg-danger" style="font-size: 0.6rem; vertical-align: middle;">{{ __('admin.portal_name') }}</span>
             </h2>
             <p class="text-muted mb-0">{{ __('admin.view_manage_notifications') }}</p>
         </div>

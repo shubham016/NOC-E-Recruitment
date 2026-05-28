@@ -119,7 +119,7 @@
 <div class="report-card">
     <div class="report-card-header">
         <h6>{{ __('admin.applications_report') }}</h6>
-        <span class="total-badge">{{ number_format($summary['total_applications']) }} total</span>
+        <span class="total-badge">{{ number_format($summary['total_applications']) }} {{ __('admin.total') }}</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.applications') }}" target="_blank">
@@ -159,7 +159,7 @@
 <div class="report-card">
     <div class="report-card-header">
         <h6>{{ __('admin.candidates_report') }}</h6>
-        <span class="total-badge">{{ number_format($summary['total_candidates']) }} total</span>
+        <span class="total-badge">{{ number_format($summary['total_candidates']) }} {{ __('admin.total') }}</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.candidates') }}" target="_blank">
@@ -198,7 +198,7 @@
 <div class="report-card">
     <div class="report-card-header">
         <h6>{{ __('admin.vacancies_report') }}</h6>
-        <span class="total-badge">{{ number_format($summary['total_vacancies']) }} total</span>
+        <span class="total-badge">{{ number_format($summary['total_vacancies']) }} {{ __('admin.total') }}</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.vacancies') }}" target="_blank">
@@ -238,7 +238,7 @@
 <div class="report-card">
     <div class="report-card-header">
         <h6>{{ __('admin.reviewers_report') }}</h6>
-        <span class="total-badge">{{ number_format($summary['total_reviewers']) }} total</span>
+        <span class="total-badge">{{ number_format($summary['total_reviewers']) }} {{ __('admin.total') }}</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.reviewers') }}" target="_blank">
@@ -268,7 +268,7 @@
 <div class="report-card">
     <div class="report-card-header">
         <h6>{{ __('admin.approvers_report') }}</h6>
-        <span class="total-badge">{{ number_format($summary['total_approvers']) }} total</span>
+        <span class="total-badge">{{ number_format($summary['total_approvers']) }} {{ __('admin.total') }}</span>
     </div>
     <div class="report-card-body">
         <form method="GET" action="{{ route('admin.reports.preview.approvers') }}" target="_blank">

@@ -1,1114 +1,703 @@
-@extends('layouts.approver')
+@extends('layouts.dashboard')
 
-@section('title', __('admin.application_details'))
-@section('portal-name', 'Approver Portal')
-@section('brand-icon', 'bi bi-person-check')
-@section('dashboard-route', route('approver.dashboard'))
-@section('user-name', Auth::guard('approver')->user()->name)
-@section('user-role', 'Application Approver')
-@section('user-initial', strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)))
-@section('logout-route', route('approver.logout'))
+@section('title', __('admin.approver_details'))
 
+@section('portal-name', __('admin.portal_name'))
+@section('brand-icon', 'bi bi-shield-check')
+@section('dashboard-route', route('admin.dashboard'))
+@section('user-name', Auth::guard('admin')->user()->name)
+@section('user-role', __('admin.system_administrator'))
+@section('user-initial', strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)))
+@section('logout-route', route('admin.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item active">
-        <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
-    </a>
-    <a href="{{ route('approver.myprofile') }}" class="sidebar-menu-item">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a>
+    @include('admin.partials.sidebar')
 @endsection
 
 @section('custom-styles')
 <style>
-    .review-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
-        border-radius: 12px;
+    .profile-card {
+        background: white;
+        border-radius: 10px;
         padding: 2rem;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
     }
 
-    .candidate-photo-section {
+    .profile-header-section {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
+        gap: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f3f4f6;
         margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-radius: 12px;
-        border: 2px solid #cbd5e1;
     }
 
-    .candidate-photo {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
+    .approver-photo {
+        width: 100px;
+        height: 100px;
         border-radius: 10px;
-        border: 3px solid white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        object-fit: cover;
+        border: 3px solid #c9a84c;
     }
 
-    .candidate-basic-info h3 {
-        margin: 0;
-        color: #1e293b;
+    .approver-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
         font-weight: 700;
+        font-size: 2.5rem;
+        border: 3px solid #c9a84c;
     }
 
-    .candidate-basic-info .detail {
-        margin: 0.3rem 0;
-        color: #475569;
+    .approver-info h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
     }
 
-    .info-card {
+    .approver-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        padding: 0.375rem 0.875rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    .info-icon-box {
+        width: 48px;
+        height: 48px;
+        background: #fef3c7;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c9a84c;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .info-details h6 {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-details p {
+        font-size: 0.938rem;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
         background: white;
         border-radius: 10px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         border: 1px solid #e5e7eb;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card.blue .stat-number  { color: #3b82f6; }
+    .stat-card.orange .stat-number { color: #f97316; }
+    .stat-card.green .stat-number  { color: #10b981; }
+    .stat-card.red .stat-number    { color: #ef4444; }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .content-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .sidebar-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
         margin-bottom: 1.5rem;
     }
 
-    .info-card h5 {
-        color: #64748b;
+    .section-header {
+        background: #f9fafb;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .section-header h3 {
+        font-size: 1.125rem;
         font-weight: 700;
-        border-bottom: 2px solid #e5e7eb;
-        padding-bottom: 0.75rem;
-        margin-bottom: 1rem;
+        color: #1f2937;
+        margin: 0;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .info-row {
-        display: flex;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f3f4f6;
+    .section-header h3 i { color: #c9a84c; font-size: 1.25rem; }
+
+    .section-body { padding: 1.5rem; }
+
+    .applications-table {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    .info-row:last-child {
-        border-bottom: none;
+    .applications-table thead th {
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        color: #000;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid #000;
+        white-space: nowrap;
+        text-align: center;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
     }
 
-    .info-label {
-        font-weight: 600;
-        color: #6b7280;
-        min-width: 180px;
-        flex-shrink: 0;
+    .applications-table thead th:first-child,
+    .applications-table tbody td:first-child { width: 60px; }
+
+    .applications-table thead th:last-child,
+    .applications-table tbody td:last-child { width: 120px; }
+
+    .applications-table tbody td {
+        padding: 1rem 1.25rem;
+        color: #000;
+        font-size: 0.875rem;
+        border: 1px solid #060606;
+        vertical-align: middle;
+        text-align: left;
     }
 
-    .info-value {
-        color: #1f2937;
-        flex: 1;
-    }
+    .applications-table tbody td:first-child,
+    .applications-table tbody td:nth-child(6),
+    .applications-table tbody td:last-child { text-align: center; }
 
-    .review-actions {
-        position: sticky;
-        top: 20px;
-    }
+    .applications-table tbody tr:hover { background: #f8fafc; }
 
-    .status-badge {
-        padding: 0.3rem 1rem;
+    .app-status-badge {
+        padding: 0.375rem 0.75rem;
         border-radius: 6px;
+        font-size: 0.75rem;
         font-weight: 600;
+        text-transform: uppercase;
         display: inline-block;
     }
 
-    .priority-badge {
-        padding: 0.4rem 0.8rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
+    .app-status-pending  { background: #fed7aa; color: #9a3412; }
+    .app-status-approved { background: #d1fae5; color: #065f46; }
+    .app-status-rejected { background: #fecaca; color: #991b1b; }
 
-    .document-item {
-        display: flex;
+    .btn-view-sm {
+        display: inline-flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 1rem;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 0.75rem;
+        gap: 0.25rem;
+        padding: 0.5rem 1rem;
+        background: #c9a84c;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.813rem;
+        font-weight: 600;
         transition: all 0.2s;
+        border: none;
     }
 
-    .document-item:hover {
-        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-        transform: translateX(5px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .btn-view-sm:hover { background: #a07828; color: white; transform: translateY(-1px); }
+
+    .info-table { width: 100%; }
+
+    .info-table tr { border-bottom: 1px solid #f3f4f6; }
+    .info-table tr:last-child { border-bottom: none; }
+    .info-table td { padding: 0.875rem 0; }
+
+    .info-table .table-label {
+        font-size: 0.813rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        width: 40%;
     }
 
-    .document-icon {
-        width: 60px;
-        height: 60px;
+    .info-table .table-value {
+        font-size: 0.938rem;
+        color: #1f2937;
+        font-weight: 500;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: white;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
         border-radius: 6px;
-        font-size: 1.2rem;
-        color: #64748b;
-        overflow: hidden;
-        border: 2px solid #e5e7eb;
-    }
-
-    .document-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .document-info {
-        flex: 1;
-    }
-
-    .document-name {
+        font-size: 0.875rem;
         font-weight: 600;
-        color: #1e293b;
-        margin: 0;
-    }
-
-    .document-size {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin: 0;
-    }
-
-    .btn-view-doc {
-        padding: 0.4rem 1rem;
-        background: #3b82f6;
-        color: white;
         text-decoration: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
         transition: all 0.2s;
     }
 
-    .btn-view-doc:hover {
-        background: #2563eb;
-        color: white;
-        transform: scale(1.05);
-    }
+    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 
-    .payment-details {
-        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        border: 2px solid #10b981;
-        border-radius: 10px;
-        padding: 1rem;
-    }
+    .action-btn-primary { background: #c9a84c; color: white; }
+    .action-btn-warning { background: #f97316; color: white; }
+    .action-btn-success { background: #10b981; color: white; }
+    .action-btn-danger  { background: #ef4444; color: white; }
 
-    .payment-details.pending {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-color: #f59e0b;
-    }
+    .empty-state { text-align: center; padding: 3rem 1rem; }
+    .empty-state i { font-size: 4rem; color: #d1d5db; margin-bottom: 1rem; }
+    .empty-state h5 { font-size: 1.125rem; color: #6b7280; margin-bottom: 0.5rem; }
+    .empty-state p  { color: #9ca3af; font-size: 0.938rem; }
 
-    .payment-details .info-row {
-        padding: 0.5rem 0;
-        margin: 0;
-    }
-
-    .payment-details .info-label {
-        min-width: 120px;
-    }
-
-    .payment-details .info-value {
-        font-size: 0.95rem;
-    }
-
-    .gateway-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.20rem 0.6rem;
-        margin-left: 5px;
-        border-radius: 4px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-        transition: all 0.2s ease;
-        vertical-align: middle;
-    }
-
-    .gateway-badge:hover {
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
-    }
-
-    .gateway-badge i {
-        font-size: 0.9rem;
-        margin-right: 0.35rem;
-    }
-
-    .alert-info-custom {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border-left: 4px solid #3b82f6;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-    }
-
-    .section-divider {
-        height: 2px;
-        background: linear-gradient(to right, #e5e7eb 0%, #3b82f6 50%, #e5e7eb 100%);
-        margin: 2rem 0;
-    }
-
-    .align-items-start {
-        align-items: flex-start !important;
-        margin-bottom: 10px;
-    }
-
-    @media print {
-        .review-actions, .no-print {
-            display: none !important;
-        }
-    }
+    @media (max-width: 1200px) { .info-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 992px)  { .stats-row { grid-template-columns: repeat(2, 1fr); } .sidebar-row { grid-template-columns: 1fr; } }
+    @media (max-width: 768px)  { .profile-header-section { flex-direction: column; text-align: center; } .stats-row { grid-template-columns: 1fr; } .action-buttons { grid-template-columns: 1fr; } }
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid px-4 py-4">
-    <!-- Page Header -->
-    <div class="approver-header">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <a href="{{ route('approver.assignedtome') }}" 
-                class="text-dark text-decoration-none mb-2 d-inline-block no-print">
-                    <i class="bi bi-arrow-left me-2"></i>
-                    {{ __('admin.back_to_applications') }}
-                </a>
-
-                <h2 class="mb-1 fw-bold">{{ __('admin.application_review') }}</h2>
-            </div>
-            <div class="text-end">
-                @php
-                    $statusColors = [
-                        'pending' => 'bg-warning text-dark',
-                        'assigned' => 'bg-info text-white',
-                        'reviewed' => 'bg-success text-white',
-                        'approved' => 'bg-success text-white',
-                        'rejected' => 'bg-danger text-white',
-                    ];
-                    $statusColor = $statusColors[$application->status] ?? 'bg-secondary text-white';
-
-                @endphp
-                <span class="status-badge {{ $statusColor }} fs-5 d-block mb-2">
-                    <i class=" me-1"></i>{{ __('admin.' . $application->status) }}
-                </span>
-                @if($application->manual_priority)
-                    <span class="priority-badge {{ $priorityColors[$application->manual_priority] ?? 'bg-secondary text-white' }}">
-                        <i class=" me-1"></i>Priority: {{ ucfirst($application->manual_priority) }}
-                    </span>
-                @endif
-            </div>
-        </div>
-    </div>
+<div class="container-fluid">
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    <div class="row">
-        <!-- Main Content -->
-        <div class="col-12 mt-4">
-            <!-- Candidate Photo & Basic Info -->
-            <div class="candidate-photo-section">
-                @if($application->passport_size_photo)
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                         alt="Candidate Photo"
-                         class="candidate-photo">
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <div class="profile-header-section">
+            <div>
+                @if($approver->photo)
+                    <img src="{{ asset('storage/' . $approver->photo) }}" alt="{{ $approver->name }}" class="approver-photo">
                 @else
-                    <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
-                        <i class="" style="font-size: 4rem;"></i>
+                    <div class="approver-avatar-placeholder">
+                        {{ strtoupper(substr($approver->name, 0, 1)) }}
                     </div>
                 @endif
-                <div class="candidate-basic-info">
-                    <h3>{{ $application->name_english ?? 'N/A' }}</h3>
-                    <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>
-                    <p class="mb-1 opacity-90">Application ID: {{ $application->id }}</p>
-                    <p class="detail">
-                        <i class=""></i>{{ $application->email ?? 'N/A' }}
-                    </p>
-                    <p class="detail">
-                        <i class=""></i>{{ $application->phone ?? 'N/A' }}
-                        @if($application->alternate_phone_number)
-                            | {{ $application->alternate_phone_number }}
-                        @endif
-                    </p>
-                    <p class="detail">
-                        <i class=""></i>
-                        {{ $application->permanent_municipality }}, {{ $application->permanent_district }}
-                    </p>
-                     <p class="mb-0 opacity-75">
-                    <i class=""></i>
-                    @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
-                    Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
-                </p>
-                 
-                </div>
-                
             </div>
 
-            <!-- Vacancy Information -->
-            <div class="info-card">
-                <h5>{{ __('admin.vacancy_information') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Position Applied:</div>
-                            <div class="info-value">{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Advertisement No:</div>
-                            <div class="info-value">{{ $application->advertisement_no ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Application Submmited:</div>
-                            <div class="info-value">{{ $application->created_at ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Department:</div>
-                            <div class="info-value">{{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Category:</div>
-                            <div class="info-value">
-                                <span>{{ ucfirst($application->jobPosting->category ?? 'N/A') }}</span>
-                            </div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Application Deadline:</div>
-                            <div class="info-value">
-                                @if($application->jobPosting->deadline)
-                                    @php 
-                                        $deadlineBS = $application->jobPosting->deadline_bs ?: adToBS($application->jobPosting->deadline->format('Y-m-d')); 
-                                    @endphp
-                                    <span class="d-block">{{ $deadlineBS }} (BS)</span>
-                                    <span class="text-muted">{{ $application->jobPosting->deadline->format('F d, Y') }} {{ __('admin.ad_suffix') }}</span>
-                                @else
-                                    N/A
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+            <div class="approver-info flex-grow-1">
+                <h2>{{ $approver->name }}</h2>
+                <div class="approver-meta">
+                    <span class="status-badge {{ $approver->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                        {{ __('admin.' . $approver->status) }}
+                    </span>
                 </div>
             </div>
 
-             
-
-            <!-- Personal Information -->
-           <div class="info-card">
-                <h5>{{ __('admin.personal_information') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Name (English):</div>
-                            <div class="info-value">{{ $application->name_english ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Name (Nepali):</div>
-                            <div class="info-value">{{ $application->name_nepali ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">{{ __('admin.birth_date_ad') }}:</div>
-                            <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">{{ __('admin.birth_date_bs') }}:</div>
-                            <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Email:</div>
-                            <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Age:</div>
-                            <div class="info-value">{{ $application->age ?? 'N/A' }} years</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Nationality:</div>
-                            <div class="info-value">{{ $application->nationality ?? 'Nepali' }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Alternate Phone Number:</div>
-                            <div class="info-value">{{ $application->alternate_phone_number ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Gender:</div>
-                            <div class="info-value">{{ ucfirst($application->gender ?? 'N/A') }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Marital Status:</div>
-                            <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Spouse Name:</div>
-                            <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Spouse Nationality (If Married):</div>
-                            <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Blood Group:</div>
-                            <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <a href="{{ route('admin.approvers.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> {{ __('admin.back') }}
+                </a>
             </div>
-
-            <!-- Citizenship Information -->
-            <div class="info-card">
-                <h5>{{ __('admin.citizenship_information') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Citizenship Number:</div>
-                            <div class="info-value">{{ $application->citizenship_number ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">{{ __('admin.issue_date_ad') }}:</div>
-                            <div class="info-value">
-                                {{ $application->citizenship_issue_date_ad 
-                                    ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') 
-                                    : ($application->citizenship_issue_date_bs ? bsToAD($application->citizenship_issue_date_bs) : 'N/A') 
-                                }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Issue Date (BS):</div>
-                            <div class="info-value">{{ $application->citizenship_issue_date_bs ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Issue District:</div>
-                            <div class="info-value">{{ $application->citizenship_issue_district ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Community & Ethnic Information -->
-            <div class="info-card">
-                <h5>{{ __('admin.community_ethnic') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Religion:</div>
-                            <div class="info-value">
-                                {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
-                            </div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Community:</div>
-                            <div class="info-value">
-                                {{ $application->community == 'other' ? $application->community_other : ucfirst($application->community ?? 'N/A') }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Ethnic Group:</div>
-                            <div class="info-value">
-                                {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
-                            </div>
-                        </div>
-                        @if($application->ethnic_certificate)
-                        <div class="info-row">
-                            <div class="info-label">Ethnic Certificate:</div>
-                            <div class="info-value">
-                                <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                                    View Certificate
-                                </a>
-                            </div>
-                        </div>
-                        @endif
-                        <div class="info-row">
-                            <div class="info-label">Mother Tongue:</div>
-                            <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Disability & Employment Information -->
-            <div class="info-card">
-                <h5>{{ __('admin.employment_disability_status') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Employment Status:</div>
-                            <div class="info-value">
-                                {{ $application->employment_status == 'other' ? $application->employment_other : ucfirst($application->employment_status ?? 'N/A') }}
-                            </div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Physical Disability:</div>
-                            <div class="info-value">
-                                {{ $application->physical_disability == 'other' ? $application->disability_other : ucfirst($application->physical_disability ?? 'None') }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        @if($application->disability_certificate)
-                        <div class="info-row">
-                            <div class="info-label">Disability Certificate:</div>
-                            <div class="info-value">
-                                <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                                    View Certificate
-                                </a>
-                            </div>
-                        </div>
-                        @endif
-                        <div class="info-row">
-                            <div class="info-label">{{ __('admin.noc_employee') }}:</div>
-                            <div class="info-value">
-                                {{ $application->noc_employee == 'yes' ? __('admin.yes') : __('admin.no') }}
-                                @if($application->noc_employee == 'yes' && $application->noc_id_card)
-                                    <span class="badge bg-info ms-2">ID: {{ $application->noc_id_card }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-           
-
-            <!-- Address Information -->
-          <div class="info-card">
-                <h5>{{ __('admin.address_information') }}</h5>
-                <div class="row">
-                    <!-- Left Column: Permanent Address -->
-                    <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">{{ __('admin.permanent_address') }}</h6>
-                        <div class="info-row">
-                            <div class="info-label">Province:</div>
-                            <div class="info-value">{{ $application->permanent_province ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">District:</div>
-                            <div class="info-value">{{ $application->permanent_district ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Municipality:</div>
-                            <div class="info-value">{{ $application->permanent_municipality ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Ward No:</div>
-                            <div class="info-value">{{ $application->permanent_ward ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Tole/Street:</div>
-                            <div class="info-value">{{ $application->permanent_tole ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">House Number:</div>
-                            <div class="info-value">{{ $application->permanent_house_number ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Mailing/Temporary Address -->
-                    <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">{{ __('admin.mailing_temp_address') }}</h6>
-                        @if($application->same_as_permanent == 'yes')
-                            <div class="alert alert-info-custom">
-                                {{ __('admin.same_as_permanent_address') }}
-                            </div>
-                        @else
-                            <div class="info-row">
-                                <div class="info-label">Province:</div>
-                                <div class="info-value">{{ $application->mailing_province ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">District:</div>
-                                <div class="info-value">{{ $application->mailing_district ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Municipality:</div>
-                                <div class="info-value">{{ $application->mailing_municipality ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Ward No:</div>
-                                <div class="info-value">{{ $application->mailing_ward ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Tole/Street:</div>
-                                <div class="info-value">{{ $application->mailing_tole ?? 'N/A' }}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">House Number:</div>
-                                <div class="info-value">{{ $application->mailing_house_number ?? 'N/A' }}</div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-             
-
-            <!-- Education -->
-            <div class="info-card">
-                <h5>{{ __('admin.educational_background') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Education Level:</div>
-                            <div class="info-value">{{ $application->education_level ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Field of Study:</div>
-                            <div class="info-value">{{ $application->field_of_study ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Institution:</div>
-                            <div class="info-value">{{ $application->institution_name ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Graduation Year:</div>
-                            <div class="info-value">{{ $application->graduation_year ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- Work Experience -->
-                <div class="info-card">
-                    <h5>{{ __('admin.work_experience') }}</h5>
-
-                    @if(strtolower($application->has_work_experience ?? '') == 'yes')
-
-                        <div class="mb-3">
-                            <strong>{{ __('admin.has_work_experience') }}:</strong>
-                            <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
-                        </div>
-
-                        @for ($i = 1; $i <= 3; $i++)
-                            @php
-                                $org = "exp{$i}_organization";
-                                $pos = "exp{$i}_position";
-                                $start = "exp{$i}_start_date";
-                                $end = "exp{$i}_end_date";
-                                $years = "exp{$i}_years";
-                                $doc = "exp{$i}_document";
-                            @endphp
-
-                            @if(!empty($application->$org) || !empty($application->$pos))
-                                <div class="border rounded p-3 mb-3">
-                                    <h6 class="text-primary">Experience {{ $i }}</h6>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>Organization:</strong>
-                                            <p>{{ $application->$org ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Position:</strong>
-                                            <p>{{ $application->$pos ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Start Date:</strong>
-                                            <p>{{ $application->$start ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>End Date:</strong>
-                                            <p>{{ $application->$end ?? '-' }}</p>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong>Years:</strong>
-                                            <p>{{ $application->$years ?? '-' }}</p>
-                                        </div>
-
-                                        
-                                    </div>
-                                    <div >
-                                            <strong>Document:</strong>
-
-                                            @if(!empty($application->$doc))
-                                                <img src="{{ Storage::url($application->$doc) }}"
-                                                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                            
-                                            @else
-                                                <div class="alert alert-info-custom">
-                                                    No document uploaded
-                                                </div>
-                                            @endif
-
-                                        </div>
-                                </div>
-                            @endif
-                        @endfor
-
-                    @else
-                        <div class="alert alert-info-custom">
-                            No work experience declared
-                        </div>
-                    @endif
-                </div>
-
-            <!-- Payment Information -->
-            <div class="info-card">
-                <h5>{{ __('admin.payment_information') }}</h5>
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Payment Gateway:</div>
-                            <div class="info-value">{{ $application->payment->gateway ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Amount:</div>
-                            <div class="info-value">{{ $application->payment->amount ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Date & Time:</div>
-                            <div class="info-value">{{ $application->payment->updated_at ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <div class="info-label">Status:</div>
-                            <div class="info-value">{{ $application->payment->status ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Transcation ID:</div>
-                            <div class="info-value">{{ $application->payment->transaction_id ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cover Letter -->
-            <!-- @if($application->cover_letter)
-            <div class="info-card">
-                <h5>{{ __('admin.cover_letter') }}</h5>
-                <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
-                </div>
-            </div>
-            @endif -->
-
-             
-
-             <!-- Uploaded Documents -->
-            <div class="info-card">
-            <h5>{{ __('admin.uploaded_documents') }}</h5>
-
-
-             @if($application->passport_size_photo)
-            <div class="document-item">
-                <div class="document-info">
-                    <p class="document-name">Passport Size Photo</p>
-                    <p class="document-size">Passport Size Photo</p>
-
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-             @if($application->citizenship_id_document)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Citizenship Id</p>
-                    <p class="document-size">Citizenship Id</p>
-
-                    <img src="{{ Storage::url($application->citizenship_id_document) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->transcript)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Educational Certificates</p>
-                    <p class="document-size">Academic transcripts and degrees</p>
-
-                    <img src="{{ Storage::url($application->transcript) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-
-            @if($application->character)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Character Certificate</p>
-                    <p class="document-size">character Certificate</p>
-
-                    <img src="{{ Storage::url($application->character) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->equivalency_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Equivalency Certificate</p>
-                    <p class="document-size">Equivalency Certificate</p>
-
-                    <img src="{{ Storage::url($application->equivalency_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->signature)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Signature</p>
-                    <p class="document-size">Signature</p>
-
-                    <img src="{{ Storage::url($application->signature) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->ethnic_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Ethnic Certificate</p>
-                    <p class="document-size">Ethnic Certificate</p>
-
-                    <img src="{{ Storage::url($application->ethnic_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-             @if($application->disability_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Disability Certificate</p>
-                    <p class="document-size">Disability Certificate</p>
-
-                    <img src="{{ Storage::url($application->disability_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->noc_id_card)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">NOC ID Card</p>
-                    <p class="document-size">NOC ID Card</p>
-
-                    <img src="{{ Storage::url($application->noc_id_card) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-        
-
-
-
-
-            <!-- @if($application->cover_letter_file)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Cover Letter (File)</p>
-                    <p class="document-size">Uploaded cover letter document</p>
-
-                    <iframe src="{{ Storage::url($application->cover_letter_file) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-          
-
-
-            <!-- @if($application->other_documents)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Other Documents</p>
-                    <p class="document-size">Additional supporting documents</p>
-
-                    <iframe src="{{ Storage::url($application->other_documents) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-            @if(
-                !$application->passport_size_photo &&
-                !$application->resume &&
-                !$application->work_experience &&
-                !$application->citizenship_certificate &&
-                !$application->citizenship_id_document &&
-                !$application->educational_certificates &&
-                !$application->transcript &&
-                !$application->experience_certificates &&
-                !$application->character_certificate &&
-                !$application->character &&
-                !$application->equivalency_certificate &&
-                !$application->equivalent &&
-                !$application->ethnic_certificate &&
-                !$application->disability_certificate &&
-                !$application->noc_id_card &&
-                !$application->cover_letter_file &&
-                !$application->signature &&
-                !$application->other_documents
-            )
-            <div class="alert alert-warning">
-                No documents uploaded
-            </div>
-            @endif
-        </div>
-            <!-- Reviewed Details -->
-            <div class="info-card">
-                <h5>
-                    <i class="text-primary me-2"></i>Reviewed Details
-                </h5>
-                <div class="timeline">
-                    <div class="info-row">
-                            <div class="info-label">Reviewer:</div>
-                            <div class="info-value">{{ $application->reviewer->name ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Reviewed Date:</div>
-                            <div class="info-value">{{ $application->reviewed_at ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Reviewer Note:</div>
-                            <div class="info-value">{{ $application->reviewer_notes?? 'N/A' }}</div>
-                        </div>
-                    
-                </div>
-            </div>
-
-            <!-- Admin Notes (if any) -->
-            @if($application->admin_notes)
-            <div class="info-card">
-                <h5>{{ __('admin.admin_notes_only') }}</h5>
-                <div class="alert alert-info-custom">
-                    <p class="mb-0"><strong>{{ __('admin.admins_note_colon') }}</strong></p>
-                    <p class="mb-0 mt-2">{{ $application->admin_notes }}</p>
-                </div>
-            </div>
-            @endif
-
-            @if($application->priority_note)
-            <div class="info-card">
-                <h5>{{ __('admin.priority_note') }}</h5>
-                <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
-                    <p class="mb-0">{{ $application->priority_note }}</p>
-                </div>
-            </div>
-            @endif
         </div>
 
-        <!-- Right Column -->
-        <div class="col-12 mt-4">
-            <!-- Actions -->
-            @if($application->status !== 'approved' && $application->status !== 'rejected')
-            <div class="info-card">
-                <h5>
-                    <i class="text-secondary me-2"></i>{{ __('admin.actions') }}
-                </h5>
-                <form action="{{ route('approver.applications.updateStatus', $application->id) }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ __('admin.decision') }}</label>
-                        <select name="status" class="form-select" required>
-                            <option value="">{{ __('admin.select_decision') }}</option>
-                            <option value="approved">{{ __('admin.approve') }}</option>
-                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>{{ __('admin.send_back_for_edit') }}</option>
-                            <option value="rejected">{{ __('admin.reject') }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ __('admin.remarks') }} <span class="text-danger">*</span></label>
-                        <textarea name="approver_notes" class="form-control" rows="4" placeholder="{{ __('admin.ph_add_remarks') }}" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-gold w-100">
-                        <i class="bi bi-check-circle me-1"></i>{{ __('admin.submit_decision') }}
-                    </button>
-                </form>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>{{ __('admin.email_address') }}</h6>
+                    <p>{{ $approver->email }}</p>
+                </div>
             </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>{{ __('admin.phone_number') }}</h6>
+                    <p>{{ $approver->phone_number ?? __('admin.not_provided') }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="info-details">
+                    <h6>{{ __('admin.department') }}</h6>
+                    <p>{{ $approver->department ?? __('admin.not_assigned') }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>{{ __('admin.designation') }}</h6>
+                    <p>{{ $approver->designation ?? __('admin.not_specified') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-row">
+        <div class="stat-card blue">
+            <div class="stat-number">{{ $stats['total'] }}</div>
+            <div class="stat-label">{{ __('admin.total_applications') }}</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-number">{{ $stats['pending'] }}</div>
+            <div class="stat-label">{{ __('admin.pending_review') }}</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-number">{{ $stats['approved'] }}</div>
+            <div class="stat-label">{{ __('admin.approved') }}</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-number">{{ $stats['rejected'] }}</div>
+            <div class="stat-label">{{ __('admin.rejected') }}</div>
+        </div>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3>
+                <i class="bi bi-clock-history"></i>
+                {{ __('admin.recent_applications') }} ({{ $recentApplications->count() }})
+            </h3>
+        </div>
+        <div class="section-body p-0">
+            @if($recentApplications->count() > 0)
+                <div class="table-responsive">
+                    <table class="applications-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('admin.sn') }}</th>
+                                <th>{{ __('admin.vacancy_title') }}</th>
+                                <th>{{ __('admin.candidate_name') }}</th>
+                                <th>{{ __('admin.email') }}</th>
+                                <th>{{ __('admin.applied_on') }}</th>
+                                <th>{{ __('admin.status') }}</th>
+                                <th>{{ __('admin.actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentApplications as $index => $application)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $application->jobPosting->title ?? 'N/A' }}</td>
+                                    <td>{{ $application->name_english }}</td>
+                                    <td>{{ $application->email }}</td>
+                                    <td>
+                                        <div class="nepali-date-bs" data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
+                                            <i class="bi bi-hourglass-split"></i> ...
+                                        </div>
+                                        <small style="color: #718096;">{{ $application->created_at->format('M d, Y') }}</small>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusClass = match($application->status) {
+                                                'approved' => 'app-status-approved',
+                                                'rejected' => 'app-status-rejected',
+                                                default    => 'app-status-pending'
+                                            };
+                                        @endphp
+                                        <span class="app-status-badge {{ $statusClass }}">
+                                            {{ __('admin.' . $application->status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.applications.show', $application->id) }}" class="btn-view-sm">
+                                            <i class="bi bi-eye-fill"></i>
+                                            {{ __('admin.view') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @else
-            <div class="info-card">
-                <h5>
-                    <i class="bi bi-info-circle text-info me-2"></i>{{ __('admin.status') }}
-                </h5>
-                <div class="alert alert-{{ $application->status === 'approved' ? 'success' : 'danger' }} mb-0">
-                    {{ __('admin.this_application_has_been') }} <strong>{{ $application->status }}</strong>.
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <h5>{{ __('admin.no_apps_yet') }}</h5>
+                    <p>{{ __('admin.approver_no_apps') }}</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Account Information & Actions Row -->
+    <div class="sidebar-row">
+        <!-- Account Information -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-person-vcard"></i>
+                    {{ __('admin.account_information') }}
+                </h3>
+            </div>
+            <div class="section-body">
+                <table class="info-table">
+                    <tr>
+                        <td class="table-label">{{ __('admin.name') }}</td>
+                        <td class="table-value">{{ $approver->name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.email') }}</td>
+                        <td class="table-value">{{ $approver->email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.phone') }}</td>
+                        <td class="table-value">{{ $approver->phone_number ?? __('admin.na') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.department') }}</td>
+                        <td class="table-value">{{ $approver->department ?? __('admin.na') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.designation') }}</td>
+                        <td class="table-value">{{ $approver->designation ?? __('admin.na') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.status') }}</td>
+                        <td class="table-value">
+                            <span class="status-badge {{ $approver->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                                {{ __('admin.' . $approver->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">{{ __('admin.joined') }}</td>
+                        <td class="table-value">{{ $approver->created_at->format('F d, Y') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Actions Card -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-gear-fill"></i>
+                    {{ __('admin.actions') }}
+                </h3>
+            </div>
+            <div class="section-body">
+                <div class="action-buttons">
+                    <a href="{{ route('admin.approvers.edit', $approver->id) }}" class="action-btn action-btn-primary">
+                        <i class="bi bi-pencil-square"></i>
+                        {{ __('admin.edit') }}
+                    </a>
+
+                    <button type="button" class="action-btn action-btn-warning" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                        <i class="bi bi-key-fill"></i>
+                        {{ __('admin.reset_password') }}
+                    </button>
+
+                    <button type="button" class="action-btn {{ $approver->status === 'active' ? 'action-btn-warning' : 'action-btn-success' }}"
+                        data-bs-toggle="modal" data-bs-target="#toggleStatusModal">
+                        {{ $approver->status === 'active' ? __('admin.deactivate') : __('admin.activate') }}
+                    </button>
+
+                    <button type="button" class="action-btn action-btn-danger" onclick="confirmDelete()">
+                        <i class="bi bi-trash-fill"></i>
+                        {{ __('admin.delete') }}
+                    </button>
                 </div>
             </div>
-            @endif
-
-            
         </div>
     </div>
 </div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('admin.reset_approver_password') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.approvers.reset-password', $approver->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('admin.new_password') }}</label>
+                        <input type="password" name="password" class="form-control" required minlength="8">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('admin.confirm_password') }}</label>
+                        <input type="password" name="password_confirmation" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-key-fill me-1"></i> {{ __('admin.reset_password') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toggle Status Modal -->
+<div class="modal fade" id="toggleStatusModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('admin.change_approver_status') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.approvers.toggle-status', $approver->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p>{{ __('admin.deactivate_confirm', ['action' => $approver->status === 'active' ? __('admin.deactivate') : __('admin.activate'), 'name' => $approver->name]) }}</p>
+                    @if($approver->status === 'active')
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            {{ __('admin.deactivate_warning_approver') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                    <button type="submit" class="btn btn-{{ $approver->status === 'active' ? 'warning' : 'success' }}">
+                        {{ $approver->status === 'active' ? __('admin.deactivate') : __('admin.activate') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Approver Form -->
+<form id="deleteForm" action="{{ route('admin.approvers.destroy', $approver->id) }}" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+@endsection
+
+@section('scripts')
+<script>
+    function confirmDelete() {
+        if (confirm('{{ __('admin.delete_approver_confirm') }}')) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+
+    function englishToNepali(str) {
+        if (!str) return str;
+        const map = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+        return str.replace(/[0-9]/g, d => map[d]);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        function waitForConverter() {
+            if (!window.nepaliLibrariesReady || typeof window.adToBS !== 'function') {
+                setTimeout(waitForConverter, 100);
+                return;
+            }
+            document.querySelectorAll('.nepali-date-bs').forEach(el => {
+                const adDate = el.getAttribute('data-ad-date');
+                if (adDate) {
+                    try {
+                        const bsDate = window.adToBS(adDate);
+                        el.innerHTML = bsDate ? englishToNepali(bsDate) : '<i class="bi bi-exclamation-circle"></i>';
+                    } catch (e) {
+                        el.innerHTML = '<i class="bi bi-x-circle"></i>';
+                    }
+                }
+            });
+        }
+        waitForConverter();
+    });
+</script>
 @endsection

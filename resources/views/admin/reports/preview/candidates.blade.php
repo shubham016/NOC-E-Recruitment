@@ -101,12 +101,12 @@
 
 <div class="preview-header">
     <div>
-        <h5>Registered Candidates Report — Preview</h5>
-        <div class="meta">{{ $candidates->count() }} record(s) &nbsp;|&nbsp; Generated: {{ now()->format('d M Y, h:i A') }}</div>
+        <h5>{{ __('admin.report_preview_candidates') }}</h5>
+        <div class="meta">{{ $candidates->count() }} {{ __('admin.record_s') }} &nbsp;|&nbsp; {{ __('admin.generated_label') }} {{ now()->format('d M Y, h:i A') }}</div>
     </div>
     <div class="d-flex gap-2 flex-wrap">
-        <a href="{{ route('admin.reports.index') }}" class="btn-back">Back to Reports</a>
-        <a href="{{ $downloadUrl }}" class="btn-download-pdf">Download PDF</a>
+        <a href="{{ route('admin.reports.index') }}" class="btn-back">{{ __('admin.back_to_reports') }}</a>
+        <a href="{{ $downloadUrl }}" class="btn-download-pdf">{{ __('admin.download_pdf') }}</a>
     </div>
 </div>
 
@@ -138,7 +138,7 @@
                         <td>{{ $c->gender ? ucfirst($c->gender) : '-' }}</td>
                         <td>{{ $c->city ?? '-' }}</td>
                         <td>{{ $c->state ?? '-' }}</td>
-                        <td>{{ ucfirst($c->status ?? 'active') }}</td>
+                        <td>{{ __('admin.' . ($c->status ?? 'active')) }}</td>
                         <td>{{ $c->created_at->format('Y-m-d') }}</td>
                     </tr>
                 @empty

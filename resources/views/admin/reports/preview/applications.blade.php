@@ -112,12 +112,12 @@
 
 <div class="preview-header">
     <div>
-        <h5>Applications Report — Preview</h5>
-        <div class="meta">{{ $applications->count() }} record(s) &nbsp;|&nbsp; Generated: {{ now()->format('d M Y, h:i A') }}</div>
+        <h5>{{ __('admin.report_preview_applications') }}</h5>
+        <div class="meta">{{ $applications->count() }} {{ __('admin.record_s') }} &nbsp;|&nbsp; {{ __('admin.generated_label') }} {{ now()->format('d M Y, h:i A') }}</div>
     </div>
     <div class="d-flex gap-2 flex-wrap">
-        <a href="{{ route('admin.reports.index') }}" class="btn-back">Back to Reports</a>
-        <a href="{{ $downloadUrl }}" class="btn-download-pdf">Download PDF</a>
+        <a href="{{ route('admin.reports.index') }}" class="btn-back">{{ __('admin.back_to_reports') }}</a>
+        <a href="{{ $downloadUrl }}" class="btn-download-pdf">{{ __('admin.download_pdf') }}</a>
     </div>
 </div>
 
@@ -152,7 +152,7 @@
                         <td>{{ $app->applied_category_label }}</td>
                         <td>
                             <span class="status-badge status-{{ $app->status }}">
-                                {{ ucfirst(str_replace('_', ' ', $app->status ?? '')) }}
+                                {{ __('admin.' . ($app->status ?? 'pending')) }}
                             </span>
                         </td>
                         <td>{{ $app->reviewer?->name ?? '-' }}</td>

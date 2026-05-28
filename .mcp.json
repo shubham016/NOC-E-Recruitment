@@ -1,12 +1,11 @@
 {
   "mcpServers": {
-    "puppeteer": {
+    "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
-      "env": {
-        "PUPPETEER_EXECUTABLE_PATH": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
-        "PUPPETEER_HEADLESS": "false"
-      }
+      "args": [
+        "-y", "chrome-devtools-mcp@latest",
+        "--browserUrl", "http://127.0.0.1:9222"
+      ]
     }
   }
 }

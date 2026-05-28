@@ -566,7 +566,7 @@
                             <option value="">{{ __('admin.all_status') }}</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                    {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                    {{ __('admin.' . $status) }}
                                 </option>
                             @endforeach
                         </select>
@@ -616,7 +616,7 @@
                 <div>
                     <span class="fw-bold text-dark me-3">
                         <i class="bi bi-check-square me-2"></i>
-                        <span id="selectedCount">0</span> application(s) selected
+                        <span id="selectedCount">0</span> {{ __('admin.apps_selected') }}
                     </span>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
                         <i class="bi bi-x-circle me-1"></i>{{ __('admin.clear_selection') }}
@@ -757,7 +757,7 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="gov-font-semibold gov-text-sm" style="color: #1f2937; font-weight: 600;">
-                                            {{ $application->status_label }}
+                                            {{ __('admin.' . $application->status) }}
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -836,7 +836,7 @@
                                                         <select name="status" class="form-select gov-form-select" required style="height: 50px;">
                                                             @foreach($statuses as $status)
                                                                 <option value="{{ $status }}" {{ $application->status == $status ? 'selected' : '' }}>
-                                                                    {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                                                    {{ __('admin.' . $status) }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -934,6 +934,7 @@
                     </table>
                 </div>
 
+                @if($applications->hasPages())
                 <!-- Pagination Footer -->
                 <div class="gov-pagination-footer">
                     <div class="d-flex justify-content-between align-items-center">
@@ -947,6 +948,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             @else
                 <!-- Empty State -->
                 <div class="gov-empty-state">
@@ -1013,7 +1015,7 @@
                         <label class="gov-form-label">{{ __('admin.new_status') }}</label>
                         <select name="status" class="form-select gov-form-select">
                             @foreach($statuses as $status)
-                                <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                                <option value="{{ $status }}">{{ __('admin.' . $status) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -1042,12 +1044,12 @@
                     <div class="mb-3 d-none" id="advertisementSelection">
                         <hr class="my-3">
                         <label class="gov-form-label fw-bold">{{ __('admin.assign_by_adv_no') }}</label>
-                        <small class="d-block text-muted mb-2">{{ __('admin.select_adv_to_assign') }} <strong>{{ __('admin.all_its_applications') }}</strong> to the person above.</small>
+                        <small class="d-block text-muted mb-2">{{ __('admin.select_adv_to_assign') }} <strong>{{ __('admin.all_its_applications') }}</strong> {{ __('admin.to_the_person_above') }}</small>
                         <select name="job_posting_id" id="jobPostingSelect" class="form-select gov-form-select">
                             <option value="">{{ __('admin.select_adv_no') }}</option>
                             @foreach($vacancies as $vacancy)
                                 <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->group_applications_count }}">
-                                    {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - Level ' . $vacancy->level : '' }}
+                                    {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - ' . __('admin.level') . ' ' . $vacancy->level : '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -1056,7 +1058,7 @@
 
                     <div class="gov-alert gov-alert-info mb-0" id="modalInfoAlert">
                         <i class="bi bi-info-circle"></i>
-                        <span id="modalInfoText"><span id="modalSelectedCount">0</span> application(s) selected via checkboxes</span>
+                        <span id="modalInfoText"><span id="modalSelectedCount">0</span> {{ __('admin.apps_selected_checkbox') }}</span>
                     </div>
                 </div>
                 <div class="modal-footer" style="background: linear-gradient(to top, #f9fafb 0%, white 100%); border-top: 2px solid #e5e7eb; padding: 1.25rem;">
@@ -1149,6 +1151,16 @@
         dob_bs:                 "{{ __('admin.dob_bs_short') }}",
         dob_ad:                 "{{ __('admin.dob_ad_short') }}",
         experience:             "{{ __('admin.experience_n') }}",
+        experience_n:           "{{ __('admin.experience_n') }}",
+        age_years:              "{{ __('admin.age_years') }}",
+        age_months:             "{{ __('admin.age_months') }}",
+        age_days:               "{{ __('admin.age_days') }}",
+        age_yrs:                "{{ __('admin.age_yrs') }}",
+        gender_male:            "{{ __('admin.gender_male') }}",
+        gender_female:          "{{ __('admin.gender_female') }}",
+        gender_other:           "{{ __('admin.gender_other') }}",
+        yes_label:              "{{ __('admin.yes_label') }}",
+        no_label:               "{{ __('admin.no_label') }}",
         // alert / confirm / inline strings
         failed_load_details:    "{{ __('admin.failed_load_details') }}",
         delete_app_confirm:     "{{ __('admin.delete_app_confirm') }}",
@@ -1277,7 +1289,7 @@
         if (!jobPostingSelect || !jobPostingSelect.value) {
             const infoText = document.getElementById('modalInfoText');
             if (infoText) {
-                infoText.innerHTML = '<span id="modalSelectedCount">' + count + '</span> application(s) selected via checkboxes';
+                infoText.innerHTML = '<span id="modalSelectedCount">' + count + '</span> ' + _t.apps_selected_checkbox;
             }
         }
 
@@ -1534,6 +1546,9 @@
         .then(r => r.json())
         .then(d => {
             body.innerHTML = renderApplicationDetail(d);
+            if (typeof window._convertToNepaliNum === 'function') {
+                window._convertToNepaliNum(body);
+            }
         })
         .catch(() => {
             body.innerHTML = '<div class="app-modal-loading"><i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#ef4444;"></i><span style="margin-top:0.5rem;">' + _t.failed_load_details + '</span></div>';
@@ -1543,7 +1558,34 @@
     function renderApplicationDetail(d) {
         const na = `<span style="color:#c4c9d4;font-style:italic;">N/A</span>`;
         const val = (v) => (v && String(v).trim()) ? String(v) : na;
-        const statusLabel = (d.status || 'pending').replace(/_/g, ' ');
+
+        // Translate status to locale label
+        const _statusMap = {
+            'pending':              "{{ __('admin.pending') }}",
+            'assigned':             "{{ __('admin.assigned') }}",
+            'reviewed':             "{{ __('admin.reviewed') }}",
+            'edited':               "{{ __('admin.edited') }}",
+            'approved':             "{{ __('admin.approved') }}",
+            'rejected':             "{{ __('admin.rejected') }}",
+            'verified':             "{{ __('admin.verified') }}",
+            'submitted':            "{{ __('admin.submitted') }}",
+        };
+        const statusLabel = _statusMap[d.status] || (d.status || 'pending').replace(/_/g, ' ');
+
+        // Translate gender
+        const _genderMap = {
+            'Male':   _t.gender_male,
+            'Female': _t.gender_female,
+            'Other':  _t.gender_other,
+        };
+        const genderLabel = d.gender ? (_genderMap[d.gender] || d.gender) : '';
+
+        // Translate age string ("27 years 9 months 3 days")
+        const translateAge = (s) => s
+            ? s.replace(/\byears?\b/g, _t.age_years)
+               .replace(/\bmonths?\b/g, _t.age_months)
+               .replace(/\bdays?\b/g, _t.age_days)
+            : s;
 
         // ── Category badges — resolved labels from server (vacancy DB + candidate DB) ──
         let catBadges = '';
@@ -1595,7 +1637,7 @@
                 expItems += `<div class="app-modal-field">
                     <span class="app-modal-field-label">${_t.experience_n} ${i + 1}</span>
                     <span class="app-modal-field-value">${exp.position ? exp.position + ', ' : ''}${exp.organization}<br>
-                    <small style="color:#9ca3af;">${period}${exp.years ? ' (' + exp.years + ' yrs)' : ''}</small>
+                    <small style="color:#9ca3af;">${period}${exp.years ? ' (' + exp.years + ' ' + _t.age_yrs + ')' : ''}</small>
                     ${exp.document ? `<br><a href="${exp.document}" target="_blank" class="small">${_t.view_document}</a>` : ''}
                     </span>
                 </div>`;
@@ -1626,8 +1668,8 @@
                 <span>${_t.id_colon} ${d.id}</span>
                 <span>${val(d.email)}</span>
                 <span>${val(d.phone)}</span>
-                ${d.gender ? `<span>${d.gender}</span>` : ''}
-                ${d.age    ? `<span>${_t.age_colon} ${d.age}</span>` : ''}
+                ${genderLabel ? `<span>${genderLabel}</span>` : ''}
+                ${d.age    ? `<span>${_t.age_colon} ${translateAge(d.age)}</span>` : ''}
             </div>
             <div class="app-modal-badges">
                 <span class="app-modal-status ${d.status}">${statusLabel}</span>
@@ -1657,7 +1699,7 @@
                     <div class="app-modal-field"><span class="app-modal-field-label">${_t.nationality}</span><span class="app-modal-field-value">${val(d.nationality)}</span></div>
                     <div class="app-modal-field"><span class="app-modal-field-label">${_t.religion}</span><span class="app-modal-field-value">${val(d.religion)}</span></div>
                     <div class="app-modal-field"><span class="app-modal-field-label">${_t.community}</span><span class="app-modal-field-value">${val(d.community)}</span></div>
-                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.noc_employee}</span><span class="app-modal-field-value">${val(d.noc_employee)}</span></div>
+                    <div class="app-modal-field"><span class="app-modal-field-label">${_t.noc_employee}</span><span class="app-modal-field-value">${d.noc_employee === 'yes' || d.noc_employee === 'Yes' ? _t.yes_label : d.noc_employee === 'no' || d.noc_employee === 'No' ? _t.no_label : val(d.noc_employee)}</span></div>
                 </div>
             </div>
 
@@ -1717,13 +1759,33 @@
                         'Verified': 'bg-primary',
                         'Allow Edit': 'bg-warning text-dark',
                     };
+                    const stageMap = {
+                        'Assigned to Reviewer': '{{ __("admin.stage_assigned_reviewer") }}',
+                        'Assigned to Approver': '{{ __("admin.stage_assigned_approver") }}',
+                        'Allow Edit':           '{{ __("admin.stage_allow_edit") }}',
+                        'Approved':             '{{ __("admin.approved") }}',
+                        'Rejected':             '{{ __("admin.rejected") }}',
+                        'Pending':              '{{ __("admin.pending") }}',
+                        'Verified':             '{{ __("admin.verified") }}',
+                        'Reviewed':             '{{ __("admin.reviewed") }}',
+                        'Edited':               '{{ __("admin.edited") }}',
+                        'Submitted':            '{{ __("admin.submitted") }}',
+                        'Assigned':             '{{ __("admin.assigned") }}',
+                    };
+                    const roleMap = {
+                        'admin':     '{{ __("admin.role_admin") }}',
+                        'reviewer':  '{{ __("admin.role_reviewer") }}',
+                        'approver':  '{{ __("admin.role_approver") }}',
+                        'candidate': '{{ __("admin.role_candidate") }}',
+                    };
                     let rows = '';
                     d.status_histories.forEach((h, i) => {
                         const bc = badgeMap[h.stage_name] || 'bg-secondary';
-                        const role = h.done_by_type ? (h.done_by_type.charAt(0).toUpperCase() + h.done_by_type.slice(1)) : '';
+                        const stageName = stageMap[h.stage_name] || h.stage_name;
+                        const role = h.done_by_type ? (roleMap[h.done_by_type] || (h.done_by_type.charAt(0).toUpperCase() + h.done_by_type.slice(1))) : '';
                         rows += `<tr>
                             <td>${i + 1}</td>
-                            <td><span class="badge ${bc}">${h.stage_name}</span></td>
+                            <td><span class="badge ${bc}">${stageName}</span></td>
                             <td>${h.done_by}<br><small class="text-muted">${role}</small></td>
                             <td>${h.created_at}</td>
                             <td>${h.remarks || '—'}</td>
