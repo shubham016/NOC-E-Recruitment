@@ -132,6 +132,10 @@ class ApplicationReviewController extends Controller
             'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'edit')
                 ->count(),
+
+            'edited' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edited')
+                ->count(),
         ];
 
         return view('reviewer.applications.index', compact('applications', 'jobs', 'stats'));
@@ -173,6 +177,10 @@ class ApplicationReviewController extends Controller
 
             'edit' => ApplicationForm::where('reviewer_id', $reviewer->id)
                 ->where('status', 'edit')
+                ->count(),
+
+            'edited' => ApplicationForm::where('reviewer_id', $reviewer->id)
+                ->where('status', 'edited')
                 ->count(),
         ];
 
@@ -508,6 +516,7 @@ class ApplicationReviewController extends Controller
             'approved' => $applications->where('status', 'approved')->count(),
             'rejected' => $applications->where('status', 'rejected')->count(),
             'edit' => $applications->where('status', 'edit')->count(),
+            'edited' => $applications->where('status', 'edited')->count(),
         ];
 
         $pdf = Pdf::loadView('reviewer.applications.pdf', compact('applications', 'stats', 'reviewer'));

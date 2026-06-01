@@ -1167,7 +1167,7 @@
                     <i class="bi bi-info-circle text-info me-2"></i>Status
                 </h5>
                 <div class="alert alert-{{ $application->status === 'approved' ? 'success' : 'danger' }} mb-0">
-                    This application has been <strong>{{ $application->status }}</strong>.
+                    This application has been {{ $application->status }}.
                 </div>
             </div>
             @endif
@@ -1177,7 +1177,7 @@
 
          <div class="info-card mt-3">
     <h5>
-        <i class="bi bi-clock-history me-2 text-secondary"></i>
+        <!-- <i class="bi bi-clock-history me-2 text-secondary"></i> -->
         Application Status History
     </h5>
 

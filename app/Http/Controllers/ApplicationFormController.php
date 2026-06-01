@@ -460,7 +460,8 @@ class ApplicationFormController extends Controller
         $groupJobs = collect([$job]);
     }
 
-    $payment = $applicationform->payment;
+    // $payment = $applicationform->payment;
+    $payment = \App\Models\Payment::where('draft_id', $applicationform->id)->first();
 
     return view('candidate.applications.edit', compact('applicationform', 'job', 'groupJobs', 'candidate', 'payment'));
 }
@@ -692,8 +693,8 @@ class ApplicationFormController extends Controller
             'father_name_english' => 'required|string',
             'mother_name_english' => 'required|string',
             'grandfather_name_english' => 'required|string',
-            'father_qualification' => 'required|string',
-            'mother_qualification' => 'required|string',
+            'father_qualification' => 'string',
+            'mother_qualification' => 'string',
             'parent_occupation' => 'required|string',
             'nationality' => 'required|string',
             'blood_group' => 'required|string',

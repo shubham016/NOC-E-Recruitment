@@ -44,10 +44,10 @@ class AssignedToMeController extends Controller
         $stats = [
             'total_applications'    => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', '!=', 'draft')->count(),
             'pending_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'reviewed')->count(),
+            'edit_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'edit')->count(),
+            'edited_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'edited')->count(),
             'approved_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'approved')->count(),
             'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
-            'rejected_applications' => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status', 'rejected')->count(),
-            'edit_applications'  => \App\Models\ApplicationForm::where('approver_id', $approver->id)->where('status','edit')->count(),
         ];
 
         $applications = $query->latest()->paginate(15)->withQueryString();

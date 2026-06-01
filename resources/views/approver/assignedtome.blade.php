@@ -148,6 +148,24 @@
                 <p class="text-muted mb-0 small">Pending Applications</p>
             </div>
         </div>
+         <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['edit_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Edit Given</p>
+            </div>
+        </div>
+         <div class="col-md-3">
+            <div class="stat-card">
+                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                    
+                </div>
+                <h3 class="fw-bold mb-0">{{ $stats['edited_applications'] }}</h3>
+                <p class="text-muted mb-0 small">Edited Application</p>
+            </div>
+        </div>
         <div class="col-md-3">
             <div class="stat-card">
                 <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">

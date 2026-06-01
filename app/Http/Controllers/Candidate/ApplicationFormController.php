@@ -410,19 +410,34 @@ class ApplicationFormController extends Controller
 
     // Block editing once payment is COMPLETED or application submitted
     // Allow: status='edit' (portal-granted), or status='draft' with no completed payment
-    $applicationform->load(['experiences', 'payment']);
-    $paymentCompleted = $applicationform->payment && $applicationform->payment->status === 'completed';
+    // $applicationform->load(['experiences', 'payment']);
+    // $paymentCompleted = $applicationform->payment && $applicationform->payment->status === 'completed';
 
-    if ($applicationform->status === 'edit') {
+    // if ($applicationform->status === 'edit') {
         // Admin/portal explicitly granted edit access — allow
-    } elseif ($applicationform->status === 'draft' && !$paymentCompleted) {
-        // Draft with no completed payment — allow (pending/abandoned payments are ignored)
-    } else {
-        return redirect()->route('candidate.applications.index')
-            ->with('error', 'This application cannot be edited. It has been paid and submitted.');
-    }
+    // } elseif ($applicationform->status === 'draft' && !$paymentCompleted) {
+    //     // Draft with no completed payment — allow (pending/abandoned payments are ignored)
+    // } else {
+    //     return redirect()->route('candidate.applications.index')
+    //         ->with('error', 'This application cannot be edited. It has been paid and submitted.');
+    // }
 
-    return view('candidate.applications.edit', compact('applicationform', 'candidate'));
+    // return view('candidate.applications.edit', compact('applicationform', 'candidate'));
+
+    // ✅ Block editing after payment/submission
+            if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
+                return redirect()->route('candidate.applications.index')
+                    ->with('error', 'This application has already been submitted and cannot be edited.');
+            }
+
+            $applicationform->load('experiences');
+
+           $payment = \App\Models\Payment::where('draft_id', $applicationform->id)
+               ->where('status', 'paid')
+               ->latest()
+               ->first();
+
+            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment'));
 }
 
     /**
@@ -583,8 +598,8 @@ class ApplicationFormController extends Controller
             'father_name_english' => 'required|string',
             'mother_name_english' => 'required|string',
             'grandfather_name_english' => 'required|string',
-            'father_qualification' => 'required|string',
-            'mother_qualification' => 'required|string',
+            'father_qualification' => 'string',
+            'mother_qualification' => 'string',
             'parent_occupation' => 'required|string',
             'nationality' => 'required|string',
             'blood_group' => 'required|string',

@@ -318,12 +318,12 @@
         </div>
     </div>
 
-    @if(session('success'))
+    <!-- @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    @endif
+    @endif -->
 
     <div class="row">
         <!-- Main Content -->
@@ -953,11 +953,11 @@
                 </div>
             </div>
         @empty
-            <div class="alert alert-primary">No experience records found.</div>
+            <div class="alert alert-success">No experience records found.</div>
         @endforelse
 
     @else
-        <div class="alert alert-info-custom">
+        <div class="alert alert-success">
             No work experience declared
         </div>
     @endif
@@ -1258,7 +1258,7 @@
 
                  <div class="info-card mt-3">
     <h5>
-        <i class="bi bi-clock-history me-2 text-secondary"></i>
+        <!-- <i class="bi bi-clock-history me-2 text-secondary"></i> -->
         Application Status History
     </h5>
 

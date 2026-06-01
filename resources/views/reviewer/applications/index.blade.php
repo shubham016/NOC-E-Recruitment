@@ -135,64 +135,60 @@
 </style>
 @endpush
 
-@section('content')
-<div class="container-fluid px-4 py-4">
+ @section('content')
+        <div class="container-fluid px-4 py-4">
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="fw-bold mb-1">
-                    <i class="bi bi-clipboard-check me-2"></i>Application Reviews
-                </h3>
-                <p class="mb-0 opacity-90">Review and process candidate applications</p>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="fw-bold mb-1">
+                            <i class="bi bi-clipboard-check me-2"></i>Application Reviews
+                        </h3>
+                        <p class="mb-0 opacity-90">Review and process candidate applications</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Statistics Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                        <small class="text-muted">Total Applications</small>
-                    </div>
+            <!-- Statistics Cards -->
+        <div class="row g-3 mb-4">
+
+            <div class="col">
+                <div class="stat-card h-100 text-center p-3">
+                    <h3 class="fw-bold mb-1">{{ $stats['total'] }}</h3>
+                    <small class="text-muted">Total Applications</small>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <h3 class="fw-bold mb-0">{{ $stats['assigned'] }}</h3>
-                        <small class="text-muted">Assigned to Me</small>
-                    </div>
+
+            <div class="col">
+                <div class="stat-card h-100 text-center p-3">
+                    <h3 class="fw-bold mb-1">{{ $stats['edit'] }}</h3>
+                    <small class="text-muted">Edit Given</small>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <h3 class="fw-bold mb-0">{{ $stats['reviewed'] }}</h3>
-                        <small class="text-muted">Reviewed</small>
-                    </div>
+
+            <div class="col">
+                <div class="stat-card h-100 text-center p-3">
+                    <h3 class="fw-bold mb-1">{{ $stats['edited'] }}</h3>
+                    <small class="text-muted">Application Edited</small>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <h3 class="fw-bold mb-0">{{ $stats['rejected'] }}</h3>
-                        <small class="text-muted">Rejected</small>
-                    </div>
+
+            <div class="col">
+                <div class="stat-card h-100 text-center p-3">
+                    <h3 class="fw-bold mb-1">{{ $stats['reviewed'] }}</h3>
+                    <small class="text-muted">Reviewed</small>
                 </div>
             </div>
+
+            <div class="col">
+                <div class="stat-card h-100 text-center p-3">
+                    <h3 class="fw-bold mb-1">{{ $stats['rejected'] }}</h3>
+                    <small class="text-muted">Rejected</small>
+                </div>
+            </div>
+
         </div>
-    </div>
 
     <!-- Search and Filter -->
     <div class="card border-0 shadow-sm mb-4">
@@ -212,6 +208,7 @@
                             <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                             <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             <option value="edit" {{ request('status') == 'edit' ? 'selected' : '' }}>Edit</option>
+                            <option value="edited" {{ request('status') == 'edited' ? 'selected' : '' }}>Edited</option>
                         </select>
                     </div>
                     <div class="col-md-3">
