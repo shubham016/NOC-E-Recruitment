@@ -169,6 +169,28 @@ class ApplicationForm extends Model
     }
 
     /**
+     * Mutator: reject absolute OS paths for any file upload field (prevents temp path corruption)
+     */
+    private function filePathMutator(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => (is_string($value) && preg_match('/^[A-Za-z]:[\\\\\/]|^\\/[^\\/]/', $value)) ? null : $value,
+        );
+    }
+
+    protected function additionalDocuments(): Attribute { return $this->filePathMutator(); }
+    protected function workExperience(): Attribute      { return $this->filePathMutator(); }
+    protected function passportSizePhoto(): Attribute   { return $this->filePathMutator(); }
+    protected function citizenshipIdDocument(): Attribute { return $this->filePathMutator(); }
+    protected function signature(): Attribute           { return $this->filePathMutator(); }
+    protected function transcript(): Attribute          { return $this->filePathMutator(); }
+    protected function character(): Attribute           { return $this->filePathMutator(); }
+    protected function nocIdCard(): Attribute           { return $this->filePathMutator(); }
+    protected function ethnicCertificate(): Attribute   { return $this->filePathMutator(); }
+    protected function disabilityCertificate(): Attribute { return $this->filePathMutator(); }
+    protected function equivalent(): Attribute          { return $this->filePathMutator(); }
+
+    /**
      * Accessor: Human readable created at
      */
     protected function createdAtFormatted(): Attribute

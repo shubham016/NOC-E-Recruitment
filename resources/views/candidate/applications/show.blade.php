@@ -241,15 +241,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>NOC ID Card:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->noc_id_card)
-                                <a href="{{ asset('storage/' . $applicationform->noc_id_card) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-id-card"></i> View NOC ID
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->noc_id_card) !!}</p>
                     </div>
                 </div>
 
@@ -314,30 +306,14 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Ethnic Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->ethnic_certificate)
-                                <a href="{{ asset('storage/' . $applicationform->ethnic_certificate) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-certificate"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->ethnic_certificate) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Disability Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->disability_certificate)
-                                <a href="{{ asset('storage/' . $applicationform->disability_certificate) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->disability_certificate) !!}</p>
                     </div>
                 </div>
 
@@ -521,113 +497,61 @@
             <div class="step d-none" id="step6">
                 <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
 
+                @php
+                    function showDoc($path) {
+                        if (!$path) return '<span class="text-muted">Not uploaded</span>';
+                        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                        $url = e(asset('storage/' . $path));
+                        if (in_array($ext, ['jpg','jpeg','png','webp','gif'])) {
+                            return '<a href="'.$url.'" target="_blank"><img src="'.$url.'" class="img-thumbnail" style="max-width:120px;max-height:120px;display:block;margin-bottom:4px;"></a>';
+                        } elseif ($ext === 'pdf') {
+                            return '<embed src="'.$url.'" type="application/pdf" width="100%" height="180px" style="border:1px solid #dee2e6;border-radius:4px;display:block;margin-bottom:4px;"></embed><a href="'.$url.'" target="_blank" class="small">Open PDF</a>';
+                        }
+                        return '<a href="'.$url.'" target="_blank" class="btn btn-sm btn-outline-secondary">View File</a>';
+                    }
+                @endphp
+
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Passport Size Photo:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->passport_size_photo)
-                                <a href="{{ asset('storage/' . $applicationform->passport_size_photo) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-image"></i> View Photo
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->passport_size_photo) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Citizenship/ID Document:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->citizenship_id_document)
-                                <a href="{{ asset('storage/' . $applicationform->citizenship_id_document) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Document
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->citizenship_id_document) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Character Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->character)
-                                <a href="{{ asset('storage/' . $applicationform->character) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->character) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Equivalency Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->equivalent)
-                                <a href="{{ asset('storage/' . $applicationform->equivalent) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->equivalent) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Work Experience Certificate:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->work_experience)
-                                <a href="{{ asset('storage/' . $applicationform->work_experience) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->work_experience) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Transcript Certificate:</strong>
-                        <p class="mb-0">
-                            @if(!empty($applicationform->transcript))
-                                <a href="{{ asset('storage/' . $applicationform->transcript) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file-alt"></i> View Certificate
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->transcript) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Signature:</strong>
-                        <p class="mb-0">
-                            @if($applicationform->signature)
-                                <a href="{{ asset('storage/' . $applicationform->signature) }}" target="_blank" class="btn btn-sm bg-light">
-                                    <i class="fas fa-file"></i> View Signature
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->signature) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <strong>Additional Documents:</strong>
-                        <p class="mb-0">
-                            @if(!empty($applicationform->additional_documents))
-                                <a href="{{ asset('storage/' . $applicationform->additional_documents) }}"
-                                   target="_blank"
-                                   class="btn btn-sm bg-light mb-1">
-                                    View Document
-                                </a>
-                            @else
-                                <span class="text-muted">Not uploaded</span>
-                            @endif
-                        </p>
+                        <p class="mb-0">{!! showDoc($applicationform->additional_documents) !!}</p>
                     </div>
                 </div>
 

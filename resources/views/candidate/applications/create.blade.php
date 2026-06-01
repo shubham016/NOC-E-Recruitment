@@ -172,35 +172,46 @@
                         </p>
 
                         @if($job->category == 'internal_appraisal')
-                            {{-- Internal Appraisal: fixed, no choice needed --}}
-                            <input type="hidden" name="applied_category[]" value="internal_appraisal">
-                            <div class="border rounded p-3 bg-light d-inline-block">
-                                <span class="fw-bold">
-                                    <i class="bi bi-star-fill text-warning me-1"></i>Internal Appraisal (आन्तरिक बढुवा)
-                                </span>
-                                <br><small class="text-muted">Performance-based promotion</small>
-                                <div class="mt-1 text-primary small fw-semibold">{{ $job->advertisement_no ?? '' }}</div>
-                            </div>
                             @php
                                 $appraisalFee = ($job->deadline && now()->gt($job->deadline) && $job->double_dastur_fee && $job->double_dastur_date && now()->lte($job->double_dastur_date))
                                     ? $job->double_dastur_fee
-                                    : $job->application_fee;
+                                    : ($job->application_fee ?? 0);
+                                $appraisalAdvNo = $job->advertisement_no ?? '';
                             @endphp
-                            @if($appraisalFee)
-                            <div class="mt-3 p-3 rounded border bg-white">
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="border rounded p-3 category-option" style="min-width:180px;"
+                                     data-adv-no="{{ $appraisalAdvNo }}" data-fee="{{ $appraisalFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_internal_appraisal"
+                                               value="internal_appraisal" checked>
+                                        <label class="form-check-label fw-bold" for="cat_internal_appraisal">
+                                            Internal Appraisal (आन्तरिक बढुवा)
+                                            <br><small class="text-muted fw-normal">Performance-based promotion</small>
+                                        </label>
+                                    </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                        {{ $appraisalAdvNo }}
+                                    </div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($appraisalFee > 0)Application Fee: Rs. {{ number_format($appraisalFee, 0) }}@endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="feeSummaryBar" class="mt-3 p-3 rounded border bg-white" style="display:none;">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                     <div>
                                         <span class="fw-bold">Selected Categories:</span>
-                                        <span class="ms-2 text-secondary small">Internal Appraisal (आन्तरिक बढुवा)</span>
+                                        <span id="selectedCategoryNames" class="ms-2 text-secondary small"></span>
                                     </div>
                                     <div class="text-end">
                                         <span class="fw-bold fs-5 text-success">
-                                            Total Fee: Rs. {{ number_format($appraisalFee, 0) }}
+                                            Total Fee: Rs. <span id="totalFeeDisplay">0</span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                            @endif
                         @else
                             {{-- Loop over all sibling jobs sharing the same position+level --}}
                             <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">

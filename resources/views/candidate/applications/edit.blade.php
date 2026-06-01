@@ -247,32 +247,45 @@
                         </p>
 
                         @if($job->category == 'internal_appraisal')
-                            <input type="hidden" name="applied_category[]" value="internal_appraisal">
-                            <div class="border rounded p-3 bg-light d-inline-block">
-                                <span class="fw-bold">Internal Appraisal (आन्तरिक बढुवा)</span>
-                                <br><small class="text-muted">Performance-based promotion</small>
-                                <div class="mt-1 text-primary small fw-semibold">{{ $job->advertisement_no ?? '' }}</div>
-                            </div>
                             @php
                                 $appraisalFee = ($job->deadline && now()->gt($job->deadline) && $job->double_dastur_fee && $job->double_dastur_date && now()->lte($job->double_dastur_date))
                                     ? $job->double_dastur_fee
-                                    : $job->application_fee;
+                                    : ($job->application_fee ?? 0);
+                                $appraisalAdvNo = $job->advertisement_no ?? '';
                             @endphp
-                            @if($appraisalFee)
-                            <div class="mt-3 p-3 rounded border bg-white">
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="border rounded p-3 category-option" style="min-width:180px;"
+                                     data-adv-no="{{ $appraisalAdvNo }}" data-fee="{{ $appraisalFee }}">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input category-cb" type="checkbox"
+                                               name="applied_category[]" id="cat_internal_appraisal"
+                                               value="internal_appraisal" checked>
+                                        <label class="form-check-label fw-bold" for="cat_internal_appraisal">
+                                            Internal Appraisal (आन्तरिक बढुवा)
+                                            <br><small class="text-muted fw-normal">Performance-based promotion</small>
+                                        </label>
+                                    </div>
+                                    <div class="adv-no-display mt-2 text-primary small fw-semibold" style="display:none;">
+                                        {{ $appraisalAdvNo }}
+                                    </div>
+                                    <div class="mt-1 text-success small fw-semibold">
+                                        @if($appraisalFee > 0)Application Fee: Rs. {{ number_format($appraisalFee, 0) }}@endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="feeSummaryBar" class="mt-3 p-3 rounded border bg-white" style="display:none;">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                     <div>
                                         <span class="fw-bold">Selected Categories:</span>
-                                        <span class="ms-2 text-secondary small">Internal Appraisal (आन्तरिक बढुवा)</span>
+                                        <span id="selectedCategoryNames" class="ms-2 text-secondary small"></span>
                                     </div>
                                     <div class="text-end">
                                         <span class="fw-bold fs-5 text-success">
-                                            Total Fee: Rs. {{ number_format($appraisalFee, 0) }}
+                                            Total Fee: Rs. <span id="totalFeeDisplay">0</span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                            @endif
                         @else
                             <div class="d-flex flex-wrap gap-3" id="categoryCheckboxGroup">
                                 @foreach($groupJobs as $gjIdx => $gJob)
@@ -1426,8 +1439,8 @@
                             <tr><th>Character</th><td id="p_character"></td></tr>
                             <tr><th>Equivalent</th><td id="p_equivalent"></td></tr>
                             <tr><th>Signature</th><td id="p_signature"></td></tr>
+                            <tr><th>Work Experience Document</th><td id="p_work_experience"></td></tr>
                             <tr><th>Additional Document</th><td id="p_additional_documents"></td></tr>
-                            <!-- <tr><th>Work Experience</th><td id="p_work_experience"></td></tr> -->
                         </table>
 
                         <div class="form-check mb-4">
@@ -2065,78 +2078,59 @@ document.addEventListener('DOMContentLoaded', function () {
             const file = input.files[0];
             const fileURL = URL.createObjectURL(file);
             if (file.type.startsWith('image/')) {
-                container.innerHTML = `<img src="${fileURL}" class="img-thumbnail" style="max-width:150px; max-height:150px;"><div class="mt-1 small text-muted">${file.name}</div>`;
+                container.innerHTML = `<a href="${fileURL}" target="_blank"><img src="${fileURL}" class="img-thumbnail" style="max-width:150px;max-height:150px;display:block;margin-bottom:4px;"></a><div class="small text-muted">Click to view full size</div>`;
+            } else if (file.type === 'application/pdf') {
+                container.innerHTML = `<embed src="${fileURL}" type="application/pdf" width="100%" height="200px" style="border:1px solid #dee2e6;border-radius:4px;"></embed><div class="mt-1"><a href="${fileURL}" target="_blank" class="small">Open PDF</a></div>`;
             } else {
-                container.innerHTML = `<a href="${fileURL}" target="_blank">${file.name}</a>`;
+                container.innerHTML = `<a href="${fileURL}" target="_blank" class="btn btn-sm btn-outline-secondary">View File</a>`;
             }
         }
 
-        // Show existing files or newly uploaded files
-        @if($applicationform->passport_size_photo)
-            document.getElementById('p_photo').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->passport_size_photo)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_photo', 'passport_size_photo');
-        @endif
+        function previewFileOrStored(containerId, inputName, storedUrl) {
+            const input = document.querySelector(`input[name="${inputName}"]`);
+            if (input && input.files && input.files.length > 0) {
+                previewFile(containerId, inputName);
+            } else if (storedUrl) {
+                renderStoredFile(containerId, storedUrl);
+            } else {
+                const container = document.getElementById(containerId);
+                if (container) container.textContent = 'Not Uploaded';
+            }
+        }
 
-        @if($applicationform->citizenship_id_document)
-            document.getElementById('p_citizenship').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->citizenship_id_document)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_citizenship', 'citizenship_id_document');
-        @endif
+        window._expImgErr = function(imgEl, url) {
+            var wrap = imgEl.closest('div.mt-1');
+            if (wrap) wrap.innerHTML = '<a href="' + url + '" target="_blank" class="btn btn-sm btn-outline-secondary">View Document</a>';
+        };
 
-        @if($applicationform->transcript)
-            document.getElementById('p_transcript').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->transcript)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_transcript', 'transcript');
-        @endif
+        function renderStoredFile(containerId, url) {
+            var container = document.getElementById(containerId);
+            if (!container || !url) return;
+            // Guard: if url looks like an absolute OS path (corrupted DB value), bail out
+            if (/^[A-Za-z]:[\\\/]|^\/[^\/]/.test(url)) { container.textContent = 'Not Uploaded'; return; }
+            var ext = url.split('.').pop().toLowerCase().split('?')[0];
+            var imageExts = ['jpg','jpeg','png','webp','gif'];
+            if (imageExts.indexOf(ext) !== -1) {
+                container.innerHTML = '<a href="' + url + '" target="_blank"><img src="' + url + '" class="img-thumbnail" style="max-width:150px;max-height:150px;display:block;margin-bottom:4px;" onerror="window._expImgErr(this,\'' + url.replace(/'/g,"\\'") + '\')"></a><div class="small text-muted">Click to view full size</div>';
+            } else if (ext === 'pdf') {
+                container.innerHTML = '<embed src="' + url + '" type="application/pdf" width="100%" height="200px" style="border:1px solid #dee2e6;border-radius:4px;"></embed><div class="mt-1"><a href="' + url + '" target="_blank" class="small">Open PDF</a></div>';
+            } else {
+                container.innerHTML = '<a href="' + url + '" target="_blank" class="btn btn-sm btn-outline-secondary">View File</a>';
+            }
+        }
 
-        @if($applicationform->character)
-            document.getElementById('p_character').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->character)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_character', 'character');
-        @endif
-
-        @if($applicationform->signature)
-            document.getElementById('p_signature').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->signature)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_signature', 'signature');
-        @endif
-
-        @if($applicationform->equivalent)
-            document.getElementById('p_equivalent').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->equivalent)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_equivalent', 'equivalent');
-        @endif
-
-        @if($applicationform->work_experience)
-            document.getElementById('p_work_experience').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->work_experience)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_work_experience', 'work_experience');
-        @endif
-
-        @if($applicationform->noc_id_card)
-            document.getElementById('p_noc_id_card').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->noc_id_card)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_noc_id_card', 'noc_id_card');
-        @endif
-
-        @if($applicationform->ethnic_certificate)
-            document.getElementById('p_ethnic_certificate').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->ethnic_certificate)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_ethnic_certificate', 'ethnic_certificate');
-        @endif
-
-        @if($applicationform->disability_certificate)
-            document.getElementById('p_disability_certificate').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->disability_certificate)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_disability_certificate', 'disability_certificate');
-        @endif
-
-        @if($applicationform->additional_documents)
-            document.getElementById('p_additional_documents').innerHTML = '<a href="' + {!! json_encode(asset('storage/'.$applicationform->additional_documents)) !!} + '" target="_blank">View Uploaded File</a>';
-        @else
-            previewFile('p_additional_documents', 'additional_documents');
-        @endif
+        // Show newly selected file first; fall back to stored file if none selected
+        previewFileOrStored('p_photo',             'passport_size_photo',      {!! json_encode($applicationform->passport_size_photo    ? asset('storage/'.$applicationform->passport_size_photo)    : null) !!});
+        previewFileOrStored('p_citizenship',        'citizenship_id_document',  {!! json_encode($applicationform->citizenship_id_document ? asset('storage/'.$applicationform->citizenship_id_document) : null) !!});
+        previewFileOrStored('p_transcript',         'transcript',               {!! json_encode($applicationform->transcript              ? asset('storage/'.$applicationform->transcript)              : null) !!});
+        previewFileOrStored('p_character',          'character',                {!! json_encode($applicationform->character               ? asset('storage/'.$applicationform->character)               : null) !!});
+        previewFileOrStored('p_signature',          'signature',                {!! json_encode($applicationform->signature               ? asset('storage/'.$applicationform->signature)               : null) !!});
+        previewFileOrStored('p_equivalent',         'equivalent',               {!! json_encode($applicationform->equivalent              ? asset('storage/'.$applicationform->equivalent)              : null) !!});
+        previewFileOrStored('p_work_experience',    'work_experience',          {!! json_encode($applicationform->work_experience         ? asset('storage/'.$applicationform->work_experience)         : null) !!});
+        previewFileOrStored('p_noc_id_card',        'noc_id_card',              {!! json_encode($applicationform->noc_id_card             ? asset('storage/'.$applicationform->noc_id_card)             : null) !!});
+        previewFileOrStored('p_ethnic_certificate', 'ethnic_certificate',       {!! json_encode($applicationform->ethnic_certificate      ? asset('storage/'.$applicationform->ethnic_certificate)      : null) !!});
+        previewFileOrStored('p_disability_certificate', 'disability_certificate', {!! json_encode($applicationform->disability_certificate ? asset('storage/'.$applicationform->disability_certificate) : null) !!});
+        previewFileOrStored('p_additional_documents', 'additional_documents',   {!! json_encode($applicationform->additional_documents    ? asset('storage/'.$applicationform->additional_documents)    : null) !!});
     }
 
     // PAYMENT GATEWAYS
@@ -2737,11 +2731,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (file) {
                 const url = URL.createObjectURL(file);
-                html += file.type.startsWith('image/')
-                    ? `<div class="mt-1"><img src="${url}" style="max-width:120px;border:1px solid #ccc;padding:2px;border-radius:4px;"></div>`
-                    : `<div class="mt-1"><a href="${url}" target="_blank" class="small">${file.name}</a></div>`;
+                if (file.type.startsWith('image/')) {
+                    html += `<div class="mt-1"><a href="${url}" target="_blank"><img src="${url}" style="max-width:120px;max-height:120px;display:block;border:1px solid #ccc;padding:2px;border-radius:4px;"></a><div class="small text-muted">Click to view full size</div></div>`;
+                } else if (file.type === 'application/pdf') {
+                    html += `<div class="mt-1"><embed src="${url}" type="application/pdf" width="100%" height="180px" style="border:1px solid #dee2e6;border-radius:4px;"></embed><div class="mt-1"><a href="${url}" target="_blank" class="small">Open PDF</a></div></div>`;
+                } else {
+                    html += `<div class="mt-1"><a href="${url}" target="_blank" class="btn btn-sm btn-outline-secondary">${file.name}</a></div>`;
+                }
             } else if (existingUrl) {
-                html += `<div class="mt-1"><a href="${existingUrl}" target="_blank" class="small">📄 View uploaded document</a></div>`;
+                const ext = existingUrl.split('.').pop().toLowerCase().split('?')[0];
+                const imgExts = ['jpg','jpeg','png','webp','gif'];
+                if (imgExts.indexOf(ext) !== -1) {
+                    html += `<div class="mt-1"><a href="${existingUrl}" target="_blank"><img src="${existingUrl}" style="max-width:120px;max-height:120px;display:block;border:1px solid #ccc;padding:2px;border-radius:4px;" onerror="window._expImgErr(this,'${existingUrl}')"></a><div class="small text-muted">Click to view full size</div></div>`;
+                } else if (ext === 'pdf') {
+                    html += `<div class="mt-1"><embed src="${existingUrl}" type="application/pdf" width="100%" height="180px" style="border:1px solid #dee2e6;border-radius:4px;"></embed><div class="mt-1"><a href="${existingUrl}" target="_blank" class="small">Open PDF</a></div></div>`;
+                } else {
+                    html += `<div class="mt-1"><a href="${existingUrl}" target="_blank" class="btn btn-sm btn-outline-secondary">View Document</a></div>`;
+                }
             } else {
                 html += `<div class="text-muted" style="font-size:.8rem;">No document uploaded</div>`;
             }

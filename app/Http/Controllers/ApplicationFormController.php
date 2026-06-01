@@ -23,6 +23,7 @@ class ApplicationFormController extends Controller
         'character'                => 'character-certificates',
         'equivalent'               => 'equivalency-certificates',
         'work_experience'          => 'work-experience-documents',
+        'additional_documents'     => 'additional-documents',
     ];
 
     /**
@@ -827,6 +828,7 @@ class ApplicationFormController extends Controller
 
         // Upload new file
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        Storage::disk('public')->makeDirectory($folder);
         $path = $file->storeAs($folder, $filename, 'public');
         
         Log::info("File uploaded successfully", [

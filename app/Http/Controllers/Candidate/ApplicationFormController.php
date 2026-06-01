@@ -26,9 +26,7 @@ class ApplicationFormController extends Controller
         'equivalent'               => 'equivalency-certificates',
         'work_experience'          => 'work-experience-documents',
         'additional_documents'     => 'additional-documents',
-        'exp1_document' => 'experience-documents',
-        'exp2_document' => 'experience-documents',
-        'exp3_document' => 'experience-documents',
+        // exp{n}_document are handled exclusively by saveExperiences() — keep them out of here
     ];
 
     /**
@@ -165,6 +163,8 @@ class ApplicationFormController extends Controller
             '_method',
             ...array_keys($this->fileFields)
         ]);
+        // Defensive: force-remove all file fields in case except() left UploadedFile objects
+        foreach (array_keys($this->fileFields) as $ff) { unset($data[$ff]); }
 
         // Handle same_as_permanent checkbox
         if ($request->boolean('same_as_permanent')) {
@@ -201,17 +201,20 @@ class ApplicationFormController extends Controller
             $request->birth_date_ad
         );
 
+        // Save experience rows
+        $this->saveExperiences($request, $draft);
+
         // Handle file uploads
         $fileData = [];
         if ($this->hasAnyFiles($request)) {
             Log::info('Processing file uploads', ['files' => array_keys($request->allFiles())]);
-            
+
             $fileData = $this->handleFileUploads($request, $draft, true);
-            
+
             if (!empty($fileData)) {
                 $draft->update($fileData);
                 Log::info('Files saved successfully', [
-                    'draft_id' => $draft->id, 
+                    'draft_id' => $draft->id,
                     'saved_files' => array_keys($fileData),
                     'file_paths' => $fileData
                 ]);
@@ -219,7 +222,7 @@ class ApplicationFormController extends Controller
         }
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Draft saved successfully',
             'draft_id' => $draft->id,
             'saved_at' => now()->format('h:i A'),
@@ -437,7 +440,12 @@ class ApplicationFormController extends Controller
                ->latest()
                ->first();
 
-            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment'));
+            $job = null;
+            if ($applicationform->job_posting_id) {
+                $job = JobPosting::find($applicationform->job_posting_id);
+            }
+
+            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment', 'job'));
 }
 
     /**
@@ -465,7 +473,9 @@ class ApplicationFormController extends Controller
         );
 
         $data = $request->except(array_merge(array_keys($this->fileFields), ['status']));
-        
+        // Defensive: force-remove all file fields in case except() left UploadedFile objects
+        foreach (array_keys($this->fileFields) as $ff) { unset($data[$ff]); }
+
         $uploadedFiles = $this->handleFileUploads($request, $applicationform, false);
 
         $data = array_merge($data, $uploadedFiles);
@@ -715,10 +725,10 @@ class ApplicationFormController extends Controller
         }
 
         $file = $request->file($field);
-        
+
         // Validate file
         if (!$file->isValid()) {
-            Log::warning("Invalid file upload for field: $field");
+            Log::warning("Invalid file upload for field: $field", ['error' => $file->getError()]);
             continue;
         }
 
@@ -730,8 +740,23 @@ class ApplicationFormController extends Controller
 
         // Upload new file
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        // Ensure the target directory exists
+        Storage::disk('public')->makeDirectory($folder);
+
         $path = $file->storeAs($folder, $filename, 'public');
-        
+
+        if (!$path) {
+            Log::error("storeAs failed — file not saved", [
+                'field' => $field, 'folder' => $folder, 'filename' => $filename,
+            ]);
+            // Preserve existing value rather than storing a bad path
+            if ($model && $model->$field) {
+                $data[$field] = $model->$field;
+            }
+            continue;
+        }
+
         Log::info("File uploaded successfully", [
             'field' => $field,
             'filename' => $filename,
@@ -739,7 +764,7 @@ class ApplicationFormController extends Controller
             'folder' => $folder,
             'full_path' => storage_path('app/public/' . $path)
         ]);
-        
+
         $data[$field] = $path;
     }
 
@@ -833,7 +858,7 @@ private function saveExperiences(Request $request, ApplicationForm $application)
         $endAd    = $request->input("exp{$i}_end_date");
         $years    = $request->input("exp{$i}_years");
 
-        if (empty($org) && empty($position) && empty($startBs) && empty($years)) {
+        if (empty($org) && empty($position) && empty($startBs) && empty($endBs) && empty($years)) {
             continue;
         }
 
