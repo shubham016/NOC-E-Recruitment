@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class CandidateRegistration extends Model
+class CandidateRegistration extends Authenticatable
 {
     protected $table = 'candidate_registration';
 
@@ -24,7 +24,7 @@ class CandidateRegistration extends Model
         'phone',
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'remember_token'];
 
     public function applicationForms()
     {

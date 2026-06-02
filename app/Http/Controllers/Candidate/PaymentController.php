@@ -8,7 +8,6 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class PaymentController extends Controller
@@ -18,14 +17,7 @@ class PaymentController extends Controller
      */
     public function showEsewa($applicationId)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $application = ApplicationForm::where('id', $applicationId)
             ->where('citizenship_number', $candidate->citizenship_number)
@@ -185,14 +177,7 @@ class PaymentController extends Controller
      */
     public function success(Request $request)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $encodedData = $request->query('data');
         if (!$encodedData) {

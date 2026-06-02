@@ -471,8 +471,8 @@
                                 ->where('is_read', false)
                                 ->count();
                             $notifRoute = route('reviewer.notifications.index');
-                        } elseif (\Illuminate\Support\Facades\Session::has('candidate_id')) {
-                            $notifCount = \App\Models\Notification::where('user_id', \Illuminate\Support\Facades\Session::get('candidate_id'))
+                        } elseif (\Illuminate\Support\Facades\Auth::guard('candidate')->check()) {
+                            $notifCount = \App\Models\Notification::where('user_id', \Illuminate\Support\Facades\Auth::guard('candidate')->id())
                                 ->where('user_type', 'candidate')
                                 ->where('is_read', false)
                                 ->count();

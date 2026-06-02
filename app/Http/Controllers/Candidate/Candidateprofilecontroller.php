@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateRegistration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class CandidateProfileController extends Controller
@@ -14,13 +15,7 @@ class CandidateProfileController extends Controller
      */
     public function show()
     {
-        $candidateId = session('candidate_id');
-        $candidate   = CandidateRegistration::find($candidateId);
-
-        if (!$candidate) {
-            return redirect()->route('candidate.login')
-                ->with('error', 'Candidate not found.');
-        }
+        $candidate = Auth::guard('candidate')->user();
 
         return view('candidate.my-profile', compact('candidate'));
     }
@@ -30,13 +25,7 @@ class CandidateProfileController extends Controller
      */
     public function edit()
     {
-        $candidateId = session('candidate_id');
-        $candidate   = CandidateRegistration::find($candidateId);
-
-        if (!$candidate) {
-            return redirect()->route('candidate.login')
-                ->with('error', 'Candidate not found.');
-        }
+        $candidate = Auth::guard('candidate')->user();
 
         return view('candidate.edit-profile', compact('candidate'));
     }
@@ -51,13 +40,7 @@ class CandidateProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $candidateId = session('candidate_id');
-        $candidate   = CandidateRegistration::find($candidateId);
-
-        if (!$candidate) {
-            return redirect()->route('candidate.login')
-                ->with('error', 'Candidate not found.');
-        }
+        $candidate = Auth::guard('candidate')->user();
 
         $validated = $request->validate([
             'name' => [
@@ -98,7 +81,7 @@ class CandidateProfileController extends Controller
                 'nullable', 'string',
             ],
             'employee_id' => [
-                'required_if:noc_employee,Yes', 'string', 'max:100',
+                'nullable', 'required_if:noc_employee,Yes', 'string', 'max:100',
             ],
         ]);
 

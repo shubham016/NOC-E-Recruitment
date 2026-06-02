@@ -24,7 +24,6 @@ use App\Http\Controllers\Candidate\NotificationController;
 use App\Http\Controllers\Approver\ApproverAuthController;
 use App\Http\Controllers\Approver\AssignedToMeController;
 use App\Http\Controllers\Approver\NotificationController as ApproverNotificationController;
-use App\Http\Controllers\ApplicationFormController;
 use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\PaymentController as ShradhaPaymentController;
 use App\Http\Controllers\CandidateController;
@@ -370,25 +369,25 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [JobBrowsingController::class, 'index'])->name('index');
             Route::get('/{id}', [JobBrowsingController::class, 'show'])->name('show');
-            Route::get('/{jobId}/check-eligibility', [ApplicationFormController::class, 'checkEligibility'])->name('check-eligibility');
+            Route::get('/{jobId}/check-eligibility', [CandidateApplicationController::class, 'checkEligibility'])->name('check-eligibility');
 
             // Application Routes (nested under jobs)
             Route::prefix('{jobId}/applications')->name('applications.')->group(function () {
-                Route::get('/create', [ApplicationFormController::class, 'create'])->name('create');
-                Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
-                Route::get('/{id}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
-                Route::put('/{id}', [ApplicationFormController::class, 'update'])->name('update');
+                Route::get('/create', [CandidateApplicationController::class, 'create'])->name('create');
+                Route::post('/', [CandidateApplicationController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [CandidateApplicationController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [CandidateApplicationController::class, 'update'])->name('update');
             });
         });
 
         // My Applications Routes (Direct access for list/show/delete)
         Route::prefix('applications')->name('applications.')->group(function () {
-            Route::get('/', [ApplicationFormController::class, 'index'])->name('index');
-            Route::post('/', [ApplicationFormController::class, 'store'])->name('store');
-            Route::get('/{applicationform}', [ApplicationFormController::class, 'show'])->name('show');
-            Route::get('/{applicationform}/edit', [ApplicationFormController::class, 'edit'])->name('edit');
-            Route::put('/{applicationform}', [ApplicationFormController::class, 'update'])->name('update');
-            Route::delete('/{applicationform}', [ApplicationFormController::class, 'destroy'])->name('destroy');
+            Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
+            Route::post('/', [CandidateApplicationController::class, 'store'])->name('store');
+            Route::get('/{applicationform}', [CandidateApplicationController::class, 'show'])->name('show');
+            Route::get('/{applicationform}/edit', [CandidateApplicationController::class, 'edit'])->name('edit');
+            Route::put('/{applicationform}', [CandidateApplicationController::class, 'update'])->name('update');
+            Route::delete('/{applicationform}', [CandidateApplicationController::class, 'destroy'])->name('destroy');
         });
 
         // Payment Routes (HEAD's eSewa PaymentController)
@@ -459,7 +458,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
 
         // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {
-            Route::post('/save-draft', [ApplicationFormController::class, 'saveDraft'])->name('saveDraft');
+            Route::post('/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('saveDraft');
         });
     });
 });

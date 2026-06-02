@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Vacancy;
 use App\Models\Application;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class VacancyBrowsingController extends Controller
@@ -80,18 +80,13 @@ class VacancyBrowsingController extends Controller
         // Check which vacancies candidate has already applied for
         $appliedVacancyIds = [];
 
-        if (Session::has('candidate_logged_in')) {
-            $candidate = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->first();
-
-            if ($candidate) {
-                $appliedVacancyIds = DB::table('application_form')
-                    ->where('citizenship_number', $candidate->citizenship_number)
-                    ->whereNotNull('vacancy_id')
-                    ->pluck('vacancy_id')
-                    ->toArray();
-            }
+        $candidate = Auth::guard('candidate')->user();
+        if ($candidate) {
+            $appliedVacancyIds = DB::table('application_form')
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->whereNotNull('vacancy_id')
+                ->pluck('vacancy_id')
+                ->toArray();
         }
 
         return view('candidate.vacancies.index', compact(
@@ -125,25 +120,18 @@ class VacancyBrowsingController extends Controller
         $hasApplied = false;
         $application = null;
 
-        if (Session::has('candidate_logged_in')) {
-            $candidate = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->first();
+        $candidate = Auth::guard('candidate')->user();
+        if ($candidate) {
+            $hasApplied = DB::table('application_form')
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->where('vacancy_id', $id)
+                ->exists();
 
-            if ($candidate) {
-                // Check if candidate already applied using citizenship_number and vacancy_id
-                $hasApplied = DB::table('application_form')
+            if ($hasApplied) {
+                $application = DB::table('application_form')
                     ->where('citizenship_number', $candidate->citizenship_number)
                     ->where('vacancy_id', $id)
-                    ->exists();
-
-                // Get candidate's application if exists
-                if ($hasApplied) {
-                    $application = DB::table('application_form')
-                        ->where('citizenship_number', $candidate->citizenship_number)
-                        ->where('vacancy_id', $id)
-                        ->first();
-                }
+                    ->first();
             }
         }
 

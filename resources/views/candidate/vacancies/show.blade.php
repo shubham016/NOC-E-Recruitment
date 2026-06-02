@@ -147,14 +147,11 @@
 
                 @php
                     $hasApplied = false;
-                    if(Session::has('candidate_logged_in')) {
-                        $candidateCitizenship = DB::table('candidate_registration')
-                            ->where('id'$vacancy, Session::get('candidate_id'))
-                            ->value('citizenship_number');
-                        
+                    $showVacancyCandidate = Auth::guard('candidate')->user();
+                    if ($showVacancyCandidate && $showVacancyCandidate->citizenship_number) {
                         $hasApplied = DB::table('application_form')
-                            ->where('vacancy_id'$vacancy, $vacancy->id)
-                            ->where('citizenship_number'$vacancy, $candidateCitizenship)
+                            ->where('vacancy_id', $vacancy->id)
+                            ->where('citizenship_number', $showVacancyCandidate->citizenship_number)
                             ->exists();
                     }
                 @endphp

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobPosting;
 use App\Models\Application;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class JobBrowsingController extends Controller
@@ -18,11 +18,9 @@ class JobBrowsingController extends Controller
     {
         // Determine if the logged-in candidate is a NOC employee
         $isNocEmployee = false;
-        if (Session::has('candidate_logged_in')) {
-            $nocValue = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->value('noc_employee');
-            $isNocEmployee = strtolower((string) $nocValue) === 'yes';
+        $nocCandidate = Auth::guard('candidate')->user();
+        if ($nocCandidate) {
+            $isNocEmployee = strtolower((string) $nocCandidate->noc_employee) === 'yes';
         }
 
         $query = JobPosting::where('status', 'active')
@@ -102,18 +100,13 @@ class JobBrowsingController extends Controller
         // Check which jobs candidate has already applied for
         $appliedJobIds = [];
 
-        if (Session::has('candidate_logged_in')) {
-            $candidate = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->first();
-
-            if ($candidate) {
-                $appliedJobIds = DB::table('application_form')
-                    ->where('citizenship_number', $candidate->citizenship_number)
-                    ->whereNotNull('job_posting_id')
-                    ->pluck('job_posting_id')
-                    ->toArray();
-            }
+        $candidate = Auth::guard('candidate')->user();
+        if ($candidate) {
+            $appliedJobIds = DB::table('application_form')
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->whereNotNull('job_posting_id')
+                ->pluck('job_posting_id')
+                ->toArray();
         }
 
         return view('candidate.jobs.index', compact(
@@ -132,11 +125,9 @@ class JobBrowsingController extends Controller
     {
         // Determine NOC status for this candidate
         $isNocEmployee = false;
-        if (Session::has('candidate_logged_in')) {
-            $nocValue = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->value('noc_employee');
-            $isNocEmployee = strtolower((string) $nocValue) === 'yes';
+        $showCandidate = Auth::guard('candidate')->user();
+        if ($showCandidate) {
+            $isNocEmployee = strtolower((string) $showCandidate->noc_employee) === 'yes';
         }
 
         $jobQuery = JobPosting::where('status', 'active')
@@ -165,23 +156,18 @@ class JobBrowsingController extends Controller
         $hasApplied = false;
         $application = null;
 
-        if (Session::has('candidate_logged_in')) {
-            $candidate = DB::table('candidate_registration')
-                ->where('id', Session::get('candidate_id'))
-                ->first();
+        $candidate = Auth::guard('candidate')->user();
+        if ($candidate) {
+            $hasApplied = DB::table('application_form')
+                ->where('citizenship_number', $candidate->citizenship_number)
+                ->where('job_posting_id', $id)
+                ->exists();
 
-            if ($candidate) {
-                $hasApplied = DB::table('application_form')
+            if ($hasApplied) {
+                $application = DB::table('application_form')
                     ->where('citizenship_number', $candidate->citizenship_number)
                     ->where('job_posting_id', $id)
-                    ->exists();
-
-                if ($hasApplied) {
-                    $application = DB::table('application_form')
-                        ->where('citizenship_number', $candidate->citizenship_number)
-                        ->where('job_posting_id', $id)
-                        ->first();
-                }
+                    ->first();
             }
         }
 

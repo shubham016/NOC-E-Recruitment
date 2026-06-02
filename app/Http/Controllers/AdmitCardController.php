@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -50,16 +50,7 @@ class AdmitCardController extends Controller
     // Show Admit Card Page
     public function index()
     {
-        // Check if candidate is logged in
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-        
-        // Get candidate information
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
         
         // Get all applications with admit card available (shortlisted status)
         $applications = DB::table('application_form')
@@ -74,16 +65,7 @@ class AdmitCardController extends Controller
     // Download Admit Card as PDF
     public function download($applicationId)
     {
-        // Check if candidate is logged in
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-        
-        // Get candidate information
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
         
         // Get application details
         $application = DB::table('application_form')
@@ -139,16 +121,7 @@ class AdmitCardController extends Controller
     // View Admit Card (before download) 
     public function view($applicationId)
     {
-        // Check if candidate is logged in
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-        
-        // Get candidate information
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
         
         // Get application details
         $application = DB::table('application_form')
@@ -172,15 +145,11 @@ class AdmitCardController extends Controller
     // Check if admit card is available for application
     public function checkAvailability($applicationId)
     {
-        // Check if candidate is logged in
-        if (!Session::has('candidate_logged_in')) {
+        $candidate = Auth::guard('candidate')->user();
+
+        if (!$candidate) {
             return response()->json(['available' => false, 'message' => 'Not logged in'], 401);
         }
-        
-        // Get candidate information
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
         
         // Check if application exists and is shortlisted
         $application = DB::table('application_form')

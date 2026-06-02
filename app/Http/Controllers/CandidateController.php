@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\CandidateRegistration;
 
 class CandidateController extends Controller
 {
@@ -121,15 +122,11 @@ class CandidateController extends Controller
             ? 'email'
             : 'citizenship_number';
 
-        $candidate = DB::table('candidate_registration')
-            ->where($fieldType, $request->email)
-            ->first();
+        $candidate = CandidateRegistration::where($fieldType, $request->email)->first();
 
         if ($candidate && Hash::check($request->password, $candidate->password)) {
-            Session::put('candidate_id',         $candidate->id);
-            Session::put('candidate_name',       $candidate->name);
-            Session::put('candidate_email',      $candidate->email);
-            Session::put('candidate_logged_in',  true);
+            Auth::guard('candidate')->login($candidate);
+            $request->session()->regenerate();
 
             return redirect()->route('candidate.dashboard')
                 ->with('success', 'Welcome, ' . $candidate->name . '!');
@@ -143,13 +140,11 @@ class CandidateController extends Controller
     /**
      * Log the candidate out.
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        Session::forget('candidate_id');
-        Session::forget('candidate_name');
-        Session::forget('candidate_email');
-        Session::forget('candidate_logged_in');
-        Session::flush();
+        Auth::guard('candidate')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('candidate.login')
             ->with('success', 'Logged out successfully!');
@@ -166,14 +161,7 @@ class CandidateController extends Controller
      */
     public function dashboard()
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first.']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         // Total applications submitted by this candidate
         $applicationsCount = DB::table('application_form')
@@ -196,19 +184,7 @@ class CandidateController extends Controller
      */
     public function profile()
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first.']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
-
-        if (!$candidate) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Profile not found.']);
-        }
+        $candidate = Auth::guard('candidate')->user();
 
         return view('candidate.profile', compact('candidate'));
     }
@@ -224,11 +200,6 @@ class CandidateController extends Controller
      */
     public function showChangePasswordForm()
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first.']);
-        }
-
         return view('candidate.change-password');
     }
 
@@ -237,11 +208,6 @@ class CandidateController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first.']);
-        }
-
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
             'new_password'     => 'required|string|min:8|confirmed',
@@ -253,9 +219,7 @@ class CandidateController extends Controller
                 ->withInput();
         }
 
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         if (!Hash::check($request->current_password, $candidate->password)) {
             return redirect()->back()
@@ -263,12 +227,9 @@ class CandidateController extends Controller
                 ->withInput();
         }
 
-        DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->update([
-                'password'   => Hash::make($request->new_password),
-                'updated_at' => now(),
-            ]);
+        $candidate->update([
+            'password' => Hash::make($request->new_password),
+        ]);
 
         return redirect()->back()
             ->with('success', 'Password changed successfully!');

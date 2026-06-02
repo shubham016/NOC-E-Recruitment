@@ -5,18 +5,13 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     private function getCandidate()
     {
-        $candidateId = Session::get('candidate_id');
-        if (!$candidateId) {
-            return null;
-        }
-        return DB::table('candidate_registration')->where('id', $candidateId)->first();
+        return Auth::guard('candidate')->user();
     }
 
     /**

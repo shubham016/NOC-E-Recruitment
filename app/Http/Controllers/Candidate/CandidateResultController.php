@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Result;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class CandidateResultController extends Controller
 {
@@ -16,13 +14,7 @@ class CandidateResultController extends Controller
      */
     public function index()
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login');
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $results = Result::where('citizenship_number', $candidate->citizenship_number)
             ->whereNotNull('published_at')
@@ -37,13 +29,7 @@ class CandidateResultController extends Controller
      */
     public function show($id)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login');
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $result = Result::where('id', $id)
             ->where('citizenship_number', $candidate->citizenship_number)

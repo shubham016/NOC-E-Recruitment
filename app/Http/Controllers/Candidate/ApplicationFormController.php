@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -34,14 +34,7 @@ class ApplicationFormController extends Controller
      */
     public function index()
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $forms = ApplicationForm::with('payment')
         ->where('citizenship_number', $candidate->citizenship_number)
@@ -56,23 +49,47 @@ class ApplicationFormController extends Controller
      */
     public function create($jobId = null)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        // Get candidate data
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         $job = null;
+        $groupJobs = collect();
         if ($jobId) {
             $job = JobPosting::find($jobId);
-            
+
             if (!$job) {
                 return redirect()->route('candidate.jobs.index')
                     ->withErrors(['error' => 'Job posting not found']);
+            }
+
+            // Block fully expired vacancies
+            $fullyExpired = $job->status !== 'active'
+                || (
+                    $job->deadline && now()->gt($job->deadline)
+                    && (!$job->double_dastur_date || now()->gt($job->double_dastur_date))
+                );
+
+            if ($fullyExpired) {
+                return redirect()->route('candidate.jobs.index')
+                    ->with('error', 'The application deadline for this vacancy has fully expired.');
+            }
+
+            // Load all sibling jobs sharing the same position + level + service_group
+            $groupJobs = JobPosting::where('status', 'active')
+                ->where(function ($q) {
+                    $q->where('deadline', '>=', now())
+                      ->orWhere(function ($inner) {
+                          $inner->whereNotNull('double_dastur_date')
+                                ->where('double_dastur_date', '>=', now());
+                      });
+                })
+                ->where('position', $job->position)
+                ->where('level', $job->level)
+                ->where('service_group', $job->service_group)
+                ->orderBy('advertisement_no', 'asc')
+                ->get();
+
+            if ($groupJobs->isEmpty()) {
+                $groupJobs = collect([$job]);
             }
         }
 
@@ -95,25 +112,23 @@ class ApplicationFormController extends Controller
         }
 
         if ($draftApplication) {
-        $draftApplication->setRelation(
-            'experiences',
-            $draftApplication->experiences ?? collect()
-        );
-    }
+            $draftApplication->setRelation(
+                'experiences',
+                $draftApplication->experiences ?? collect()
+            );
+        }
 
-        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication'));
+        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication', 'groupJobs'));
     }
 
     
     public function saveDraft(Request $request)
 {
-    if (!Session::has('candidate_logged_in')) {
+    $candidate = Auth::guard('candidate')->user();
+
+    if (!$candidate) {
         return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
     }
-
-    $candidate = DB::table('candidate_registration')
-        ->where('id', Session::get('candidate_id'))
-        ->first();
 
     try {
         // Log incoming request for debugging
@@ -262,14 +277,7 @@ class ApplicationFormController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         // Validate the request
         $validated = $request->validate(
@@ -376,14 +384,7 @@ class ApplicationFormController extends Controller
      */
     public function show(ApplicationForm $applicationform)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
             return redirect()->route('candidate.applications.index')
@@ -398,36 +399,14 @@ class ApplicationFormController extends Controller
      */
     public function edit(ApplicationForm $applicationform)
 {
-    if (!Session::has('candidate_logged_in')) {
-        return redirect()->route('candidate.login');
-    }
-
-    $candidate = DB::table('candidate_registration')
-        ->where('id', Session::get('candidate_id'))
-        ->first();
+    $candidate = Auth::guard('candidate')->user();
 
     if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
         return redirect()->route('candidate.applications.index')
             ->withErrors(['error' => 'Unauthorized access']);
     }
 
-    // Block editing once payment is COMPLETED or application submitted
-    // Allow: status='edit' (portal-granted), or status='draft' with no completed payment
-    // $applicationform->load(['experiences', 'payment']);
-    // $paymentCompleted = $applicationform->payment && $applicationform->payment->status === 'completed';
-
-    // if ($applicationform->status === 'edit') {
-        // Admin/portal explicitly granted edit access — allow
-    // } elseif ($applicationform->status === 'draft' && !$paymentCompleted) {
-    //     // Draft with no completed payment — allow (pending/abandoned payments are ignored)
-    // } else {
-    //     return redirect()->route('candidate.applications.index')
-    //         ->with('error', 'This application cannot be edited. It has been paid and submitted.');
-    // }
-
-    // return view('candidate.applications.edit', compact('applicationform', 'candidate'));
-
-    // ✅ Block editing after payment/submission
+    // Block editing after payment/submission
             if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
                 return redirect()->route('candidate.applications.index')
                     ->with('error', 'This application has already been submitted and cannot be edited.');
@@ -441,11 +420,30 @@ class ApplicationFormController extends Controller
                ->first();
 
             $job = null;
+            $groupJobs = collect();
             if ($applicationform->job_posting_id) {
                 $job = JobPosting::find($applicationform->job_posting_id);
+                if ($job) {
+                    $groupJobs = JobPosting::where('status', 'active')
+                        ->where(function ($q) {
+                            $q->where('deadline', '>=', now())
+                              ->orWhere(function ($inner) {
+                                  $inner->whereNotNull('double_dastur_date')
+                                        ->where('double_dastur_date', '>=', now());
+                              });
+                        })
+                        ->where('position', $job->position)
+                        ->where('level', $job->level)
+                        ->where('service_group', $job->service_group)
+                        ->orderBy('advertisement_no', 'asc')
+                        ->get();
+                    if ($groupJobs->isEmpty()) {
+                        $groupJobs = collect([$job]);
+                    }
+                }
             }
 
-            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment', 'job'));
+            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment', 'job', 'groupJobs'));
 }
 
     /**
@@ -453,14 +451,7 @@ class ApplicationFormController extends Controller
      */
     public function update(Request $request, ApplicationForm $applicationform)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
             return redirect()->route('candidate.applications.index')
@@ -508,14 +499,7 @@ class ApplicationFormController extends Controller
      */
     public function destroy(ApplicationForm $applicationform)
     {
-        if (!Session::has('candidate_logged_in')) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['error' => 'Please login first']);
-        }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
+        $candidate = Auth::guard('candidate')->user();
 
         if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
             return redirect()->route('candidate.applications.index')
@@ -530,11 +514,21 @@ class ApplicationFormController extends Controller
     }
 
     /**
+     * Alias for checkEligibility — used by the vacancies route
+     */
+    public function checkEligibilityAjax(Request $request, $vacancyId)
+    {
+        return $this->checkEligibility($request, $vacancyId);
+    }
+
+    /**
      * Check eligibility for a job
      */
     public function checkEligibility(Request $request, $jobId)
     {
-        if (!Session::has('candidate_logged_in')) {
+        $candidate = Auth::guard('candidate')->user();
+
+        if (!$candidate) {
             return response()->json([
                 'eligible' => false,
                 'errors' => ['Please login first']
@@ -542,17 +536,13 @@ class ApplicationFormController extends Controller
         }
 
         $job = JobPosting::find($jobId);
-        
+
         if (!$job) {
             return response()->json([
                 'eligible' => false,
                 'errors' => ['Job posting not found']
             ], 404);
         }
-
-        $candidate = DB::table('candidate_registration')
-            ->where('id', Session::get('candidate_id'))
-            ->first();
 
         $existingApplication = ApplicationForm::where('job_posting_id', $job->id)
             ->where('citizenship_number', $candidate->citizenship_number)
@@ -644,6 +634,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         } else {
             $rules['citizenship_id_document'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['passport_size_photo'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
@@ -652,6 +643,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         // Conditional validation for NOC ID Card
@@ -816,74 +808,75 @@ class ApplicationFormController extends Controller
             ]);
     }
 
-    // work experiences
-private function saveExperiences(Request $request, ApplicationForm $application): void
-{
-    // ✅ Add this debug log to see what's arriving
-    Log::info('saveExperiences called', [
-        'application_id' => $application->id,
-        'has_work_exp'   => $request->input('has_work_experience'),
-        'exp1_org'       => $request->input('exp1_organization'),
-        'exp1_pos'       => $request->input('exp1_position'),
-        'exp1_years'     => $request->input('exp1_years'),
-        'all_exp_keys'   => array_filter(array_keys($request->all()), fn($k) => str_starts_with($k, 'exp')),
-    ]);
-
-    // ✅ Only delete existing records if we actually have experience data to save
-    $hasAnyData = false;
-    for ($i = 1; $i <= 10; $i++) {
-        if (!empty($request->input("exp{$i}_organization")) || 
-            !empty($request->input("exp{$i}_position")) ||
-            !empty($request->input("exp{$i}_start_date_bs")) ||
-            !empty($request->input("exp{$i}_years"))) {
-            $hasAnyData = true;
-            break;
+    private function saveExperiences(Request $request, ApplicationForm $application): void
+    {
+        $hasAnyData = false;
+        for ($i = 1; $i <= 10; $i++) {
+            if (!empty($request->input("exp{$i}_organization")) ||
+                !empty($request->input("exp{$i}_position")) ||
+                !empty($request->input("exp{$i}_start_date_bs")) ||
+                !empty($request->input("exp{$i}_years"))) {
+                $hasAnyData = true;
+                break;
+            }
         }
-    }
 
-    // ✅ Only wipe existing records if new data is coming in
-    if ($hasAnyData) {
+        if (!$hasAnyData) {
+            Log::info('saveExperiences: no data, preserving existing records', [
+                'application_id' => $application->id,
+            ]);
+            return;
+        }
+
+        // Snapshot existing documents keyed by exp_number before deleting
+        $existingDocs = \App\Models\ApplicationExperience::where('application_form_id', $application->id)
+            ->pluck('document', 'exp_number')
+            ->toArray();
+
         \App\Models\ApplicationExperience::where('application_form_id', $application->id)->delete();
-    } else {
-        Log::info('saveExperiences: no data found, preserving existing records');
-        return;
-    }
 
-    for ($i = 1; $i <= 10; $i++) {
-        $org      = $request->input("exp{$i}_organization");
-        $position = $request->input("exp{$i}_position");
-        $startBs  = $request->input("exp{$i}_start_date_bs");
-        $startAd  = $request->input("exp{$i}_start_date");
-        $endBs    = $request->input("exp{$i}_end_date_bs");
-        $endAd    = $request->input("exp{$i}_end_date");
-        $years    = $request->input("exp{$i}_years");
+        for ($i = 1; $i <= 10; $i++) {
+            $org      = $request->input("exp{$i}_organization");
+            $position = $request->input("exp{$i}_position");
+            $startBs  = $request->input("exp{$i}_start_date_bs");
+            $startAd  = $request->input("exp{$i}_start_date");
+            $endBs    = $request->input("exp{$i}_end_date_bs");
+            $endAd    = $request->input("exp{$i}_end_date");
+            $years    = $request->input("exp{$i}_years");
 
-        if (empty($org) && empty($position) && empty($startBs) && empty($endBs) && empty($years)) {
-            continue;
+            if (empty($org) && empty($position) && empty($startBs) && empty($years)) {
+                continue;
+            }
+
+            $expData = [
+                'application_form_id' => $application->id,
+                'exp_number'          => $i,
+                'organization'        => $org,
+                'position'            => $position,
+                'start_date_bs'       => $startBs,
+                'start_date'          => $startAd ?: null,
+                'end_date_bs'         => $endBs,
+                'end_date'            => $endAd ?: null,
+                'years'               => $years ?: null,
+            ];
+
+            $fileField = "exp{$i}_document";
+            if ($request->hasFile($fileField) && $request->file($fileField)->isValid()) {
+                $file     = $request->file($fileField);
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $path     = $file->storeAs('experience-documents', $filename, 'public');
+                $expData['document'] = $path;
+            } elseif (!empty($existingDocs[$i])) {
+                $expData['document'] = $existingDocs[$i];
+            }
+
+            \App\Models\ApplicationExperience::create($expData);
+
+            Log::info('Experience saved', [
+                'application_id' => $application->id,
+                'exp_number'     => $i,
+                'organization'   => $org,
+            ]);
         }
-
-        $expData = [
-            'application_form_id' => $application->id,
-            'exp_number'          => $i,
-            'organization'        => $org,
-            'position'            => $position,
-            'start_date_bs'       => $startBs,
-            'start_date'          => $startAd ?: null,
-            'end_date_bs'         => $endBs,
-            'end_date'            => $endAd ?: null,
-            'years'               => $years ?: null,
-        ];
-
-        $fileField = "exp{$i}_document";
-        if ($request->hasFile($fileField) && $request->file($fileField)->isValid()) {
-            $file     = $request->file($fileField);
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $path     = $file->storeAs('experience-documents', $filename, 'public');
-            $expData['document'] = $path;
-        }
-
-        $created = \App\Models\ApplicationExperience::create($expData);
-        Log::info('Experience saved', ['exp_number' => $i, 'id' => $created->id, 'org' => $org]);
     }
-}
 }

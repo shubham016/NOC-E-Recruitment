@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Result;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class CandidateResultController extends Controller
@@ -16,7 +16,7 @@ class CandidateResultController extends Controller
      */
     public function viewResult()
 {
-    $candidateId = Session::get('candidate_id');
+    $candidateId = Auth::guard('candidate')->id();
 
     if (!$candidateId) {
         return redirect()->route('candidate.login')
@@ -45,7 +45,7 @@ class CandidateResultController extends Controller
      */
     public function viewPublishedResult()
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return redirect()->route('candidate.login')
@@ -78,7 +78,7 @@ class CandidateResultController extends Controller
      */
     public function showResult($id)
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return redirect()->route('candidate.login')
@@ -114,7 +114,7 @@ class CandidateResultController extends Controller
      */
     public function getResultStats()
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -158,7 +158,7 @@ class CandidateResultController extends Controller
      */
     public function downloadResultPdf($id)
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return redirect()->route('candidate.login')
@@ -197,7 +197,7 @@ class CandidateResultController extends Controller
      */
     public function searchResults(Request $request)
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return redirect()->route('candidate.login')
@@ -252,7 +252,7 @@ class CandidateResultController extends Controller
      */
     public function checkNewResults()
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -282,7 +282,7 @@ class CandidateResultController extends Controller
      */
     public function getResultsByStatus()
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -310,7 +310,7 @@ class CandidateResultController extends Controller
      */
     public function exportResults()
     {
-        $candidateId = Session::get('candidate_id');
+        $candidateId = Auth::guard('candidate')->id();
 
         if (!$candidateId) {
             return redirect()->route('candidate.login')

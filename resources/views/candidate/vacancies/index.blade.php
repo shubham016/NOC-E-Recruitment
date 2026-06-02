@@ -126,14 +126,11 @@
                         @foreach($vacancies as $index => $job)
                         @php
                             $hasApplied = false;
-                            if(Session::has('candidate_logged_in')) {
-                                $candidateCitizenship = DB::table('candidate_registration')
-                                    ->where('id'$vacancy, Session::get('candidate_id'))
-                                    ->value('citizenship_number');
-                                
+                            $vacIdxCandidate = Auth::guard('candidate')->user();
+                            if ($vacIdxCandidate && $vacIdxCandidate->citizenship_number) {
                                 $hasApplied = DB::table('application_form')
-                                    ->where('vacancy_id'$vacancy, $vacancy->id)
-                                    ->where('citizenship_number'$vacancy, $candidateCitizenship)
+                                    ->where('vacancy_id', $vacancy->id)
+                                    ->where('citizenship_number', $vacIdxCandidate->citizenship_number)
                                     ->exists();
                             }
                         @endphp

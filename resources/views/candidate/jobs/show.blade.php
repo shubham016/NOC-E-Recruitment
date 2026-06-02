@@ -222,14 +222,11 @@
 
                 @php
                     $hasApplied = false;
-                    if(Session::has('candidate_logged_in')) {
-                        $candidateCitizenship = DB::table('candidate_registration')
-                            ->where('id', Session::get('candidate_id'))
-                            ->value('citizenship_number');
-                        
+                    $viewCandidate = Auth::guard('candidate')->user();
+                    if ($viewCandidate && $viewCandidate->citizenship_number) {
                         $hasApplied = DB::table('application_form')
                             ->where('job_posting_id', $job->id)
-                            ->where('citizenship_number', $candidateCitizenship)
+                            ->where('citizenship_number', $viewCandidate->citizenship_number)
                             ->exists();
                     }
                 @endphp

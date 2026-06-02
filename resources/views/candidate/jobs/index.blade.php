@@ -147,17 +147,13 @@
 
                             // Pre-fetch hasApplied for all jobs in one query
                             $appliedJobIds = [];
-                            if (Session::has('candidate_logged_in')) {
-                                $candidateCitizenship = DB::table('candidate_registration')
-                                    ->where('id', Session::get('candidate_id'))
-                                    ->value('citizenship_number');
-                                if ($candidateCitizenship) {
-                                    $appliedJobIds = DB::table('application_form')
-                                        ->whereIn('job_posting_id', collect($jobItems)->pluck('id')->toArray())
-                                        ->where('citizenship_number', $candidateCitizenship)
-                                        ->pluck('job_posting_id')
-                                        ->toArray();
-                                }
+                            $indexCandidate = Auth::guard('candidate')->user();
+                            if ($indexCandidate && $indexCandidate->citizenship_number) {
+                                $appliedJobIds = DB::table('application_form')
+                                    ->whereIn('job_posting_id', collect($jobItems)->pluck('id')->toArray())
+                                    ->where('citizenship_number', $indexCandidate->citizenship_number)
+                                    ->pluck('job_posting_id')
+                                    ->toArray();
                             }
 
                             // Pre-calculate group-level applied status (any job in group applied)

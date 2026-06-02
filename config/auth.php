@@ -70,7 +70,7 @@ return [
 
         'candidates' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Candidate::class,
+            'model' => App\Models\CandidateRegistration::class,
         ],
 
         'approvers' => [

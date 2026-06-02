@@ -84,7 +84,7 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header mb-4">
-        <h1 class="page-title">Welcome, {{ session('candidate_name') }}!</h1>
+        <h1 class="page-title">Welcome, {{ $candidate->name ?? Auth::guard('candidate')->user()->name ?? 'Candidate' }}!</h1>
     </div>
 
     <!-- Stats Cards -->

@@ -225,20 +225,20 @@
                                         && now()->lte($gJob->double_dastur_date);
                                     $gEffectiveFee = $gIsDoubleDastur ? $gJob->double_dastur_fee : ($gJob->application_fee ?? 0);
                                     $gInclusiveTypes = [];
-                                    if ($gJob->has_inclusive || $gJob->category == 'inclusive') {
+                                    if ($gJob->category == 'inclusive') {
                                         if ($gJob->inclusive_type) {
                                             $gDecoded = json_decode($gJob->inclusive_type, true);
                                             $gInclusiveTypes = is_array($gDecoded) ? $gDecoded : [$gJob->inclusive_type];
                                         }
                                     }
                                     $gInternalInclusiveTypes = [];
-                                    if ($gJob->has_internal_inclusive && is_array($gJob->internal_inclusive_types)) {
+                                    if ($gJob->category == 'internal' && $gJob->has_internal_inclusive && is_array($gJob->internal_inclusive_types)) {
                                         $gInternalInclusiveTypes = $gJob->internal_inclusive_types;
                                     }
                                 @endphp
 
                                 {{-- Open --}}
-                                @if($gJob->has_open || $gJob->category == 'open')
+                                @if($gJob->category == 'open')
                                 <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
                                     <div class="form-check mb-0">
                                         <input class="form-check-input category-cb" type="checkbox"
@@ -281,7 +281,7 @@
                                 @endforeach
 
                                 {{-- If inclusive but no types listed, show generic --}}
-                                @if(($gJob->has_inclusive || $gJob->category == 'inclusive') && count($gInclusiveTypes) === 0)
+                                @if($gJob->category == 'inclusive' && count($gInclusiveTypes) === 0)
                                     <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
@@ -297,7 +297,7 @@
                                 @endif
 
                                 {{-- Internal Open --}}
-                                @if(($gJob->has_internal || $gJob->category == 'internal') && $gJob->has_internal_open)
+                                @if($gJob->category == 'internal' && $gJob->has_internal_open)
                                     <div class="border rounded p-3 category-option" style="min-width:180px;" data-adv-no="{{ $gAdvNo }}" data-fee="{{ $gEffectiveFee }}">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input category-cb" type="checkbox"
@@ -401,11 +401,32 @@
                                 return;
                             }
 
+                            var hasOpen = checkedBoxes.some(function(cb) {
+                                return cb.value === 'open' || cb.value === 'internal_open';
+                            });
+                            var hasInclusive = checkedBoxes.some(function(cb) {
+                                return cb.value === 'inclusive' || cb.value === 'internal_inclusive';
+                            });
+
+                            // Business rule: Inclusive fee (e.g. 500) is an extra on top of Open.
+                            // If only Inclusive is selected (no Open), charge the Open base fee instead of Inclusive's fee.
+                            // If both are selected, charge both: Open fee + Inclusive fee.
+                            var feeBoxes;
+                            if (hasInclusive && !hasOpen) {
+                                // Swap Inclusive boxes out, bring in Open boxes for fee calculation
+                                var openBoxes = Array.from(document.querySelectorAll('.category-cb[value="open"], .category-cb[value="internal_open"]'));
+                                var nonInclusiveChecked = checkedBoxes.filter(function(cb) {
+                                    return cb.value !== 'inclusive' && cb.value !== 'internal_inclusive';
+                                });
+                                feeBoxes = nonInclusiveChecked.concat(openBoxes);
+                            } else {
+                                feeBoxes = checkedBoxes;
+                            }
+
                             // Sum fee once per unique advertisement number
-                            // (multiple categories from the same vacancy share one fee)
                             var seenAdvNos = {};
                             var total = 0;
-                            checkedBoxes.forEach(function(cb) {
+                            feeBoxes.forEach(function(cb) {
                                 var option = cb.closest('.category-option');
                                 if (!option) return;
                                 var advNo = option.getAttribute('data-adv-no') || cb.id;
@@ -549,7 +570,54 @@
 
                         </div>
 
+                         
+
                          <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="citizenship_number" class="form-label">Citizenship Number <span class="text-danger">*</span></label>
+                            <input type="text" name="citizenship_number" id="citizenship_number" class="form-control"
+                                value="{{ old('citizenship_number', $draftApplication->citizenship_number ?? $candidate->citizenship_number) }}" required>
+                        </div>
+
+                        {{-- Citizenship Issue Date BS — Nepali date picker --}}
+                        <div class="col-md-4">
+                            <label for="citizenship_issue_date_bs" class="form-label">Citizenship Issue Date (B.S) <span class="text-danger">*</span></label>
+                            <div class="ndp-wrapper">
+                                <input type="text" name="citizenship_issue_date_bs" id="citizenship_issue_date_bs" class="form-control"
+                                    placeholder="YYYY-MM-DD" autocomplete="off"
+                                    value="{{ old('citizenship_issue_date_bs', $draftApplication->citizenship_issue_date_bs ?? $candidate->citizenship_issue_date_bs) }}" required>
+                                <span class="ndp-icon"><i class="bi bi-calendar-check"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="citizenship_issue_district" class="form-label">Citizenship Issue District <span class="text-danger">*</span></label>
+                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_district" class="form-control"
+                                value="{{ old('citizenship_issue_district', $draftApplication->citizenship_issue_district ?? $candidate->citizenship_issue_distric) }}" required>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
+                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control"
+                                value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? $job->advertisement_no ?? '') }}" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
+                            <input type="text" name="applying_position" id="applying_position" class="form-control"
+                                value="{{ old('applying_position', $draftApplication->applying_position ?? $job->title ?? '') }}" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                            <input type="text" name="department" id="department" class="form-control"
+                                value="{{ $job ? ($job->service_group ?: $job->department) : ($draftApplication->department ?? '') }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
 
                          <div class="col-md-4">
                                 <label for="physical_disability" class="form-label">Physical Disability <span
@@ -577,27 +645,6 @@
 
                          </div>
 
-
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="advertisement_no" class="form-label">Advertisement Number <span class="text-danger">*</span></label>
-                            <input type="text" name="advertisement_no" id="advertisement_no" class="form-control"
-                                value="{{ old('advertisement_no', $draftApplication->advertisement_no ?? $job->advertisement_no ?? '') }}" readonly>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="applying_position" class="form-label">Applying Position <span class="text-danger">*</span></label>
-                            <input type="text" name="applying_position" id="applying_position" class="form-control"
-                                value="{{ old('applying_position', $draftApplication->applying_position ?? $job->title ?? '') }}" readonly>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                            <input type="text" name="department" id="department" class="form-control"
-                                value="{{ $job ? ($job->service_group ?: $job->department) : ($draftApplication->department ?? '') }}" readonly>
-                        </div>
-                    </div>
-
-
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="marital_status" class="form-label">Marital Status <span class="text-danger">*</span></label>
@@ -618,31 +665,6 @@
                             <label for="spouse_nationality" class="form-label">Spouse Nationality (If Married)</label>
                             <input type="text" name="spouse_nationality" id="spouse_nationality" class="form-control"
                                 value="{{ old('spouse_nationality', $draftApplication->spouse_nationality ?? '') }}">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="citizenship_number" class="form-label">Citizenship Number <span class="text-danger">*</span></label>
-                            <input type="text" name="citizenship_number" id="citizenship_number" class="form-control"
-                                value="{{ old('citizenship_number', $draftApplication->citizenship_number ?? $candidate->citizenship_number) }}" required>
-                        </div>
-
-                        {{-- Citizenship Issue Date BS — Nepali date picker --}}
-                        <div class="col-md-4">
-                            <label for="citizenship_issue_date_bs" class="form-label">Citizenship Issue Date (B.S) <span class="text-danger">*</span></label>
-                            <div class="ndp-wrapper">
-                                <input type="text" name="citizenship_issue_date_bs" id="citizenship_issue_date_bs" class="form-control"
-                                    placeholder="YYYY-MM-DD" autocomplete="off"
-                                    value="{{ old('citizenship_issue_date_bs', $draftApplication->citizenship_issue_date_bs ?? $candidate->citizenship_issue_date_bs) }}" required>
-                                <span class="ndp-icon"><i class="bi bi-calendar-check"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label for="citizenship_issue_district" class="form-label">Citizenship Issue District <span class="text-danger">*</span></label>
-                            <input type="text" name="citizenship_issue_district" id="citizenship_issue_district" class="form-control"
-                                value="{{ old('citizenship_issue_district', $draftApplication->citizenship_issue_district ?? $candidate->citizenship_issue_distric) }}" required>
                         </div>
                     </div>
 

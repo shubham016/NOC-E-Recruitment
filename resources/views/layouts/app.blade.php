@@ -601,9 +601,9 @@
                                 <i class="bi bi-bell"></i>
                                 @php
                                     try {
-                                        $candidateSessionId = session('candidate_id');
-                                        if ($candidateSessionId) {
-                                            $unreadCount = \App\Models\Notification::where('user_id', $candidateSessionId)
+                                        $bellCandidateId = Auth::guard('candidate')->id();
+                                        if ($bellCandidateId) {
+                                            $unreadCount = \App\Models\Notification::where('user_id', $bellCandidateId)
                                                 ->where('user_type', 'candidate')
                                                 ->where('is_read', false)
                                                 ->count();
@@ -790,25 +790,20 @@
                         $candidateInitial = 'U';
                         $candidatePhoto   = null;
 
-                        if (session()->has('candidate_id')) {
-                            $candidateId = session('candidate_id');
-
-                            $candidate = \DB::table('candidate_registration')
-                                ->where('id', $candidateId)
-                                ->first();
-
-                            if ($candidate && !empty($candidate->name)) {
-                                $candidateName    = $candidate->name;
+                        $sidebarCandidate = Auth::guard('candidate')->user();
+                        if ($sidebarCandidate) {
+                            if (!empty($sidebarCandidate->name)) {
+                                $candidateName    = $sidebarCandidate->name;
                                 $candidateInitial = strtoupper(substr($candidateName, 0, 1));
-                            } elseif ($candidate && !empty($candidate->email)) {
-                                $candidateName    = explode('@', $candidate->email)[0];
+                            } elseif (!empty($sidebarCandidate->email)) {
+                                $candidateName    = explode('@', $sidebarCandidate->email)[0];
                                 $candidateInitial = strtoupper(substr($candidateName, 0, 1));
                             }
 
                             // Get latest passport photo submitted in any application
-                            if (!empty($candidate->citizenship_number)) {
+                            if (!empty($sidebarCandidate->citizenship_number)) {
                                 $candidatePhoto = \DB::table('application_form')
-                                    ->where('citizenship_number', $candidate->citizenship_number)
+                                    ->where('citizenship_number', $sidebarCandidate->citizenship_number)
                                     ->whereNotNull('passport_size_photo')
                                     ->orderBy('created_at', 'desc')
                                     ->value('passport_size_photo');
