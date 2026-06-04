@@ -292,7 +292,7 @@ return [
     'approver_already_assigned'   => 'Approver already assigned:',
     'no_apps_filter_msg'          => 'No applications match your current filter criteria.',
     'no_apps_filter_hint'         => 'Try adjusting your filters or search terms.',
-    'no_apps_system_msg'          => 'There are no job applications in the system yet.',
+    'no_apps_system_msg'          => 'There are no vacancy applications in the system yet.',
     'no_apps_system_hint'         => 'Applications will appear here once candidates start applying.',
     'delete_job_confirm'          => 'Are you sure you want to delete this job? This action cannot be undone.',
     'delete_approver_confirm'     => 'Are you sure you want to delete this approver?',

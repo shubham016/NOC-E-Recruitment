@@ -166,7 +166,7 @@
                         <strong>Citizenship Issue Date (B.S):</strong>
                         <p class="mb-0">
                             @if($applicationform->citizenship_issue_date_bs)
-                                {{ is_string($applicationform->citizenship_issue_date_bs) ? \Carbon\Carbon::parse($applicationform->citizenship_issue_date_bs)->format('F d, Y') : $applicationform->citizenship_issue_date_bs->format('F d, Y') }}
+                                {{ $applicationform->citizenship_issue_date_bs }}
                             @else
                                 -
                             @endif
