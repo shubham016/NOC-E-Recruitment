@@ -59,4 +59,10 @@ return [
         'detail_url'     => env('CONNECTIPS_DETAIL_URL', 'https://uat.connectips.com/connectipswebws/api/creditor/gettxndetail'),
     ],
 
+    'sparrowsms' => [
+        'token'    => env('SPARROW_SMS_TOKEN'),
+        'from'     => env('SPARROW_SMS_FROM'),
+        'base_url' => env('SPARROW_SMS_BASE_URL', 'http://api.sparrowsms.com/v2'),
+    ],
+
 ];

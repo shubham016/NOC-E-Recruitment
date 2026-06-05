@@ -28,6 +28,8 @@ use App\Http\Controllers\Candidate\JobBrowsingController;
 use App\Http\Controllers\PaymentController as ShradhaPaymentController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\Approver\MyProfileController as ApproverMyProfileController;
+use App\Http\Controllers\Admin\SmsController as AdminSmsController;
+use App\Http\Controllers\Candidate\SmsController as CandidateSmsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -198,6 +200,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{id}/mark-as-read', [AdminNotificationController::class, 'markAsRead'])->name('markAsRead');
             Route::post('/mark-all-as-read', [AdminNotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
             Route::delete('/{id}', [AdminNotificationController::class, 'destroy'])->name('destroy');
+        });
+
+        /*
+        | SMS Management Routes
+        */
+        Route::prefix('sms')->name('sms.')->group(function () {
+            Route::get('/', [AdminSmsController::class, 'index'])->name('index');
+            Route::get('/create', [AdminSmsController::class, 'create'])->name('create');
+            Route::post('/', [AdminSmsController::class, 'store'])->name('store');
+            Route::get('/applicants', [AdminSmsController::class, 'getApplicants'])->name('applicants');
+            Route::get('/{smsLog}', [AdminSmsController::class, 'show'])->name('show');
         });
     });
 });
@@ -434,6 +447,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/edit', [App\Http\Controllers\Candidate\ProfileController::class, 'edit'])->name('edit');
             Route::put('/', [App\Http\Controllers\Candidate\ProfileController::class, 'update'])->name('update');
         });
+
+        // SMS History
+        Route::get('/sms', [CandidateSmsController::class, 'index'])->name('sms.index');
 
         // Settings Routes
         Route::prefix('settings')->name('settings.')->group(function () {

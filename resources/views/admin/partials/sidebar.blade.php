@@ -39,6 +39,11 @@
     <span>{{ __('admin.admit_cards') }}</span>
 </a>
 
+<a href="{{ route('admin.sms.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.sms.*') ? 'active' : '' }}">
+    <i class="bi bi-chat-dots"></i>
+    <span>SMS Management</span>
+</a>
+
 <a href="{{ route('admin.reports.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
     <i class="bi bi-bar-chart"></i>
     <span>{{ __('admin.reports') }}</span>

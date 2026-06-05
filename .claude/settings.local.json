@@ -25,7 +25,14 @@
       "Bash(rm -rf \"C:\\\\Users\\\\DELL\\\\node_modules\\\\puppeteer-core\")",
       "Bash(rm -rf \"C:\\\\Users\\\\DELL\\\\node_modules\\\\@puppeteer\")",
       "Bash(rm -rf \"C:\\\\Users\\\\DELL\\\\node_modules\\\\devtools-protocol\")",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(composer search *)",
+      "Bash(npm search *)",
+      "WebFetch(domain:docs.sparrowsms.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:web.sparrowsms.com)",
+      "WebFetch(domain:sparrowsms.com)"
     ]
   }
 }
