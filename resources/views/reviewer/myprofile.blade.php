@@ -1,4 +1,4 @@
-@extends('layouts.apps')
+@extends('layouts.reviewer')
 
 @section('title', 'Reviewer Dashboard')
 
@@ -13,15 +13,19 @@
 @section('sidebar-menu')
     <a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('reviewer.dashboard') }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('reviewer.assigned_to_me') }}</span>
     </a>
     <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item active">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('reviewer.my_profile') }}</span>
+    </a>
+    <a href="{{ route('reviewer.notifications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>{{ __('reviewer.notifications') }}</span>
     </a>
     
 @endsection
@@ -29,7 +33,7 @@
 @section('custom-styles')
 <style>
     .dashboard-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16315c 0%, #16315c 100%);
         border-radius: 10px;
         padding: 2rem;
         color: white;
@@ -95,7 +99,7 @@
 
     .quick-action-btn {
         display: block;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16315c 0%, #16315c 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -122,7 +126,7 @@
     <!-- Dashboard Header -->
     <div class="info-card">
                 <h5>
-                    <i class="text-primary me-2"></i>Reviewer Information
+                    <i class="text-primary me-2"></i>{{ __('reviewer.reviewer_information') }}
                 </h5>
                 <div class="text-center mb-4">
                     <img 
@@ -134,36 +138,36 @@
                 </div>
                 
                 <div class="info-row">
-                <span class="text-muted">Employee ID:</span>
-                <span class="fw-semibold">{{ $user->employee_id }}</span>
+                    <span class="text-muted">{{ __('reviewer.employee_id') }}:</span>
+                    <span class="fw-semibold">{{ $user->employee_id }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Name:</span>
+                    <span class="text-muted">{{ __('reviewer.name') }}:</span>
                     <span class="fw-semibold">{{ $user->name }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Phone Number:</span>
+                    <span class="text-muted">{{ __('reviewer.phone_number') }}:</span>
                     <span class="fw-semibold">{{ $user->phone}}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Email:</span>
+                    <span class="text-muted">{{ __('reviewer.email') }}:</span>
                     <span class="fw-semibold">{{ $user->email}}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Department:</span>
+                    <span class="text-muted">{{ __('reviewer.department') }}:</span>
                     <span class="fw-semibold">{{ $user->department ?? 'N/A' }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Designation:</span>
+                    <span class="text-muted">{{ __('reviewer.designation') }}:</span>
                     <span class="fw-semibold">{{ $user->designation ?? 'N/A' }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-muted">Status:</span>
+                    <span class="text-muted">{{ __('reviewer.status') }}:</span>
                     <span class="fw-semibold">{{ $user->status ?? 'N/A' }}</span>
                 </div>
                 @if($user->vacancy_id)
                 <div class="info-row">
-                    <span class="text-muted">Assigned Job:</span>
+                    <span class="text-muted">{{ __('reviewer.assigned_job') }}:</span>
                     <span class="fw-semibold">{{ $user->vacancy->title ?? 'N/A' }}</span>
                 </div>
                 @endif
@@ -172,7 +176,7 @@
             <!-- Change Password Section -->
             <div class="info-card">
                 <h5>
-                    <i class="text-primary"></i>Change Password
+                    <i class="text-primary"></i>{{ __('reviewer.change_password') }}
                 </h5>
 
                 @if(session('success'))
@@ -191,22 +195,22 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label class="form-label">Current Password</label>
+                        <label class="form-label">{{ __('reviewer.current_password') }}</label>
                         <input type="password" name="current_password" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">New Password</label>
+                        <label class="form-label">{{ __('reviewer.new_password') }}</label>
                         <input type="password" name="new_password" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Confirm New Password</label>
+                        <label class="form-label">{{ __('reviewer.confirm_new_password') }}</label>
                         <input type="password" name="new_password_confirmation" class="form-control" required>
                     </div>
 
                     <button type="submit" class="quick-action-btn">
-                        Update Password
+                        {{ __('reviewer.update_password') }}
                     </button>
                 </form>
             </div>

@@ -94,7 +94,7 @@
             width: 50px;
             height: 50px;
             border-radius: 8px;
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -251,6 +251,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center text-uppercase">{{ __('admin.sn') }}</th>
+                                <th class="text-center text-uppercase">{{ __('admin.employee_id') }}</th>
                                 <th class="text-center text-uppercase">{{ __('admin.name') }}</th>
                                 <th class="text-center text-uppercase">{{ __('admin.email') }}</th>
                                 <th class="text-center text-uppercase">{{ __('admin.phone') }}</th>
@@ -264,6 +265,7 @@
                             @forelse($reviewers as $reviewer)
                                 <tr class="reviewer-row">
                                     <td>{{ $reviewers->firstItem() + $loop->index }}</td>
+                                    <td>{{ $reviewer->employee_id }}</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             @if($reviewer->photo)

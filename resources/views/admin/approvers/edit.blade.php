@@ -17,7 +17,7 @@
 @section('content')
 <div class="container-fluid px-4 py-4">
     <!-- Page Header -->
-    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);">
+    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);">
         <div class="card-body text-white p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>

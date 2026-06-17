@@ -745,6 +745,8 @@ return [
     'candidate_profile_title'       => 'Candidate Profile',
     'edit_vacancy'                  => 'Edit Vacancy',
     'create_reviewer'               => 'Create Reviewer',
+    'add_reviewer_to_system'        => 'Add a new reviewer to the system',
+    'update_reviewer'               => 'Update Reviewer',
     'reviewer_details'              => 'Reviewer Details',
     'approver_details'              => 'Approver Details',
     'back_to_applications'          => 'Back to Applications',

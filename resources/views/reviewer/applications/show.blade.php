@@ -1,4 +1,4 @@
-@extends('layouts.apps')
+@extends('layouts.reviewer')
 
 @section('title', 'Review Application')
 
@@ -11,26 +11,30 @@
 @section('logout-route', route('reviewer.logout'))
 
 @section('sidebar-menu')
-    <a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item active">
-        <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
-    </a>
-    <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a>
+<a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item">
+    <i class="bi bi-speedometer2"></i>
+    <span>{{ __('reviewer.dashboard') }}</span>
+</a>
+<a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item active">
+    <i class="bi bi-inbox"></i>
+    <span>{{ __('reviewer.assigned_to_me') }}</span>
+</a>
+<a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
+    <i class="bi bi-person"></i>
+    <span>{{ __('reviewer.my_profile') }}</span>
+</a>
+<a href="{{ route('reviewer.notifications.index') }}" class="sidebar-menu-item">
+    <i class="bi bi-bell"></i>
+    <span>{{ __('reviewer.notifications') }}</span>
+</a>
 @endsection
 
 @section('custom-styles')
 <style>
     .review-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16315c 0%, #1a3a6b 100%);
         border-radius: 12px;
-        padding: 2rem;
+        padding: 2rem 2.5rem;
         color: white;
         margin-bottom: 2rem;
         box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
@@ -115,6 +119,7 @@
     }
 
     .status-badge {
+        background: rgba(255, 255, 255, 0.15);
         padding: 0.3rem 1rem;
         border-radius: 6px;
         font-weight: 600;
@@ -146,30 +151,6 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .document-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f8fafc;
-        border-radius: 8px;
-        font-size: 1.2rem;
-        color: #64748b;
-        overflow: hidden;
-        border: 2px solid #e5e7eb;
-    }
-
-    .document-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .document-icon i {
-        font-size: 1.5rem;
-    }
-
     .document-info {
         flex: 1;
     }
@@ -186,69 +167,6 @@
         margin: 0;
     }
 
-    .btn-view-doc {
-        padding: 0.4rem 1rem;
-        background: #ff0000;
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-    }
-
-    .btn-view-doc:hover {
-        background: #cc0000;
-        color: white;
-        transform: scale(1.05);
-    }
-
-    .payment-details {
-        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        border: 2px solid #10b981;
-        border-radius: 10px;
-        padding: 1rem;
-    }
-
-    .payment-details.pending {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-color: #f59e0b;
-    }
-
-    .payment-details .info-row {
-        padding: 0.5rem 0;
-        margin: 0;
-    }
-
-    .payment-details .info-label {
-        min-width: 120px;
-    }
-
-    .payment-details .info-value {
-        font-size: 0.95rem;
-    }
-
-    .gateway-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.20rem 0.6rem;
-        margin-left: 5px;
-        border-radius: 4px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-        transition: all 0.2s ease;
-        vertical-align: middle;
-    }
-
-    .gateway-badge:hover {
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
-    }
-
-    .gateway-badge i {
-        font-size: 0.9rem;
-        margin-right: 0.35rem;
-    }
-
     .alert-info-custom {
         background: linear-gradient(135deg, #fedbdb 0%, #febfbf 100%);
         border-left: 4px solid #fa0000;
@@ -259,17 +177,14 @@
 
     .section-divider {
         height: 2px;
-        background: linear-gradient(to right, #e5e7eb 0%, #ff0000 50%, #e5e7eb 100%);
+        background: linear-gradient(to right, #e5e7eb 0%, #1a3a6b 50%, #e5e7eb 100%);
         margin: 2rem 0;
     }
 
-    .align-items-start {
-        align-items: flex-start !important;
-        margin-bottom: 10px;
-    }
-
     @media print {
-        .review-actions, .no-print {
+
+        .review-actions,
+        .no-print {
             display: none !important;
         }
     }
@@ -278,1226 +193,849 @@
 
 @section('content')
 <div class="container-fluid px-4 py-4">
-    <!-- Page Header -->
+
+    {{-- ═══════════════════════════════════════════
+         PAGE HEADER
+    ═══════════════════════════════════════════ --}}
     <div class="review-header">
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-center">
             <div>
-                <a href="{{ route('reviewer.applications.index') }}" class="text-white text-decoration-none mb-2 d-inline-block opacity-75 no-print">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Applications
+                <a href="{{ route('reviewer.applications.index') }}"
+                    class="text-white text-decoration-none mb-2 d-inline-block opacity-75 no-print">
+                    <i class="bi bi-arrow-left me-2"></i>{{ __('reviewer.back_to_applications') }}
                 </a>
-                <h2 class="mb-1 fw-bold">Application Review</h2>
+                <h2 class="mb-0 fw-bold">{{ __('reviewer.application_review') }}</h2>
             </div>
             <div class="text-end">
-                @php
-                    $statusColors = [
-                        'pending' => 'bg-warning text-dark',
-                        'assigned' => 'bg-danger text-white',
-                        'reviewed' => 'bg-success text-white',
-                        'approved' => 'bg-success text-white',
-                        'rejected' => 'bg-danger text-white',
-                    ];
-                    $statusColor = $statusColors[$application->status] ?? 'bg-secondary text-white';
-
-                    $priorityColors = [
-                        'critical' => 'bg-dark text-white',
-                        'high' => 'bg-danger text-white',
-                        'medium' => 'bg-warning text-dark',
-                        'low' => 'bg-info text-white',
-                        'normal' => 'bg-secondary text-white',
-                    ];
-                @endphp
-                <span class="status-badge {{ $statusColor }} fs-5 d-block mb-2">
-                    <i class=" me-1"></i>{{ ucfirst($application->status) }}
+                <span class="status-badge fs-5 mb-2 d-inline-block">
+                    {{ ucfirst($application->status) }}
                 </span>
                 @if($application->manual_priority)
-                    <span class="priority-badge {{ $priorityColors[$application->manual_priority] ?? 'bg-secondary text-white' }}">
-                        <i class=" me-1"></i>Priority: {{ ucfirst($application->manual_priority) }}
-                    </span>
+                <span class="priority-badge d-block mt-1 {{ $priorityColors[$application->manual_priority] ?? 'bg-secondary text-white' }}">
+                    Priority: {{ ucfirst($application->manual_priority) }}
+                </span>
                 @endif
             </div>
         </div>
     </div>
 
-    <!-- @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif -->
-
+    {{-- ═══════════════════════════════════════════
+         MAIN CONTENT COLUMN
+    ═══════════════════════════════════════════ --}}
     <div class="row">
-        <!-- Main Content -->
         <div class="col-lg-12">
 
-            <!-- Candidate Photo & Basic Info -->
+            {{-- Candidate Photo & Basic Info --}}
             <div class="candidate-photo-section">
                 @if($application->passport_size_photo)
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                         alt="Candidate Photo"
-                         class="candidate-photo">
+                <img src="{{ Storage::url($application->passport_size_photo) }}"
+                    alt="Candidate Photo" class="candidate-photo">
                 @else
-                    <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
-                        <i class="" style="font-size: 4rem;"></i>
-                    </div>
+                <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
+                    <i class="bi bi-person" style="font-size: 4rem;"></i>
+                </div>
                 @endif
                 <div class="candidate-basic-info">
                     <h3>{{ $application->name_english ?? 'N/A' }}</h3>
                     <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>
-                    <p class="mb-1 opacity-90">Application ID: {{ $application->id }}</p>
+                    <p class="mb-1 opacity-90">{{ __('reviewer.application_id') }}: {{ $application->id }}</p>
+                    <p class="detail">{{ $application->email ?? 'N/A' }}</p>
                     <p class="detail">
-                        <i class=""></i>{{ $application->email ?? 'N/A' }}
-                    </p>
-                    <p class="detail">
-                        <i class=""></i>{{ $application->phone ?? 'N/A' }}
+                        {{ $application->phone ?? 'N/A' }}
                         @if($application->alternate_phone_number)
-                            | {{ $application->alternate_phone_number }}
+                        | {{ $application->alternate_phone_number }}
                         @endif
                     </p>
-                    <p class="detail">
-                        <i class=""></i>
-                        {{ $application->permanent_municipality }}, {{ $application->permanent_district }}
-                    </p>
+                    <p class="detail">{{ $application->permanent_municipality }}, {{ $application->permanent_district }}</p>
                     <p class="mb-0 opacity-75">
-                        <i class=""></i>
                         @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
                         Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
                     </p>
                 </div>
             </div>
-
-            <!-- Vacancy Information -->
-<div class="info-card">
-    <h5><i class=""></i>Vacancy Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Position Applied:</div>
-                <div class="info-value">
-                    <strong>{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</strong>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Advertisement No:</div>
-                <div class="info-value">{{ $application->advertisement_no ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Department:</div>
-                <div class="info-value">
-                    {{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Category:</div>
-                <div class="info-value">
-                    <span class="badge bg-info">
-                        {{ ucfirst($application->jobPosting->category ?? 'N/A') }}
-                    </span>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Application Deadline:</div>
-                <div class="info-value">
-                    @if($application->jobPosting->deadline)
-                        @php 
-                            $deadlineBS = $application->jobPosting->deadline_bs 
-                                ?: adToBS($application->jobPosting->deadline->format('Y-m-d')); 
-                        @endphp
-                        <span class="text-danger fw-bold d-block">{{ $deadlineBS }} (BS)</span>
-                        <span class="text-muted">
-                            {{ $application->jobPosting->deadline->format('F d, Y') }} (AD)
-                        </span>
-                    @else
-                        N/A
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-            
-
-            <!-- Personal Information -->
-<div class="info-card">
-    <h5><i class=""></i>Personal Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Name (English):</div>
-                <div class="info-value"><strong>{{ $application->name_english ?? 'N/A' }}</strong></div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->name_nepali ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Birth Date (AD):</div>
-                <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Birth Date (BS):</div>
-                <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Email:</div>
-                <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Age:</div>
-                <div class="info-value">{{ $application->age ?? 'N/A' }} years</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Alternate Phone Number:</div>
-                <div class="info-value">{{ $application->alternate_phone_number ?? 'N/A' }}</div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Gender:</div>
-                <div class="info-value">{{ ucfirst($application->gender ?? 'N/A') }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Marital Status:</div>
-                <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Spouse Name:</div>
-                <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Spouse Nationality (If Married):</div>
-                <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Blood Group:</div>
-                <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Nationality:</div>
-                <div class="info-value">{{ $application->nationality ?? 'Nepali' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Mother Tongue:</div>
-                <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Religion:</div>
-                <div class="info-value">
-                    {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-            <!-- Citizenship Information -->
-<div class="info-card">
-    <h5><i class=""></i>Citizenship Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Citizenship Number:</div>
-                <div class="info-value">
-                    <strong>{{ $application->citizenship_number ?? 'N/A' }}</strong>
-                </div>
-            </div>
-
-            <!-- <div class="info-row">
-                <div class="info-label">Issue Date (AD):</div>
-                <div class="info-value">
-                    {{ $application->citizenship_issue_date_ad 
-                        ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') 
-                        : 'N/A' }}
-                </div>
-            </div> -->
-
-            <div class="info-row">
-                <div class="info-label">Issue District:</div>
-                <div class="info-value">
-                    {{ $application->citizenship_issue_district ?? 'N/A' }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Issue Date (BS):</div>
-                <div class="info-value">
-                    {{ $application->citizenship_issue_date_bs ?? 'N/A' }}
-                </div>
-            </div>
-
-            
-        </div>
-    </div>
-
-     @if($application->citizenship_id_document)
-            <div class="document-item">
-                <div class="document-info">
-                    <p class="document-name">Citizenship Id</p>
-                    <p class="document-size">Citizenship Id</p>
-
-                    <img src="{{ Storage::url($application->citizenship_id_document) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-</div>
-
-            <!-- Community & Ethnic Information -->
-<div class="info-card">
-    <h5><i class=""></i>Community & Ethnic Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Religion:</div>
-                <div class="info-value">
-                    {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Community:</div>
-                <div class="info-value">
-                    {{ $application->community == 'other' ? $application->community_other : ucfirst($application->community ?? 'N/A') }}
-                </div>
-            </div>
-
-           
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            @if($application->ethnic_certificate)
-            <div class="info-row">
-                <div class="info-label">Ethnic Certificate:</div>
-                <div class="info-value">
-                    <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                        <i class=""></i> View Certificate
-                    </a>
-                </div>
-            </div>
-            @endif
-
-            <div class="info-row">
-                <div class="info-label">Mother Tongue:</div>
-                <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
-            </div>
-            
-             <div class="info-row">
-                <div class="info-label">Ethnic Group:</div>
-                <div class="info-value">
-                    {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-           <!-- Disability & Employment Information -->
-<div class="info-card">
-    <h5><i class=""></i>Employment & Disability Status</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Employment Status:</div>
-                <div class="info-value">
-                    {{ $application->employment_status == 'other' ? $application->employment_other : ucfirst($application->employment_status ?? 'N/A') }}
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Physical Disability:</div>
-                <div class="info-value">
-                    {{ $application->physical_disability == 'other' ? $application->disability_other : ucfirst($application->physical_disability ?? 'None') }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            @if($application->disability_certificate)
-            <div class="info-row">
-                <div class="info-label">Disability Certificate:</div>
-                <div class="info-value">
-                    <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                        <i class=""></i> View Certificate
-                    </a>
-                </div>
-            </div>
-            @endif
-
-            <div class="info-row">
-                <div class="info-label">NOC Employee:</div>
-                <div class="info-value">
-                    {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
-                    @if($application->noc_employee == 'yes' && $application->noc_id_card)
-                        <span class="badge bg-info ms-2">ID: {{ $application->noc_id_card }}</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-         
-
-           <!-- Family Information -->
-<div class="info-card">
-    <h5><i class=""></i>Family Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <!-- Grandfather -->
-            <div class="info-row">
-                <div class="info-label text-dark">Grandfather Name:</div>
-                <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
-            </div>
-
-            <!-- Father -->
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Father's Information</h6>
-            
-            <div class="info-row">
-                <div class="info-label">Name (English):</div>
-                <div class="info-value">{{ $application->father_name_english ?? 'N/A' }}</div>
-            </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->father_name_nepali ?? 'N/A' }}</div>
-            </div> -->
-            <div class="info-row">
-                <div class="info-label">Qualification:</div>
-                <div class="info-value">{{ $application->father_qualification ?? 'N/A' }}</div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <!-- Mother -->
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Mother's Information</h6>
-            <div class="info-row">
-                <div class="info-label">Name (English):</div>
-                <div class="info-value">{{ $application->mother_name_english ?? 'N/A' }}</div>
-            </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->mother_name_nepali ?? 'N/A' }}</div>
-            </div> -->
-            <div class="info-row">
-                <div class="info-label">Qualification:</div>
-                <div class="info-value">{{ $application->mother_qualification ?? 'N/A' }}</div>
-            </div>
-
-            <!-- Parent Occupation -->
-            <div class="info-row">
-                <div class="info-label">Parent's Occupation:</div>
-                <div class="info-value">
-                    {{ $application->parent_occupation == 'other' ? $application->parent_occupation_other : ucfirst($application->parent_occupation ?? 'N/A') }}
-                </div>
-            </div>
-
-            <!-- Spouse -->
-            @if($application->marital_status == 'married')
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Spouse Information</h6>
-            <div class="info-row">
-                <div class="info-label">Name (English):</div>
-                <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->spouse_name_nepali ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Nationality:</div>
-                <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
-            </div>
-            @endif
-        </div>
-    </div>
-</div>
-            <!-- Address Information -->
-<div class="info-card">
-    <h5><i class=""></i>Address Information</h5>
-
-    <div class="row">
-        <!-- Left Column: Permanent Address -->
-        <div class="col-md-6">
-            <h6 class="text-dark mt-2 mb-2">Permanent Address</h6>
-
-            <div class="info-row">
-                <div class="info-label">Province:</div>
-                <div class="info-value">{{ $application->permanent_province ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">District:</div>
-                <div class="info-value">{{ $application->permanent_district ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Municipality:</div>
-                <div class="info-value">{{ $application->permanent_municipality ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Ward No:</div>
-                <div class="info-value">{{ $application->permanent_ward ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Tole/Street:</div>
-                <div class="info-value">{{ $application->permanent_tole ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">House Number:</div>
-                <div class="info-value">{{ $application->permanent_house_number ?? 'N/A' }}</div>
-            </div>
-        </div>
-
-        <!-- Right Column: Mailing Address -->
-        <div class="col-md-6">
-            <h6 class="text-dark mt-3 mb-2">Mailing/Temporary Address</h6>
-
-            @if($application->same_as_permanent == 'yes')
-                <div class="alert alert-primary">
-                    <i class=""></i>Same as Permanent Address
-                </div>
-            @else
-                <div class="info-row">
-                    <div class="info-label">Province:</div>
-                    <div class="info-value">{{ $application->mailing_province ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">District:</div>
-                    <div class="info-value">{{ $application->mailing_district ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Municipality:</div>
-                    <div class="info-value">{{ $application->mailing_municipality ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Ward No:</div>
-                    <div class="info-value">{{ $application->mailing_ward ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Tole/Street:</div>
-                    <div class="info-value">{{ $application->mailing_tole ?? 'N/A' }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">House Number:</div>
-                    <div class="info-value">{{ $application->mailing_house_number ?? 'N/A' }}</div>
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
-
-
-
-           <!-- Educational Background -->
-<div class="info-card">
-    <h5><i class=""></i>Educational Background</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Education Level:</div>
-                <div class="info-value">
-                    <strong>{{ $application->education_level ?? 'N/A' }}</strong>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Field of Study:</div>
-                <div class="info-value">{{ $application->field_of_study ?? 'N/A' }}</div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Institution:</div>
-                <div class="info-value">{{ $application->institution_name ?? 'N/A' }}</div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Graduation Year:</div>
-                <div class="info-value">{{ $application->graduation_year ?? 'N/A' }}</div>
-            </div>
-        </div>
-    </div>
-
-    @if($application->transcript)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Educational Certificates</p>
-                    <p class="document-size">Academic transcripts and degrees</p>
-
-                    <img src="{{ Storage::url($application->transcript) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-
-            @if($application->character)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Character Certificate</p>
-                    <p class="document-size">character Certificate</p>
-
-                    <img src="{{ Storage::url($application->character) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->equivalency_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Equivalency Certificate</p>
-                    <p class="document-size">Equivalency Certificate</p>
-
-                    <img src="{{ Storage::url($application->equivalency_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-</div>
-
-             <!-- Work Experience -->
-<div class="info-card">
-    <h5>Work Experience</h5>
-
-    @if(strtolower($application->has_work_experience ?? '') == 'yes')
-
-        <div class="mb-3">
-            <strong>Has Work Experience:</strong>
-            <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
-        </div>
-
-        @forelse($application->experiences as $exp)
-            <div class="border rounded p-3 mb-3">
-                <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
+            {{-- /Candidate Photo --}}
+
+            {{-- ── Vacancy Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.vacancy_information') }}</h5>
                 <div class="row">
                     <div class="col-md-6">
-                        <strong>Organization:</strong>
-                        <p>{{ $exp->organization ?? '-' }}</p>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.position_applied') }}:</div>
+                            <div class="info-value">{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.advertisement_no') }}:</div>
+                            <div class="info-value">{{ $application->advertisement_no ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.department') }}:</div>
+                            <div class="info-value">{{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}</div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <strong>Position:</strong>
-                        <p>{{ $exp->position ?? '-' }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Start Date (B.S):</strong>
-                        <p>{{ $exp->start_date_bs ?? '-' }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>End Date (B.S):</strong>
-                        <p>{{ $exp->end_date_bs ?? '-' }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Years:</strong>
-                        <p>{{ $exp->years ?? '-' }}</p>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.category') }}:</div>
+                            <div class="info-value">
+                                @if(!empty($application->applied_category))
+                                {{ implode(', ', $application->applied_category) }}
+                                @else
+                                N/A
+                                @endif
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.application_deadline') }}:</div>
+                            <div class="info-value">
+                                @if($application->jobPosting->deadline)
+                                @php
+                                $deadlineBS = $application->jobPosting->deadline_bs
+                                ?: adToBS($application->jobPosting->deadline->format('Y-m-d'));
+                                @endphp
+                                <span class="d-block">{{ $deadlineBS }} (BS)</span>
+                                <span class="text-muted d-block">{{ $application->jobPosting->deadline->format('F d, Y') }} (AD)</span>
+                                @else
+                                N/A
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <strong>Document:</strong>
-                    @if($exp->document)
+            </div>
+            {{-- /Vacancy Information --}}
+
+            {{-- ── Personal Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.personal_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.name_english') }}:</div>
+                            <div class="info-value">{{ $application->name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.name_nepali') }}:</div>
+                            <div class="info-value">{{ $application->name_nepali ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.birth_date_ad') }}:</div>
+                            <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.birth_date_bs') }}:</div>
+                            <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.email') }}:</div>
+                            <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.age') }}:</div>
+                            <div class="info-value">{{ $application->age ?? 'N/A' }} years</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.alternate_phone_number') }}:</div>
+                            <div class="info-value">{{ $application->alternate_phone_number ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.gender') }}:</div>
+                            <div class="info-value">{{ ucfirst($application->gender ?? 'N/A') }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.marital_status') }}:</div>
+                            <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.spouse_name') }}:</div>
+                            <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.spouse_nationality') }}:</div>
+                            <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.blood_group') }}:</div>
+                            <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.nationality') }}:</div>
+                            <div class="info-value">{{ $application->nationality ?? 'Nepali' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.mother_tongue') }}:</div>
+                            <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.religion') }}:</div>
+                            <div class="info-value">
+                                {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- /Personal Information --}}
+
+            {{-- ── Citizenship Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.citizenship_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.citizenship_number') }}:</div>
+                            <div class="info-value">{{ $application->citizenship_number ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.citizenship_issue_district') }}:</div>
+                            <div class="info-value">{{ $application->citizenship_issue_district ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.citizenship_issue_date_bs') }}:</div>
+                            <div class="info-value">{{ $application->citizenship_issue_date_bs ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                </div>
+                @if($application->citizenship_id_document)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.citizenship_id') }}</p>
+                        <img src="{{ Storage::url($application->citizenship_id_document) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
+                </div>
+                @endif
+            </div>
+            {{-- /Citizenship Information --}}
+
+            {{-- ── Community & Ethnic Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.community_ethnic_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.religion') }}:</div>
+                            <div class="info-value">
+                                {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.community') }}:</div>
+                            <div class="info-value">
+                                {{ $application->community == 'other' ? $application->community_other : ucfirst($application->community ?? 'N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @if($application->ethnic_certificate)
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.ethnic_certificate') }}:</div>
+                            <div class="info-value">
+                                <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
+                                    {{ __('reviewer.view_certificate') }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.mother_tongue') }}:</div>
+                            <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.ethnic_group') }}:</div>
+                            <div class="info-value">
+                                {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- /Community & Ethnic --}}
+
+            {{-- ── Disability & Employment ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.employment_disability_status') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.employment_status') }}:</div>
+                            <div class="info-value">
+                                {{ $application->employment_status == 'other' ? $application->employment_other : ucfirst($application->employment_status ?? 'N/A') }}
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.physical_disability') }}:</div>
+                            <div class="info-value">
+                                {{ $application->physical_disability == 'other' ? $application->disability_other : ucfirst($application->physical_disability ?? 'None') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @if($application->disability_certificate)
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.disability_certificate') }}:</div>
+                            <div class="info-value">
+                                <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
+                                    {{ __('reviewer.view_certificate') }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.noc_employee') }}:</div>
+                            <div class="info-value">
+                                {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
+                                @if($application->noc_employee == 'yes' && $application->noc_id_card)
+                                <span class="badge bg-info ms-2">ID: {{ $application->noc_id_card }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- /Disability & Employment --}}
+
+            {{-- ── Family Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.family_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label text-dark">{{ __('reviewer.grandfather_name') }}:</div>
+                            <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <h6 class="text-dark mt-3 mb-2">{{ __('reviewer.father_information') }}</h6>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.father_name_english') }}:</div>
+                            <div class="info-value">{{ $application->father_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.father_name_nepali') }}:</div>
+                            <div class="info-value">{{ $application->father_name_nepali ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.father_qualification') }}:</div>
+                            <div class="info-value">{{ $application->father_qualification ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-dark mt-3 mb-2">{{ __('reviewer.mother_information') }}</h6>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.mother_name_english') }}:</div>
+                            <div class="info-value">{{ $application->mother_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.mother_name_nepali') }}:</div>
+                            <div class="info-value">{{ $application->mother_name_nepali ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.mother_qualification') }}:</div>
+                            <div class="info-value">{{ $application->mother_qualification ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.parent_occupation') }}:</div>
+                            <div class="info-value">
+                                {{ $application->parent_occupation == 'other' ? $application->parent_occupation_other : ucfirst($application->parent_occupation ?? 'N/A') }}
+                            </div>
+                        </div>
+                        @if($application->marital_status == 'married')
+                        <h6 class="text-dark mt-3 mb-2">{{ __('reviewer.spouse_information') }}</h6>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.spouse_name_english') }}:</div>
+                            <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.spouse_name_nepali') }}:</div>
+                            <div class="info-value">{{ $application->spouse_name_nepali ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.spouse_nationality') }}:</div>
+                            <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            {{-- /Family Information --}}
+
+            {{-- ── Address Information ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.address_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-dark mt-2 mb-2">{{ __('reviewer.permanent_address') }}</h6>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.province') }}:</div>
+                            <div class="info-value">{{ $application->permanent_province ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.district') }}:</div>
+                            <div class="info-value">{{ $application->permanent_district ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.municipality') }}:</div>
+                            <div class="info-value">{{ $application->permanent_municipality ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.ward_no') }}:</div>
+                            <div class="info-value">{{ $application->permanent_ward ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.tole_street') }}:</div>
+                            <div class="info-value">{{ $application->permanent_tole ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.house_number') }}:</div>
+                            <div class="info-value">{{ $application->permanent_house_number ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-dark mt-3 mb-2">{{ __('reviewer.mailing_temporary_address') }}</h6>
+                        @if($application->same_as_permanent == 'yes')
+                        <div class="alert alert-primary">{{ __('reviewer.same_as_permanent') }}</div>
+                        @else
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.province') }}:</div>
+                            <div class="info-value">{{ $application->mailing_province ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.district') }}:</div>
+                            <div class="info-value">{{ $application->mailing_district ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.municipality') }}:</div>
+                            <div class="info-value">{{ $application->mailing_municipality ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.ward_no') }}:</div>
+                            <div class="info-value">{{ $application->mailing_ward ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.tole_street') }}:</div>
+                            <div class="info-value">{{ $application->mailing_tole ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.house_number') }}:</div>
+                            <div class="info-value">{{ $application->mailing_house_number ?? 'N/A' }}</div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            {{-- /Address Information --}}
+
+            {{-- ── Educational Background ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.educational_background') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.education_level') }}:</div>
+                            <div class="info-value">{{ $application->education_level ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.field_of_study') }}:</div>
+                            <div class="info-value">{{ $application->field_of_study ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.institution') }}:</div>
+                            <div class="info-value">{{ $application->institution_name ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.graduation_year') }}:</div>
+                            <div class="info-value">{{ $application->graduation_year ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                </div>
+                @if($application->transcript)
+                <div class="document-item mt-3">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.educational_certificates') }}</p>
+                        <p class="document-size">{{ __('reviewer.academic_transcripts') }}</p>
+                        <img src="{{ Storage::url($application->transcript) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
+                </div>
+                @endif
+                @if($application->character)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.character_certificate') }}</p>
+                        <img src="{{ Storage::url($application->character) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
+                </div>
+                @endif
+                @if($application->equivalency_certificate)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.equivalency_certificate') }}</p>
+                        <p class="document-size">{{ __('reviewer.equivalency_certificate_description') }}</p>
+                        <img src="{{ Storage::url($application->equivalency_certificate) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
+                </div>
+                @endif
+            </div>
+            {{-- /Educational Background --}}
+
+            {{-- ── Work Experience ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.work_experience') }}</h5>
+                @if(strtolower($application->has_work_experience ?? '') == 'yes')
+                <div class="mb-3">
+                    <strong>{{ __('reviewer.has_work_experience') }}:</strong>
+                    <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
+                </div>
+                @forelse($application->experiences as $exp)
+                <div class="border rounded p-3 mb-3">
+                    <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>{{ __('reviewer.organization') }}:</strong>
+                            <p>{{ $exp->organization ?? '-' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{{ __('reviewer.position') }}:</strong>
+                            <p>{{ $exp->position ?? '-' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{{ __('reviewer.start_date') }} (B.S):</strong>
+                            <p>{{ $exp->start_date_bs ?? '-' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{{ __('reviewer.end_date') }} (B.S):</strong>
+                            <p>{{ $exp->end_date_bs ?? '-' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{{ __('reviewer.years') }}:</strong>
+                            <p>{{ $exp->years ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>{{ __('reviewer.document') }}:</strong>
+                        @if($exp->document)
                         @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
                         @if(in_array($ext, ['jpg','jpeg','png','webp']))
-                            <img src="{{ Storage::url($exp->document) }}"
-                                style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                        <img src="{{ Storage::url($exp->document) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
                         @else
-                            <a href="{{ Storage::url($exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
+                        <a href="{{ Storage::url($exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
                         @endif
-                    @else
-                        <div class="alert alert-primary">No document uploaded</div>
-                    @endif
+                        @else
+                        <div class="alert alert-primary mt-2">{{ __('reviewer.no_document_uploaded') }}</div>
+                        @endif
+                    </div>
                 </div>
+                @empty
+                <div class="alert alert-success">{{ __('reviewer.no_experience_records') }}</div>
+                @endforelse
+                @else
+                <div class="alert alert-primary">{{ __('reviewer.no_work_experience') }}</div>
+                @endif
             </div>
-        @empty
-            <div class="alert alert-success">No experience records found.</div>
-        @endforelse
+            {{-- /Work Experience --}}
 
-    @else
-        <div class="alert alert-success">
-            No work experience declared
-        </div>
-    @endif
-</div>
-
-            <!-- Cover Letter -->
-            <!-- @if($application->cover_letter)
+            {{-- ── Uploaded Documents ── --}}
             <div class="info-card">
-                <h5><i class=""></i>Cover Letter</h5>
-                <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
+                <h5>{{ __('reviewer.uploaded_documents') }}</h5>
+                @if($application->passport_size_photo)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.passport_size_photo') }}</p>
+                        <img src="{{ Storage::url($application->passport_size_photo) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
                 </div>
-            </div>
-            @endif -->
-
-           
-
-            <!-- Uploaded Documents -->
-            <div class="info-card">
-            <h5><i class=""></i>Uploaded Documents</h5>
-
-
-             @if($application->passport_size_photo)
-            <div class="document-item">
-                <div class="document-info">
-                    <p class="document-name">Passport Size Photo</p>
-                    <p class="document-size">Passport Size Photo</p>
-
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                @endif
+                @if($application->signature)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.signature') }}</p>
+                        <img src="{{ Storage::url($application->signature) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
                 </div>
-            </div>
-            @endif
-
-            
-
-            
-
-            @if($application->signature)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Signature</p>
-                    <p class="document-size">Signature</p>
-
-                    <img src="{{ Storage::url($application->signature) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                @endif
+                @if($application->ethnic_certificate)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.ethnic_certificate') }}</p>
+                        <img src="{{ Storage::url($application->ethnic_certificate) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
                 </div>
-            </div>
-            @endif
-
-            @if($application->ethnic_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Ethnic Certificate</p>
-                    <p class="document-size">Ethnic Certificate</p>
-
-                    <img src="{{ Storage::url($application->ethnic_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                @endif
+                @if($application->disability_certificate)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.disability_certificate') }}</p>
+                        <img src="{{ Storage::url($application->disability_certificate) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
                 </div>
-            </div>
-            @endif
-
-             @if($application->disability_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Disability Certificate</p>
-                    <p class="document-size">Disability Certificate</p>
-
-                    <img src="{{ Storage::url($application->disability_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                @endif
+                @if($application->noc_id_card)
+                <div class="document-item">
+                    <div class="document-info">
+                        <p class="document-name">{{ __('reviewer.noc_id_card') }}</p>
+                        <img src="{{ Storage::url($application->noc_id_card) }}"
+                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                    </div>
                 </div>
+                @endif
+                @if(
+                !$application->passport_size_photo && !$application->resume &&
+                !$application->work_experience && !$application->citizenship_certificate &&
+                !$application->citizenship_id_document && !$application->educational_certificates &&
+                !$application->transcript && !$application->experience_certificates &&
+                !$application->character_certificate && !$application->character &&
+                !$application->equivalency_certificate && !$application->equivalent &&
+                !$application->ethnic_certificate && !$application->disability_certificate &&
+                !$application->noc_id_card && !$application->cover_letter_file &&
+                !$application->signature && !$application->other_documents
+                )
+                <div class="alert alert-warning">{{ __('reviewer.no_documents_uploaded') }}</div>
+                @endif
             </div>
-            @endif
+            {{-- /Uploaded Documents --}}
 
-            @if($application->noc_id_card)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">NOC ID Card</p>
-                    <p class="document-size">NOC ID Card</p>
-
-                    <img src="{{ Storage::url($application->noc_id_card) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-        
-
-
-
-
-            <!-- @if($application->cover_letter_file)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Cover Letter (File)</p>
-                    <p class="document-size">Uploaded cover letter document</p>
-
-                    <iframe src="{{ Storage::url($application->cover_letter_file) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-          
-
-
-            <!-- @if($application->other_documents)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Other Documents</p>
-                    <p class="document-size">Additional supporting documents</p>
-
-                    <iframe src="{{ Storage::url($application->other_documents) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-            @if(
-                !$application->passport_size_photo &&
-                !$application->resume &&
-                !$application->work_experience &&
-                !$application->citizenship_certificate &&
-                !$application->citizenship_id_document &&
-                !$application->educational_certificates &&
-                !$application->transcript &&
-                !$application->experience_certificates &&
-                !$application->character_certificate &&
-                !$application->character &&
-                !$application->equivalency_certificate &&
-                !$application->equivalent &&
-                !$application->ethnic_certificate &&
-                !$application->disability_certificate &&
-                !$application->noc_id_card &&
-                !$application->cover_letter_file &&
-                !$application->signature &&
-                !$application->other_documents
-            )
-            <div class="alert alert-warning">
-                No documents uploaded
-            </div>
-            @endif
-        </div>
-
-            <!-- Admin Notes -->
+            {{-- ── Admin Notes ── --}}
             @if($application->admin_notes)
             <div class="info-card">
-                <h5>Admin Notes</h5>
+                <h5>{{ __('reviewer.admin_notes') }}</h5>
                 <div class="alert alert-info-custom">
-                    <p class="mb-0"><strong>Admin's Note:</strong></p>
+                    <p class="mb-0"><strong>{{ __('reviewer.admins_note') }}:</strong></p>
                     <p class="mb-0 mt-2">{{ $application->admin_notes }}</p>
                 </div>
             </div>
             @endif
 
-            <!-- Priority Note -->
+            {{-- ── Priority Note ── --}}
             @if($application->priority_note)
             <div class="info-card">
-                <h5>Priority Note</h5>
+                <h5>{{ __('reviewer.priority_note') }}</h5>
                 <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
                     <p class="mb-0">{{ $application->priority_note }}</p>
                 </div>
             </div>
             @endif
 
-        </div>
-<!-- Payment -->
-@php
-    $payment = \App\Models\Payment::where('draft_id', $application->id)->first();
-@endphp
-
-@if($payment)
-<div class="info-card mt-3">
-    <h5>Payment Information</h5>
-
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Amount:</div>
-                <div class="info-value">
-                    <strong>NPR {{ number_format($payment->amount, 2) }}</strong>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Status:</div>
-                <div class="info-value">
-                    {{ ucfirst($payment->status) }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="info-row">
-                <div class="info-label">Payment Gateway:</div>
-                <div class="info-value">
-                    {{ ucfirst($payment->gateway) }}
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">Transaction ID:</div>
-                <div class="info-value">
-                    {{ ucfirst($payment->transaction_id) }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
-      <div class="container-fluid">
-    <div class="row">
-
-
-        
-
-        <!-- ========================= -->
-        <!-- RIGHT SIDE: SIDEBAR -->
-        <!-- ========================= -->
-        <div class="col-lg-12">
-            <div class="review-actions">
-
-                <!-- Sidebar - Review Actions & Payment -->
-                <div class="info-card no-print">
-                    <h5>Review Action</h5>
-
-                    <form action="{{ route('reviewer.applications.updateStatus', $application->id) }}" method="POST" id="reviewForm">
-                        @csrf
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Action <span class="text-danger">*</span></label>
-                            <select name="status" class="form-select" id="reviewStatus" required>
-                                <option value="">Select Action...</option>
-                                <option value="reviewed" {{ $application->status == 'reviewed' ? 'selected' : '' }}>Mark as Reviewed</option>
-                                <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
-                                <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>Reject Application</option>
-                            </select>
+            {{-- ── Payment ── --}}
+            @php $payment = \App\Models\Payment::where('draft_id', $application->id)->first(); @endphp
+            @if($payment)
+            <div class="info-card">
+                <h5>{{ __('reviewer.payment_information') }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.amount') }}:</div>
+                            <div class="info-value">NPR {{ number_format($payment->amount, 2) }}</div>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">
-                                <span id="notesLabel">Comments/Notes</span> <span class="text-danger">*</span>
-                            </label>
-                            <textarea name="reviewer_notes" class="form-control" rows="6" id="reviewerNotes" placeholder="Add your comments..." required>{{ $application->reviewer_notes }}</textarea>
-                            <small class="text-muted" id="notesHelp">
-                                Please provide detailed feedback.
-                            </small>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.status') }}:</div>
+                            <div class="info-value">{{ ucfirst($payment->status) }}</div>
                         </div>
-
-                        
-
-                        <div id="smsPreview" style="display: none;" class="mb-3">
-                            <div class="alert alert-warning" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b;">
-                                <strong>SMS Notification Preview:</strong>
-                                <p class="mt-2 mb-0 small" style="font-family: monospace; background: white; padding: 0.75rem; border-radius: 6px;">
-                                    <strong>Nepal Oil Corporation</strong><br>
-                                    Your application (ID: {{ $application->id }}) has been rejected.<br><br>
-                                    <strong>Reason:</strong> <span id="smsReasonPreview">[Your rejection reason will appear here]</span><br><br>
-                                    Please review and reapply if eligible.<br>
-                                    - NOC E-Recruitment
-                                </p>
-                                <small class="text-muted mt-2 d-block">This SMS will be sent to: <strong>{{ $application->phone ?? 'N/A' }}</strong></small>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-lg" style="background: #64748b; color: white;">
-                                Submit Action
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
-                                Print Application
-                            </button>
-                            <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-secondary">
-                                Back to List
-                            </a>
-                        </div>
-                    </form>
-                    
-                </div>
-
-                 <div class="info-card mt-3">
-    <h5>
-        <!-- <i class="bi bi-clock-history me-2 text-secondary"></i> -->
-        Application Status History
-    </h5>
-
-    @php $histories = $application->statusHistories; @endphp
-
-    @if($histories->isEmpty())
-        <div class="alert alert-info-custom">No history available yet.</div>
-    @else
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width:50px">S.N</th>
-                        <th>Stage Name</th>
-                        <th>Done By</th>
-                        <th>Date &amp; Time</th>
-                        <th>Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($histories as $index => $history)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>
-                                @php
-                                    $badgeClass = match($history->stage_name) {
-                                        'Approved'   => 'bg-success',
-                                        'Rejected'   => 'bg-danger',
-                                        'Verified'   => 'bg-primary',
-                                        'Allow Edit' => 'bg-warning text-dark',
-                                        default      => 'bg-secondary',
-                                    };
-                                @endphp
-                                <span class="badge {{ $badgeClass }}">
-                                    {{ $history->stage_name }}
-                                </span>
-                            </td>
-                            <td>
-                                {{ $history->done_by }}
-                                <small class="d-block text-muted">
-                                    {{ ucfirst($history->done_by_type) }}
-                                </small>
-                            </td>
-                            <td>{{ $history->created_at->format('F d, Y') }}</td>
-                            <td>{{ $history->remarks ?: '—' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-</div>
-
-               
-
-                <!-- Timeline -->
-                <!-- <div class="info-card mt-3">
-                    <h5>Timeline</h5>
-
-                    <div class="info-row">
-                        <div class="info-label">Applied:</div>
-                        <div class="info-value">{{ $application->created_at }}</div>
                     </div>
-                </div> -->
-
-                <!-- Quick Stats -->
-                <!-- <div class="info-card mt-3">
-                    <h5>Quick Stats</h5>
-
-                    <div class="info-row">
-                        <div class="info-label">Application ID:</div>
-                        <div class="info-value"><strong>{{ $application->id }}</strong></div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.payment_gateway') }}:</div>
+                            <div class="info-value">{{ ucfirst($payment->gateway) }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('reviewer.transaction_id') }}:</div>
+                            <div class="info-value">{{ $payment->transaction_id }}</div>
+                        </div>
                     </div>
-                </div> -->
-
+                </div>
             </div>
-        </div>
+            @endif
 
-    </div>
-</div>
-    </div>
-</div>
+            {{-- ── Review Action Form ── --}}
+            <div class="info-card no-print">
+                <h5>{{ __('reviewer.review_action') }}</h5>
+                <form action="{{ route('reviewer.applications.updateStatus', $application->id) }}" method="POST" id="reviewForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ __('reviewer.action') }} <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" id="reviewStatus" required>
+                            <option value="">{{ __('reviewer.select_action') }}</option>
+                            <option value="reviewed" {{ $application->status == 'reviewed' ? 'selected' : '' }}>{{ __('reviewer.mark_as_reviewed') }}</option>
+                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>{{ __('reviewer.send_back_for_edit') }}</option>
+                            <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>{{ __('reviewer.reject_application') }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <span id="notesLabel">{{ __('reviewer.comments_notes') }}</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="reviewer_notes" class="form-control" rows="6"
+                            id="reviewerNotes"
+                            placeholder="{{ __('reviewer.remarks_placeholder') }}"
+                            required>{{ $application->reviewer_notes }}</textarea>
+                        <small class="text-muted" id="notesHelp">{{ __('reviewer.please_provide_detailed_feedback') }}</small>
+                    </div>
+                    <div id="smsPreview" style="display:none;" class="mb-3">
+                        <div class="alert alert-warning" style="background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-left:4px solid #f59e0b;">
+                            <strong>{{ __('reviewer.sms_notification_preview') }}:</strong>
+                            <p class="mt-2 mb-0 small" style="font-family:monospace;background:white;padding:0.75rem;border-radius:6px;">
+                                <strong>{{ __('reviewer.nepal_oil_corporation') }}</strong><br>
+                                {{ __('reviewer.your_application_has_been_rejected') }}<br><br>
+                                <strong>{{ __('reviewer.reason') }}:</strong>
+                                <span id="smsReasonPreview">[Your rejection reason will appear here]</span><br><br>
+                                {{ __('reviewer.please_review_and_reapply') }}<br>
+                                - NOC E-Recruitment
+                            </p>
+                            <small class="text-muted mt-2 d-block">{{ __('reviewer.sms_will_be_sent_to') }} <strong>{{ $application->phone ?? 'N/A' }}</strong></small>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" id="submitBtn" class="btn btn-lg" style="background:#64748b;color:white;">
+                            {{ __('reviewer.submit_action') }}
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                            {{ __('reviewer.print_application') }}
+                        </button>
+                        <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-secondary">
+                            {{ __('reviewer.back_to_list') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            {{-- ── Status History ── --}}
+            <div class="info-card">
+                <h5>{{ __('reviewer.application_status_history') }}</h5>
+                @php $histories = $application->statusHistories; @endphp
+                @if($histories->isEmpty())
+                <div class="alert alert-info-custom">{{ __('reviewer.no_history_available') }}</div>
+                @else
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:50px">S.N</th>
+                                <th>{{ __('reviewer.stage_name') }}</th>
+                                <th>{{ __('reviewer.done_by') }}</th>
+                                <th>{{ __('reviewer.date_time') }}</th>
+                                <th>{{ __('reviewer.remarks') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($histories as $index => $history)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $history->stage_name }}</td>
+                                <td>
+                                    {{ $history->done_by }}
+                                    <small class="d-block text-muted">{{ ucfirst($history->done_by_type) }}</small>
+                                </td>
+                                <td>{{ $history->created_at->format('F d, Y') }}</td>
+                                <td>{{ $history->remarks ?: '—' }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+            </div>
+            {{-- /Status History --}}
+
+        </div>{{-- /col-lg-12 --}}
+    </div>{{-- /row --}}
+
+</div>{{-- /container-fluid --}}
 @endsection
 
 @section('scripts')
 <script>
-document.getElementById('reviewStatus').addEventListener('change', function() {
-    const status = this.value;
-    const notesLabel = document.getElementById('notesLabel');
-    const notesHelp = document.getElementById('notesHelp');
-    const reviewerNotes = document.getElementById('reviewerNotes');
-    const submitBtn = document.getElementById('submitBtn');
-    const submitIcon = document.getElementById('submitIcon');
-    const submitText = document.getElementById('submitText');
-    const smsPreview = document.getElementById('smsPreview');
-    const approverSelect = document.getElementById('approverSelect');
-    const approverRequired = document.getElementById('approverRequired');
-    const approverHelpText = document.getElementById('approverHelpText');
+    document.getElementById('reviewStatus').addEventListener('change', function() {
+        const status = this.value;
+        const notesLabel = document.getElementById('notesLabel');
+        const notesHelp = document.getElementById('notesHelp');
+        const reviewerNotes = document.getElementById('reviewerNotes');
+        const submitBtn = document.getElementById('submitBtn');
+        const smsPreview = document.getElementById('smsPreview');
 
-    if (status === 'reviewed') {
-        notesLabel.textContent = 'Review Comments';
-        notesHelp.textContent = 'Add your assessment and recommendations for the Approver.';
-        reviewerNotes.placeholder = 'Candidate\'s qualifications, strengths, weaknesses, and overall assessment...';
-        submitBtn.className = 'btn btn-success btn-lg';
-        submitBtn.style.background = '';
-        submitIcon.className = ' me-2';
-        submitText.textContent = 'Submit Review';
-        smsPreview.style.display = 'none';
-        approverSelect.required = true;
-        approverRequired.style.display = 'inline';
-        approverHelpText.classList.remove('text-muted');
-        approverHelpText.classList.add('text-danger');
-        approverHelpText.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i><strong>Required:</strong> Select the approver who will make the final decision';
-    } else if (status === 'rejected') {
-        notesLabel.textContent = 'Rejection Reason';
-        notesHelp.innerHTML = '<i class="me-1"></i><strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
-        reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy" or "Educational certificates are not clear/readable"...';
-        submitBtn.className = 'btn btn-danger btn-lg';
-        submitBtn.style.background = '';
-        submitIcon.className = ' me-2';
-        submitText.textContent = 'Reject Application';
-        smsPreview.style.display = 'block';
-        approverSelect.required = false;
-        approverRequired.style.display = 'none';
-        approverHelpText.classList.remove('text-danger');
-        approverHelpText.classList.add('text-muted');
-        approverHelpText.innerHTML = 'Select the approver who will make the final decision (required when marking as reviewed)';
-    } else {
-        submitBtn.className = 'btn btn-lg';
-        submitBtn.style.background = '#64748b';
-        submitBtn.style.color = 'white';
-        submitIcon.className = 'me-2';
-        submitText.textContent = 'Submit Action';
-        smsPreview.style.display = 'none';
-        approverSelect.required = false;
-        approverRequired.style.display = 'none';
-        approverHelpText.classList.remove('text-danger');
-        approverHelpText.classList.add('text-muted');
-        approverHelpText.innerHTML = 'Select the approver who will make the final decision (required when marking as reviewed)';
-    }
-});
+        if (status === 'reviewed') {
+            notesLabel.textContent = 'Review Comments';
+            notesHelp.textContent = 'Add your assessment and recommendations for the Approver.';
+            reviewerNotes.placeholder = "Candidate's qualifications, strengths, weaknesses, and overall assessment...";
+            submitBtn.className = 'btn btn-success btn-lg';
+            submitBtn.style.background = '';
+            submitBtn.textContent = '{{ __("reviewer.submit_action") }}';
+            smsPreview.style.display = 'none';
+        } else if (status === 'rejected') {
+            notesLabel.textContent = 'Rejection Reason';
+            notesHelp.innerHTML = '<strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
+            reviewerNotes.placeholder = 'Example: "Missing citizenship certificate copy"...';
+            submitBtn.className = 'btn btn-danger btn-lg';
+            submitBtn.style.background = '';
+            submitBtn.textContent = 'Reject Application';
+            smsPreview.style.display = 'block';
+        } else {
+            submitBtn.className = 'btn btn-lg';
+            submitBtn.style.background = '#64748b';
+            submitBtn.style.color = 'white';
+            smsPreview.style.display = 'none';
+        }
+    });
 
-// Initialize approver selection on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const status = document.getElementById('reviewStatus').value;
-    const approverSelect = document.getElementById('approverSelect');
-    const approverRequired = document.getElementById('approverRequired');
-    const approverHelpText = document.getElementById('approverHelpText');
+    document.getElementById('reviewerNotes').addEventListener('input', function() {
+        if (document.getElementById('reviewStatus').value === 'rejected') {
+            document.getElementById('smsReasonPreview').textContent =
+                this.value.trim() || '[Your rejection reason will appear here]';
+        }
+    });
 
-    if (status === 'reviewed') {
-        approverSelect.required = true;
-        approverRequired.style.display = 'inline';
-        approverHelpText.classList.remove('text-muted');
-        approverHelpText.classList.add('text-danger');
-        approverHelpText.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i><strong>Required:</strong> Select the approver who will make the final decision';
-    }
-});
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const status = document.getElementById('reviewStatus').value;
+        const notes = document.getElementById('reviewerNotes').value;
 
-document.getElementById('reviewerNotes').addEventListener('input', function() {
-    const status = document.getElementById('reviewStatus').value;
-    if (status === 'rejected') {
-        const reason = this.value.trim() || '[Your rejection reason will appear here]';
-        document.getElementById('smsReasonPreview').textContent = reason;
-    }
-});
-
-document.getElementById('reviewForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const status = formData.get('status');
-    const notes = formData.get('reviewer_notes');
-
-    if (!status) {
-        alert('⚠️ Please select an action (Reviewed or Rejected)');
-        return;
-    }
-
-    if (!notes || notes.trim() === '') {
-        alert('⚠️ Please add comments/notes before submitting');
-        return;
-    }
-
-    // Check if approver is selected when status is 'reviewed'
-    if (status === 'reviewed') {
-        const approverId = formData.get('approver_id');
-        if (!approverId || approverId === '') {
-            alert('⚠️ Please select an approver before marking as reviewed');
+        if (!status) {
+            alert('⚠️ Please select an action');
             return;
         }
-    }
-
-    // Check if approver is selected when status is 'reviewed'
-    if (status === 'reviewed') {
-        const approverId = formData.get('approver_id');
-        if (!approverId || approverId === '') {
-            alert('⚠️ Please select an approver before marking as reviewed');
+        if (!notes.trim()) {
+            alert('⚠️ Please add comments/notes before submitting');
             return;
         }
-    }
 
-    let confirmMessage = '';
-    if (status === 'reviewed') {
-        const approverSelect = document.getElementById('approverSelect');
-        const approverName = approverSelect.options[approverSelect.selectedIndex].text;
-        confirmMessage = 'Are you sure you want to mark this application as REVIEWED?\n\n✓ Application will be assigned to: ' + approverName + '\n✓ Application will be sent to the Approver Portal for final decision.\n✓ Your review notes will be forwarded to the Approver.\n\nThis action will be recorded in the system.';
-    } else if (status === 'rejected') {
-        confirmMessage = 'Are you sure you want to REJECT this application?\n\n✓ Candidate will be notified via SMS (when Sparrow SMS is integrated).\n✓ Your rejection reason will be sent to: {{ $application->phone ?? "N/A" }}\n\n⚠️ Make sure your rejection reason is clear and helpful.\n\nThis action will be recorded in the system.';
-    } else {
-        confirmMessage = 'Are you sure you want to submit this action?';
-    }
+        const confirmMessage = status === 'rejected' ?
+            'Are you sure you want to REJECT this application?\n\nThe candidate will be notified. This action will be recorded.' :
+            'Are you sure you want to submit this action? This will be recorded in the system.';
 
-    if (confirm(confirmMessage)) {
-        fetch(this.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                status: status,
-                reviewer_notes: notes
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('✅ ' + data.message);
-                location.reload();
-            } else {
-                alert('❌ ' + (data.message || 'Error updating status'));
-            }
-        })
-        .catch(error => {
-            alert('❌ Error updating status. Please try again.');
-            console.error('Error:', error);
-        });
-    }
-});
+        if (confirm(confirmMessage)) {
+            fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        status,
+                        reviewer_notes: notes
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ ' + data.message);
+                        location.reload();
+                    } else {
+                        alert('❌ ' + (data.message || 'Error updating status'));
+                    }
+                })
+                .catch(() => alert('❌ Error updating status. Please try again.'));
+        }
+    });
 </script>
 @endsection

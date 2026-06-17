@@ -30,7 +30,7 @@ class ApplicationReviewController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name_english', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%")
                     ->orWhereHas('jobPosting', function ($q) use ($search) {
                         $q->where('title', 'like', "%{$search}%");
                     });

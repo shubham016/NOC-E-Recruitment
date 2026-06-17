@@ -91,7 +91,7 @@ class RegistrationFormController extends Controller
     private function validationRules($isStore = true)
     {
         $rules = [
-            'name' => 'required|string|max:255',
+            'name_english' => 'nullable|string|max:255',
             'birth_date_ad' => 'required|date',
             'age' => 'required|integer|min:18|max:100',
             'phone' => 'required|string',

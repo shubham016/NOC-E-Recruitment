@@ -7,6 +7,10 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item active">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
@@ -19,10 +23,6 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    <!-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a> -->
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>
@@ -34,122 +34,864 @@
 @endsection
 
 @section('content')
+<div class="container my-2">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center py-2">
+            <h3 class="mb-0 fw-bold">NOC | View My Profile</h3>
+            <a href="{{ route('candidate.edit-profile') }}" class="btn btn-danger btn-sm">
+                <i class="bi bi-pencil me-1"></i> Edit Profile
+            </a>
+        </div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>My Profile</h4>
-        <a href="{{ route('candidate.edit-profile') }}" class="btn btn-danger btn-sm">
-            <i class="bi bi-pencil me-1"></i>Edit Profile
-        </a>
-    </div>
+        <div class="card-body px-5 pt-3 pb-5">
 
-    <div class="card-body">
+            {{-- Clickable Tabs Navigation --}}
+            <div class="step-tabs mb-5">
+                <div class="d-flex flex-wrap justify-content-between border-bottom position-relative">
+                    <div class="tab-item active" data-step="1">
+                        <span class="tab-circle">1</span>
+                        <span class="tab-label d-none d-md-inline">Personal</span>
+                    </div>
+                    <div class="tab-item" data-step="2">
+                        <span class="tab-circle">2</span>
+                        <span class="tab-label d-none d-md-inline">General</span>
+                    </div>
+                    <div class="tab-item" data-step="3">
+                        <span class="tab-circle">3</span>
+                        <span class="tab-label d-none d-md-inline">Address</span>
+                    </div>
+                    <div class="tab-item" data-step="4">
+                        <span class="tab-circle">4</span>
+                        <span class="tab-label d-none d-md-inline">Education</span>
+                    </div>
+                    <div class="tab-item" data-step="5">
+                        <span class="tab-circle">5</span>
+                        <span class="tab-label d-none d-md-inline">Experience</span>
+                    </div>
+                    <div class="tab-item" data-step="6">
+                        <span class="tab-circle">6</span>
+                        <span class="tab-label d-none d-md-inline">Documents</span>
+                    </div>
+                    <!-- <div class="tab-item" data-step="7">
+                        <span class="tab-circle">7</span>
+                        <span class="tab-label d-none d-md-inline">Payment</span>
+                    </div> -->
+                </div>
+            </div>
 
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                <strong>Please fix the following errors:</strong>
-                <ul class="mb-0 mt-1">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
+            {{-- STEP 1: Personal --}}
+            <div class="step active" id="step1">
+                <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Full Name (English):</strong>
+                        <p class="mb-0">{{ $candidate->name_english ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Full Name (Nepali):</strong>
+                        <p class="mb-0">{{ $candidate->name_nepali ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3 mb-3">
+                        <strong>Birth Date (A.D):</strong>
+                        <p class="mb-0">
+                            @if(!empty($candidate?->birth_date_ad))
+                                {{ is_string($candidate->birth_date_ad) ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('F d, Y') : $candidate->birth_date_ad->format('F d, Y') }}
+                            @else
+                                -
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Birth Date (B.S):</strong>
+                        <p class="mb-0">{{ $candidate->birth_date_bs ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Email:</strong>
+                        <p class="mb-0">{{ $candidate->email ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <strong>Phone Number:</strong>
+                        <p class="mb-0">{{ $candidate->phone ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Age:</strong>
+                        <p class="mb-0">{{ $candidate->age ?? '-' }} {{ $candidate->age ? 'years' : '' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Alternate Phone Number:</strong>
+                        <p class="mb-0">{{ $candidate->alternate_phone_number ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Gender:</strong>
+                        <p class="mb-0">{{ ucfirst($candidate->gender ?? '-') }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Marital Status:</strong>
+                        <p class="mb-0">{{ ucfirst($candidate->marital_status ?? '-') }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Spouse Name (English):</strong>
+                        <p class="mb-0">{{ $candidate->spouse_name_english ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Spouse Nationality:</strong>
+                        <p class="mb-0">{{ $candidate->spouse_nationality ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Citizenship Number:</strong>
+                        <p class="mb-0">{{ $candidate->citizenship_number ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Citizenship Issue Date (B.S):</strong>
+                        <p class="mb-0">{{ $candidate->citizenship_issue_date_bs ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Citizenship Issue District:</strong>
+                        <p class="mb-0">{{ $candidate->citizenship_issue_district ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Father Name (English):</strong>
+                        <p class="mb-0">{{ $candidate->father_name_english ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Mother Name (English):</strong>
+                        <p class="mb-0">{{ $candidate->mother_name_english ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Grandfather Name (English):</strong>
+                        <p class="mb-0">{{ $candidate->grandfather_name_english ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Father Name (Nepali):</strong>
+                        <p class="mb-0">{{ $candidate->father_name_nepali ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Mother Name (Nepali):</strong>
+                        <p class="mb-0">{{ $candidate->mother_name_nepali ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Grandfather Name (Nepali):</strong>
+                        <p class="mb-0">{{ $candidate->grandfather_name_nepali ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Blood Group:</strong>
+                        <p class="mb-0">{{ $candidate->blood_group ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Nationality:</strong>
+                        <p class="mb-0">{{ $candidate->nationality ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Are you NOC Employee?:</strong>
+                        <p class="mb-0">{{ ucfirst($candidate->noc_employee ?? '-') }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>NOC ID Card:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->noc_id_card ?? null) !!}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Parent's Occupation:</strong>
+                        <p class="mb-0">{{ $candidate->parents_occupation ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+            {{-- STEP 2: General --}}
+            <div class="step d-none" id="step2">
+                <h5 class="mb-4 text-dark">Step 2 — General Information</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Religion:</strong>
+                        <p class="mb-0">
+                            {{ $candidate->religion ?? '-' }}
+                            @if(($candidate->religion ?? null) === 'Other' && !empty($candidate->religion_other))
+                                ({{ $candidate->religion_other }})
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Community:</strong>
+                        <p class="mb-0">
+                            {{ $candidate->community ?? '-' }}
+                            @if(($candidate->community ?? null) === 'Other' && !empty($candidate->community_other))
+                                ({{ $candidate->community_other }})
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Ethnic Group:</strong>
+                        <p class="mb-0">
+                            {{ $candidate->ethnic_group ?? '-' }}
+                            @if(($candidate->ethnic_group ?? null) === 'Other' && !empty($candidate->ethnic_group_other))
+                                ({{ $candidate->ethnic_group_other }})
+                            @endif
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Mother Tongue:</strong>
+                        <p class="mb-0">{{ $candidate->mother_tongue ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Employment Status:</strong>
+                        <p class="mb-0">{{ ucfirst($candidate->employment_status ?? '-') }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Physical Disability:</strong>
+                        <p class="mb-0">{{ ucfirst($candidate->physical_disability ?? '-') }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Disability Details:</strong>
+                        <p class="mb-0">{{ $candidate->disability_other ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Ethnic Certificate:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->ethnic_certificate ?? null) !!}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Disability Certificate:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->disability_certificate ?? null) !!}</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+            {{-- STEP 3: Address --}}
+            <div class="step d-none" id="step3">
+                <h5 class="mb-4 text-dark">Step 3 — Address Information</h5>
+
+                <h6 class="mb-3 text-secondary">Permanent Address</h6>
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Province:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_province ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>District:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_district ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Municipality:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_municipality ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Ward No.:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_ward ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Tole:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_tole ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>House Number:</strong>
+                        <p class="mb-0">{{ $candidate->permanent_house_number ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <h6 class="mb-3 text-secondary mt-4">Mailing/Current Address</h6>
+                @if(!empty($candidate?->same_as_permanent))
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-info-circle"></i> Same as Permanent Address
+                    </div>
+                @endif
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Province:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_province ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>District:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_district ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Municipality:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_municipality ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3">
+                        <strong>Ward No.:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_ward ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Tole:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_tole ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>House Number:</strong>
+                        <p class="mb-0">{{ $candidate->mailing_house_number ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+            {{-- STEP 4: Education --}}
+            <div class="step d-none" id="step4">
+                <h5 class="mb-4 text-dark">Step 4 — Educational Background</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Highest Education Level:</strong>
+                        <p class="mb-0">{{ $candidate->education_level ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Field of Study:</strong>
+                        <p class="mb-0">{{ $candidate->field_of_study ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Institution Name:</strong>
+                        <p class="mb-0">{{ $candidate->institution_name ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Graduation Year:</strong>
+                        <p class="mb-0">{{ $candidate->graduation_year ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
+                </div>
+            </div>
+
+            {{-- STEP 5: Experience --}}
+            <div class="step d-none" id="step5">
+                <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+
+                <div class="mb-3">
+                    <strong>Has Work Experience:</strong>
+                    <p class="mb-0">{{ ucfirst($candidate->has_work_experience ?? '-') }}</p>
+                </div>
+
+                {{-- Since myprofile uses exp1/exp2/exp3 fields, render them if present --}}
+                @php
+                    $exps = [
+                        [
+                            'title' => 'Experience 1',
+                            'org' => $candidate->exp1_organization ?? null,
+                            'pos' => $candidate->exp1_position ?? null,
+                            'start' => $candidate->exp1_start_date_bs ?? null,
+                            'end' => $candidate->exp1_end_date_bs ?? null,
+                            'years' => $candidate->exp1_years ?? null,
+                            'doc' => $candidate->exp1_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 2',
+                            'org' => $candidate->exp2_organization ?? null,
+                            'pos' => $candidate->exp2_position ?? null,
+                            'start' => $candidate->exp2_start_date_bs ?? null,
+                            'end' => $candidate->exp2_end_date_bs  ?? null,
+                            'years' => $candidate->exp2_years ?? null,
+                            'doc' => $candidate->exp2_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 3',
+                            'org' => $candidate->exp3_organization ?? null,
+                            'pos' => $candidate->exp3_position ?? null,
+                            'start' => $candidate->exp3_start_date_bs  ?? null,
+                            'end' => $candidate->exp3_end_date_bs  ?? null,
+                            'years' => $candidate->exp3_years ?? null,
+                            'doc' => $candidate->exp3_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 4',
+                            'org' => $candidate->exp4_organization ?? null,
+                            'pos' => $candidate->exp4_position ?? null,
+                            'start' => $candidate->exp4_start_date_bs  ?? null,
+                            'end' => $candidate->exp4_end_date_bs  ?? null,
+                            'years' => $candidate->exp4_years ?? null,
+                            'doc' => $candidate->exp4_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 5',
+                            'org' => $candidate->exp5_organization ?? null,
+                            'pos' => $candidate->exp5_position ?? null,
+                            'start' => $candidate->exp5_start_date_bs ?? null,
+                            'end' => $candidate->exp5_end_date_bs ?? null,
+                            'years' => $candidate->exp5_years ?? null,
+                            'doc' => $candidate->exp5_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 6',
+                            'org' => $candidate->exp6_organization ?? null,
+                            'pos' => $candidate->exp6_position ?? null,
+                            'start' => $candidate->exp6_start_date_bs ?? null,
+                            'end' => $candidate->exp6_end_date_bs ?? null,
+                            'years' => $candidate->exp6_years ?? null,
+                            'doc' => $candidate->exp6_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 7',
+                            'org' => $candidate->exp7_organization ?? null,
+                            'pos' => $candidate->exp7_position ?? null,
+                            'start' => $candidate->exp7_start_date_bs ?? null,
+                            'end' => $candidate->exp7_end_date_bs ?? null,
+                            'years' => $candidate->exp7_years ?? null,
+                            'doc' => $candidate->exp7_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 8',
+                            'org' => $candidate->exp8_organization ?? null,
+                            'pos' => $candidate->exp8_position ?? null,
+                            'start' => $candidate->exp8_start_date_bs ?? null,
+                            'end' => $candidate->exp8_end_date_bs ?? null,
+                            'years' => $candidate->exp8_years ?? null,
+                            'doc' => $candidate->exp8_document ?? null,
+                        ],
+                        [
+                            'title' => 'Experience 9',
+                            'org' => $candidate->exp9_organization ?? null,
+                            'pos' => $candidate->exp9_position ?? null,
+                            'start' => $candidate->exp9_start_date_bs ?? null,
+                            'end' => $candidate->exp9_end_date_bs ?? null,
+                            'years' => $candidate->exp9_years ?? null,
+                            'doc' => $candidate->exp9_document ?? null,
+                        ],
+                        
+                        [
+                            'title' => 'Experience 10',
+                            'org' => $candidate->exp10_organization ?? null,
+                            'pos' => $candidate->exp10_position ?? null,
+                            'start' => $candidate->exp10_start_date_bs ?? null,
+                            'end' => $candidate->exp10_end_date_bs ?? null,
+                            'years' => $candidate->exp10_years ?? null,
+                            'doc' => $candidate->exp10_document ?? null,
+                        ],
+                    ];
+
+                    $hasAnyExp = collect($exps)->contains(function ($e) {
+                        return !empty($e['org']) || !empty($e['pos']) || !empty($e['start']) || !empty($e['end']) || !empty($e['years']) || !empty($e['doc']);
+                    });
+                @endphp
+
+                @if($hasAnyExp)
+                    @foreach($exps as $idx => $exp)
+                        @php
+                            $empty = empty($exp['org']) && empty($exp['pos']) && empty($exp['start']) && empty($exp['end']) && empty($exp['years']) && empty($exp['doc']);
+                        @endphp
+                        @continue($empty)
+
+                        <div class="border rounded p-3 mb-3">
+                            <h6 class="text-primary">{{ $exp['title'] }}</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Organization:</strong>
+                                    <p>{{ $exp['org'] ?? '-' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Position:</strong>
+                                    <p>{{ $exp['pos'] ?? '-' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Start Date:</strong>
+                                    <p>{{ $exp['start'] ?? '-' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>End Date:</strong>
+                                    <p>{{ $exp['end'] ?? '-' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Years:</strong>
+                                    <p>{{ $exp['years'] ?? '-' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Document:</strong>
+                                    <p>{!! showDoc($exp['doc']) !!}</p>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+                @else
+                    <p class="text-muted">No work experience records.</p>
+                @endif
 
-        <form action="{{ route('candidate.my-profile.update') }}" method="POST" novalidate>
-            @csrf
-            @method('PUT')
-
-            {{-- Personal Info --}}
-            <h6 class="text-uppercase text-muted fw-semibold mb-3 border-bottom pb-2"
-                style="font-size:.75rem;letter-spacing:.08em;">Personal Information</h6>
-
-            <div class="row g-3 mb-4">
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->name ?? '—') }}
-                    </div>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <button type="button" class="btn btn-light next-btn">Next</button>
                 </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->email ?? '—') }}
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->phone ?? '—') }}
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Gender<span class="text-danger">*</span></label>
-
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->gender ?? '—') }}
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Date of Birth (BS)<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->date_of_birth_bs ?? '—') }}
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">NOC Employee<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->noc_employee ?? '—') }}
-                    </div>
-                </div>
-
             </div>
 
-            {{-- Citizenship --}}
-            <h6 class="text-uppercase text-muted fw-semibold mb-3 border-bottom pb-2"
-                style="font-size:.75rem;letter-spacing:.08em;">Citizenship and National ID Details</h6>
+            {{-- STEP 6: Documents --}}
+            <div class="step d-none" id="step6">
+                <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
 
-            <div class="row g-3 mb-4">
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Citizenship Number<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->citizenship_number ?? '—') }}
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Passport Size Photo:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->passport_size_photo ?? null) !!}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Citizenship/ID Document:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->citizenship_id_document ?? null) !!}</p>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">National ID Number<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->nid ?? '—') }}
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Character Certificate:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->character_certificate ?? ($candidate->character ?? null)) !!}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Equivalency Certificate:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->equivalency_certificate ?? ($candidate->equivalent ?? null)) !!}</p>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Issue District<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->citizenship_issue_distric ?? '—') }}
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Signature:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->signature ?? null) !!}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Transcript Certificate:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->transcript ?? null) !!}</p>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Issue Date (BS)<span class="text-danger">*</span></label>
-                    <div class="form-control bg-light">
-                        {{ ucfirst($candidate?->citizenship_issue_date_bs ?? '—') }}
+                <div class="row mb-3">
+                    
+                    <div class="col-md-6 mb-3">
+                        <strong>NOC ID Card:</strong>
+                        <p class="mb-0">{!! showDoc($candidate->noc_id_card ?? null) !!}</p>
                     </div>
                 </div>
 
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
             </div>
-        </form>
+
+            {{-- STEP 7: Payment (kept for UI consistency) --}}
+            <!-- <div class="step d-none" id="step7">
+                <h5 class="mb-4 text-dark">Step 7 — Payment Details</h5>
+
+                <div class="alert alert-info py-2">
+                    Payment information is not part of My Profile.
+                    Please check “My Applications” to view payment details for a submitted application.
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="mb-3 text-secondary">Profile Status</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>Profile ID:</strong>
+                        <p class="mb-0">{{ $candidate->id ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Updated At:</strong>
+                        <p class="mb-0">
+                            @if(!empty($candidate?->updated_at))
+                                {{ is_string($candidate->updated_at) ? \Carbon\Carbon::parse($candidate->updated_at)->format('F d, Y h:i A') : $candidate->updated_at->format('F d, Y h:i A') }}
+                            @else
+                                -
+                            @endif
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+                    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div> -->
+
+        </div>
     </div>
 </div>
 
+@push('styles')
+<style>
+    /* ===== CLICKABLE TABS STYLING ===== */
+    .step-tabs { position: relative; margin-bottom: 2.5rem; }
+    .step-tabs .d-flex { gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+
+    .tab-item {
+        flex: 1;
+        text-align: center;
+        padding: 15px 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        min-width: 120px;
+        user-select: none;
+    }
+
+    .tab-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #e9ecef;
+        color: #6c757d;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
+    }
+
+    .tab-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .tab-item.active .tab-circle,
+    .tab-item.completed .tab-circle { background: #000000; color: white; }
+
+    .tab-item.active .tab-label,
+    .tab-item.completed .tab-label { color: #000000; font-weight: 600; }
+
+    .tab-item:hover .tab-circle { background: #000000; color: white; }
+    .tab-item:hover .tab-label { color: #000000; }
+
+    .step { transition: opacity 0.4s ease; }
+    .step.active { opacity: 1; }
+    .step.d-none {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        pointer-events: none;
+        visibility: hidden;
+    }
+
+    @media (max-width: 768px) {
+        .tab-label { font-size: 0.8rem; }
+        .tab-item { padding: 12px 4px; }
+        .tab-circle { width: 35px; height: 35px; font-size: 1rem; }
+    }
+
+    .card-body strong { color: #495057; font-weight: 600; }
+
+    .card-body p {
+        color: #212529;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        margin-bottom: 0 !important;
+    }
+
+    .border-bottom { border-bottom: 2px solid #dee2e6 !important; }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let currentStep = 1;
+    const totalSteps = 6;
+
+    function updateTabsAndProgress() {
+        document.querySelectorAll('.tab-item').forEach((tab, index) => {
+            const stepNum = index + 1;
+            tab.classList.remove('active', 'completed');
+            if (stepNum < currentStep) tab.classList.add('completed');
+            else if (stepNum === currentStep) tab.classList.add('active');
+        });
+    }
+
+    function showStep(step) {
+        document.querySelectorAll('.step').forEach(s => s.classList.add('d-none'));
+        const el = document.getElementById('step' + step);
+        if (el) {
+            el.classList.remove('d-none');
+            el.classList.add('active');
+        }
+        currentStep = step;
+        updateTabsAndProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.tab-item').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetStep = parseInt(tab.getAttribute('data-step'));
+            showStep(targetStep);
+        });
+    });
+
+    document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentStep < totalSteps) showStep(currentStep + 1);
+        });
+    });
+
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentStep > 1) showStep(currentStep - 1);
+        });
+    });
+
+    showStep(1);
+});
+// Age and date 
+(function () {
+
+    function calculateExactAge(dateString) {
+
+        if (!dateString) return '';
+
+        const birthDate = new Date(dateString);
+
+        if (isNaN(birthDate.getTime())) return '';
+
+        const today = new Date();
+
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+
+            months--;
+
+            const lastMonth = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0
+            );
+
+            days += lastMonth.getDate();
+        }
+
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return `${years} years ${months} months ${days} days`;
+    }
+
+    function updateAge(dateValue) {
+
+        const ageField = document.getElementById('age');
+
+        if (!ageField) return;
+
+        ageField.value = calculateExactAge(dateValue);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const adField = document.getElementById('birth_date_ad');
+        const bsField = document.getElementById('birth_date_bs');
+
+        if (adField) {
+
+            adField.addEventListener('change', function () {
+                updateAge(this.value);
+            });
+
+            adField.addEventListener('input', function () {
+                updateAge(this.value);
+            });
+        }
+
+        if (bsField) {
+
+            bsField.addEventListener('change', function () {
+
+                if (typeof window.bsToAD === 'function') {
+
+                    const adDate = window.bsToAD(this.value);
+
+                    if (adDate) {
+
+                        if (adField) {
+                            adField.value = adDate;
+                            const adDisp = document.getElementById('birth_date_ad_display');
+                            if (adDisp && window.formatADDisplay) adDisp.value = window.formatADDisplay(adDate);
+                        }
+
+                        updateAge(adDate);
+                    }
+                }
+            });
+        }
+
+        // On page load: if BS already has a value but AD is empty, auto-convert
+        if (bsField && bsField.value && adField && !adField.value) {
+            if (typeof window.bsToAD === 'function') {
+                const adDate = window.bsToAD(bsField.value);
+                if (adDate) {
+                    adField.value = adDate;
+                    const adDisp = document.getElementById('birth_date_ad_display');
+                    if (adDisp && window.formatADDisplay) adDisp.value = window.formatADDisplay(adDate);
+                    updateAge(adDate);
+                }
+            }
+        }
+
+        // Initial age calculation if AD already has a value
+        if (adField && adField.value) {
+            updateAge(adField.value);
+        }
+    });
+
+})();
+</script>
+@endpush
 @endsection

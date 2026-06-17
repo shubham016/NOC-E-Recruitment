@@ -745,6 +745,8 @@ return [
     'candidate_profile_title'       => 'उम्मेदवार प्रोफाइल',
     'edit_vacancy'                  => 'रिक्त पद सम्पादन',
     'create_reviewer'               => 'समीक्षक सिर्जना',
+    'add_reviewer_to_system'        => 'प्रणालीमा नयाँ समीक्षक थप्नुहोस्',
+    'update_reviewer'               => 'समीक्षक अपडेट',
     'reviewer_details'              => 'समीक्षक विवरण',
     'approver_details'              => 'अनुमोदक विवरण',
     'back_to_applications'          => 'आवेदनहरूमा फर्कनुस्',

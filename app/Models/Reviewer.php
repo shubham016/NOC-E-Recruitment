@@ -10,6 +10,7 @@ class Reviewer extends Authenticatable
     use HasFactory;
 
     protected $fillable = [
+        'employee_id',
         'name',
         'email',
         'password',
@@ -29,6 +30,22 @@ class Reviewer extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the name of the unique identifier for the user.
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'employee_id';
+    }
+
+    /**
+     * Get the username used for authentication (for login form)
+     */
+    public function username()
+    {
+        return 'employee_id';
+    }
 
     /**
      * Relationship: Reviewer has reviewed many applications

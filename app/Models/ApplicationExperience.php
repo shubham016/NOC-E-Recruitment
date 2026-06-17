@@ -10,6 +10,7 @@ class ApplicationExperience extends Model
 
     protected $fillable = [
         'application_form_id',
+        'candidate_id', 
         'exp_number',
         'organization',
         'position',

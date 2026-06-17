@@ -38,21 +38,21 @@
         height: 100px;
         border-radius: 10px;
         object-fit: cover;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1d6df7;
     }
 
     .reviewer-avatar-placeholder {
         width: 100px;
         height: 100px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: 700;
         font-size: 2.5rem;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1d6df7;
     }
 
     .reviewer-info h2 {
@@ -88,8 +88,8 @@
     }
 
     .reviewer-id-badge {
-        background: #fef3c7;
-        color: #92400e;
+        background: #dbeafe;
+        color: #1e40af;
         padding: 0.375rem 0.875rem;
         border-radius: 6px;
         font-size: 0.813rem;
@@ -112,12 +112,12 @@
     .info-icon-box {
         width: 48px;
         height: 48px;
-        background: #fef3c7;
+        background: #dbeafe;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #c9a84c;
+        color: #1d6df7;
         font-size: 1.25rem;
         flex-shrink: 0;
     }
@@ -227,7 +227,7 @@
     }
 
     .section-header h3 i {
-        color: #c9a84c;
+        color: #1d6df7;
         font-size: 1.25rem;
     }
 
@@ -320,7 +320,7 @@
         align-items: center;
         gap: 0.25rem;
         padding: 0.5rem 1rem;
-        background: #c9a84c;
+        background: #1d6df7;
         color: white;
         border-radius: 6px;
         text-decoration: none;
@@ -331,7 +331,7 @@
     }
 
     .btn-view-sm:hover {
-        background: #a07828;
+        background: #1557c0;
         color: white;
         transform: translateY(-1px);
     }
@@ -396,7 +396,7 @@
     }
 
     .action-btn-primary {
-        background: #c9a84c;
+        background: #1d6df7;
         color: white;
     }
 
@@ -528,6 +528,16 @@
         </div>
 
         <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon-box">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div class="info-details">
+                    <h6>{{ __('admin.employee_id') }}</h6>
+                    <p>{{ $reviewer->employee_id }}</p>
+                </div>
+            </div>
+
             <div class="info-item">
                 <div class="info-icon-box">
                     <i class="bi bi-envelope-fill"></i>
@@ -674,6 +684,10 @@
             </div>
             <div class="section-body">
                 <table class="info-table">
+                    <tr>
+                        <td class="table-label">{{ __('admin.employee_id') }}</td>
+                        <td class="table-value">{{ $reviewer->employee_id }}</td>
+                    </tr>
                     <tr>
                         <td class="table-label">{{ __('admin.name') }}</td>
                         <td class="table-value">{{ $reviewer->name }}</td>

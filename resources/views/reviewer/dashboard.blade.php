@@ -1,4 +1,4 @@
-@extends('layouts.apps')
+@extends('layouts.reviewer')
 
 @section('title', 'Reviewer Dashboard')
 
@@ -13,22 +13,26 @@
 @section('sidebar-menu')
     <a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item active">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('reviewer.dashboard') }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('reviewer.assigned_to_me') }}</span>
     </a>
     <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('reviewer.my_profile') }}</span>
+    </a>
+    <a href="{{ route('reviewer.notifications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>{{ __('reviewer.notifications') }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .dashboard-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16315c 0%, #16315c 100%);
         border-radius: 10px;
         padding: 2rem;
         color: white;
@@ -126,16 +130,23 @@
 
 @section('content')
 <div class="container-fluid px-4 py-4">
+
     <!-- Dashboard Header -->
-    <div class="dashboard-header">
+        <div class="dashboard-header">
         <div class="row align-items-center">
+            <!-- Left side: Welcome message -->
             <div class="col-md-8">
                 <h2 class="fw-bold mb-2">
-                    <i class="bi me-2"></i>Welcome, {{ Auth::guard('reviewer')->user()->name }}!
+                    {{ __('reviewer.welcome') }}, {{ Auth::guard('reviewer')->user()->name }}!
                 </h2>
-                <p class="mb-0 opacity-90">
-                    <i class="bi me-2"></i>{{ now()->format('l, F d, Y') }}
-                </p>
+            </div>
+
+            <!-- Right side: Calendar -->
+            <div class="col-md-4 text-end"> <!-- text-end aligns content to right -->
+                <small>
+                    <span id="english-date"></span> <br> <span id="nepali-date"></span>
+                </small>
+                
             </div>
         </div>
     </div>
@@ -144,32 +155,50 @@
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="stat-card">
-                <div>
-                    <i class="bi text-info"></i>
+                <div class="stat-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                    <i class="bi bi-inbox"></i>
                 </div>
                 <h3 class="fw-bold mb-0">{{ $status['assigned'] }}</h3>
-                <p class="text-muted mb-0 small">Assigned to Me</p>
+                <p class="text-muted mb-0 small">{{ __('reviewer.pending_review') }}</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card">
-                <div>
-                    <i class="bi text-success"></i>
+                <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                    <i class="bi bi-check-circle"></i>
                 </div>
                 <h3 class="fw-bold mb-0">{{ $status['reviewed'] }}</h3>
-                <p class="text-muted mb-0 small">Reviewed Applications</p>
+                <p class="text-muted mb-0 small">{{ __('reviewer.reviewed_applications') }}</p>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-0">{{ $status['rejected'] }}</h3>
+                <p class="text-muted mb-0 small">{{ __('reviewer.rejected_applications') }}</p>
+            </div>
+        </div>
+        <!-- <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-0">{{ $status['approved'] }}</h3>
+                <p class="text-muted mb-0 small">{{ __('reviewer.approved_applications') }}</p>
+            </div>
+        </div> -->
     </div>
 
     <div class="row g-4">
         <!-- Left Column -->
-        <div class="col-lg-8">
+        <div>
             <!-- Today's Progress -->
             <div class="progress-card mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi text-primary me-2"></i>Today's Progress
+                        <i class="bi text-primary me-2"></i>{{ __('reviewer.todays_progress') }}
                     </h5>
                     <span class="badge bg-success">{{ $todaystatus['reviewed_today'] }} / {{ $todaystatus['daily_target'] }}</span>
                 </div>
@@ -185,13 +214,13 @@
                     <div class="col-6">
                         <div class="p-3 bg-success bg-opacity-10 rounded">
                             <div class="fw-bold text-success fs-5">{{ $todaystatus['reviewed_today'] }}</div>
-                            <small class="text-muted">Reviewed Today</small>
+                            <small class="text-muted">{{ __('reviewer.reviewed_today') }}</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="p-3 bg-warning bg-opacity-10 rounded">
                             <div class="fw-bold text-warning fs-5">{{ $todaystatus['pending_review'] }}</div>
-                            <small class="text-muted">Pending Review</small>
+                            <small class="text-muted">{{ __('reviewer.pending_review') }}</small>
                         </div>
                     </div>
                 </div>

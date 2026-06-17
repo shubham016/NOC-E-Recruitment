@@ -11,22 +11,26 @@
 @section('sidebar-menu')
     <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('approver.dashboard') }}</span>
     </a>
     <a href="{{ route('approver.assignedtome', ['status' => 'assigned']) }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('approver.assigned_to_me') }}</span>
     </a>
     <a href="{{ route('approver.myprofile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('approver.my_profile') }}</span>
+    </a>
+    <a href="{{ route('approver.notifications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>{{ __('approver.notifications') }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        background: linear-gradient(135deg, #173361 0%, #173361 100%);
         border-radius: 12px;
         padding: 1.5rem;
         color: white;
@@ -130,70 +134,52 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h3 class="fw-bold mb-1">
-                    <i class="bi me-2"></i>Application Approves
+                    {{ __('approver.application_approves') }}
                 </h3>
-                <p class="mb-0 opacity-90">Approve and process candidate applications</p>
+                <p class="mb-0 opacity-90">{{ __('approver.approve_process_desc') }}</p>
             </div>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['pending_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Pending Applications</p>
-            </div>
-        </div>
-         <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['edit_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Edit Given</p>
-            </div>
-        </div>
-         <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['edited_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Edited Application</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['approved_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Approved</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['rejected_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Rejected</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div  style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
-                    
-                </div>
-                <h3 class="fw-bold mb-0">{{ $stats['total_applications'] }}</h3>
-                <p class="text-muted mb-0 small">Total Applications</p>
-            </div>
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['pending_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.pending_applications') }}</p>
         </div>
     </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['edit_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.edit_given') }}</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['edited_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.application_edited') }}</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['approved_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.approved') }}</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['rejected_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.rejected') }}</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <h3 class="fw-bold mb-0">{{ $stats['total_applications'] }}</h3>
+            <p class="text-muted mb-0 small">{{ __('approver.total_applications') }}</p>
+        </div>
+    </div>
+</div>
     
     
     <!-- Search and Filter -->
@@ -202,19 +188,21 @@
             <form method="GET" action="{{ route('approver.assignedtome') }}" id="filterForm">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <input type="text" name="search" class="form-control" placeholder="Search candidates..." value="{{ request('search') }}">
+                        <input type="text" name="search" class="form-control" placeholder="{{ __('approver.search_candidates') }}" value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
                         <select name="status" class="form-select">
-                            <option value="">All Status</option>
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                            <option value="">{{ __('approver.all_status') }}</option>
+                            <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>{{ __('approver.pending_applications') }}</option>
+                            <option value="edit" {{ request('status') == 'edit' ? 'selected' : '' }}>{{ __('approver.edit_given') }}</option>
+                            <option value="edited" {{ request('status') == 'edited' ? 'selected' : '' }}>{{ __('approver.application_edited') }}</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>{{ __('approver.approved') }}</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>{{ __('approver.rejected') }}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <select name="job_id" class="form-select">
-                            <option value="">All Vacancies</option>
+                            <option value="">{{ __('approver.all_vacancies') }}</option>
                             @foreach($jobs as $job)
                                 <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
                                     {{ $job->title }}
@@ -224,7 +212,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="me-1"></i> Search
+                            <i class="me-1"></i> {{ __('approver.search') }}
                         </button>
                     </div>
                 </div>
@@ -241,18 +229,18 @@
                 <div>
                     <span class="fw-bold text-dark me-3">
                         <i class="bi me-2"></i>
-                        <span id="selectedCount">0</span> application(s) selected
+                        <span id="selectedCount">0</span> {{ __('approver.selected_applications') }}
                     </span>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                        <i class="bi me-1"></i>Clear Selection
+                        <i class="bi me-1"></i>{{ __('approver.clear_selection') }}
                     </button>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-success" onclick="exportSelected('csv')">
-                        <i class="bi me-1"></i>Export to Excel
+                        <i class="bi me-1"></i>{{ __('approver.export_to_excel') }}
                     </button>
                     <button type="button" class="btn btn-sm btn-danger" onclick="exportSelected('pdf')">
-                        <i class="bi me-1"></i>Export to PDF
+                        <i class="bi me-1"></i>{{ __('approver.export_to_pdf') }}
                     </button>
                 </div>
             </div>
@@ -264,9 +252,9 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <i class="text-dark me-2"></i>Applications List
+                    <i class="text-dark me-2"></i>{{ __('approver.applications_list') }}
                 </h6>
-                <span >{{ $applications->total() }} Total</span>
+                <span >{{ $applications->total() }} {{ __('approver.total') }}</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -277,15 +265,15 @@
                             <th style="width: 40px;">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th>Advertisement No</th>
-                            <th>App ID</th>
-                            <th>Photo</th>
-                            <th>Full Name</th>
-                            <th>Vacancy Type</th>
-                            <th>Payment</th>
-                            <th>Applied Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('approver.advertisement_no') }}</th>
+                            <th>{{ __('approver.app_id') }}</th>
+                            <th>{{ __('approver.photo') }}</th>
+                            <th>{{ __('approver.full_name') }}</th>
+                            <th>{{ __('approver.vacancy_type') }}</th>
+                            <th>{{ __('approver.payment') }}</th>
+                            <th>{{ __('approver.applied_date') }}</th>
+                            <th>{{ __('approver.status') }}</th>
+                            <th>{{ __('approver.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -338,13 +326,15 @@
                                     <span >{{ ucfirst($application->status) }}</span>
                                 </td>
                                 <td class="nowrap">
-                                    <a href="{{ route('approver.applications.show', $application->id) }}" 
-                                    class="btn btn-sm 
-                                    {{ in_array($application->status, ['approved', 'rejected']) ? 'btn-success' : 'btn-danger' }}">
-                                        
+                                    <a href="{{ route('approver.applications.show', $application->id) }}"
+                                    class="btn btn-sm"
+                                    style="background-color: {{ in_array($application->status, ['approved', 'rejected']) ? '#d3dde8' : '#173361' }};
+                                            border-color: {{ in_array($application->status, ['approved', 'rejected']) ? '#d3dde8' : '#173361' }};
+                                            color: {{ in_array($application->status, ['approved', 'rejected']) ? '#173361' : '#ffffff' }};">
+
                                         <i class="bi {{ in_array($application->status, ['approved', 'rejected']) ? 'bi-check-circle' : 'bi-eye' }} me-1"></i>
-                                        
-                                        {{ in_array($application->status, ['approved', 'rejected']) ? 'Checked' : 'Check' }}
+
+                                        {{ in_array($application->status, ['approved', 'rejected']) ? __('approver.checked') : __('approver.check') }}
                                     </a>
                                 </td>
                             </tr>
@@ -352,8 +342,8 @@
                             <tr>
                                 <td colspan="10" class="text-center py-5">
                                     <i class="display-1 text-muted"></i>
-                                    <h5 class="text-muted mt-3">No Applications Found</h5>
-                                    <p class="text-secondary">No applications match your criteria.</p>
+                                    <h5 class="text-muted mt-3">{{ __('approver.no_applications_found') }}</h5>
+                                    <p class="text-secondary">{{ __('approver.no_applications_match_criteria') }}</p>
                                 </td>
                             </tr>
                         @endforelse

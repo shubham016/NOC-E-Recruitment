@@ -14,22 +14,26 @@
 @section('sidebar-menu')
     <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('approver.dashboard') }}</span>
     </a>
     <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('approver.assigned_to_me') }}</span>
     </a>
     <a href="{{ route('approver.myprofile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('approver.my_profile') }}</span>
+    </a>
+    <a href="{{ route('approver.notifications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>{{ __('approver.notifications') }}</span>
     </a>
 @endsection
 
 @section('custom-styles')
 <style>
     .review-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16325e 0%, #16325e 100%);
         border-radius: 12px;
         padding: 2rem;
         color: white;
@@ -276,35 +280,22 @@
 @section('content')
 <div class="container-fluid px-4 py-4">
     <!-- Page Header -->
-    <div class="approver-header">
+    <div class="review-header">
         <div class="d-flex justify-content-between align-items-start">
             <div>
-                <a href="{{ route('approver.assignedtome') }}" 
-                class="text-dark text-decoration-none mb-2 d-inline-block no-print">
-                    <i class="bi bi-arrow-left me-2"></i>
-                    Back to Applications
+                <a href="{{ route('approver.assignedtome') }}"  class="text-white text-decoration-none mb-2 d-inline-block opacity-75 no-print">
+                    <i class="bi bi-arrow-left me-2"></i>{{ __('approver.back_to_applications') }}
                 </a>
-
-                <h2 class="mb-1 fw-bold">Application Review</h2>
+                <h2 class="mb-1 fw-bold">{{ __('approver.application_review') }}</h2>
             </div>
             <div class="text-end">
-                @php
-                    $statusColors = [
-                        'pending' => 'bg-warning text-dark',
-                        'assigned' => 'bg-info text-white',
-                        'reviewed' => 'bg-success text-white',
-                        'approved' => 'bg-success text-white',
-                        'rejected' => 'bg-danger text-white',
-                    ];
-                    $statusColor = $statusColors[$application->status] ?? 'bg-secondary text-white';
-
-                @endphp
-                <span class="status-badge {{ $statusColor }} fs-5 d-block mb-2">
+                
+                <span class="status-badge  fs-5 d-block mb-2">
                     <i class=" me-1"></i>{{ ucfirst($application->status) }}
                 </span>
                 @if($application->manual_priority)
                     <span class="priority-badge {{ $priorityColors[$application->manual_priority] ?? 'bg-secondary text-white' }}">
-                        <i class=" me-1"></i>Priority: {{ ucfirst($application->manual_priority) }}
+                        <i class=" me-1"></i>{{ __('approver.priority') }}: {{ ucfirst($application->manual_priority) }}
                     </span>
                 @endif
             </div>
@@ -335,7 +326,7 @@
                 <div class="candidate-basic-info">
                     <h3>{{ $application->name_english ?? 'N/A' }}</h3>
                     <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>
-                    <p class="mb-1 opacity-90">Application ID: {{ $application->id }}</p>
+                    <p class="mb-1 opacity-90">{{ __('approver.app_id') }}: {{ $application->id }}</p>
                     <p class="detail">
                         <i class=""></i>{{ $application->email ?? 'N/A' }}
                     </p>
@@ -361,20 +352,20 @@
 
             <!-- Vacancy Information -->
             <div class="info-card">
-                <h5>Vacancy Information</h5>
+                <h5>{{ __('approver.vacancy_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Position Applied:</div>
+                            <div class="info-label">{{ __('approver.position_applied') }}:</div>
                             <div class="info-value">{{ $application->jobPosting->title ?? $application->applying_position ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Advertisement No:</div>
+                            <div class="info-label">{{ __('approver.advertisement_no') }}:</div>
                             <div class="info-value">{{ $application->advertisement_no ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Application Submmited:</div>
+                            <div class="info-label">{{ __('approver.application_submitted') }}:</div>
                             <div class="info-value">{{ $application->created_at ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -382,17 +373,21 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Department:</div>
+                            <div class="info-label">{{ __('approver.department') }}:</div>
                             <div class="info-value">{{ $application->jobPosting->department ?? $application->department ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Category:</div>
-                            <div class="info-value">
-                                <span>{{ ucfirst($application->jobPosting->category ?? 'N/A') }}</span>
-                            </div>
-                        </div>
+                <div class="info-label">{{ __('approver.category') }}:</div>
+                <div class="info-value">
+                    @if(!empty($application->applied_category))
+                        {{ implode(', ', $application->applied_category) }}
+                    @else
+                        N/A
+                    @endif
+                </div>
+            </div>
                         <div class="info-row">
-                            <div class="info-label">Application Deadline:</div>
+                            <div class="info-label">{{ __('approver.application_deadline') }}:</div>
                             <div class="info-value">
                                 @if($application->jobPosting->deadline)
                                     @php 
@@ -413,36 +408,37 @@
 
             <!-- Personal Information -->
            <div class="info-card">
-                <h5>Personal Information</h5>
+                <h5>{{ __('approver.personal_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Name (English):</div>
+                            <div class="info-label">{{ __('approver.name_english') }}:</div>
                             <div class="info-value">{{ $application->name_english ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Name (Nepali):</div>
+                            <div class="info-label">{{ __('approver.name_nepali') }}:</div>
                             <div class="info-value">{{ $application->name_nepali ?? 'N/A' }}</div>
                         </div>
+                       
                         <div class="info-row">
-                            <div class="info-label">Birth Date (AD):</div>
-                            <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Birth Date (BS):</div>
+                            <div class="info-label">{{ __('approver.birth_date_bs') }}:</div>
                             <div class="info-value">{{ $application->birth_date_bs ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Email:</div>
-                            <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
+                            <div class="info-label">{{ __('approver.marital_status') }}:</div>
+                            <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Age:</div>
+                            <div class="info-label">{{ __('approver.spouse_name') }}:</div>
+                            <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">{{ __('approver.age') }}:</div>
                             <div class="info-value">{{ $application->age ?? 'N/A' }} years</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Nationality:</div>
+                            <div class="info-label">{{ __('approver.nationality') }}:</div>
                             <div class="info-value">{{ $application->nationality ?? 'Nepali' }}</div>
                         </div>
                     </div>
@@ -450,27 +446,28 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Alternate Phone Number:</div>
+                            <div class="info-label">{{ __('approver.alternate_phone') }}:</div>
                             <div class="info-value">{{ $application->alternate_phone_number ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Gender:</div>
+                            <div class="info-label">{{ __('approver.gender') }}:</div>
                             <div class="info-value">{{ ucfirst($application->gender ?? 'N/A') }}</div>
                         </div>
-                        <div class="info-row">
-                            <div class="info-label">Marital Status:</div>
-                            <div class="info-value">{{ ucfirst($application->marital_status ?? 'N/A') }}</div>
+                         <div class="info-row">
+                            <div class="info-label">{{ __('approver.birth_date_ad') }}:</div>
+                            <div class="info-value">{{ $application->birth_date_ad ? $application->birth_date_ad->format('Y-m-d') : 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Spouse Name:</div>
-                            <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
+                            <div class="info-label">{{ __('approver.email') }}:</div>
+                            <div class="info-value">{{ $application->email ?? 'N/A' }}</div>
                         </div>
+                        
                         <div class="info-row">
-                            <div class="info-label">Spouse Nationality (If Married):</div>
+                            <div class="info-label">{{ __('approver.spouse_nationality_married') }}:</div>
                             <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Blood Group:</div>
+                            <div class="info-label">{{ __('approver.blood_group') }}:</div>
                             <div class="info-value">{{ $application->blood_group ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -479,16 +476,16 @@
 
             <!-- Citizenship Information -->
             <div class="info-card">
-                <h5>Citizenship Information</h5>
+                <h5>{{ __('approver.citizenship_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Citizenship Number:</div>
+                            <div class="info-label">{{ __('approver.citizenship_number') }}:</div>
                             <div class="info-value">{{ $application->citizenship_number ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Issue Date (AD):</div>
+                            <div class="info-label">{{ __('approver.issue_date_ad') }}:</div>
                             <div class="info-value">
                                 {{ $application->citizenship_issue_date_ad 
                                     ? \Carbon\Carbon::parse($application->citizenship_issue_date_ad)->format('Y-m-d') 
@@ -501,11 +498,11 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Issue Date (BS):</div>
+                            <div class="info-label">{{ __('approver.issue_date_bs') }}:</div>
                             <div class="info-value">{{ $application->citizenship_issue_date_bs ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Issue District:</div>
+                            <div class="info-label">{{ __('approver.issue_district') }}:</div>
                             <div class="info-value">{{ $application->citizenship_issue_district ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -516,8 +513,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Citizenship Id</p>
-                    <p class="document-size">Citizenship Id</p>
+                    <p class="document-name">{{ __('approver.citizenship_id') }}</p>
+                    <p class="document-size">{{ __('approver.citizenship_id') }}</p>
 
                     <img src="{{ Storage::url($application->citizenship_id_document) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -528,18 +525,18 @@
 
             <!-- Community & Ethnic Information -->
             <div class="info-card">
-                <h5>Community & Ethnic Information</h5>
+                <h5>{{ __('approver.community_ethnic_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Religion:</div>
+                            <div class="info-label">{{ __('approver.religion') }}:</div>
                             <div class="info-value">
                                 {{ $application->religion == 'other' ? $application->religion_other : ucfirst($application->religion ?? 'N/A') }}
                             </div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Community:</div>
+                            <div class="info-label">{{ __('approver.community') }}:</div>
                             <div class="info-value">
                                 {{ $application->community == 'other' ? $application->community_other : ucfirst($application->community ?? 'N/A') }}
                             </div>
@@ -549,14 +546,14 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Ethnic Group:</div>
+                            <div class="info-label">{{ __('approver.ethnic_group') }}:</div>
                             <div class="info-value">
                                 {{ $application->ethnic_group == 'other' ? $application->ethnic_group_other : ucfirst($application->ethnic_group ?? 'N/A') }}
                             </div>
                         </div>
                         @if($application->ethnic_certificate)
                         <div class="info-row">
-                            <div class="info-label">Ethnic Certificate:</div>
+                            <div class="info-label">{{ __('approver.ethnic_certificate') }}:</div>
                             <div class="info-value">
                                 <a href="{{ Storage::url($application->ethnic_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
                                     View Certificate
@@ -565,7 +562,7 @@
                         </div>
                         @endif
                         <div class="info-row">
-                            <div class="info-label">Mother Tongue:</div>
+                            <div class="info-label">{{ __('approver.mother_tongue') }}:</div>
                             <div class="info-value">{{ $application->mother_tongue ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -574,18 +571,18 @@
 
             <!-- Disability & Employment Information -->
             <div class="info-card">
-                <h5>Employment & Disability Status</h5>
+                <h5>{{ __('approver.employment_disability_status') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Employment Status:</div>
+                            <div class="info-label">{{ __('approver.employment_status') }}:</div>
                             <div class="info-value">
                                 {{ $application->employment_status == 'other' ? $application->employment_other : ucfirst($application->employment_status ?? 'N/A') }}
                             </div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Physical Disability:</div>
+                            <div class="info-label">{{ __('approver.physical_disability') }}:</div>
                             <div class="info-value">
                                 {{ $application->physical_disability == 'other' ? $application->disability_other : ucfirst($application->physical_disability ?? 'None') }}
                             </div>
@@ -596,16 +593,16 @@
                     <div class="col-md-6">
                         @if($application->disability_certificate)
                         <div class="info-row">
-                            <div class="info-label">Disability Certificate:</div>
+                            <div class="info-label">{{ __('approver.disability_certificate') }}:</div>
                             <div class="info-value">
                                 <a href="{{ Storage::url($application->disability_certificate) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                                    View Certificate
+                                    {{ __('approver.view_certificate') }}
                                 </a>
                             </div>
                         </div>
                         @endif
                         <div class="info-row">
-                            <div class="info-label">NOC Employee:</div>
+                            <div class="info-label">{{ __('approver.noc_employee') }}:</div>
                             <div class="info-value">
                                 {{ $application->noc_employee == 'yes' ? 'Yes' : 'No' }}
                                 @if($application->noc_employee == 'yes' && $application->noc_id_card)
@@ -619,30 +616,30 @@
 
             <!-- Family Information -->
 <div class="info-card">
-    <h5><i class=""></i>Family Information</h5>
+    <h5><i class=""></i>{{ __('approver.family_information') }}</h5>
 
     <div class="row">
         <!-- Left Column -->
         <div class="col-md-6">
             <!-- Grandfather -->
             <div class="info-row">
-                <div class="info-label text-dark">Grandfather Name:</div>
+                <div class="info-label text-dark">{{ __('approver.grandfather_name') }}:</div>
                 <div class="info-value">{{ $application->grandfather_name_english ?? 'N/A' }}</div>
             </div>
 
             <!-- Father -->
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Father's Information</h6>
-            
+            <h6 class="text-dark mt-3 mb-2"><i class=""></i>{{ __('approver.fathers_information') }}</h6>
+
             <div class="info-row">
-                <div class="info-label">Name (English):</div>
+                <div class="info-label">{{ __('approver.father_name_english') }}:</div>
                 <div class="info-value">{{ $application->father_name_english ?? 'N/A' }}</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->father_name_nepali ?? 'N/A' }}</div>
-            </div> -->
             <div class="info-row">
-                <div class="info-label">Qualification:</div>
+                <div class="info-label">{{ __('approver.father_name_nepali') }}:</div>
+                <div class="info-value">{{ $application->father_name_nepali ?? 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">{{ __('approver.father_qualification') }}:</div>
                 <div class="info-value">{{ $application->father_qualification ?? 'N/A' }}</div>
             </div>
         </div>
@@ -650,23 +647,23 @@
         <!-- Right Column -->
         <div class="col-md-6">
             <!-- Mother -->
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Mother's Information</h6>
+            <h6 class="text-dark mt-3 mb-2"><i class=""></i>{{ __('approver.mothers_information') }}</h6>
             <div class="info-row">
-                <div class="info-label">Name (English):</div>
+                <div class="info-label">{{ __('approver.mother_name_english') }}:</div>
                 <div class="info-value">{{ $application->mother_name_english ?? 'N/A' }}</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
-                <div class="info-value">{{ $application->mother_name_nepali ?? 'N/A' }}</div>
-            </div> -->
             <div class="info-row">
-                <div class="info-label">Qualification:</div>
+                <div class="info-label">{{ __('approver.mother_name_nepali') }}:</div>
+                <div class="info-value">{{ $application->mother_name_nepali ?? 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">{{ __('approver.mother_qualification') }}:</div>
                 <div class="info-value">{{ $application->mother_qualification ?? 'N/A' }}</div>
             </div>
 
             <!-- Parent Occupation -->
             <div class="info-row">
-                <div class="info-label">Parent's Occupation:</div>
+                <div class="info-label">{{ __('approver.parent_occupation') }}:</div>
                 <div class="info-value">
                     {{ $application->parent_occupation == 'other' ? $application->parent_occupation_other : ucfirst($application->parent_occupation ?? 'N/A') }}
                 </div>
@@ -674,17 +671,17 @@
 
             <!-- Spouse -->
             @if($application->marital_status == 'married')
-            <h6 class="text-dark mt-3 mb-2"><i class=""></i>Spouse Information</h6>
+            <h6 class="text-dark mt-3 mb-2"><i class=""></i>{{ __('approver.spouse_information') }}</h6>
             <div class="info-row">
-                <div class="info-label">Name (English):</div>
+                <div class="info-label">{{ __('approver.spouse_name_english') }}:</div>
                 <div class="info-value">{{ $application->spouse_name_english ?? 'N/A' }}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Name (Nepali):</div>
+                <div class="info-label">{{ __('approver.spouse_name_nepali') }}:</div>
                 <div class="info-value">{{ $application->spouse_name_nepali ?? 'N/A' }}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Nationality:</div>
+                <div class="info-label">{{ __('approver.spouse_nationality') }}:</div>
                 <div class="info-value">{{ $application->spouse_nationality ?? 'N/A' }}</div>
             </div>
             @endif
@@ -694,67 +691,67 @@
 
             <!-- Address Information -->
           <div class="info-card">
-                <h5>Address Information</h5>
+                <h5>{{ __('approver.address_information') }}</h5>
                 <div class="row">
                     <!-- Left Column: Permanent Address -->
                     <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">Permanent Address</h6>
+                        <h6 class="text-dark mt-2 mb-2">{{ __('approver.permanent_address') }}</h6>
                         <div class="info-row">
-                            <div class="info-label">Province:</div>
+                            <div class="info-label">{{ __('approver.province') }}:</div>
                             <div class="info-value">{{ $application->permanent_province ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">District:</div>
+                            <div class="info-label">{{ __('approver.district') }}:</div>
                             <div class="info-value">{{ $application->permanent_district ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Municipality:</div>
+                            <div class="info-label">{{ __('approver.municipality') }}:</div>
                             <div class="info-value">{{ $application->permanent_municipality ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Ward No:</div>
+                            <div class="info-label">{{ __('approver.ward_no') }}:</div>
                             <div class="info-value">{{ $application->permanent_ward ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Tole/Street:</div>
+                            <div class="info-label">{{ __('approver.tole_street') }}:</div>
                             <div class="info-value">{{ $application->permanent_tole ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">House Number:</div>
+                            <div class="info-label">{{ __('approver.house_number') }}:</div>
                             <div class="info-value">{{ $application->permanent_house_number ?? 'N/A' }}</div>
                         </div>
                     </div>
 
                     <!-- Right Column: Mailing/Temporary Address -->
                     <div class="col-md-6">
-                        <h6 class="text-dark mt-2 mb-2">Mailing/Temporary Address</h6>
+                        <h6 class="text-dark mt-2 mb-2">{{ __('approver.mailing_temporary_address') }}</h6>
                         @if($application->same_as_permanent == 'yes')
                             <div class="alert alert-primary">
-                                Same as Permanent Address
+                                {{ __('approver.same_as_permanent') }}
                             </div>
                         @else
                             <div class="info-row">
-                                <div class="info-label">Province:</div>
+                                <div class="info-label">{{ __('approver.province') }}:</div>
                                 <div class="info-value">{{ $application->mailing_province ?? 'N/A' }}</div>
                             </div>
                             <div class="info-row">
-                                <div class="info-label">District:</div>
+                                <div class="info-label">{{ __('approver.district') }}:</div>
                                 <div class="info-value">{{ $application->mailing_district ?? 'N/A' }}</div>
                             </div>
                             <div class="info-row">
-                                <div class="info-label">Municipality:</div>
+                                <div class="info-label">{{ __('approver.municipality') }}:</div>
                                 <div class="info-value">{{ $application->mailing_municipality ?? 'N/A' }}</div>
                             </div>
                             <div class="info-row">
-                                <div class="info-label">Ward No:</div>
+                                <div class="info-label">{{ __('approver.ward_no') }}:</div>
                                 <div class="info-value">{{ $application->mailing_ward ?? 'N/A' }}</div>
                             </div>
                             <div class="info-row">
-                                <div class="info-label">Tole/Street:</div>
+                                <div class="info-label">{{ __('approver.tole_street') }}:</div>
                                 <div class="info-value">{{ $application->mailing_tole ?? 'N/A' }}</div>
                             </div>
                             <div class="info-row">
-                                <div class="info-label">House Number:</div>
+                                <div class="info-label">{{ __('approver.house_number') }}:</div>
                                 <div class="info-value">{{ $application->mailing_house_number ?? 'N/A' }}</div>
                             </div>
                         @endif
@@ -766,16 +763,16 @@
 
             <!-- Education -->
             <div class="info-card">
-                <h5>Educational Background</h5>
+                <h5>{{ __('approver.educational_background') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Education Level:</div>
+                            <div class="info-label">{{ __('approver.education_level') }}:</div>
                             <div class="info-value">{{ $application->education_level ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Field of Study:</div>
+                            <div class="info-label">{{ __('approver.field_of_study') }}:</div>
                             <div class="info-value">{{ $application->field_of_study ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -783,11 +780,11 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Institution:</div>
+                            <div class="info-label">{{ __('approver.institution') }}:</div>
                             <div class="info-value">{{ $application->institution_name ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Graduation Year:</div>
+                            <div class="info-label">{{ __('approver.graduation_year') }}:</div>
                             <div class="info-value">{{ $application->graduation_year ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -798,8 +795,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Educational Certificates</p>
-                    <p class="document-size">Academic transcripts and degrees</p>
+                    <p class="document-name">{{ __('approver.educational_certificates') }}</p>
+                    <p class="document-size">{{ __('approver.academic_transcripts_and_degrees') }}</p>
 
                     <img src="{{ Storage::url($application->transcript) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -813,8 +810,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Character Certificate</p>
-                    <p class="document-size">character Certificate</p>
+                    <p class="document-name">{{ __('approver.character_certificate') }}</p>
+                    <p class="document-size">{{ __('approver.character_certificate_description') }}</p>
 
                     <img src="{{ Storage::url($application->character) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -827,8 +824,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Equivalency Certificate</p>
-                    <p class="document-size">Equivalency Certificate</p>
+                    <p class="document-name">{{ __('approver.equivalency_certificate') }}</p>
+                    <p class="document-size">{{ __('approver.equivalency_certificate_description') }}</p>
 
                     <img src="{{ Storage::url($application->equivalency_certificate) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -839,46 +836,46 @@
 
              <!-- Work Experience -->
                 <div class="info-card">
-                    <h5>Work Experience</h5>
+                    <h5>{{ __('approver.work_experience') }}</h5>
 
                     <div class="mb-3">
-                        <strong>Has Work Experience:</strong>
+                        <strong>{{ __('approver.has_work_experience') }}:</strong>
                         <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
                     </div>
 
                     @forelse($application->experiences as $exp)
                         <div class="border rounded p-3 mb-3">
-                            <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
+                            <h6 class="text-primary">{{ __('approver.experience') }} {{ $exp->exp_number }}</h6>
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <strong>Organization:</strong>
+                                    <strong>{{ __('approver.organization') }}:</strong>
                                     <p>{{ $exp->organization ?? '-' }}</p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <strong>Position:</strong>
+                                    <strong>{{ __('approver.position') }}:</strong>
                                     <p>{{ $exp->position ?? '-' }}</p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <strong>Start Date (B.S):</strong>
+                                    <strong>{{ __('approver.start_date') }} (B.S):</strong>
                                     <p>{{ $exp->start_date_bs ?? '-' }}</p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <strong>End Date (B.S):</strong>
+                                    <strong>{{ __('approver.end_date') }} (B.S):</strong>
                                     <p>{{ $exp->end_date_bs ?? '-' }}</p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <strong>Years:</strong>
+                                    <strong>{{ __('approver.years') }}:</strong>
                                     <p>{{ $exp->years ?? '-' }}</p>
                                 </div>
                             </div>
 
                             <div>
-                                <strong>Document:</strong>
+                                <strong>{{ __('approver.document') }}:</strong>
                                 @if($exp->document)
                                     @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
                                     @if(in_array($ext, ['jpg','jpeg','png','webp']))
@@ -888,33 +885,33 @@
                                         <a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
                                     @endif
                                 @else
-                                    <div class="alert alert-primary">No document uploaded</div>
+                                    <div class="alert alert-primary">{{ __('approver.no_document_uploaded') }}</div>
                                 @endif
                             </div>
                         </div>
                     @empty
                         <div class="alert alert-primary">
-                            No work experience records.
+                            {{ __('approver.no_work_experience') }}
                         </div>
                     @endforelse
                 </div>
 
             <!-- Payment Information -->
             <div class="info-card">
-                <h5>Payment Information</h5>
+                <h5>{{ __('approver.payment_information') }}</h5>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Payment Gateway:</div>
+                            <div class="info-label">{{ __('approver.payment_gateway') }}:</div>
                             <div class="info-value">{{ $application->payment->gateway ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Amount:</div>
+                            <div class="info-label">{{ __('approver.amount') }}:</div>
                             <div class="info-value">{{ $application->payment->amount ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Date & Time:</div>
+                            <div class="info-label">{{ __('approver.date_time') }}:</div>
                             <div class="info-value">{{ $application->payment->updated_at ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -922,11 +919,11 @@
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Status:</div>
+                            <div class="info-label">{{ __('approver.status') }}:</div>
                             <div class="info-value">{{ $application->payment->status ?? 'N/A' }}</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Transcation ID:</div>
+                            <div class="info-label">{{ __('approver.transaction_id') }}:</div>
                             <div class="info-value">{{ $application->payment->transaction_id ?? 'N/A' }}</div>
                         </div>
                     </div>
@@ -947,14 +944,14 @@
 
              <!-- Uploaded Documents -->
             <div class="info-card">
-            <h5><i class=""></i>Uploaded Documents</h5>
+            <h5><i class=""></i>{{ __('approver.uploaded_documents') }}</h5>
 
 
              @if($application->passport_size_photo)
             <div class="document-item">
                 <div class="document-info">
-                    <p class="document-name">Passport Size Photo</p>
-                    <p class="document-size">Passport Size Photo</p>
+                    <p class="document-name">{{ __('approver.passport_size_photo') }}</p>
+                    <p class="document-size">{{ __('approver.passport_size_photo') }}</p>
 
                     <img src="{{ Storage::url($application->passport_size_photo) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -971,8 +968,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Signature</p>
-                    <p class="document-size">Signature</p>
+                    <p class="document-name">{{ __('approver.signature') }}</p>
+                    <p class="document-size">{{ __('approver.signature') }}</p>
 
                     <img src="{{ Storage::url($application->signature) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -985,8 +982,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Ethnic Certificate</p>
-                    <p class="document-size">Ethnic Certificate</p>
+                    <p class="document-name">{{ __('approver.ethnic_certificate') }}</p>
+                    <p class="document-size">{{ __('approver.ethnic_certificate') }}</p>
 
                     <img src="{{ Storage::url($application->ethnic_certificate) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -999,8 +996,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">Disability Certificate</p>
-                    <p class="document-size">Disability Certificate</p>
+                    <p class="document-name">{{ __('approver.disability_certificate') }}</p>
+                    <p class="document-size">{{ __('approver.disability_certificate') }}</p>
 
                     <img src="{{ Storage::url($application->disability_certificate) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -1013,8 +1010,8 @@
                 
 
                 <div class="document-info">
-                    <p class="document-name">NOC ID Card</p>
-                    <p class="document-size">NOC ID Card</p>
+                    <p class="document-name">{{ __('approver.noc_id_card') }}</p>
+                    <p class="document-size">{{ __('approver.noc_id_card') }}</p>
 
                     <img src="{{ Storage::url($application->noc_id_card) }}"
                     style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
@@ -1083,7 +1080,7 @@
                 !$application->other_documents
             )
             <div class="alert alert-warning">
-                No documents uploaded
+                {{ __('approver.no_documents_uploaded') }}
             </div>
             @endif
         </div>
@@ -1139,32 +1136,32 @@
             @if($application->status !== 'approved' && $application->status !== 'rejected')
             <div class="info-card">
                 <h5>
-                    <i class="text-secondary me-2"></i>Actions
+                    <i class="text-secondary me-2"></i>{{ __('approver.actions') }}
                 </h5>
                 <form action="{{ route('approver.applications.updateStatus', $application->id) }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Decision</label>
+                        <label class="form-label fw-semibold">{{ __('approver.decision') }}</label>
                         <select name="status" class="form-select" required>
-                            <option value="">Select Decision</option>
-                            <option value="approved">Approve</option>
-                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>Send Back for Edit</option>
-                            <option value="rejected">Reject</option>
+                            <option value="">{{ __('approver.select_decision') }}</option>
+                            <option value="approved">{{ __('approver.decision_approve') }}</option>
+                            <option value="edit" {{ $application->status == 'edit' ? 'selected' : '' }}>{{ __('approver.decision_edit') }}</option>
+                            <option value="rejected" {{ $application->status == 'rejected' ? 'selected' : '' }}>{{ __('approver.decision_reject') }}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Remarks <span class="text-danger">*</span></label>
-                        <textarea name="approver_notes" class="form-control" rows="4" placeholder="Add your remarks here..." required></textarea>
+                        <label class="form-label fw-semibold">{{ __('approver.remarks') }} <span class="text-danger">*</span></label>
+                        <textarea name="approver_notes" class="form-control" rows="4" placeholder="{{ __('approver.remarks_placeholder') }}" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-gold w-100">
-                        <i class="bi bi-check-circle me-1"></i>Submit Decision
+                        <i class="bi bi-check-circle me-1"></i>{{ __('approver.submit_decision') }}
                     </button>
                 </form>
             </div>
             @else
             <div class="info-card">
                 <h5>
-                    <i class="bi bi-info-circle text-info me-2"></i>Status
+                    <i class="bi bi-info-circle text-info me-2"></i>{{ __('approver.status') }}
                 </h5>
                 <div class="alert alert-{{ $application->status === 'approved' ? 'success' : 'danger' }} mb-0">
                     This application has been {{ $application->status }}.
@@ -1178,23 +1175,23 @@
          <div class="info-card mt-3">
     <h5>
         <!-- <i class="bi bi-clock-history me-2 text-secondary"></i> -->
-        Application Status History
+        {{ __('approver.application_status_history') }}
     </h5>
 
     @php $histories = $application->statusHistories; @endphp
 
     @if($histories->isEmpty())
-        <div class="alert alert-info-custom">No history available yet.</div>
+        <div class="alert alert-info-custom">{{ __('approver.no_history_available') }}</div>
     @else
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th style="width:50px">S.N</th>
-                        <th>Stage Name</th>
-                        <th>Done By</th>
-                        <th>Date &amp; Time</th>
-                        <th>Remarks</th>
+                        <th>{{ __('approver.stage_name') }}</th>
+                        <th>{{ __('approver.done_by') }}</th>
+                        <th>{{ __('approver.date_time') }}</th>
+                        <th>{{ __('approver.remarks') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1202,16 +1199,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                @php
-                                    $badgeClass = match($history->stage_name) {
-                                        'Approved'   => 'bg-success',
-                                        'Rejected'   => 'bg-danger',
-                                        'Verified'   => 'bg-primary',
-                                        'Allow Edit' => 'bg-warning text-dark',
-                                        default      => 'bg-secondary',
-                                    };
-                                @endphp
-                                <span class="badge {{ $badgeClass }}">
+                                <span >
                                     {{ $history->stage_name }}
                                 </span>
                             </td>

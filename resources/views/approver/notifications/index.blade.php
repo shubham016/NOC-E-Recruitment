@@ -13,15 +13,19 @@
 @section('sidebar-menu')
     <a href="{{ route('approver.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('reviewer.dashboard') }}</span>
     </a>
     <a href="{{ route('approver.assignedtome') }}" class="sidebar-menu-item">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('reviewer.assigned_to_me') }}</span>
+    </a>
+    <a href="{{ route('approver.myprofile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>{{ __('approver.my_profile') }}</span>
     </a>
     <a href="{{ route('approver.notifications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-bell"></i>
-        <span>Notifications</span>
+        <span>{{ __('approver.notifications') }}</span>
     </a>
 @endsection
 
@@ -33,14 +37,14 @@
     }
 
     .notification-card:hover {
-        border-left-color: #c9a84c;
+        border-left-color: #173361;
         transform: translateX(5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
     }
 
     .notification-card.unread {
-        background-color: #fffbf0;
-        border-left-color: #c9a84c;
+        background-color: #dfe6ed;
+        border-left-color: #173361;
     }
 
     .notification-icon {
@@ -56,7 +60,7 @@
 
     .notification-icon.info {
         background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(160, 120, 40, 0.1));
-        color: #a07828;
+        color: #173361;
     }
 
     .notification-icon.success {
@@ -80,10 +84,9 @@
     <!-- Page Header -->
     <div class="mb-3">
         <h2 class="mb-1">
-            Notifications
-            <span class="badge bg-warning text-dark" style="font-size: 0.6rem; vertical-align: middle;">APPROVER PORTAL</span>
+            {{ __('approver.notifications') }}
         </h2>
-        <p class="text-muted mb-0">View and manage your notifications</p>
+        <p class="text-muted mb-0">{{ __('approver.notifications_description') }}</p>
     </div>
 
     <!-- Unseen / Seen Tabs + Mark All As Seen -->
@@ -92,25 +95,25 @@
             <li class="nav-item">
                 <a class="nav-link {{ $tab === 'unseen' ? 'active fw-semibold' : 'text-muted' }}"
                    href="{{ route('approver.notifications.index', ['tab' => 'unseen']) }}"
-                   style="{{ $tab === 'unseen' ? 'color:#c9a84c !important; border-bottom: 2px solid #c9a84c; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
-                    Unseen
+                   style="{{ $tab === 'unseen' ? 'color:#173361 !important; border-bottom: 2px solid #173361; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    {{ __('approver.unseen') }}
                     @if($unseenCount > 0)
-                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $unseenCount }}</span>
+                        <span class="badge bg-primary ms-1" style="font-size:0.65rem;">{{ $unseenCount }}</span>
                     @endif
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ $tab === 'seen' ? 'active fw-semibold' : 'text-muted' }}"
                    href="{{ route('approver.notifications.index', ['tab' => 'seen']) }}"
-                   style="{{ $tab === 'seen' ? 'color:#17a2b8 !important; border-bottom: 2px solid #17a2b8; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
-                    Seen
+                   style="{{ $tab === 'seen' ? 'color:#173361 !important; border-bottom: 2px solid #173361; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                    {{ __('approver.seen') }}
                 </a>
             </li>
         </ul>
         <form method="POST" action="{{ route('approver.notifications.markAllAsRead') }}" class="d-inline mb-1">
             @csrf
             <button type="submit" class="btn btn-sm btn-outline-secondary fw-semibold" style="letter-spacing:0.05em;" {{ $unseenCount === 0 ? 'disabled' : '' }}>
-                MARK ALL AS SEEN
+                {{ __('reviewer.mark_all_as_seen') }}
             </button>
         </form>
     </div>
@@ -144,7 +147,7 @@
                                         <h6 class="mb-0 fw-semibold">{{ $notification->title }}</h6>
                                         <div class="d-flex gap-2 align-items-center">
                                             @if(!$notification->is_read)
-                                                <span class="badge bg-warning text-dark">New</span>
+                                                <span class="badge bg-primary text-white">{{ __('reviewer.new') }}</span>
                                             @endif
                                             <span class="notification-time">
                                                 {{ $notification->created_at->diffForHumans() }}
@@ -158,12 +161,12 @@
                                         @if($notification->related_type === 'application' && $notification->related_id)
                                             <form method="POST" action="{{ route('approver.notifications.markAsRead', $notification->id) }}" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">View Application</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">{{ __('reviewer.view_application') }}</button>
                                             </form>
                                         @elseif(!$notification->is_read)
                                             <form method="POST" action="{{ route('approver.notifications.markAsRead', $notification->id) }}" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-success">Mark as Read</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-success">{{ __('reviewer.mark_as_read') }}</button>
                                             </form>
                                         @endif
                                     </div>
@@ -185,13 +188,13 @@
             <div class="card-body text-center py-5">
                 <i class="bi bi-bell-slash display-1 text-muted mb-3"></i>
                 <h4 class="text-muted">
-                    {{ $tab === 'seen' ? 'No Seen Notifications' : 'No Unseen Notifications' }}
+                    {{ $tab === 'seen' ? __('reviewer.no_seen_notifications') : __('reviewer.no_unseen_notifications') }}
                 </h4>
                 <p class="text-secondary">
-                    {{ $tab === 'seen' ? 'You have no seen notifications yet.' : 'You have no new notifications at the moment.' }}
+                    {{ $tab === 'seen' ? __('reviewer.no_seen_notifications_description') : __('reviewer.no_unseen_notifications_description') }}
                 </p>
                 <a href="{{ route('approver.dashboard') }}" class="btn btn-danger mt-3">
-                    Back to Dashboard
+                    {{ __('reviewer.back_to_dashboard') }}
                 </a>
             </div>
         </div>

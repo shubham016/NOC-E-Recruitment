@@ -85,7 +85,7 @@
 
     /* Header bar */
     .noc-form-header {
-        background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #c9a84c 100%);
+        background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #1d6df7 100%);
         padding: 1.2rem 2rem;
         display: flex;
         align-items: center;
@@ -103,7 +103,7 @@
     }
 
     .noc-form-header .header-icon {
-        color: #c9a84c;
+        color: #1d6df7;
         font-size: 1.2rem;
     }
 
@@ -150,7 +150,7 @@
     /* Session message (logged out etc.) */
     .noc-session-msg {
         background: #fff8e1;
-        border-left: 4px solid #c9a84c;
+        border-left: 4px solid #1d6df7;
         border-radius: 2px;
         padding: 0.65rem 1rem;
         margin-bottom: 1.5rem;
@@ -271,7 +271,7 @@
     }
 
     .noc-login-btn {
-        background: linear-gradient(135deg, #c9a84c 0%, #b8941f 100%);
+        background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
         color: #fff;
         border: none;
         height: 42px;
@@ -284,13 +284,13 @@
         border-radius: 2px;
         cursor: pointer;
         transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-        box-shadow: 0 3px 12px rgba(201,168,76,0.35);
+        box-shadow: 0 3px 12px rgba(29,109,247,0.35);
     }
 
     .noc-login-btn:hover {
-        background: linear-gradient(135deg, #d4b55a 0%, #c9a84c 100%);
+        background: linear-gradient(135deg, #4589f9 0%, #1d6df7 100%);
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(201,168,76,0.45);
+        box-shadow: 0 6px 20px rgba(29,109,247,0.45);
     }
 
     .noc-login-btn:active {
@@ -321,7 +321,7 @@
     }
 
     .noc-form-footer a:hover {
-        color: #c9a84c;
+        color: #1d6df7;
         text-decoration: underline;
     }
 
@@ -420,21 +420,21 @@
                 <form method="POST" action="{{ route('reviewer.login.post') }}" novalidate>
                     @csrf
 
-                    {{-- Username / Email --}}
+                    {{-- Employee ID --}}
                     <div class="noc-input-group">
                         <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value="{{ old('email') }}"
-                            placeholder="Email Address"
-                            class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
+                            type="text"
+                            id="employee_id"
+                            name="employee_id"
+                            value="{{ old('employee_id') }}"
+                            placeholder="Employee ID"
+                            class="{{ $errors->has('employee_id') ? 'is-invalid' : '' }}"
                             required
                             autofocus
-                            autocomplete="email"
+                            autocomplete="username"
                         >
-                        <span class="noc-input-icon"><i class="bi bi-person"></i></span>
-                        @error('email')
+                        <span class="noc-input-icon"><i class="bi bi-person-badge"></i></span>
+                        @error('employee_id')
                             <div class="noc-invalid-feedback">
                                 <i class="bi bi-x-circle"></i> {{ $message }}
                             </div>

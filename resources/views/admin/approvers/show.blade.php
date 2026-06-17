@@ -38,21 +38,21 @@
         height: 100px;
         border-radius: 10px;
         object-fit: cover;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1d6df7;
     }
 
     .approver-avatar-placeholder {
         width: 100px;
         height: 100px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: 700;
         font-size: 2.5rem;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1d6df7;
     }
 
     .approver-info h2 {
@@ -102,12 +102,12 @@
     .info-icon-box {
         width: 48px;
         height: 48px;
-        background: #fef3c7;
+        background: #dbeafe;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #c9a84c;
+        color: #1d6df7;
         font-size: 1.25rem;
         flex-shrink: 0;
     }
@@ -203,7 +203,7 @@
         gap: 0.5rem;
     }
 
-    .section-header h3 i { color: #c9a84c; font-size: 1.25rem; }
+    .section-header h3 i { color: #1d6df7; font-size: 1.25rem; }
 
     .section-body { padding: 1.5rem; }
 
@@ -264,7 +264,7 @@
         align-items: center;
         gap: 0.25rem;
         padding: 0.5rem 1rem;
-        background: #c9a84c;
+        background: #1d6df7;
         color: white;
         border-radius: 6px;
         text-decoration: none;
@@ -274,7 +274,7 @@
         border: none;
     }
 
-    .btn-view-sm:hover { background: #a07828; color: white; transform: translateY(-1px); }
+    .btn-view-sm:hover { background: #1557c0; color: white; transform: translateY(-1px); }
 
     .info-table { width: 100%; }
 
@@ -319,7 +319,7 @@
 
     .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 
-    .action-btn-primary { background: #c9a84c; color: white; }
+    .action-btn-primary { background: #1d6df7; color: white; }
     .action-btn-warning { background: #f97316; color: white; }
     .action-btn-success { background: #10b981; color: white; }
     .action-btn-danger  { background: #ef4444; color: white; }

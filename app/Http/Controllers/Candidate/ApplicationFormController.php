@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
+use App\Models\ApplicationExperience;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class ApplicationFormController extends Controller
 {
-    
+
     private $fileFields = [
         'ethnic_certificate'       => 'ethnic-certificates',
         'noc_id_card'              => 'noc-id-cards',
@@ -37,9 +38,9 @@ class ApplicationFormController extends Controller
         $candidate = Auth::guard('candidate')->user();
 
         $forms = ApplicationForm::with('payment')
-        ->where('citizenship_number', $candidate->citizenship_number)
-        ->latest()
-        ->paginate(10);
+            ->where('citizenship_number', $candidate->citizenship_number)
+            ->latest()
+            ->paginate(10);
 
         return view('candidate.applications.index', compact('forms'));
     }
@@ -50,6 +51,7 @@ class ApplicationFormController extends Controller
     public function create($jobId = null)
     {
         $candidate = Auth::guard('candidate')->user();
+        // dd($candidate);
 
         $job = null;
         $groupJobs = collect();
@@ -77,10 +79,10 @@ class ApplicationFormController extends Controller
             $groupJobs = JobPosting::where('status', 'active')
                 ->where(function ($q) {
                     $q->where('deadline', '>=', now())
-                      ->orWhere(function ($inner) {
-                          $inner->whereNotNull('double_dastur_date')
+                        ->orWhere(function ($inner) {
+                            $inner->whereNotNull('double_dastur_date')
                                 ->where('double_dastur_date', '>=', now());
-                      });
+                        });
                 })
                 ->where('position', $job->position)
                 ->where('level', $job->level)
@@ -118,146 +120,169 @@ class ApplicationFormController extends Controller
             );
         }
 
-        return view('candidate.applications.create', compact('job', 'candidate', 'draftApplication', 'groupJobs'));
+         $profileExperiences = ApplicationExperience::where('candidate_id', $candidate->id)
+            ->whereNull('application_form_id')
+            ->orderBy('exp_number')
+            ->get()
+            ->keyBy('exp_number');
+
+       
+    // Extract individual variables for the blade
+    $exp1  = $profileExperiences[1]  ?? null;
+    $exp2  = $profileExperiences[2]  ?? null;
+    $exp3  = $profileExperiences[3]  ?? null;
+    $exp4  = $profileExperiences[4]  ?? null;
+    $exp5  = $profileExperiences[5]  ?? null;
+    $exp6  = $profileExperiences[6]  ?? null;
+    $exp7  = $profileExperiences[7]  ?? null;
+    $exp8  = $profileExperiences[8]  ?? null;
+    $exp9  = $profileExperiences[9]  ?? null;
+    $exp10 = $profileExperiences[10] ?? null;
+
+    return view('candidate.applications.create', compact(
+        'job', 'candidate', 'draftApplication', 'groupJobs',
+        'exp1', 'exp2', 'exp3', 'exp4', 'exp5',
+        'exp6', 'exp7', 'exp8', 'exp9', 'exp10'
+    ));
     }
 
-    
     public function saveDraft(Request $request)
-{
-    $candidate = Auth::guard('candidate')->user();
+    {
+        $candidate = Auth::guard('candidate')->user();
 
-    if (!$candidate) {
-        return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
-    }
-
-    try {
-        // Log incoming request for debugging
-        Log::info('Draft save attempt', [
-            'candidate_id' => $candidate->id,
-            'has_draft_id' => $request->has('draft_id'),
-            'draft_id' => $request->draft_id,
-            'job_posting_id' => $request->job_posting_id,
-            'has_files' => $this->hasAnyFiles($request),
-            'files_present' => array_keys($request->allFiles())
-        ]);
-
-        // Find or create draft
-        $draft = null;
-        
-        if ($request->filled('draft_id')) {
-            $draft = ApplicationForm::where('id', $request->draft_id)
-                ->where('citizenship_number', $candidate->citizenship_number)
-                ->where('status', 'draft')
-                ->first();
-                
-            Log::info('Found draft by ID', ['draft_id' => $draft ? $draft->id : null]);
-        }
-        
-        if (!$draft && $request->filled('job_posting_id')) {
-            $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                ->where('job_posting_id', $request->job_posting_id)
-                ->where('status', 'draft')
-                ->first();
-                
-            Log::info('Found draft by job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
-        }
-        
-        if (!$draft) {
-            $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
-                ->where('status', 'draft')
-                ->whereNull('job_posting_id')
-                ->latest()
-                ->first();
-                
-            Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
         }
 
-        // Get all data except files and tokens
-        $data = $request->except([
-            '_token',
-            '_method',
-            ...array_keys($this->fileFields)
-        ]);
-        // Defensive: force-remove all file fields in case except() left UploadedFile objects
-        foreach (array_keys($this->fileFields) as $ff) { unset($data[$ff]); }
+        try {
+            // Log incoming request for debugging
+            Log::info('Draft save attempt', [
+                'candidate_id' => $candidate->id,
+                'has_draft_id' => $request->has('draft_id'),
+                'draft_id' => $request->draft_id,
+                'job_posting_id' => $request->job_posting_id,
+                'has_files' => $this->hasAnyFiles($request),
+                'files_present' => array_keys($request->allFiles())
+            ]);
 
-        // Handle same_as_permanent checkbox
-        if ($request->boolean('same_as_permanent')) {
-            $mailingData = $this->copyPermanentToMailing($request);
-            $data = array_merge($data, $mailingData);
-        }
+            // Find or create draft
+            $draft = null;
 
-        // Add required fields
-        $data['citizenship_number'] = $candidate->citizenship_number;
-        $data['status'] = 'draft';
-        
-        if ($request->filled('job_posting_id')) {
-            $data['job_posting_id'] = $request->job_posting_id;
-        }
+            if ($request->filled('draft_id')) {
+                $draft = ApplicationForm::where('id', $request->draft_id)
+                    ->where('citizenship_number', $candidate->citizenship_number)
+                    ->where('status', 'draft')
+                    ->first();
 
-        // Remove empty values
-        $data = array_filter($data, function($value) {
-            return !is_null($value) && $value !== '';
-        });
-
-        // Create or update draft
-        if ($draft) {
-            $draft->update($data);
-            Log::info('Draft updated', ['draft_id' => $draft->id]);
-        } else {
-            $draft = ApplicationForm::create($data);
-            Log::info('Draft created', ['draft_id' => $draft->id]);
-        }
-
-        // Keep candidate profile birth date in sync
-        $this->syncBirthDateToProfile(
-            $candidate->id,
-            $request->birth_date_bs,
-            $request->birth_date_ad
-        );
-
-        // Save experience rows
-        $this->saveExperiences($request, $draft);
-
-        // Handle file uploads
-        $fileData = [];
-        if ($this->hasAnyFiles($request)) {
-            Log::info('Processing file uploads', ['files' => array_keys($request->allFiles())]);
-
-            $fileData = $this->handleFileUploads($request, $draft, true);
-
-            if (!empty($fileData)) {
-                $draft->update($fileData);
-                Log::info('Files saved successfully', [
-                    'draft_id' => $draft->id,
-                    'saved_files' => array_keys($fileData),
-                    'file_paths' => $fileData
-                ]);
+                Log::info('Found draft by ID', ['draft_id' => $draft ? $draft->id : null]);
             }
+
+            if (!$draft && $request->filled('job_posting_id')) {
+                $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+                    ->where('job_posting_id', $request->job_posting_id)
+                    ->where('status', 'draft')
+                    ->first();
+
+                Log::info('Found draft by job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
+            }
+
+            if (!$draft) {
+                $draft = ApplicationForm::where('citizenship_number', $candidate->citizenship_number)
+                    ->where('status', 'draft')
+                    ->whereNull('job_posting_id')
+                    ->latest()
+                    ->first();
+
+                Log::info('Found draft without job_posting_id', ['draft_id' => $draft ? $draft->id : null]);
+            }
+
+            // Get all data except files and tokens
+            $data = $request->except([
+                '_token',
+                '_method',
+                ...array_keys($this->fileFields)
+            ]);
+            // Defensive: force-remove all file fields in case except() left UploadedFile objects
+            foreach (array_keys($this->fileFields) as $ff) {
+                unset($data[$ff]);
+            }
+
+            // Handle same_as_permanent checkbox
+            if ($request->boolean('same_as_permanent')) {
+                $mailingData = $this->copyPermanentToMailing($request);
+                $data = array_merge($data, $mailingData);
+            }
+
+            // Add required fields
+            $data['citizenship_number'] = $candidate->citizenship_number;
+            $data['status'] = 'draft';
+
+            if ($request->filled('job_posting_id')) {
+                $data['job_posting_id'] = $request->job_posting_id;
+            }
+
+            // Remove empty values
+            $data = array_filter($data, function ($value) {
+                return !is_null($value) && $value !== '';
+            });
+
+            // Create or update draft
+            if ($draft) {
+                $draft->update($data);
+                Log::info('Draft updated', ['draft_id' => $draft->id]);
+            } else {
+                $draft = ApplicationForm::create($data);
+                Log::info('Draft created', ['draft_id' => $draft->id]);
+            }
+
+            // Keep candidate profile birth date in sync
+            $this->syncBirthDateToProfile(
+                $candidate->id,
+                $request->birth_date_bs,
+                $request->birth_date_ad
+            );
+
+            // Save experience rows
+            $this->saveExperiences($request, $draft);
+
+            // Handle file uploads
+            $fileData = [];
+            if ($this->hasAnyFiles($request)) {
+                Log::info('Processing file uploads', ['files' => array_keys($request->allFiles())]);
+
+                $fileData = $this->handleFileUploads($request, $draft, true);
+
+                if (!empty($fileData)) {
+                    $draft->update($fileData);
+                    Log::info('Files saved successfully', [
+                        'draft_id' => $draft->id,
+                        'saved_files' => array_keys($fileData),
+                        'file_paths' => $fileData
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Draft saved successfully',
+                'draft_id' => $draft->id,
+                'saved_at' => now()->format('h:i A'),
+                'files_saved' => !empty($fileData) ? array_keys($fileData) : []
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Draft save error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving draft: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Draft saved successfully',
-            'draft_id' => $draft->id,
-            'saved_at' => now()->format('h:i A'),
-            'files_saved' => !empty($fileData) ? array_keys($fileData) : []
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Draft save error', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'line' => $e->getLine(),
-            'file' => $e->getFile()
-        ]);
-        
-        return response()->json([
-            'success' => false, 
-            'message' => 'Error saving draft: ' . $e->getMessage()
-        ], 500);
     }
-}
 
     /**
      * Check if request has any files to upload
@@ -288,7 +313,7 @@ class ApplicationFormController extends Controller
         // Check job eligibility if applying for a job
         if ($request->has('job_posting_id')) {
             $job = JobPosting::find($request->job_posting_id);
-            
+
             if (!$job) {
                 return redirect()->back()
                     ->withErrors(['error' => 'Job posting not found'])
@@ -330,7 +355,7 @@ class ApplicationFormController extends Controller
 
         // Get all data except files
         $data = $request->except(array_merge(array_keys($this->fileFields), ['status']));
-        
+
         // Check if updating a draft
         $existingDraft = null;
         if ($request->has('draft_id')) {
@@ -339,7 +364,7 @@ class ApplicationFormController extends Controller
                 ->where('status', 'draft')
                 ->first();
         }
-        
+
         // Handle file uploads (pass existing draft to preserve files if no new upload)
         $uploadedFiles = $this->handleFileUploads($request, $existingDraft, false);
         $data = array_merge($data, $uploadedFiles);
@@ -398,53 +423,53 @@ class ApplicationFormController extends Controller
      * Show the form for editing the specified application
      */
     public function edit(ApplicationForm $applicationform)
-{
-    $candidate = Auth::guard('candidate')->user();
+    {
+        $candidate = Auth::guard('candidate')->user();
 
-    if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
-        return redirect()->route('candidate.applications.index')
-            ->withErrors(['error' => 'Unauthorized access']);
-    }
+        if ($applicationform->citizenship_number !== $candidate->citizenship_number) {
+            return redirect()->route('candidate.applications.index')
+                ->withErrors(['error' => 'Unauthorized access']);
+        }
 
-    // Block editing after payment/submission
-            if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
-                return redirect()->route('candidate.applications.index')
-                    ->with('error', 'This application has already been submitted and cannot be edited.');
-            }
+        // Block editing after payment/submission
+        if (!in_array($applicationform->status, ['draft', 'edit', 'edited'])) {
+            return redirect()->route('candidate.applications.index')
+                ->with('error', 'This application has already been submitted and cannot be edited.');
+        }
 
-            $applicationform->load('experiences');
+        $applicationform->load('experiences');
 
-           $payment = \App\Models\Payment::where('draft_id', $applicationform->id)
-               ->where('status', 'paid')
-               ->latest()
-               ->first();
+        $payment = \App\Models\Payment::where('draft_id', $applicationform->id)
+            ->where('status', 'paid')
+            ->latest()
+            ->first();
 
-            $job = null;
-            $groupJobs = collect();
-            if ($applicationform->job_posting_id) {
-                $job = JobPosting::find($applicationform->job_posting_id);
-                if ($job) {
-                    $groupJobs = JobPosting::where('status', 'active')
-                        ->where(function ($q) {
-                            $q->where('deadline', '>=', now())
-                              ->orWhere(function ($inner) {
-                                  $inner->whereNotNull('double_dastur_date')
-                                        ->where('double_dastur_date', '>=', now());
-                              });
-                        })
-                        ->where('position', $job->position)
-                        ->where('level', $job->level)
-                        ->where('service_group', $job->service_group)
-                        ->orderBy('advertisement_no', 'asc')
-                        ->get();
-                    if ($groupJobs->isEmpty()) {
-                        $groupJobs = collect([$job]);
-                    }
+        $job = null;
+        $groupJobs = collect();
+        if ($applicationform->job_posting_id) {
+            $job = JobPosting::find($applicationform->job_posting_id);
+            if ($job) {
+                $groupJobs = JobPosting::where('status', 'active')
+                    ->where(function ($q) {
+                        $q->where('deadline', '>=', now())
+                            ->orWhere(function ($inner) {
+                                $inner->whereNotNull('double_dastur_date')
+                                    ->where('double_dastur_date', '>=', now());
+                            });
+                    })
+                    ->where('position', $job->position)
+                    ->where('level', $job->level)
+                    ->where('service_group', $job->service_group)
+                    ->orderBy('advertisement_no', 'asc')
+                    ->get();
+                if ($groupJobs->isEmpty()) {
+                    $groupJobs = collect([$job]);
                 }
             }
+        }
 
-            return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment', 'job', 'groupJobs'));
-}
+        return view('candidate.applications.edit', compact('applicationform', 'candidate', 'payment', 'job', 'groupJobs'));
+    }
 
     /**
      * Update the specified application
@@ -465,7 +490,9 @@ class ApplicationFormController extends Controller
 
         $data = $request->except(array_merge(array_keys($this->fileFields), ['status']));
         // Defensive: force-remove all file fields in case except() left UploadedFile objects
-        foreach (array_keys($this->fileFields) as $ff) { unset($data[$ff]); }
+        foreach (array_keys($this->fileFields) as $ff) {
+            unset($data[$ff]);
+        }
 
         $uploadedFiles = $this->handleFileUploads($request, $applicationform, false);
 
@@ -566,7 +593,6 @@ class ApplicationFormController extends Controller
         ];
 
         $eligibility = $job->isEligible($applicationData);
-
         return response()->json($eligibility);
     }
 
@@ -598,8 +624,8 @@ class ApplicationFormController extends Controller
             'father_name_english' => 'required|string',
             'mother_name_english' => 'required|string',
             'grandfather_name_english' => 'required|string',
-            'father_qualification' => 'string',
-            'mother_qualification' => 'string',
+            'father_qualification' => 'nullable|string',
+            'mother_qualification' => 'nullable|string',
             'parent_occupation' => 'required|string',
             'nationality' => 'required|string',
             'blood_group' => 'required|string',
@@ -634,7 +660,6 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         } else {
             $rules['citizenship_id_document'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['passport_size_photo'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
@@ -643,7 +668,6 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['additional_documents'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         // Conditional validation for NOC ID Card
@@ -680,12 +704,12 @@ class ApplicationFormController extends Controller
             'noc_id_card.required_if' => 'NOC ID Card is required when you are a NOC employee.',
             'noc_id_card.mimes' => 'NOC ID Card must be an image (JPEG, JPG, PNG) or PDF.',
             'noc_id_card.max' => 'NOC ID Card must not exceed 2MB.',
-            
+
             'physical_disability.required' => 'Please select whether you have a physical disability.',
             'disability_certificate.required_if' => 'Disability Certificate is required when you have a physical disability.',
             'disability_certificate.mimes' => 'Disability Certificate must be an image (JPEG, JPG, PNG) or PDF.',
             'disability_certificate.max' => 'Disability Certificate must not exceed 2MB.',
-            
+
             'ethnic_group.required' => 'Please select your ethnic group.',
             'ethnic_certificate.required_if' => 'Ethnic Certificate is required for Dalit and Janajati ethnic groups.',
             'ethnic_certificate.mimes' => 'Ethnic Certificate must be an image (JPEG, JPG, PNG) or PDF.',
@@ -703,65 +727,67 @@ class ApplicationFormController extends Controller
      * Handle file uploads for the application
      */
     private function handleFileUploads(Request $request, ?ApplicationForm $model = null, $isDraft = false)
-{
-    $data = [];
+    {
+        $data = [];
 
-    foreach ($this->fileFields as $field => $folder) {
-        // Skip if no file uploaded
-        if (!$request->hasFile($field)) {
-            // PRESERVE existing files if model exists
-            if ($model && $model->$field) {
-                $data[$field] = $model->$field;
+        foreach ($this->fileFields as $field => $folder) {
+            // Skip if no file uploaded
+            if (!$request->hasFile($field)) {
+                // PRESERVE existing files if model exists
+                if ($model && $model->$field) {
+                    $data[$field] = $model->$field;
+                }
+                continue;
             }
-            continue;
-        }
 
-        $file = $request->file($field);
+            $file = $request->file($field);
 
-        // Validate file
-        if (!$file->isValid()) {
-            Log::warning("Invalid file upload for field: $field", ['error' => $file->getError()]);
-            continue;
-        }
+            // Validate file
+            if (!$file->isValid()) {
+                Log::warning("Invalid file upload for field: $field", ['error' => $file->getError()]);
+                continue;
+            }
 
-        // Only delete old file if NOT a draft AND file exists
-        if (!$isDraft && $model && $model->$field && Storage::disk('public')->exists($model->$field)) {
-            Storage::disk('public')->delete($model->$field);
-            Log::info("Deleted old file", ['field' => $field, 'path' => $model->$field]);
-        }
+            // Only delete old file if NOT a draft AND file exists
+            if (!$isDraft && $model && $model->$field && Storage::disk('public')->exists($model->$field)) {
+                Storage::disk('public')->delete($model->$field);
+                Log::info("Deleted old file", ['field' => $field, 'path' => $model->$field]);
+            }
 
-        // Upload new file
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // Upload new file
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-        // Ensure the target directory exists
-        Storage::disk('public')->makeDirectory($folder);
+            // Ensure the target directory exists
+            Storage::disk('public')->makeDirectory($folder);
 
-        $path = $file->storeAs($folder, $filename, 'public');
+            $path = $file->storeAs($folder, $filename, 'public');
 
-        if (!$path) {
-            Log::error("storeAs failed — file not saved", [
-                'field' => $field, 'folder' => $folder, 'filename' => $filename,
+            if (!$path) {
+                Log::error("storeAs failed — file not saved", [
+                    'field' => $field,
+                    'folder' => $folder,
+                    'filename' => $filename,
+                ]);
+                // Preserve existing value rather than storing a bad path
+                if ($model && $model->$field) {
+                    $data[$field] = $model->$field;
+                }
+                continue;
+            }
+
+            Log::info("File uploaded successfully", [
+                'field' => $field,
+                'filename' => $filename,
+                'path' => $path,
+                'folder' => $folder,
+                'full_path' => storage_path('app/public/' . $path)
             ]);
-            // Preserve existing value rather than storing a bad path
-            if ($model && $model->$field) {
-                $data[$field] = $model->$field;
-            }
-            continue;
+
+            $data[$field] = $path;
         }
 
-        Log::info("File uploaded successfully", [
-            'field' => $field,
-            'filename' => $filename,
-            'path' => $path,
-            'folder' => $folder,
-            'full_path' => storage_path('app/public/' . $path)
-        ]);
-
-        $data[$field] = $path;
+        return $data;
     }
-
-    return $data;
-}
 
     /**
      * Copy permanent address to mailing address
@@ -803,7 +829,7 @@ class ApplicationFormController extends Controller
         DB::table('candidate_registration')
             ->where('id', $candidateId)
             ->update([
-                'date_of_birth_bs' => $birthDateBs,
+                'birth_date_bs' => $birthDateBs,
                 'birth_date_ad'    => $birthDateAd ?: null,
             ]);
     }
@@ -812,10 +838,12 @@ class ApplicationFormController extends Controller
     {
         $hasAnyData = false;
         for ($i = 1; $i <= 10; $i++) {
-            if (!empty($request->input("exp{$i}_organization")) ||
+            if (
+                !empty($request->input("exp{$i}_organization")) ||
                 !empty($request->input("exp{$i}_position")) ||
                 !empty($request->input("exp{$i}_start_date_bs")) ||
-                !empty($request->input("exp{$i}_years"))) {
+                !empty($request->input("exp{$i}_years"))
+            ) {
                 $hasAnyData = true;
                 break;
             }

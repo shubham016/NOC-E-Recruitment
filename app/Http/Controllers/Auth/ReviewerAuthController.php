@@ -18,29 +18,52 @@ class ReviewerAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'employee_id' => 'required',
             'password' => 'required|min:6',
         ]);
 
+        // Check if reviewer exists
+        $reviewer = \App\Models\Reviewer::where('employee_id', $request->employee_id)->first();
+
+        if (!$reviewer) {
+            return back()->withErrors([
+                'employee_id' => 'Reviewer not found with this Employee ID.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        if ($reviewer->status !== 'active') {
+            return back()->withErrors([
+                'employee_id' => 'Your account is inactive. Please contact administrator.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        // Verify password manually first
+        if (!\Hash::check($request->password, $reviewer->password)) {
+            return back()->withErrors([
+                'employee_id' => 'Invalid password.',
+            ])->withInput($request->only('employee_id'));
+        }
+
+        // If all checks pass, authenticate
         if (Auth::guard('reviewer')->attempt([
-            'email' => $request->email,
+            'employee_id' => $request->employee_id,
             'password' => $request->password,
             'status' => 'active'
-        ], $request->remember)) {
+        ], $request->filled('remember'))) {
             $request->session()->regenerate();
             return redirect()->route('reviewer.dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials or account is inactive.',
-        ])->withInput($request->only('email'));
+            'employee_id' => 'Authentication failed. Please try again.',
+        ])->withInput($request->only('employee_id'));
     }
 
     // Handle logout
     public function logout(Request $request)
     {
         Auth::guard('reviewer')->logout();
-        $request->session()->regenerate();
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('reviewer.login');
     }

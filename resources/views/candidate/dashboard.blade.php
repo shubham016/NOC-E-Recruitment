@@ -7,6 +7,10 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
@@ -84,7 +88,7 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header mb-4">
-        <h1 class="page-title">Welcome, {{ $candidate->name ?? Auth::guard('candidate')->user()->name ?? 'Candidate' }}!</h1>
+        <h1 class="page-title">Welcome, {{ $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate' }}!</h1>
     </div>
 
     <!-- Stats Cards -->

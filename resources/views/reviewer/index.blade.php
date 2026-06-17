@@ -13,36 +13,36 @@
 @section('sidebar-menu')
     <a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('reviewer.dashboard') }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-hourglass-split"></i>
-        <span>Pending Reviews</span>
+        <span>{{ __('reviewer.pending_reviews') }}</span>
         <span class="badge bg-warning text-dark ms-auto">{{ $stats['pending'] }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-check-circle"></i>
-        <span>Reviewed Applications</span>
+        <span>{{ __('reviewer.reviewed_applications') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-star"></i>
-        <span>Shortlisted</span>
+        <span>{{ __('reviewer.shortlisted') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-x-circle"></i>
-        <span>Rejected</span>
+        <span>{{ __('reviewer.rejected') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-briefcase"></i>
-        <span>Job Positions</span>
+        <span>{{ __('reviewer.job_positions') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-bar-chart"></i>
-        <span>My Statistics</span>
+        <span>{{ __('reviewer.my_statistics') }}</span>
     </a>
     <a href="#" class="sidebar-menu-item">
         <i class="bi bi-gear"></i>
-        <span>Settings</span>
+        <span>{{ __('reviewer.settings') }}</span>
     </a>
 @endsection
 
@@ -163,16 +163,16 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-1">
-            <i class="bi bi-list-check text-primary me-2"></i>Applications Management
+            <i class="bi bi-list-check text-primary me-2"></i>{{ __('reviewer.applications_management') }}
         </h4>
-        <p class="text-muted mb-0">Review and manage all job applications</p>
+        <p class="text-muted mb-0">{{ __('reviewer.review_and_manage_applications') }}</p>
     </div>
     <div class="d-flex gap-2">
         <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtersModal">
-            <i class="bi bi-funnel me-2"></i>Advanced Filters
+            <i class="bi bi-funnel me-2"></i>{{ __('reviewer.advanced_filters') }}
         </button>
         <button class="btn btn-outline-primary" onclick="exportApplications()">
-            <i class="bi bi-download me-2"></i>Export
+            <i class="bi bi-download me-2"></i>{{ __('reviewer.export') }}
         </button>
     </div>
 </div>
@@ -187,7 +187,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
-                    <small class="text-muted">Total Applications</small>
+                    <small class="text-muted">{{ __('reviewer.total_applications') }}</small>
                 </div>
             </div>
         </div>
@@ -200,7 +200,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['pending'] }}</h3>
-                    <small class="text-muted">Pending Review</small>
+                    <small class="text-muted">{{ __('reviewer.pending_review') }}</small>
                 </div>
             </div>
         </div>
@@ -213,7 +213,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['shortlisted'] }}</h3>
-                    <small class="text-muted">Shortlisted</small>
+                    <small class="text-muted">{{ __('reviewer.shortlisted') }}</small>
                 </div>
             </div>
         </div>
@@ -226,7 +226,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-0">{{ $stats['rejected'] }}</h3>
-                    <small class="text-muted">Rejected</small>
+                    <small class="text-muted">{{ __('reviewer.rejected') }}</small>
                 </div>
             </div>
         </div>
@@ -244,27 +244,27 @@
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" class="form-control" name="search" 
-                               placeholder="Search by name, email, or job title..." 
+                               placeholder="{{ __('reviewer.search_by_name_email_or_job_title') }}" 
                                value="{{ request('search') }}">
                     </div>
                 </div>
                 <div class="col-md-2">
                     <select class="form-select" name="status" onchange="this.form.submit()">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="selected" {{ request('status') == 'selected' ? 'selected' : '' }}>Selected</option>
-                        <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="">{{ __('reviewer.all_status') }}</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('reviewer.pending') }}</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>{{ __('reviewer.approved') }}</option>
+                        <option value="selected" {{ request('status') == 'selected' ? 'selected' : '' }}>{{ __('reviewer.selected') }}</option>
+                        <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>{{ __('reviewer.shortlisted') }}</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>{{ __('reviewer.rejected') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <select class="form-select" name="priority" onchange="this.form.submit()">
                         <option value="">All Priority</option>
-                        <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                        <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                        <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>Normal</option>
+                        <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>{{ __('reviewer.high') }}</option>
+                        <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>{{ __('reviewer.medium') }}</option>
+                        <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>{{ __('reviewer.low') }}</option>
+                        <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>{{ __('reviewer.normal') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -280,7 +280,7 @@
                 <div class="col-md-2">
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-grow-1">
-                            <i class="bi bi-search"></i> Search
+                            <i class="bi bi-search"></i> {{ __('reviewer.search') }}
                         </button>
                         @if(request()->hasAny(['search', 'status', 'priority', 'job_id', 'date_from', 'date_to']))
                             <a href="{{ route('reviewer.applications.index') }}" class="btn btn-outline-secondary">
@@ -295,10 +295,10 @@
         <!-- Active Filters -->
         @if(request()->hasAny(['search', 'status', 'priority', 'job_id', 'date_from', 'date_to']))
             <div class="mt-3">
-                <small class="text-muted me-2">Active Filters:</small>
+                <small class="text-muted me-2">{{ __('reviewer.active_filters') }}:</small>
                 @if(request('search'))
                     <span class="filter-badge">
-                        Search: "{{ request('search') }}"
+                        {{ __('reviewer.search') }}: "{{ request('search') }}"
                         <a href="{{ request()->fullUrlWithout('search') }}" class="remove-filter">
                             <i class="bi bi-x"></i>
                         </a>
@@ -306,7 +306,7 @@
                 @endif
                 @if(request('status'))
                     <span class="filter-badge">
-                        Status: {{ ucfirst(str_replace('_', ' ', request('status'))) }}
+                        {{ __('reviewer.status') }}: {{ ucfirst(str_replace('_', ' ', request('status'))) }}
                         <a href="{{ request()->fullUrlWithout('status') }}" class="remove-filter">
                             <i class="bi bi-x"></i>
                         </a>
@@ -314,7 +314,7 @@
                 @endif
                 @if(request('priority'))
                     <span class="filter-badge">
-                        Priority: {{ ucfirst(request('priority')) }}
+                        {{ __('reviewer.priority') }}: {{ ucfirst(request('priority')) }}
                         <a href="{{ request()->fullUrlWithout('priority') }}" class="remove-filter">
                             <i class="bi bi-x"></i>
                         </a>
@@ -332,20 +332,20 @@
             <div class="d-flex align-items-center gap-3">
                 <input type="checkbox" class="select-all-checkbox" id="selectAll">
                 <h6 class="mb-0 fw-bold">
-                    Applications List
-                    <span class="badge bg-primary ms-2">{{ $applications->total() }} Total</span>
+                    {{ __('reviewer.applications_list') }}
+                    <span class="badge bg-primary ms-2">{{ $applications->total() }} {{ __('reviewer.total') }}</span>
                 </h6>
             </div>
             <div class="d-flex gap-2">
                 <select class="form-select form-select-sm" style="width: auto;" onchange="changeSorting(this.value)">
                     <option value="created_at-desc" {{ request('sort_by') == 'created_at' && request('sort_order') == 'desc' ? 'selected' : '' }}>
-                        Newest First
+                        {{ __('reviewer.newest_first') }}
                     </option>
                     <option value="created_at-asc" {{ request('sort_by') == 'created_at' && request('sort_order') == 'asc' ? 'selected' : '' }}>
-                        Oldest First
+                        {{ __('reviewer.oldest_first') }}
                     </option>
                     <option value="deadline-asc" {{ request('sort_by') == 'deadline' && request('sort_order') == 'asc' ? 'selected' : '' }}>
-                        Urgent First
+                        {{ __('reviewer.urgent_first') }}
                     </option>
                 </select>
             </div>
@@ -357,13 +357,13 @@
                 <thead class="table-light">
                     <tr>
                         <th width="40"></th>
-                        <th>Candidate</th>
-                        <th>Job Position</th>
-                        <th>Applied Date</th>
-                        <th>Deadline</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th width="120">Actions</th>
+                        <th>{{ __('reviewer.candidate') }}</th>
+                        <th>{{ __('reviewer.job_position') }}</th>
+                        <th>{{ __('reviewer.applied_date') }}</th>
+                        <th>{{ __('reviewer.deadline') }}</th>
+                        <th>{{ __('reviewer.status') }}</th>
+                        <th>{{ __('reviewer.priority') }}</th>
+                        <th width="120">{{ __('reviewer.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -443,7 +443,7 @@
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <i class="bi bi-inbox fs-1 text-muted"></i>
-                                <p class="text-muted mt-3">No applications found</p>
+                                <p class="text-muted mt-3">{{ __('reviewer.no_applications_found') }}</p>
                             </td>
                         </tr>
                     @endforelse
@@ -468,13 +468,13 @@
 <!-- Bulk Actions Bar -->
 <div class="bulk-actions-bar" id="bulkActionsBar">
     <div class="me-3">
-        <strong><span id="selectedCount">0</span> Selected</strong>
+        <strong><span id="selectedCount">0</span> {{ __('reviewer.selected') }}</strong>
     </div>
     <button class="btn btn-success btn-sm" onclick="bulkAction('shortlisted')">
-        <i class="bi bi-check-circle me-1"></i>Shortlist
+        <i class="bi bi-check-circle me-1"></i>{{ __('reviewer.shortlist') }}
     </button>
     <button class="btn btn-danger btn-sm" onclick="bulkAction('rejected')">
-        <i class="bi bi-x-circle me-1"></i>Reject
+        <i class="bi bi-x-circle me-1"></i>{{ __('reviewer.reject') }}
     </button>
     <button class="btn btn-outline-light btn-sm" onclick="clearSelection()">
         <i class="bi bi-x-lg"></i>
@@ -487,7 +487,7 @@
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
                 <h5 class="modal-title fw-bold">
-                    <i class="bi bi-file-earmark-person me-2"></i>Application Review
+                    <i class="bi bi-file-earmark-person me-2"></i>{{ __('reviewer.application_review') }}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -507,23 +507,23 @@
                         <div class="col-lg-8 border-end">
                             <div class="p-4">
                                 <h6 class="fw-bold mb-3">
-                                    <i class="bi bi-person-circle text-primary me-2"></i>Candidate Information
+                                    <i class="bi bi-person-circle text-primary me-2"></i>{{ __('reviewer.candidate_information') }}
                                 </h6>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
-                                        <label class="small text-muted">Full Name</label>
+                                        <label class="small text-muted">{{ __('reviewer.full_name') }}</label>
                                         <p class="fw-semibold mb-0" id="candidateName">-</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted">Email</label>
+                                        <label class="small text-muted">{{ __('reviewer.email') }}</label>
                                         <p class="mb-0" id="candidateEmail">-</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted">Phone</label>
+                                        <label class="small text-muted">{{ __('reviewer.phone') }}</label>
                                         <p class="mb-0" id="candidatePhone">-</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted">Address</label>
+                                        <label class="small text-muted">{{ __('reviewer.address') }}</label>
                                         <p class="mb-0" id="candidateAddress">-</p>
                                     </div>
                                 </div>
@@ -531,27 +531,27 @@
                                 <hr>
 
                                 <h6 class="fw-bold mb-3">
-                                    <i class="bi bi-briefcase text-warning me-2"></i>Position Details
+                                    <i class="bi bi-briefcase text-warning me-2"></i>{{ __('reviewer.position_details') }}
                                 </h6>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-12">
-                                        <label class="small text-muted">Vacancy Title</label>
+                                        <label class="small text-muted">{{ __('reviewer.vacancy_title') }}</label>
                                         <p class="fw-semibold mb-0" id="jobTitle">-</p>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted">Department</label>
+                                        <label class="small text-muted">{{ __('reviewer.department') }}</label>
                                         <p class="mb-0" id="jobDepartment">-</p>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted">Location</label>
+                                        <label class="small text-muted">{{ __('reviewer.location') }}</label>
                                         <p class="mb-0" id="jobLocation">-</p>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted">Type</label>
+                                        <label class="small text-muted">{{ __('reviewer.type') }}</label>
                                         <p class="mb-0" id="jobType">-</p>
                                     </div>
                                     <div class="col-md-12">
-                                        <label class="small text-muted">Salary Range</label>
+                                        <label class="small text-muted">{{ __('reviewer.salary_range') }}</label>
                                         <p class="mb-0" id="salaryRange">-</p>
                                     </div>
                                 </div>
@@ -559,14 +559,14 @@
                                 <hr>
 
                                 <h6 class="fw-bold mb-3">
-                                    <i class="bi bi-file-text text-success me-2"></i>Cover Letter
+                                    <i class="bi bi-file-text text-success me-2"></i>{{ __('reviewer.cover_letter') }}
                                 </h6>
                                 <div class="bg-light rounded p-3 mb-4">
                                     <p class="mb-0 small" id="coverLetter" style="white-space: pre-wrap;">-</p>
                                 </div>
 
                                 <h6 class="fw-bold mb-3">
-                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Resume
+                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>{{ __('reviewer.resume') }}
                                 </h6>
                                 <div id="resumeSection">
                                     <button class="btn btn-outline-primary btn-sm">
@@ -583,16 +583,16 @@
                         <div class="col-lg-4">
                             <div class="p-4 bg-light h-100">
                                 <h6 class="fw-bold mb-3">
-                                    <i class="bi bi-pencil-square text-info me-2"></i>Review Actions
+                                    <i class="bi bi-pencil-square text-info me-2"></i>{{ __('reviewer.review_actions') }}
                                 </h6>
 
                                 <div class="mb-4">
-                                    <label class="small text-muted d-block mb-2">Application Status</label>
+                                    <label class="small text-muted d-block mb-2">{{ __('reviewer.application_status') }}</label>
                                     <span class="badge bg-warning text-dark" id="currentStatus">Pending</span>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label class="small text-muted d-block mb-2">Applied Date</label>
+                                    <label class="small text-muted d-block mb-2">{{ __('reviewer.applied_date') }}</label>
                                     <p class="mb-0 small" id="appliedDate">-</p>
                                 </div>
 
@@ -602,34 +602,34 @@
                                     <input type="hidden" id="applicationId">
 
                                     <div class="mb-3">
-                                        <label class="form-label fw-semibold">Reviewer Notes</label>
+                                        <label class="form-label fw-semibold">{{ __('reviewer.reviewer_notes') }}</label>
                                         <textarea class="form-control" id="reviewerNotes" rows="4" 
                                             placeholder="Add your notes here..."></textarea>
                                         <small class="text-muted">
-                                            <i class="bi bi-info-circle"></i> Required for rejection
+                                            <i class="bi bi-info-circle"></i> {{ __('reviewer.required_for_rejection') }}
                                         </small>
                                     </div>
 
                                     <div class="d-grid gap-2">
                                         <button type="button" class="btn btn-success btn-action" data-status="shortlisted">
-                                            <i class="bi bi-check-circle me-2"></i>Shortlist
+                                            <i class="bi bi-check-circle me-2"></i>{{ __('reviewer.shortlist') }}
                                         </button>
                                         <button type="button" class="btn btn-danger btn-action" data-status="rejected">
-                                            <i class="bi bi-x-circle me-2"></i>Reject
+                                            <i class="bi bi-x-circle me-2"></i>{{ __('reviewer.reject') }}
                                         </button>
                                         <button type="button" class="btn btn-info btn-action" data-status="approved">
-                                            <i class="bi bi-arrow-repeat me-2"></i>Approved
+                                            <i class="bi bi-arrow-repeat me-2"></i>{{ __('reviewer.approve') }}
                                         </button>
                                     </div>
                                 </form>
 
                                 <div id="reviewedInfo" style="display: none;" class="mt-4 p-3 bg-white rounded border">
                                     <h6 class="fw-bold mb-2 small">
-                                        <i class="bi bi-clock-history me-1"></i>Previous Review
+                                        <i class="bi bi-clock-history me-1"></i>{{ __('reviewer.previous_review') }}
                                     </h6>
-                                    <p class="mb-1 small"><strong>Reviewed by:</strong> <span id="reviewedBy">-</span></p>
-                                    <p class="mb-1 small"><strong>Date:</strong> <span id="reviewedAt">-</span></p>
-                                    <p class="mb-0 small"><strong>Notes:</strong> <span id="previousNotes">-</span></p>
+                                    <p class="mb-1 small"><strong>{{ __('reviewer.reviewed_by') }}:</strong> <span id="reviewedBy">-</span></p>
+                                    <p class="mb-1 small"><strong>{{ __('reviewer.date') }}:</strong> <span id="reviewedAt">-</span></p>
+                                    <p class="mb-0 small"><strong>{{ __('reviewer.notes') }}:</strong> <span id="previousNotes">-</span></p>
                                 </div>
                             </div>
                         </div>

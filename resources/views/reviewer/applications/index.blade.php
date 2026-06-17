@@ -1,9 +1,8 @@
-@extends('layouts.apps')
+@extends('layouts.reviewer')
 
 @section('title', 'Application Reviews')
 
 @section('portal-name', 'Reviewer Portal')
-@section('brand-icon', 'bi bi-clipboard-check')
 @section('dashboard-route', route('reviewer.dashboard'))
 @section('user-name', Auth::guard('reviewer')->user()->name)
 @section('user-role', 'Application Reviewer')
@@ -13,22 +12,26 @@
 @section('sidebar-menu')
     <a href="{{ route('reviewer.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('reviewer.dashboard') }}</span>
     </a>
     <a href="{{ route('reviewer.applications.index', ['status' => 'assigned']) }}" class="sidebar-menu-item active">
         <i class="bi bi-inbox"></i>
-        <span>Assigned to Me</span>
+        <span>{{ __('reviewer.assigned_to_me') }}</span>
     </a>
     <a href="{{ route('reviewer.myprofile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('reviewer.my_profile') }}</span>
+    </a>
+    <a href="{{ route('reviewer.notifications.index') }}" class="sidebar-menu-item">
+        <i class="bi bi-bell"></i>
+        <span>{{ __('reviewer.notifications') }}</span>
     </a>
 @endsection
 
 @push('styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #a07828 0%, #a07828 100%);
+        background: linear-gradient(135deg, #16315c 0%, #16315c 100%);
         border-radius: 12px;
         padding: 1.5rem;
         color: white;
@@ -143,9 +146,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h3 class="fw-bold mb-1">
-                            <i class="bi bi-clipboard-check me-2"></i>Application Reviews
+                            {{ __('reviewer.application_reviews') }}
                         </h3>
-                        <p class="mb-0 opacity-90">Review and process candidate applications</p>
+                        <p class="mb-0 opacity-90">{{ __('reviewer.review_process_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -156,35 +159,35 @@
             <div class="col">
                 <div class="stat-card h-100 text-center p-3">
                     <h3 class="fw-bold mb-1">{{ $stats['total'] }}</h3>
-                    <small class="text-muted">Total Applications</small>
+                    <small class="text-muted">{{ __('reviewer.total_applications') }}</small>
                 </div>
             </div>
 
             <div class="col">
                 <div class="stat-card h-100 text-center p-3">
                     <h3 class="fw-bold mb-1">{{ $stats['edit'] }}</h3>
-                    <small class="text-muted">Edit Given</small>
+                    <small class="text-muted">{{ __('reviewer.edit_given') }}</small>
                 </div>
             </div>
 
             <div class="col">
                 <div class="stat-card h-100 text-center p-3">
                     <h3 class="fw-bold mb-1">{{ $stats['edited'] }}</h3>
-                    <small class="text-muted">Application Edited</small>
+                    <small class="text-muted">{{ __('reviewer.application_edited') }}</small>
                 </div>
             </div>
 
             <div class="col">
                 <div class="stat-card h-100 text-center p-3">
                     <h3 class="fw-bold mb-1">{{ $stats['reviewed'] }}</h3>
-                    <small class="text-muted">Reviewed</small>
+                    <small class="text-muted">{{ __('reviewer.reviewed') }}</small>
                 </div>
             </div>
 
             <div class="col">
                 <div class="stat-card h-100 text-center p-3">
                     <h3 class="fw-bold mb-1">{{ $stats['rejected'] }}</h3>
-                    <small class="text-muted">Rejected</small>
+                    <small class="text-muted">{{ __('reviewer.rejected') }}</small>
                 </div>
             </div>
 
@@ -197,33 +200,34 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <input type="text" name="search" class="form-control"
-                               placeholder="Search candidates..." value="{{ request('search') }}">
+                               placeholder="{{ __('reviewer.search_candidates') }}" value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
                        <select name="status" class="form-select">
-                            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option>
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>Assigned</option>
-                            <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>Reviewed</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                            <option value="edit" {{ request('status') == 'edit' ? 'selected' : '' }}>Edit</option>
-                            <option value="edited" {{ request('status') == 'edited' ? 'selected' : '' }}>Edited</option>
+                            <!-- <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option> -->
+                            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>{{ __('reviewer.all_status') }}</option>
+                            <!-- <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option> -->
+                            <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>{{ __('reviewer.pending_review') }}</option>
+                            <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>{{ __('reviewer.reviewed') }}</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>{{ __('reviewer.status_approved') }}</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>{{ __('reviewer.rejected') }}</option>
+                            <option value="edit" {{ request('status') == 'edit' ? 'selected' : '' }}>{{ __('reviewer.edit_given') }}</option>
+                            <option value="edited" {{ request('status') == 'edited' ? 'selected' : '' }}>{{ __('reviewer.application_edited') }}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <select name="job_id" class="form-select">
-                            <option value="">All Vacancies</option>
+                            <option value="">{{ __('reviewer.all_vacancies') }}</option>
                             @foreach($jobs as $job)
                                 <option value="{{ $job->id }}" {{ request('job_id') == $job->id ? 'selected' : '' }}>
-                                    {{ $job->title }}
+                                    {{ $job->advertisement_no }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-danger w-100">
-                            <i class="bi bi-search me-1"></i> Search
+                        <button type="submit" class="btn btn-success w-100">
+                            {{ __('reviewer.search') }}
                         </button>
                     </div>
                 </div>
@@ -238,9 +242,9 @@
         <div class="card-header bg-white py-3" id="tableHeaderDefault">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
-                    <i class="bi bi-list-ul text-dark me-2"></i>Applications List
+                    <i class="bi bi-list-ul text-dark me-2"></i>{{ __('reviewer.applications_list') }}
                 </h6>
-                <span class="badge bg-danger">{{ $applications->total() }} Total</span>
+                <span >{{ $applications->total() }} {{ __('reviewer.total') }}</span>
             </div>
         </div>
 
@@ -249,18 +253,18 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2">
                     <span class="fw-bold text-dark">
-                        <span id="selectedCount">0</span> application(s) selected
+                        <span id="selectedCount">0</span> {{ __('reviewer.application_selected') }}
                     </span>
                     <button type="button" class="btn btn-sm btn-outline-secondary" id="clearSelectionBtn">
-                        Clear Selection
+                        {{ __('reviewer.clear_selection') }}
                     </button>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-success px-3" id="exportCsvBtn">
-                        Export to Excel
+                        {{ __('reviewer.export_to_excel') }}
                     </button>
                     <button type="button" class="btn btn-sm btn-danger px-3" id="exportPdfBtn">
-                        Export to PDF
+                        {{ __('reviewer.export_to_pdf') }}
                     </button>
                 </div>
             </div>
@@ -274,58 +278,24 @@
                             <th style="width: 40px;">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th>S.N.</th>
-                            <th>AD No</th>
-                            <th>Application ID</th>
-                            <th>Photo</th>
-                            <th>Candidate</th>
-                            <th>Position</th>
-                            <th>Department</th>
-                            <th>Payment</th>
-                            <th>Applied Date</th>
-                            <th>Deadline</th>
+                            <!-- <th>{{ __('reviewer.serial_number') }}</th> -->
+                            <th>{{ __('reviewer.advertisement_no') }}</th>
+                            <th>{{ __('reviewer.application_id') }}</th>
+                            <th>{{ __('reviewer.photo') }}</th>
+                            <th>{{ __('reviewer.candidate') }}</th>
+                            <th>{{ __('reviewer.position') }}</th>
+                            <th>{{ __('reviewer.department') }}</th>
+                            <th>{{ __('reviewer.payment') }}</th>
+                            <th>{{ __('reviewer.applied_date') }}</th>
+                            <th>{{ __('reviewer.deadline') }}</th>
                             <!-- <th>Priority</th> -->
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('reviewer.status') }}</th>
+                            <th>{{ __('reviewer.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($applications as $index => $application)
                             @php
-                                $daysRemaining = $application->jobPosting
-                                    ? (int) now()->diffInDays($application->jobPosting->deadline, false)
-                                    : 0;
-
-                                if ($application->manual_priority) {
-                                    $priorityClass = 'priority-' . $application->manual_priority;
-                                    $priorityText  = ucfirst($application->manual_priority);
-                                    $priorityBadge = match($application->manual_priority) {
-                                        'critical' => 'bg-dark',
-                                        'high'     => 'bg-danger',
-                                        'medium'   => 'bg-warning',
-                                        'low'      => 'bg-success',
-                                        'normal'   => 'bg-secondary',
-                                        default    => 'bg-secondary'
-                                    };
-                                } else {
-                                    $priorityClass = '';
-                                    $priorityBadge = 'bg-secondary';
-                                    $priorityText  = 'Normal';
-
-                                    if ($daysRemaining <= 2) {
-                                        $priorityClass = 'priority-high';
-                                        $priorityBadge = 'bg-danger';
-                                        $priorityText  = 'High';
-                                    } elseif ($daysRemaining <= 5) {
-                                        $priorityClass = 'priority-medium';
-                                        $priorityBadge = 'bg-warning';
-                                        $priorityText  = 'Medium';
-                                    } elseif ($daysRemaining <= 10) {
-                                        $priorityClass = 'priority-low';
-                                        $priorityBadge = 'bg-success';
-                                        $priorityText  = 'Low';
-                                    }
-                                }
 
                                 $statusColors = [
                                     'pending'  => 'bg-warning text-dark',
@@ -337,14 +307,14 @@
                                 $statusColor = $statusColors[$application->status] ?? 'bg-secondary';
                             @endphp
 
-                            <tr class="application-card {{ $priorityClass }}">
+                            <tr class="application-card">
                                 <td class="text-center">
                                     <input type="checkbox"
                                            class="form-check-input application-checkbox"
                                            value="{{ $application->id }}">
                                 </td>
 
-                                <td class="nowrap">{{ $applications->firstItem() + $index }}</td>
+                                <!-- <td class="nowrap">{{ $applications->firstItem() + $index }}</td> -->
                                 <td class="nowrap">{{ $application->jobPosting->advertisement_no ?? 'N/A' }}</td>
                                 <td class="nowrap">{{ $application->id }}</td>
 
@@ -370,18 +340,19 @@
                                 <td class="nowrap">
                                     @php $paymentStatus = $application->payment->status ?? null; @endphp
                                     @if($paymentStatus === 'completed')
-                                        <span class="badge bg-success">Completed</span>
+                                        <span class="badge bg-success">{{ __('reviewer.completed') }}</span>
                                     @elseif($paymentStatus)
-                                        <span class="badge bg-warning text-dark">{{ ucfirst($paymentStatus) }}</span>
+                                        <span class="d-block">{{ ucfirst($paymentStatus) }}</span>
+                                        <small class="d-block text-muted">Rs. {{ $application->payment->amount ?? 'N/A' }}</small>
                                     @else
-                                        <span class="text-muted">N/A</span>
+                                        <span class="text-muted">{{ __('reviewer.not_applicable') }}</span>
                                     @endif
                                 </td>
 
                                 <td class="nowrap">
                                     @php $appliedDate = $application->submitted_at ?? $application->created_at; @endphp
-                                    <strong class="text-success d-block">{{ adToBS($appliedDate) }}</strong>
-                                    <small class="text-muted">{{ \Carbon\Carbon::parse($appliedDate)->format('h:i A') }}</small>
+                                    <spam class="d-block">{{ adToBS($appliedDate) }}</spam>
+                                    <small class="d-blocktext-muted">{{ \Carbon\Carbon::parse($appliedDate)->format('h:i A') }}</small>
                                 </td>
 
                                 <td class="nowrap">
@@ -390,34 +361,24 @@
                                             $deadlineBS = $application->jobPosting->deadline_bs
                                                 ?: adToBS($application->jobPosting->deadline->format('Y-m-d'));
                                         @endphp
-                                        <strong class="text-danger d-block">{{ $deadlineBS }} (BS)</strong>
+                                        <spam class="d-block">{{ $deadlineBS }} (BS)</spam>
                                         <small class="text-muted d-block">{{ $application->jobPosting->deadline->format('M d, Y') }}</small>
-                                        <small class="badge {{ $daysRemaining <= 5 ? 'bg-danger' : 'bg-secondary' }}">
-                                            {{ $daysRemaining }} days left
-                                        </small>
+                                        
                                     @else
                                         N/A
                                     @endif
                                 </td>
 
-                                <!-- <td class="nowrap">
-                                    <span class="badge {{ $priorityBadge }}">{{ $priorityText }}</span>
-                                    @if($application->manual_priority && $application->priority_note)
-                                        <br><small class="text-muted" title="{{ $application->priority_note }}">📌</small>
-                                    @elseif(!$application->manual_priority)
-                                        <br><small class="text-muted">(Auto)</small>
-                                    @endif
-                                </td> -->
 
                                 <td class="nowrap">
-                                    <span class="badge {{ $statusColor }}">{{ ucfirst($application->status) }}</span>
+                                    <span >{{ ucfirst($application->status) }}</span>
                                 </td>
 
                                 <td class="nowrap">
                                     <a href="{{ route('reviewer.applications.show', $application->id) }}"
                                        class="btn btn-sm {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'btn-danger' : 'btn-warning' }}">
                                         <i class="bi {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'bi-check-circle' : 'bi-eye' }} me-1"></i>
-                                        {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? 'View' : 'Review' }}
+                                        {{ in_array($application->status, ['approved', 'rejected', 'reviewed']) ? __('reviewer.view') : __('reviewer.review') }}
                                     </a>
                                 </td>
                             </tr>
@@ -425,8 +386,8 @@
                             <tr>
                                 <td colspan="14" class="text-center py-5">
                                     <i class="bi bi-inbox display-1 text-muted"></i>
-                                    <h5 class="text-muted mt-3">No Applications Found</h5>
-                                    <p class="text-secondary">No applications match your criteria.</p>
+                                    <h5 class="text-muted mt-3">{{ __('reviewer.no_applications_found') }}</h5>
+                                    <p class="text-secondary">{{ __('reviewer.no_applications_match_criteria') }}</p>
                                 </td>
                             </tr>
                         @endforelse

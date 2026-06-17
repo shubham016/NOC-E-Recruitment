@@ -27,6 +27,7 @@ class ReviewerController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('employee_id', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%")
                     ->orWhere('department', 'like', "%{$search}%");
             });
@@ -93,24 +94,23 @@ class ReviewerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'employee_id' => ['required', 'string', 'max:50', 'unique:reviewers'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:reviewers'],
             'phone' => ['nullable', 'string', 'max:20'],
             'department' => ['required', 'string', 'max:255'],
             'designation' => ['nullable', 'string', 'max:255'],
-            'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'password' => ['required', Password::min(8)],
+            'photo' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
-
-        $validated['password'] = Hash::make($validated['password']);
 
         // Handle photo upload
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('reviewer-photos', 'public');
-            $validated['photo'] = $photoPath;
+            $validated['photo'] = $request->file('photo')->store('reviewer-photos', 'public');
         }
 
+        // Password will be automatically hashed by the model cast
         Reviewer::create($validated);
 
         return redirect()->route('admin.reviewers.index')
@@ -167,31 +167,23 @@ class ReviewerController extends Controller
         $reviewer = Reviewer::findOrFail($id);
 
         $validated = $request->validate([
+            'employee_id' => ['required', 'string', 'max:50', 'unique:reviewers,employee_id,' . $id],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:reviewers,email,' . $reviewer->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:reviewers,email,' . $id],
             'phone' => ['nullable', 'string', 'max:20'],
             'department' => ['required', 'string', 'max:255'],
             'designation' => ['nullable', 'string', 'max:255'],
-            'password' => ['nullable', 'confirmed', Password::min(8)->letters()->numbers()],
+            'photo' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
-
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
 
         // Handle photo upload
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
+            // Delete old photo
             if ($reviewer->photo) {
                 Storage::disk('public')->delete($reviewer->photo);
             }
-
-            $photoPath = $request->file('photo')->store('reviewer-photos', 'public');
-            $validated['photo'] = $photoPath;
+            $validated['photo'] = $request->file('photo')->store('reviewer-photos', 'public');
         }
 
         $reviewer->update($validated);
@@ -244,11 +236,11 @@ class ReviewerController extends Controller
         $reviewer = Reviewer::findOrFail($id);
 
         $validated = $request->validate([
-            'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'password' => ['required', Password::min(8), 'confirmed'],
         ]);
 
         $reviewer->update([
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'], // Will be automatically hashed by model cast
         ]);
 
         return back()->with('success', 'Password reset successfully.');

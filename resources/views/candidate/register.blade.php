@@ -350,14 +350,14 @@
                         {{-- Name / Email / Phone (3 columns) --}}
                         <div class="noc-row3">
                             <div class="noc-field">
-                                <label for="name">Full Name <span class="req">*</span></label>
+                                <label for="name_english">Full Name <span class="req">*</span></label>
                                 <div class="noc-input-group">
-                                    <input type="text" id="name" name="name" value="{{ old('name') }}"
+                                    <input type="text" id="name_english" name="name_english" value="{{ old('name_english') }}"
                                         placeholder="Enter your full name"
-                                        class="{{ $errors->has('name') ? 'is-invalid' : '' }}"
+                                        class="{{ $errors->has('name_english') ? 'is-invalid' : '' }}"
                                         required autofocus>
                                     <span class="noc-input-icon"><i class="bi bi-person"></i></span>
-                                    @error('name')
+                                    @error('name_english')
                                         <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
                                     @enderror
                                 </div>
@@ -413,14 +413,14 @@
 
                             {{-- DOB BS Date Picker --}}
                             <div class="noc-field">
-                                <label for="date_of_birth_bs">Date of Birth (BS) <span class="req">*</span></label>
+                                <label for="birth_date_bs">Date of Birth (BS) <span class="req">*</span></label>
                                 <div class="noc-input-group">
-                                    <input type="text" id="date_of_birth_bs" name="date_of_birth_bs"
-                                        value="{{ old('date_of_birth_bs') }}" placeholder="YYYY-MM-DD"
+                                    <input type="text" id="birth_date_bs" name="birth_date_bs"
+                                        value="{{ old('birth_date_bs') }}" placeholder="YYYY-MM-DD"
                                         autocomplete="off"
-                                        class="{{ $errors->has('date_of_birth_bs') ? 'is-invalid' : '' }}" required>
+                                        class="{{ $errors->has('birth_date_bs') ? 'is-invalid' : '' }}" required>
                                     <span class="noc-input-icon"><i class="bi bi-calendar-event"></i></span>
-                                    @error('date_of_birth_bs')
+                                    @error('birth_date_bs')
                                         <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
                                     @enderror
                                 </div>
@@ -490,16 +490,16 @@
                             </div>
                         </div>
 
-                        {{-- Issue District & Issue Date --}}
+                        {{-- Issue district & Issue Date --}}
                         <div class="noc-row">
                             <div class="noc-field">
-                                <label for="citizenship_issue_distric">Issue District <span class="req">*</span></label>
+                                <label for="citizenship_issue_district">Issue district <span class="req">*</span></label>
                                 <div class="noc-input-group">
-                                    <input type="text" id="citizenship_issue_distric" name="citizenship_issue_distric"
-                                        value="{{ old('citizenship_issue_distric') }}" placeholder="District name"
-                                        class="{{ $errors->has('citizenship_issue_distric') ? 'is-invalid' : '' }}" required>
+                                    <input type="text" id="citizenship_issue_district" name="citizenship_issue_district"
+                                        value="{{ old('citizenship_issue_district') }}" placeholder="District name"
+                                        class="{{ $errors->has('citizenship_issue_district') ? 'is-invalid' : '' }}" required>
                                     <span class="noc-input-icon"><i class="bi bi-geo-alt"></i></span>
-                                    @error('citizenship_issue_distric')
+                                    @error('citizenship_issue_district')
                                         <div class="noc-invalid-feedback"><i class="bi bi-x-circle"></i> {{ $message }}</div>
                                     @enderror
                                 </div>
@@ -577,7 +577,7 @@
 {{-- Date Picker Initialization --}}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const dobInput = document.getElementById('date_of_birth_bs');
+        const dobInput = document.getElementById('birth_date_bs');
         const issueDateInput = document.getElementById('citizenship_issue_date_bs');
 
         if (dobInput && typeof dobInput.nepaliDatePicker === 'function') {

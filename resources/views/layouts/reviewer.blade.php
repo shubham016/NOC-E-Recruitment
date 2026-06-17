@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title') - {{ __('admin.company_system') }}</title>
+    <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -47,8 +48,7 @@
         /* ── Form elements ──────────────────────────────────────── */
         .card-body { font-size: 13px; }
         .card-body .form-control {
-            font-size: 13px;
-            padding: 0.4rem 0.6rem;
+            font-size: 13px; padding: 0.4rem 0.6rem;
             height: calc(1.5em + 0.8rem + 2px);
         }
         .card-body .form-select { font-size: 13px; padding: 0.4rem 0.6rem; }
@@ -63,14 +63,10 @@
         }
         .notification-link .bi-bell { font-size: 1rem; line-height: 1.5; }
         .notification-link .badge.translate-middle {
-            width: 14px !important;
-            height: 14px !important;
-            min-width: 12px !important;
-            font-size: 0.5rem !important;
-            padding: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+            width: 14px !important; height: 14px !important;
+            min-width: 12px !important; font-size: 0.5rem !important;
+            padding: 0 !important; display: flex !important;
+            align-items: center !important; justify-content: center !important;
             transform: translate(-128%, 44%) !important;
         }
 
@@ -122,14 +118,11 @@
         }
 
         /* ── Layout container ───────────────────────────────────── */
-        .layout-container {
-            display: flex;
-            min-height: calc(100vh - 70px);
-        }
+        .layout-container { display: flex; min-height: calc(100vh - 70px); }
 
         /* ── Sidebar ────────────────────────────────────────────── */
         .sidebar {
-            width: 250px;
+            width: 260px;
             background: linear-gradient(180deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #2c2c2c;
             position: fixed;
@@ -147,10 +140,13 @@
             padding-top: 70px;
         }
 
-        .sidebar.hidden    { transform: translateX(-250px); }
+        /* Desktop hidden state */
+        .sidebar.hidden { transform: translateX(-260px); }
+
+        /* Mobile open state */
         .sidebar.mobile-open { transform: translateX(0) !important; }
 
-        /* Backdrop for mobile */
+        /* Backdrop (mobile only) */
         .sidebar-backdrop {
             display: none;
             position: fixed;
@@ -172,12 +168,10 @@
         .user-profile-sidebar { display: flex; align-items: center; gap: 0.75rem; width: 100%; }
 
         .user-avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: #fff;
-            flex-shrink: 0; font-size: 0.9rem;
+            font-weight: 700; color: #fff; flex-shrink: 0; font-size: 0.9rem;
         }
 
         .user-info { flex: 1; min-width: 0; }
@@ -185,24 +179,18 @@
         .user-info h6 {
             margin: 0; font-size: 0.95rem; font-weight: 600;
             color: var(--navy-primary); white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis; max-width: 160px;
-            display: block !important;
+            overflow: hidden; text-overflow: ellipsis;
+            max-width: 160px; display: block !important;
         }
-        .user-info small {
-            font-size: 0.75rem; color: var(--navy-light); display: block !important;
-        }
+        .user-info small { font-size: 0.75rem; color: var(--navy-light); display: block !important; }
 
         /* ── Sidebar menu ───────────────────────────────────────── */
         .sidebar-menu { padding: 0.75rem 0; flex: 1; overflow-y: auto; }
 
         .sidebar-menu-item {
-            padding: 0.7rem 1.25rem;
-            color: #444;
-            text-decoration: none;
+            padding: 0.7rem 1.25rem; color: #444; text-decoration: none;
             display: flex; align-items: center; gap: 0.75rem;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
+            transition: all 0.3s ease; border-left: 3px solid transparent; font-size: 0.9rem;
         }
         .sidebar-menu-item:hover {
             background: rgba(26, 58, 107, 0.08);
@@ -230,7 +218,7 @@
         /* ── Main content ───────────────────────────────────────── */
         .main-content {
             flex: 1;
-            margin-left: 250px;
+            margin-left: 260px;
             padding: 1.5rem;
             background: #f8f9fa;
             overflow-x: hidden;
@@ -248,8 +236,8 @@
             background: linear-gradient(90deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #555;
             padding: 20px 0;
-            margin-left: 250px;
-            width: calc(100% - 250px);
+            margin-left: 260px;
+            width: calc(100% - 260px);
             transition: margin-left 0.3s ease, width 0.3s ease;
             border-top: 1px solid var(--navy-border-lt);
         }
@@ -257,10 +245,8 @@
 
         /* ── Stat cards ─────────────────────────────────────────── */
         .stat-card {
-            border: none; border-radius: 12px;
-            padding: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background: white;
+            border: none; border-radius: 12px; padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; background: white;
         }
         .stat-card:hover {
             transform: translateY(-4px);
@@ -277,10 +263,15 @@
         .stat-icon.slate   { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
         .stat-icon.navy    { background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%); }
 
+        /* ── Page header helpers ────────────────────────────────── */
+        .page-header    { margin-bottom: 2rem; }
+        .page-title     { font-size: 1.75rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+        .page-subtitle  { color: #64748b; font-size: 1rem; }
+
         /* ── RESPONSIVE ─────────────────────────────────────────── */
         @media (max-width: 991px) {
             .sidebar {
-                transform: translateX(-250px);
+                transform: translateX(-260px);
                 padding-top: 0;
             }
 
@@ -294,7 +285,7 @@
                 width: 100% !important;
             }
 
-            /* Brand text scaling */
+            /* Brand scaling */
             .noc-info h5    { font-size: 14px; }
             .noc-info p     { font-size: 11px; }
             .noc-info small { font-size: 10px; }
@@ -335,12 +326,13 @@
 
 <body>
 
-    <!-- Sidebar backdrop (mobile) -->
+    <!-- Sidebar backdrop (mobile overlay) -->
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- Top Navigation Bar -->
     <nav class="navbar navbar-light" id="topNavbar">
         <div class="container-fluid">
+
             <button class="sidebar-toggle-btn" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
             </button>
@@ -348,13 +340,13 @@
             <div class="noc-brand-container me-auto">
                 <img src="{{ asset('images/images.png') }}" alt="Nepal Oil Corporation Logo" class="noc-logo">
                 <div class="noc-info">
-                    <h5>{{ __('approver.company_name') }}</h5>
-                    <p>{{ __('approver.company_address') }}</p>
-                    <small>{{ __('approver.company_system') }}</small>
+                    <h5>{{ __('reviewer.company_name') }}</h5>
+                    <p>{{ __('reviewer.company_address') }}</p>
+                    <small>{{ __('reviewer.company_system') }}</small>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-1">
+            <div class="d-flex align-items-center gap-1 ms-auto">
 
                 <!-- Language Switcher -->
                 <form method="POST" action="{{ route('language.switch') }}" style="display:inline;">
@@ -368,35 +360,48 @@
 
                 <!-- Notifications -->
                 @php
-                    try {
-                        $unreadCount = Auth::guard('approver')->check()
-                            ? \App\Models\Notification::where('user_id', Auth::guard('approver')->id())
-                                ->where('user_type', 'approver')
-                                ->where('is_read', false)
-                                ->count()
-                            : 0;
-                    } catch (\Exception $e) {
-                        $unreadCount = 0;
+                    $notifCount = 0;
+                    $notifRoute = null;
+
+                    if (Auth::guard('reviewer')->check()) {
+                        $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                            ->where('user_type', 'reviewer')
+                            ->where('is_read', false)
+                            ->count();
+                        $notifRoute = route('reviewer.notifications.index');
+                    } elseif (\Illuminate\Support\Facades\Auth::guard('candidate')->check()) {
+                        $notifCount = \App\Models\Notification::where('user_id', \Illuminate\Support\Facades\Auth::guard('candidate')->id())
+                            ->where('user_type', 'candidate')
+                            ->where('is_read', false)
+                            ->count();
+                        $notifRoute = route('candidate.notifications.index');
                     }
                 @endphp
-                <a class="nav-link text-dark position-relative notification-link px-2"
-                   href="{{ route('approver.notifications.index') }}"
+
+                @if($notifRoute)
+                <a href="{{ $notifRoute }}" class="nav-link text-dark position-relative notification-link px-2"
                    title="Notifications">
                     <i class="bi bi-bell" style="color: #1a3a6b;"></i>
-                    @if($unreadCount > 0)
+                    @if($notifCount > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                            {{ $notifCount > 99 ? '99+' : $notifCount }}
                         </span>
                     @endif
                 </a>
+                @endif
 
                 <!-- Logout -->
-                <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
+                @php
+                    $logoutRoute = Auth::guard('reviewer')->check()
+                        ? route('reviewer.logout')
+                        : route('candidate.logout');
+                @endphp
+                <form method="POST" action="{{ $logoutRoute }}" class="d-inline">
                     @csrf
                     <button class="btn btn-link nav-link text-dark px-2" type="submit"
                         style="font-size:0.85rem;white-space:nowrap;color:#1a3a6b !important;">
                         <i class="bi bi-box-arrow-right"></i>
-                        <span class="d-none d-sm-inline">{{ __('approver.logout') }}</span>
+                        <span class="d-none d-sm-inline">{{ __('reviewer.logout') }}</span>
                     </button>
                 </form>
 
@@ -411,18 +416,29 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="user-profile-sidebar">
-                    <div class="user-avatar" style="{{ Auth::guard('approver')->user()->photo ? 'background:none;' : '' }}">
-                        @if(Auth::guard('approver')->user()->photo)
-                            <img src="{{ asset('storage/' . Auth::guard('approver')->user()->photo) }}"
-                                 alt="{{ Auth::guard('approver')->user()->name }}"
+                    @php
+                        $reviewerName    = 'Reviewer';
+                        $reviewerInitial = 'R';
+                        $reviewerPhoto   = null;
+
+                        if (Auth::guard('reviewer')->check()) {
+                            $reviewer        = Auth::guard('reviewer')->user();
+                            $reviewerName    = $reviewer->name;
+                            $reviewerInitial = strtoupper(substr($reviewerName, 0, 1));
+                            $reviewerPhoto   = $reviewer->photo;
+                        }
+                    @endphp
+                    <div class="user-avatar" style="{{ $reviewerPhoto ? 'background:none;' : '' }}">
+                        @if($reviewerPhoto)
+                            <img src="{{ asset('storage/' . $reviewerPhoto) }}" alt="{{ $reviewerName }}"
                                  style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
                         @else
-                            {{ strtoupper(substr(Auth::guard('approver')->user()->name, 0, 1)) }}
+                            {{ $reviewerInitial }}
                         @endif
                     </div>
                     <div class="user-info">
-                        <h6>{{ Auth::guard('approver')->user()->name }}</h6>
-                        <small>{{ __('approver.user_role') }}</small>
+                        <h6 title="{{ $reviewerName }}">{{ $reviewerName }}</h6>
+                        <small>{{ __('reviewer.user_role') }}</small>
                     </div>
                 </div>
             </div>
@@ -452,7 +468,7 @@
             @if($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <strong>{{ __('approver.validation_errors') }}</strong>
+                    <strong>{{ __('reviewer.validation_errors') }}</strong>
                     <ul class="mb-0 mt-2">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -469,7 +485,7 @@
     <!-- Footer -->
     <footer id="footer">
         <div class="container text-center">
-            <p class="mb-0" style="color: #1a3a6b;">&copy; {{ date('Y') }} {{ __('approver.company_name') }}</p>
+            <p class="mb-0" style="color: #1a3a6b;">&copy; {{ date('Y') }} {{ __('reviewer.company_name') }}</p>
         </div>
     </footer>
 
@@ -477,6 +493,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        /* ── BS Date helpers ────────────────────────────────────── */
         const BS_DATA = {
             2081:[31,31,32,31,31,31,30,29,30,29,30,30],
             2082:[31,31,32,31,31,31,30,29,30,29,30,30],
@@ -500,9 +517,10 @@
         }
 
         function adToBs(adYear, adMonth, adDay) {
-            const refAD  = new Date(2024, 3, 14);
+            const refAD = new Date(2024, 3, 14);
             let { year, month, day } = { year:2081, month:0, day:1 };
             let diff = Math.round((new Date(adYear, adMonth, adDay) - refAD) / 86400000);
+
             if (diff >= 0) {
                 while (diff > 0) {
                     const rem = getDaysInBSMonth(year, month) - day;
@@ -534,13 +552,15 @@
             }
         }
 
+        /* ── Sidebar toggle ─────────────────────────────────────── */
         document.addEventListener('DOMContentLoaded', function () {
-            const sidebar    = document.getElementById('sidebar');
-            const main       = document.getElementById('mainContent');
-            const footer     = document.getElementById('footer');
-            const toggleBtn  = document.getElementById('sidebarToggle');
-            const backdrop   = document.getElementById('sidebarBackdrop');
-            const isDesktop  = () => window.innerWidth >= 992;
+            const sidebar   = document.getElementById('sidebar');
+            const main      = document.getElementById('mainContent');
+            const footer    = document.getElementById('footer');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const backdrop  = document.getElementById('sidebarBackdrop');
+
+            const isDesktop = () => window.innerWidth >= 992;
 
             let desktopHidden = localStorage.getItem('sidebarHidden') === 'true';
 
@@ -603,5 +623,4 @@
     @yield('scripts')
     @stack('scripts')
 </body>
-
 </html>

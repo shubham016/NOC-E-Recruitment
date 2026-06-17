@@ -385,7 +385,7 @@
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
         }
 
-        /* ─── My Profile navbar dropdown ─── */
+        /* ─── My Profile navbar dropdown ───
         .profile-nav-btn {
             display: inline-flex;
             align-items: center;
@@ -490,7 +490,7 @@
         .profile-dropdown-menu .dropdown-divider {
             border-color: #f0ede6;
             margin: 0.25rem 0;
-        }
+        } */
 
         /* Responsive */
         @media (max-width: 991px) {
@@ -616,7 +616,7 @@
                             </a>
                         </li>
 
-                        {{-- My Profile Dropdown --}}
+                        <!-- {{-- My Profile Dropdown --}}
                         @php
                             try {
                                 $navCandidate     = Auth::guard('candidate')->user();
@@ -643,26 +643,18 @@
                                role="button"
                                data-bs-toggle="dropdown"
                                aria-expanded="false">
-                                <!-- <span class="profile-nav-avatar">
+                                <span class="profile-nav-avatar">
                                     @if($navPhoto)
                                         <img src="{{ asset('storage/' . $navPhoto) }}" alt="{{ $navCandidateName }}">
                                     @else
                                         {{ $navInitial }}
                                     @endif
-                                </span> -->
+                                </span>
                                 <span class="d-none d-md-inline">My Profile</span>
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu"
                                 aria-labelledby="profileNavDropdown">
-
-                                <!-- {{-- Header: name + role --}}
-                                <li>
-                                    <div class="profile-dropdown-header">
-                                        <div class="name" title="{{ $navCandidateName }}">{{ $navCandidateName }}</div>
-                                        <div class="role">Applicant</div>
-                                    </div>
-                                </li> -->
 
                                 {{-- View Profile --}}
                                 <li>
@@ -677,15 +669,8 @@
                                         <i class="bi bi-pencil"></i> Edit Profile
                                     </a>
                                 </li>
-
-                                <!-- {{-- Change Password --}}
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('candidate.change-password') }}">
-                                        <i class="bi bi-lock"></i> Change Password
-                                    </a>
-                                </li> -->
                             </ul>
-                        </li>
+                        </li> -->
 
                         {{-- Standalone Logout (always visible for candidates) --}}
                         <li class="nav-item ms-1">

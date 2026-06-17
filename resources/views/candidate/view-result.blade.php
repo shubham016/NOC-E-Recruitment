@@ -7,6 +7,10 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
@@ -19,11 +23,6 @@
         <i class="bi bi-file-earmark-check"></i>
         <span>View Result</span>
     </a>
-    {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-    </a>
-    --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
         <span>Download Admit Card</span>

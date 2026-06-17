@@ -29,6 +29,7 @@ use App\Http\Controllers\PaymentController as ShradhaPaymentController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\Approver\MyProfileController as ApproverMyProfileController;
 use App\Http\Controllers\Admin\SmsController as AdminSmsController;
+use App\Http\Controllers\Candidate\CandidateProfileController;
 use App\Http\Controllers\Candidate\SmsController as CandidateSmsController;
 
 /*
@@ -357,7 +358,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
 
-        // My Profile Routes
+        // My Profile Rou
         Route::get('/my-profile/edit',   [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'edit'])->name('edit-profile');
         Route::put('/my-profile/update', [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'update'])->name('my-profile.update');
 
@@ -448,9 +449,6 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::put('/', [App\Http\Controllers\Candidate\ProfileController::class, 'update'])->name('update');
         });
 
-        // SMS History
-        Route::get('/sms', [CandidateSmsController::class, 'index'])->name('sms.index');
-
         // Settings Routes
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::get('/', [App\Http\Controllers\Candidate\SettingsController::class, 'index'])->name('index');
@@ -470,9 +468,11 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::get('/admit-card/{id}/view', [AdmitCardController::class, 'show'])->name('admit-card.view');
         Route::get('/change-password', [CandidateController::class, 'showChangePasswordForm'])->name('change-password');
         Route::post('/change-password', [CandidateController::class, 'updatePassword'])->name('change-password.post');
-        Route::get('/my-profile', [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'show'])->name('my-profile');
-
-        // ApplicationForm routes (shradha's flat application routes)
+        Route::get('/my-profile',      [CandidateProfileController::class, 'show'])->name('my-profile');
+        Route::get('/edit-profile',    [CandidateProfileController::class, 'edit'])->name('edit-profile');
+        Route::post('/profile/update', [CandidateProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile/save-draft', [CandidateProfileController::class, 'saveDraft'])->name('profile.save-draft');
+                // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::post('/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('saveDraft');
         });

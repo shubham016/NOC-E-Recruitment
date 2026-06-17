@@ -8,6 +8,10 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
+    <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
         <span>Vacancy</span>
@@ -166,7 +170,7 @@
                         <strong>Citizenship Issue Date (B.S):</strong>
                         <p class="mb-0">
                             @if($applicationform->citizenship_issue_date_bs)
-                                {{ $applicationform->citizenship_issue_date_bs }}
+                                {{ is_string($applicationform->citizenship_issue_date_bs) ? \Carbon\Carbon::parse($applicationform->citizenship_issue_date_bs)->format('F d, Y') : $applicationform->citizenship_issue_date_bs->format('F d, Y') }}
                             @else
                                 -
                             @endif
@@ -496,20 +500,6 @@
             {{-- STEP 6: Documents --}}
             <div class="step d-none" id="step6">
                 <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
-
-                @php
-                    function showDoc($path) {
-                        if (!$path) return '<span class="text-muted">Not uploaded</span>';
-                        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-                        $url = e(asset('storage/' . $path));
-                        if (in_array($ext, ['jpg','jpeg','png','webp','gif'])) {
-                            return '<a href="'.$url.'" target="_blank"><img src="'.$url.'" class="img-thumbnail" style="max-width:120px;max-height:120px;display:block;margin-bottom:4px;"></a>';
-                        } elseif ($ext === 'pdf') {
-                            return '<embed src="'.$url.'" type="application/pdf" width="100%" height="180px" style="border:1px solid #dee2e6;border-radius:4px;display:block;margin-bottom:4px;"></embed><a href="'.$url.'" target="_blank" class="small">Open PDF</a>';
-                        }
-                        return '<a href="'.$url.'" target="_blank" class="btn btn-sm btn-outline-secondary">View File</a>';
-                    }
-                @endphp
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">

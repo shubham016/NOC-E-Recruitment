@@ -1,5 +1,30 @@
 <?php
+if (!function_exists('showDoc')) {
+    /**
+     * Generate a view/download link for an uploaded document.
+     * Returns a dash if no file is provided.
+     */
+    function showDoc(?string $path): string
+    {
+        if (empty($path)) {
+            return '-';
+        }
 
+        $url = asset('storage/' . $path);
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+
+        if (in_array($extension, $imageExtensions)) {
+            return '<a href="' . $url . '" target="_blank">
+                        <img src="' . $url . '" alt="Document" style="max-height:80px; max-width:120px; border-radius:4px; border:1px solid #dee2e6;">
+                    </a>';
+        }
+
+        return '<a href="' . $url . '" target="_blank" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-file-earmark me-1"></i> View Document
+                </a>';
+    }
+}
 if (!function_exists('adToBS')) {
     /**
      * Convert AD (English) date to BS (Nepali) date
