@@ -1,27 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'Candidate Dashboard')
+@section('title', __('candidate.candidate_dashboard'))
 
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item active">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Vacancy</span>
+        <span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>My Applications</span>
+        <span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
-        <span>View Result</span>
+        <span>{{ __('candidate.view_result') }}</span>
     </a>
     {{-- <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
@@ -30,11 +30,11 @@
     --}}
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
-        <span>Download Admit Card</span>
+        <span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
         <i class="bi bi-lock"></i>
-        <span>Change Password</span>
+        <span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
 
@@ -101,9 +101,9 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h2 class="fw-bold mb-1">
-                    Welcome, {{ $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate' }}!
+                    {{ __('candidate.welcome', ['name' => $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate']) }}
                 </h2>
-                <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Recruitment Candidate</p>
+                <p class="mb-0 opacity-75" style="font-size: 0.95rem;">{{ __('candidate.recruitment_candidate') }}</p>
             </div>
             <div class="col-md-4 text-md-end mt-2 mt-md-0">
                 <small class="opacity-90">
@@ -125,9 +125,9 @@
             <a href="{{ route('candidate.jobs.index') }}" class="text-decoration-none d-block">
                 <div class="card stat-card h-60 shadow-sm cursor-pointer">
                     <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
-                    <p class="text-muted mb-2">Total Live Advertisements</p>
+                    <p class="text-muted mb-2">{{ __('candidate.total_live_advertisements') }}</p>
                     <small class="text-danger">
-                        <i class="bi bi-info-circle me-1"></i>Currently Active
+                        <i class="bi bi-info-circle me-1"></i>{{ __('candidate.currently_active') }}
                     </small>
                 </div>
             </a>
@@ -137,9 +137,9 @@
             <a href="{{ route('candidate.jobs.index') }}" class="text-decoration-none d-block">
                 <div class="card stat-card h-60 shadow-sm cursor-pointer">
                     <h3 class="h2 fw-bold mb-1">{{ $jobpostingsCount ?? 0 }}</h3>
-                    <p class="text-muted mb-2">Total Vacancy</p>
+                    <p class="text-muted mb-2">{{ __('candidate.total_vacancy') }}</p>
                     <small class="text-warning">
-                        <i class="bi bi-clock me-1"></i>All time
+                        <i class="bi bi-clock me-1"></i>{{ __('candidate.all_time') }}
                     </small>
                 </div>
             </a>
@@ -149,9 +149,9 @@
              <a href="{{ route('candidate.applications.index') }}" class="text-decoration-none d-block">
             <div class="card stat-card h-60 shadow-sm cursor-pointer">
                 <h3 class="h2 fw-bold mb-1">{{ $applicationsCount ?? 0 }}</h3>
-                <p class="text-muted mb-2">My Applications</p>
+                <p class="text-muted mb-2">{{ __('candidate.my_applications') }}</p>
                 <small class="text-success">
-                    <i class="bi bi-check-circle me-1"></i>All Applications
+                    <i class="bi bi-check-circle me-1"></i>{{ __('candidate.all_applications') }}
                 </small>
             </div>
              </a>

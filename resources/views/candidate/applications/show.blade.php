@@ -1,43 +1,84 @@
 @extends('layouts.app')
 
-@section('title', 'View Registration')
+@section('title', __('candidate.view_registration'))
 
 @section('content')
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Vacancy</span>
+        <span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-file-earmark-text"></i>
-        <span>My Applications</span>
+        <span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
-        <span>View Result</span>
+        <span>{{ __('candidate.view_result') }}</span>
     </a>
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
-        <span>Download Admit Card</span>
+        <span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
         <i class="bi bi-lock"></i>
-        <span>Change Password</span>
+        <span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
+
+@php
+    $candidateProfile = $applicationform->candidateRegistration;
+    $documentPath = function ($applicationField, $profileField = null) use ($applicationform, $candidateProfile) {
+        $profileField = $profileField ?: $applicationField;
+
+        return $applicationform->{$applicationField}
+            ?? ($candidateProfile ? $candidateProfile->{$profileField} : null);
+    };
+
+    $experienceDocumentPath = function ($experience) use ($candidateProfile) {
+        $profileField = 'exp' . (int) $experience->exp_number . '_document';
+
+        return $experience->document
+            ?? ($candidateProfile ? $candidateProfile->{$profileField} : null);
+    };
+
+    $firstExperienceDocumentPath = function () use ($applicationform, $candidateProfile, $experienceDocumentPath) {
+        if ($applicationform->work_experience) {
+            return $applicationform->work_experience;
+        }
+
+        foreach ($applicationform->experiences as $experience) {
+            $path = $experienceDocumentPath($experience);
+            if ($path) {
+                return $path;
+            }
+        }
+
+        if ($candidateProfile) {
+            for ($i = 1; $i <= 10; $i++) {
+                $field = 'exp' . $i . '_document';
+                if ($candidateProfile->{$field}) {
+                    return $candidateProfile->{$field};
+                }
+            }
+        }
+
+        return null;
+    };
+@endphp
 
 <div class="container my-2">
     <div class="card shadow-lg border-0">
         <div class="card-header bg-light text-dark text-center py-2">
-            <h3 class="mb-0 fw-bold">NOC | View Application Form</h3>
+            <h3 class="mb-0 fw-bold">{{ __('candidate.view_application_form') }}</h3>
         </div>
 
         <div class="card-body px-5 pt-3 pb-5">
@@ -47,31 +88,31 @@
                 <div class="d-flex flex-wrap justify-content-between border-bottom position-relative">
                     <div class="tab-item active" data-step="1">
                         <span class="tab-circle">1</span>
-                        <span class="tab-label d-none d-md-inline">Personal</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.personal') }}</span>
                     </div>
                     <div class="tab-item" data-step="2">
                         <span class="tab-circle">2</span>
-                        <span class="tab-label d-none d-md-inline">General</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.general') }}</span>
                     </div>
                     <div class="tab-item" data-step="3">
                         <span class="tab-circle">3</span>
-                        <span class="tab-label d-none d-md-inline">Address</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.address') }}</span>
                     </div>
                     <div class="tab-item" data-step="4">
                         <span class="tab-circle">4</span>
-                        <span class="tab-label d-none d-md-inline">Education</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.education') }}</span>
                     </div>
                     <div class="tab-item" data-step="5">
                         <span class="tab-circle">5</span>
-                        <span class="tab-label d-none d-md-inline">Experience</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.experience') }}</span>
                     </div>
                     <div class="tab-item" data-step="6">
                         <span class="tab-circle">6</span>
-                        <span class="tab-label d-none d-md-inline">Documents</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.documents') }}</span>
                     </div>
                     <div class="tab-item" data-step="7">
                         <span class="tab-circle">7</span>
-                        <span class="tab-label d-none d-md-inline">Payment</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.payment') }}</span>
                     </div>
                 </div>
             </div>
@@ -245,7 +286,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>NOC ID Card:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->noc_id_card) !!}</p>
+                        <p class="mb-0">{!! showDoc($documentPath('noc_id_card')) !!}</p>
                     </div>
                 </div>
 
@@ -310,14 +351,14 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <strong>Ethnic Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->ethnic_certificate) !!}</p>
+                        <p class="mb-0">{!! showDoc($documentPath('ethnic_certificate')) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
                         <strong>Disability Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->disability_certificate) !!}</p>
+                        <p class="mb-0">{!! showDoc($documentPath('disability_certificate')) !!}</p>
                     </div>
                 </div>
 
@@ -439,7 +480,7 @@
 
            {{-- STEP 5: Experience --}}
 <div class="step d-none" id="step5">
-    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+    <h5 class="mb-4 text-dark">Step 5 - {{ __('candidate.work_experience') }}</h5>
 
     <div class="mb-3">
         <strong>Has Work Experience:</strong>
@@ -473,13 +514,14 @@
                 <div class="col-md-6">
                     <strong>Document:</strong>
                     <p>
-                        @if($exp->document)
-                            @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
+                        @php $expDocument = $experienceDocumentPath($exp); @endphp
+                        @if($expDocument)
+                            @php $ext = strtolower(pathinfo($expDocument, PATHINFO_EXTENSION)); @endphp
                             @if(in_array($ext, ['jpg','jpeg','png','webp']))
-                                <img src="{{ asset('storage/' . $exp->document) }}"
+                                <img src="{{ asset('storage/' . $expDocument) }}"
                                      style="max-width:100%;max-height:250px;border:1px solid #ccc;border-radius:4px;">
                             @else
-                                <a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View Document</a>
+                                <a href="{{ asset('storage/' . $expDocument) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View Document</a>
                             @endif
                         @else
                             -
@@ -499,48 +541,48 @@
 </div>
             {{-- STEP 6: Documents --}}
             <div class="step d-none" id="step6">
-                <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
+                <h5 class="mb-4 text-dark">Step 6 - {{ __('candidate.uploaded_documents') }}</h5>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Passport Size Photo:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->passport_size_photo) !!}</p>
+                        <strong>{{ __('candidate.passport_size_photo') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('passport_size_photo')) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Citizenship/ID Document:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->citizenship_id_document) !!}</p>
+                        <strong>{{ __('candidate.citizenship_id_document') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('citizenship_id_document')) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Character Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->character) !!}</p>
+                        <strong>{{ __('candidate.character_certificate') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('character', 'character_certificate')) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Equivalency Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->equivalent) !!}</p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6 mb-3">
-                        <strong>Work Experience Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->work_experience) !!}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Transcript Certificate:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->transcript) !!}</p>
+                        <strong>{{ __('candidate.equivalency_certificate') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('equivalent', 'equivalency_certificate')) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Signature:</strong>
-                        <p class="mb-0">{!! showDoc($applicationform->signature) !!}</p>
+                        <strong>{{ __('candidate.work_experience_certificate') }}:</strong>
+                        <p class="mb-0">{!! showDoc($firstExperienceDocumentPath()) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Additional Documents:</strong>
+                        <strong>{{ __('candidate.transcript_certificate') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('transcript')) !!}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <strong>{{ __('candidate.signature') }}:</strong>
+                        <p class="mb-0">{!! showDoc($documentPath('signature')) !!}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>{{ __('candidate.additional_documents') }}:</strong>
                         <p class="mb-0">{!! showDoc($applicationform->additional_documents) !!}</p>
                     </div>
                 </div>

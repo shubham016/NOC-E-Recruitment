@@ -16,33 +16,10 @@ class JobBrowsingController extends Controller
      */
     public function index(Request $request)
     {
-        // Determine if the logged-in candidate is a NOC employee
-        $isNocEmployee = false;
-        $nocCandidate = Auth::guard('candidate')->user();
-        if ($nocCandidate) {
-            $isNocEmployee = strtolower((string) $nocCandidate->noc_employee) === 'yes';
-        }
+        $candidate = Auth::guard('candidate')->user();
 
-        $query = JobPosting::where('status', 'active')
-            ->where(function ($q) {
-                $q->where(function ($inner) {
-                    $inner->whereNotNull('double_dastur_date')
-                          ->where('double_dastur_date', '>=', now());
-                })->orWhere(function ($inner) {
-                    $inner->whereNull('double_dastur_date')
-                          ->where('deadline', '>=', now());
-                });
-            });
-
-        // Non-NOC candidates: hide internal-only vacancies (no open, no inclusive component)
-        if (!$isNocEmployee) {
-            $query->where(function ($q) {
-                $q->where('has_open', true)
-                  ->orWhere('has_inclusive', true)
-                  ->orWhere('category', 'open')
-                  ->orWhere('category', 'inclusive');
-            });
-        }
+        $query = JobPosting::live()
+            ->visibleToCandidate($candidate);
 
         // Search
         if ($request->filled('search')) {
@@ -82,17 +59,20 @@ class JobBrowsingController extends Controller
         $jobs = $query->withCount('applications')->paginate(12)->withQueryString();
 
         // Get filter options
-        $departments = JobPosting::where('status', 'active')
+        $departments = JobPosting::live()
+            ->visibleToCandidate($candidate)
             ->distinct()
             ->pluck('department')
             ->filter();
 
-        $locations = JobPosting::where('status', 'active')
+        $locations = JobPosting::live()
+            ->visibleToCandidate($candidate)
             ->distinct()
             ->pluck('location')
             ->filter();
 
-        $positionLevels = JobPosting::where('status', 'active')
+        $positionLevels = JobPosting::live()
+            ->visibleToCandidate($candidate)
             ->distinct()
             ->pluck('position')
             ->filter();
@@ -123,32 +103,10 @@ class JobBrowsingController extends Controller
      */
     public function show($id)
     {
-        // Determine NOC status for this candidate
-        $isNocEmployee = false;
-        $showCandidate = Auth::guard('candidate')->user();
-        if ($showCandidate) {
-            $isNocEmployee = strtolower((string) $showCandidate->noc_employee) === 'yes';
-        }
+        $candidate = Auth::guard('candidate')->user();
 
-        $jobQuery = JobPosting::where('status', 'active')
-            ->where(function ($q) {
-                $q->where(function ($inner) {
-                    $inner->whereNotNull('double_dastur_date')
-                          ->where('double_dastur_date', '>=', now());
-                })->orWhere(function ($inner) {
-                    $inner->whereNull('double_dastur_date')
-                          ->where('deadline', '>=', now());
-                });
-            });
-
-        if (!$isNocEmployee) {
-            $jobQuery->where(function ($q) {
-                $q->where('has_open', true)
-                  ->orWhere('has_inclusive', true)
-                  ->orWhere('category', 'open')
-                  ->orWhere('category', 'inclusive');
-            });
-        }
+        $jobQuery = JobPosting::live()
+            ->visibleToCandidate($candidate);
 
         $job = $jobQuery->withCount('applications')->findOrFail($id);
 
@@ -171,16 +129,8 @@ class JobBrowsingController extends Controller
             }
         }
 
-        $groupJobs = JobPosting::where('status', 'active')
-            ->where(function ($q) {
-                $q->where(function ($inner) {
-                    $inner->whereNotNull('double_dastur_date')
-                          ->where('double_dastur_date', '>=', now());
-                })->orWhere(function ($inner) {
-                    $inner->whereNull('double_dastur_date')
-                          ->where('deadline', '>=', now());
-                });
-            })
+        $groupJobs = JobPosting::live()
+            ->visibleToCandidate($candidate)
             ->where('position', $job->position)
             ->where('level', $job->level)
             ->where('service_group', $job->service_group)

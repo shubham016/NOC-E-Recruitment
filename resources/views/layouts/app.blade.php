@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') - {{ __('admin.system_title') }}</title>
+    <title>@yield('title') - {{ __('candidate.system_title') }}</title>
     <link rel="icon" href="{{ asset('images/noc_logo_tab.png') }}" type="image/png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -62,13 +62,15 @@
         .notification-link {
             display: inline-flex !important;
             align-items: center !important;
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
+            justify-content: center !important;
+            height: 40px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
         .notification-link .bi-bell {
             font-size: 1rem;
-            line-height: 1.5;
+            line-height: 1;
         }
 
         .notification-badge {
@@ -95,7 +97,7 @@
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transform: translate(-128%, 44%) !important;
+            transform: translate(-80%, 35%) !important;
         }
 
         .tab-item {
@@ -232,6 +234,47 @@
         .navbar-nav-inline .nav-link,
         .navbar-nav-inline .btn-link {
             white-space: nowrap;
+        }
+
+        .language-toggle-btn {
+            min-width: auto;
+            height: 40px;
+            padding: 0 0.4rem;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: #212529;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .language-toggle-btn.lang-en {
+            transform: translateX(3px);
+        }
+
+        .language-toggle-btn:hover,
+        .language-toggle-btn:focus {
+            background: transparent;
+            color: #212529;
+            outline: none;
+        }
+
+        .navbar-separator {
+            color: #212529;
+            height: 40px;
+            padding: 0 0.35rem 0 0.25rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         @media (max-width: 575px) {
@@ -758,9 +801,9 @@
                 <img src="/images/images.png" alt="Nepal Oil Corporation Logo" class="noc-logo"
                     style="height: 50px; width: auto; display: block;">
                 <div class="noc-info">
-                    <h5>NEPAL OIL CORPORATION LTD.</h5>
-                    <p>Babarmahal, Kathmandu</p>
-                    <small>Online Recruitment Management System</small>
+                    <h5>{{ __('candidate.company_name') }}</h5>
+                    <p>{{ __('candidate.company_address') }}</p>
+                    <small>{{ __('candidate.company_system') }}</small>
                 </div>
             </div>
 
@@ -768,11 +811,29 @@
 
                     @if(request()->is('candidate/*'))
 
+                        {{-- Language Switcher --}}
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('language.switch') }}" class="d-flex align-items-center">
+                                @csrf
+                                @php
+                                    $nextLocale = app()->getLocale() === 'ne' ? 'en' : 'ne';
+                                @endphp
+                                <input type="hidden" name="locale" value="{{ $nextLocale }}">
+                                <button type="submit" class="language-toggle-btn {{ $nextLocale === 'en' ? 'lang-en' : '' }}" aria-label="{{ __('candidate.language') }}">
+                                    {!! $nextLocale === 'ne' ? '&#2344;&#2375;&#2346;&#2366;' : 'En' !!}
+                                </button>
+                            </form>
+                        </li>
+
+                        <li class="nav-item" aria-hidden="true">
+                            <span class="navbar-separator">|</span>
+                        </li>
+
                         {{-- Notifications --}}
                         <li class="nav-item">
                             <a class="nav-link text-dark position-relative notification-link"
                                href="{{ route('candidate.notifications.index') }}"
-                               title="Notifications">
+                               title="{{ __('candidate.notifications') }}">
                                 <i class="bi bi-bell"></i>
                                 @php
                                     try {
@@ -851,8 +912,8 @@
                         <li class="nav-item ms-1">
                             <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
                                 @csrf
-                                <button class="btn btn-link nav-link text-dark" type="submit" title="Logout">
-                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
+                                <button class="btn btn-link nav-link text-dark" type="submit" title="{{ __('candidate.logout') }}">
+                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">{{ __('candidate.logout') }}</span>
                                 </button>
                             </form>
                         </li>
@@ -951,8 +1012,14 @@
 
                         $sidebarCandidate = Auth::guard('candidate')->user();
                         if ($sidebarCandidate) {
-                            if (!empty($sidebarCandidate->name)) {
+                            if (!empty($sidebarCandidate->name_english)) {
+                                $candidateName    = $sidebarCandidate->name_english;
+                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                            } elseif (!empty($sidebarCandidate->name)) {
                                 $candidateName    = $sidebarCandidate->name;
+                                $candidateInitial = strtoupper(substr($candidateName, 0, 1));
+                            } elseif (!empty($sidebarCandidate->name_nepali)) {
+                                $candidateName    = $sidebarCandidate->name_nepali;
                                 $candidateInitial = strtoupper(substr($candidateName, 0, 1));
                             } elseif (!empty($sidebarCandidate->email)) {
                                 $candidateName    = explode('@', $sidebarCandidate->email)[0];
@@ -980,7 +1047,7 @@
                     </div>
                     <div class="user-info">
                         <h6 title="{{ $candidateName }}">{{ $candidateName }}</h6>
-                        <small>Applicant</small>
+                        <small>{{ __('candidate.applicant') }}</small>
                     </div>
                 </div>
             </div>

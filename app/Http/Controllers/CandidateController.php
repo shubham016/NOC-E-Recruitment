@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\CandidateRegistration;
+use App\Models\JobPosting;
 
 class CandidateController extends Controller
 {
@@ -149,7 +150,9 @@ class CandidateController extends Controller
             ->where('citizenship_number', $candidate->citizenship_number)
             ->count();
 
-        $jobpostingsCount = DB::table('job_postings')->count();
+        $jobpostingsCount = JobPosting::live()
+            ->visibleToCandidate($candidate)
+            ->count();
 
         return view('candidate.dashboard', [
             'candidate'         => $candidate,

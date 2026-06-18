@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Browse Vacancy')
+@section('title', __('candidate.browse_vacancies'))
 
-@section('portal-name', 'Candidate Portal')
+@section('portal-name', __('candidate.candidate_portal'))
 @section('brand-icon', 'bi bi-briefcase')
 @section('dashboard-route', route('candidate.dashboard'))
 @section('user-name', Auth::guard('candidate')->user()?->name ?? 'Guest')
@@ -13,31 +13,31 @@
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item active">
         <i class="bi bi-search"></i>
-        <span>Vacancy</span>
+        <span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>My Applications</span>
+        <span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
-        <span>View Result</span>
+        <span>{{ __('candidate.view_result') }}</span>
     </a>
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
-        <span>Download Admit Card</span>
+        <span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
         <i class="bi bi-lock"></i>
-        <span>Change Password</span>
+        <span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
 
@@ -45,9 +45,9 @@
 <div class="page-header">
     <h1 class="page-title">
         <!-- <i class="bi bi-search text-dark"></i> -->
-         Browse Vacancies
+         {{ __('candidate.browse_vacancies') }}
     </h1>
-    <p class="page-subtitle">Find and apply for available positions</p>
+    <p class="page-subtitle">{{ __('candidate.find_and_apply_for_available_positions') }}</p>
 </div>
 
 <!-- Alerts -->
@@ -85,13 +85,13 @@
         <form method="GET" action="{{ route('candidate.jobs.index') }}">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <input type="text" name="search" class="form-control" placeholder="Search by Vacancy title..."
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('candidate.search_by_vacancy_title') }}"
                         value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-light w-100">
                         <!-- <i class="fas fa-search"></i>  -->
-                        Search
+                        {{ __('candidate.search') }}
                     </button>
                 </div>
             </div>
@@ -104,7 +104,7 @@
         <div class="card-header bg-light text-black">
             <h5 class="mb-0">
                 <!-- <i class="bi bi-table"></i> -->
-                 Available Vacancies
+                 {{ __('candidate.available_vacancies') }}
             </h5>
         </div>
         <div class="card-body">
@@ -112,16 +112,16 @@
                 <table class="table table-bordered align-middle vacancy-table">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center">S.N</th>
-                            <th>Vacancy Title</th>
-                            <th>Service / Group</th>
-                            <th>Position / Level</th>
-                            <th>Advertisement No.</th>
-                            <th>Type</th>
-                            <th class="text-center">Demand</th>
-                            <th>Deadline</th>
-                            <th class="text-center">Double Dastur</th>
-                            <th class="text-center">Action</th>
+                            <th class="text-center">{{ __('candidate.sn') }}</th>
+                            <th>{{ __('candidate.vacancy_title') }}</th>
+                            <th>{{ __('candidate.service_group') }}</th>
+                            <th>{{ __('candidate.position_level') }}</th>
+                            <th>{{ __('candidate.advertisement_no') }}</th>
+                            <th>{{ __('candidate.type') }}</th>
+                            <th class="text-center">{{ __('candidate.demand') }}</th>
+                            <th>{{ __('candidate.deadline') }}</th>
+                            <th class="text-center">{{ __('candidate.double_dastur') }}</th>
+                            <th class="text-center">{{ __('candidate.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -328,16 +328,16 @@
                             <td rowspan="{{ $thisPosRowspan }}" class="text-center align-middle">
                                 <div class="d-flex gap-1 justify-content-center">
                                     <a href="{{ route('candidate.jobs.show', $job->id) }}"
-                                       class="btn btn-sm btn-outline-danger" title="View Details">
+                                       class="btn btn-sm btn-outline-danger" title="{{ __('candidate.view_details') }}">
                                         <!-- <i class="bi bi-eye"></i>  -->
                                         Details
                                     </a>
                                     @if(!$hasAppliedInGroup && $job->status === 'active')
                                         <button onclick="checkEligibilityAndApply({{ $job->id }})"
                                             class="btn btn-sm btn-danger apply-btn-{{ $job->id }}"
-                                            title="Apply Now">
+                                            title="{{ __('candidate.apply_now') }}">
                                             <!-- <i class="fas fa-paper-plane"></i> -->
-                                            Apply
+                                            {{ __('candidate.apply') }}
                                         </button>
                                     @endif
                                 </div>
@@ -359,8 +359,8 @@
     <div class="card shadow-sm">
         <div class="card-body text-center py-5">
             <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-            <h4 class="text-muted">No Vacancies Available</h4>
-            <p class="text-secondary">There are no vacancy postings matching your criteria at the moment.</p>
+            <h4 class="text-muted">{{ __('candidate.no_vacancies_available') }}</h4>
+            <p class="text-secondary">{{ __('candidate.no_vacancies_available_description') }}</p>
             <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger mt-3">
                 <i class="bi bi-house-door"></i> Back to Dashboard
             </a>

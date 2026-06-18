@@ -149,6 +149,38 @@ class JobPosting extends Model
         });
     }
 
+    public function scopeLive($query)
+    {
+        return $query->where('status', 'active')
+            ->where(function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNotNull('double_dastur_date')
+                        ->where('double_dastur_date', '>=', now());
+                })->orWhere(function ($inner) {
+                    $inner->whereNull('double_dastur_date')
+                        ->where('deadline', '>=', now());
+                });
+            });
+    }
+
+    public function scopeVisibleToCandidate($query, $candidate)
+    {
+        $isNocEmployee = strtolower((string) ($candidate->noc_employee ?? '')) === 'yes';
+
+        if ($isNocEmployee) {
+            return $query;
+        }
+
+        return $query->where(function ($q) {
+            $q->whereNull('category')
+                ->orWhereNotIn('category', ['internal', 'internal_appraisal']);
+        })->where(function ($q) {
+            $q->where('has_open', true)
+                ->orWhere('has_inclusive', true)
+                ->orWhereIn('category', ['open', 'inclusive']);
+        });
+    }
+
     public function scopePostedByAdmin($query)
     {
         return $query->where('posted_by_type', 'admin');

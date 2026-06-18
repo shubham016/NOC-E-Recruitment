@@ -89,6 +89,16 @@ class CandidateRegistration extends Authenticatable
         ];
     }
 
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, array $attributes) => $attributes['name_english']
+                ?? $attributes['name_nepali']
+                ?? $attributes['email']
+                ?? null,
+        );
+    }
+
     // ── Relationships ─────────────────────────────────────────────────────
 
     public function applicationForms()

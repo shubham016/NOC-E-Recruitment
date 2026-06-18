@@ -1,44 +1,44 @@
 @extends('layouts.app')
 
-@section('title', 'Download Admit Card')
+@section('title', __('candidate.download_admit_card'))
 
 @section('content')
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Vacancy</span>
+        <span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>My Applications</span>
+        <span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
-        <span>View Result</span>
+        <span>{{ __('candidate.view_result') }}</span>
     </a>
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item active">
         <i class="bi bi-box-arrow-down"></i>
-        <span>Download Admit Card</span>
+        <span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
         <i class="bi bi-lock"></i>
-        <span>Change Password</span>
+        <span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="page-header mb-4 pb-3 border-bottom">
-                <h2><i class="bi bi-file-earmark-text"></i> Download Admit Card</h2>
-                <p class="text-muted">Download your admit card for scheduled examinations</p>
+                <h2><i class="bi bi-file-earmark-text"></i> {{ __('candidate.download_admit_card') }}</h2>
+                <p class="text-muted">{{ __('candidate.download_admit_card_description') }}</p>
             </div>
         </div>
     </div>
@@ -145,13 +145,13 @@
                 <div class="card text-center py-5 shadow-sm">
                     <div class="card-body">
                         <i class="bi bi-file-earmark-text text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
-                        <h3 class="mt-4">No Admit Cards Available</h3>
+                        <h3 class="mt-4">{{ __('candidate.no_admit_cards_available') }}</h3>
                         <p class="text-muted mb-4">
-                            Admit cards will be available once your application is shortlisted for examination.<br>
-                            Please check back later or contact the administration for more information.
+                            {{ __('candidate.no_admit_cards_available_description') }}<br>
+                            {{ __('candidate.check_back_later') }}
                         </p>
                         <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
-                            <i class="bi bi-house-door"></i> Back to Dashboard
+                            <i class="bi bi-house-door"></i> {{ __('candidate.back_to_dashboard') }}
                         </a>
                     </div>
                 </div>

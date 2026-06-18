@@ -1,35 +1,35 @@
 @extends('layouts.app')
 
-@section('title', 'View Profile')
+@section('title', __('candidate.my_profile'))
 
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
         <i class="bi bi-speedometer2"></i>
-        <span>Dashboard</span>
+        <span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item active">
         <i class="bi bi-person"></i>
-        <span>My Profile</span>
+        <span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
         <i class="bi bi-search"></i>
-        <span>Vacancy</span>
+        <span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-text"></i>
-        <span>My Applications</span>
+        <span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
         <i class="bi bi-file-earmark-check"></i>
-        <span>View Result</span>
+        <span>{{ __('candidate.view_result') }}</span>
     </a>
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
         <i class="bi bi-box-arrow-down"></i>
-        <span>Download Admit Card</span>
+        <span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
         <i class="bi bi-lock"></i>
-        <span>Change Password</span>
+        <span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
 
@@ -37,9 +37,9 @@
 <div class="container my-2">
     <div class="card shadow-lg border-0">
         <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center py-2">
-            <h3 class="mb-0 fw-bold">NOC | View My Profile</h3>
+            <h3 class="mb-0 fw-bold">{{ __('candidate.view_my_profile') }}</h3>
             <a href="{{ route('candidate.edit-profile') }}" class="btn btn-danger btn-sm">
-                <i class="bi bi-pencil me-1"></i> Edit Profile
+                <i class="bi bi-pencil me-1"></i> {{ __('candidate.edit_profile') }}
             </a>
         </div>
 
@@ -50,27 +50,27 @@
                 <div class="d-flex flex-wrap justify-content-between border-bottom position-relative">
                     <div class="tab-item active" data-step="1">
                         <span class="tab-circle">1</span>
-                        <span class="tab-label d-none d-md-inline">Personal</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.personal') }}</span>
                     </div>
                     <div class="tab-item" data-step="2">
                         <span class="tab-circle">2</span>
-                        <span class="tab-label d-none d-md-inline">General</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.general') }}</span>
                     </div>
                     <div class="tab-item" data-step="3">
                         <span class="tab-circle">3</span>
-                        <span class="tab-label d-none d-md-inline">Address</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.address') }}</span>
                     </div>
                     <div class="tab-item" data-step="4">
                         <span class="tab-circle">4</span>
-                        <span class="tab-label d-none d-md-inline">Education</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.education') }}</span>
                     </div>
                     <div class="tab-item" data-step="5">
                         <span class="tab-circle">5</span>
-                        <span class="tab-label d-none d-md-inline">Experience</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.experience') }}</span>
                     </div>
                     <div class="tab-item" data-step="6">
                         <span class="tab-circle">6</span>
-                        <span class="tab-label d-none d-md-inline">Documents</span>
+                        <span class="tab-label d-none d-md-inline">{{ __('candidate.documents') }}</span>
                     </div>
                     <!-- <div class="tab-item" data-step="7">
                         <span class="tab-circle">7</span>
@@ -81,22 +81,22 @@
 
             {{-- STEP 1: Personal --}}
             <div class="step active" id="step1">
-                <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
+                <h5 class="mb-4 text-dark">Step 1 - {{ __('candidate.personal_information') }}</h5>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Full Name (English):</strong>
+                        <strong>{{ __('candidate.full_name_english') }}:</strong>
                         <p class="mb-0">{{ $candidate->name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Full Name (Nepali):</strong>
+                        <strong>{{ __('candidate.full_name_nepali') }}:</strong>
                         <p class="mb-0">{{ $candidate->name_nepali ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-3 mb-3">
-                        <strong>Birth Date (A.D):</strong>
+                        <strong>{{ __('candidate.birth_date_ad') }}:</strong>
                         <p class="mb-0">
                             @if(!empty($candidate?->birth_date_ad))
                                 {{ is_string($candidate->birth_date_ad) ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('F d, Y') : $candidate->birth_date_ad->format('F d, Y') }}
@@ -106,116 +106,116 @@
                         </p>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <strong>Birth Date (B.S):</strong>
+                        <strong>{{ __('candidate.birth_date_bs') }}:</strong>
                         <p class="mb-0">{{ $candidate->birth_date_bs ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <strong>Email:</strong>
+                        <strong>{{ __('candidate.email') }}:</strong>
                         <p class="mb-0">{{ $candidate->email ?? '-' }}</p>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <strong>Phone Number:</strong>
+                        <strong>{{ __('candidate.phone_number') }}:</strong>
                         <p class="mb-0">{{ $candidate->phone ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Age:</strong>
-                        <p class="mb-0">{{ $candidate->age ?? '-' }} {{ $candidate->age ? 'years' : '' }}</p>
+                        <strong>{{ __('candidate.age') }}:</strong>
+                        <p class="mb-0">{{ $candidate->age ?? '-' }} {{ $candidate->age ? __('candidate.years') : '' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Alternate Phone Number:</strong>
+                        <strong>{{ __('candidate.alternate_phone_number') }}:</strong>
                         <p class="mb-0">{{ $candidate->alternate_phone_number ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Gender:</strong>
+                        <strong>{{ __('candidate.gender') }}:</strong>
                         <p class="mb-0">{{ ucfirst($candidate->gender ?? '-') }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Marital Status:</strong>
+                        <strong>{{ __('candidate.marital_status') }}:</strong>
                         <p class="mb-0">{{ ucfirst($candidate->marital_status ?? '-') }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Spouse Name (English):</strong>
+                        <strong>{{ __('candidate.spouse_name_english') }}:</strong>
                         <p class="mb-0">{{ $candidate->spouse_name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Spouse Nationality:</strong>
+                        <strong>{{ __('candidate.spouse_nationality') }}:</strong>
                         <p class="mb-0">{{ $candidate->spouse_nationality ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Citizenship Number:</strong>
+                        <strong>{{ __('candidate.citizenship_number') }}:</strong>
                         <p class="mb-0">{{ $candidate->citizenship_number ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Citizenship Issue Date (B.S):</strong>
+                        <strong>{{ __('candidate.citizenship_issue_date_bs') }}:</strong>
                         <p class="mb-0">{{ $candidate->citizenship_issue_date_bs ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Citizenship Issue District:</strong>
+                        <strong>{{ __('candidate.citizenship_issue_district') }}:</strong>
                         <p class="mb-0">{{ $candidate->citizenship_issue_district ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Father Name (English):</strong>
+                        <strong>{{ __('candidate.father_name_english') }}:</strong>
                         <p class="mb-0">{{ $candidate->father_name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Mother Name (English):</strong>
+                        <strong>{{ __('candidate.mother_name_english') }}:</strong>
                         <p class="mb-0">{{ $candidate->mother_name_english ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Grandfather Name (English):</strong>
+                        <strong>{{ __('candidate.grandfather_name_english') }}:</strong>
                         <p class="mb-0">{{ $candidate->grandfather_name_english ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Father Name (Nepali):</strong>
+                        <strong>{{ __('candidate.father_name_nepali') }}:</strong>
                         <p class="mb-0">{{ $candidate->father_name_nepali ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Mother Name (Nepali):</strong>
+                        <strong>{{ __('candidate.mother_name_nepali') }}:</strong>
                         <p class="mb-0">{{ $candidate->mother_name_nepali ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Grandfather Name (Nepali):</strong>
+                        <strong>{{ __('candidate.grandfather_name_nepali') }}:</strong>
                         <p class="mb-0">{{ $candidate->grandfather_name_nepali ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Blood Group:</strong>
+                        <strong>{{ __('candidate.blood_group') }}:</strong>
                         <p class="mb-0">{{ $candidate->blood_group ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Nationality:</strong>
+                        <strong>{{ __('candidate.nationality') }}:</strong>
                         <p class="mb-0">{{ $candidate->nationality ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Are you NOC Employee?:</strong>
+                        <strong>{{ __('candidate.are_you_noc_employee') }}:</strong>
                         <p class="mb-0">{{ ucfirst($candidate->noc_employee ?? '-') }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>NOC ID Card:</strong>
+                        <strong>{{ __('candidate.noc_id_card') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->noc_id_card ?? null) !!}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Parent's Occupation:</strong>
+                        <strong>{{ __('candidate.parents_occupation') }}:</strong>
                         <p class="mb-0">{{ $candidate->parents_occupation ?? '-' }}</p>
                     </div>
                 </div>
@@ -227,11 +227,11 @@
 
             {{-- STEP 2: General --}}
             <div class="step d-none" id="step2">
-                <h5 class="mb-4 text-dark">Step 2 — General Information</h5>
+                <h5 class="mb-4 text-dark">Step 2 - {{ __('candidate.general_information') }}</h5>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Religion:</strong>
+                        <strong>{{ __('candidate.religion') }}:</strong>
                         <p class="mb-0">
                             {{ $candidate->religion ?? '-' }}
                             @if(($candidate->religion ?? null) === 'Other' && !empty($candidate->religion_other))
@@ -240,7 +240,7 @@
                         </p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Community:</strong>
+                        <strong>{{ __('candidate.community') }}:</strong>
                         <p class="mb-0">
                             {{ $candidate->community ?? '-' }}
                             @if(($candidate->community ?? null) === 'Other' && !empty($candidate->community_other))
@@ -249,7 +249,7 @@
                         </p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Ethnic Group:</strong>
+                        <strong>{{ __('candidate.ethnic_group') }}:</strong>
                         <p class="mb-0">
                             {{ $candidate->ethnic_group ?? '-' }}
                             @if(($candidate->ethnic_group ?? null) === 'Other' && !empty($candidate->ethnic_group_other))
@@ -261,33 +261,33 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Mother Tongue:</strong>
+                        <strong>{{ __('candidate.mother_tongue') }}:</strong>
                         <p class="mb-0">{{ $candidate->mother_tongue ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Employment Status:</strong>
+                        <strong>{{ __('candidate.employment_status') }}:</strong>
                         <p class="mb-0">{{ ucfirst($candidate->employment_status ?? '-') }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Physical Disability:</strong>
+                        <strong>{{ __('candidate.physical_disability') }}:</strong>
                         <p class="mb-0">{{ ucfirst($candidate->physical_disability ?? '-') }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Disability Details:</strong>
+                        <strong>{{ __('candidate.disability_details') }}:</strong>
                         <p class="mb-0">{{ $candidate->disability_other ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Ethnic Certificate:</strong>
+                        <strong>{{ __('candidate.ethnic_certificate') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->ethnic_certificate ?? null) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Disability Certificate:</strong>
+                        <strong>{{ __('candidate.disability_certificate') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->disability_certificate ?? null) !!}</p>
                     </div>
                 </div>
@@ -300,72 +300,72 @@
 
             {{-- STEP 3: Address --}}
             <div class="step d-none" id="step3">
-                <h5 class="mb-4 text-dark">Step 3 — Address Information</h5>
+                <h5 class="mb-4 text-dark">Step 3 - {{ __('candidate.address_information') }}</h5>
 
-                <h6 class="mb-3 text-secondary">Permanent Address</h6>
+                <h6 class="mb-3 text-secondary">{{ __('candidate.permanent_address') }}</h6>
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Province:</strong>
+                        <strong>{{ __('candidate.province') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_province ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>District:</strong>
+                        <strong>{{ __('candidate.district') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_district ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Municipality:</strong>
+                        <strong>{{ __('candidate.municipality') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_municipality ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Ward No.:</strong>
+                        <strong>{{ __('candidate.ward_no') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_ward ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Tole:</strong>
+                        <strong>{{ __('candidate.tole') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_tole ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>House Number:</strong>
+                        <strong>{{ __('candidate.house_number') }}:</strong>
                         <p class="mb-0">{{ $candidate->permanent_house_number ?? '-' }}</p>
                     </div>
                 </div>
 
-                <h6 class="mb-3 text-secondary mt-4">Mailing/Current Address</h6>
+                <h6 class="mb-3 text-secondary mt-4">{{ __('candidate.mailing_current_address') }}</h6>
                 @if(!empty($candidate?->same_as_permanent))
                     <div class="alert alert-info mb-3">
-                        <i class="fas fa-info-circle"></i> Same as Permanent Address
+                        <i class="fas fa-info-circle"></i> {{ __('candidate.same_as_permanent_address') }}
                     </div>
                 @endif
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Province:</strong>
+                        <strong>{{ __('candidate.province') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_province ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>District:</strong>
+                        <strong>{{ __('candidate.district') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_district ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Municipality:</strong>
+                        <strong>{{ __('candidate.municipality') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_municipality ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <strong>Ward No.:</strong>
+                        <strong>{{ __('candidate.ward_no') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_ward ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>Tole:</strong>
+                        <strong>{{ __('candidate.tole') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_tole ?? '-' }}</p>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <strong>House Number:</strong>
+                        <strong>{{ __('candidate.house_number') }}:</strong>
                         <p class="mb-0">{{ $candidate->mailing_house_number ?? '-' }}</p>
                     </div>
                 </div>
@@ -378,26 +378,26 @@
 
             {{-- STEP 4: Education --}}
             <div class="step d-none" id="step4">
-                <h5 class="mb-4 text-dark">Step 4 — Educational Background</h5>
+                <h5 class="mb-4 text-dark">Step 4 - {{ __('candidate.educational_background') }}</h5>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Highest Education Level:</strong>
+                        <strong>{{ __('candidate.highest_education_level') }}:</strong>
                         <p class="mb-0">{{ $candidate->education_level ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Field of Study:</strong>
+                        <strong>{{ __('candidate.field_of_study') }}:</strong>
                         <p class="mb-0">{{ $candidate->field_of_study ?? '-' }}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Institution Name:</strong>
+                        <strong>{{ __('candidate.institution_name') }}:</strong>
                         <p class="mb-0">{{ $candidate->institution_name ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Graduation Year:</strong>
+                        <strong>{{ __('candidate.graduation_year') }}:</strong>
                         <p class="mb-0">{{ $candidate->graduation_year ?? '-' }}</p>
                     </div>
                 </div>
@@ -410,10 +410,10 @@
 
             {{-- STEP 5: Experience --}}
             <div class="step d-none" id="step5">
-                <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+                <h5 class="mb-4 text-dark">Step 5 - {{ __('candidate.work_experience') }}</h5>
 
                 <div class="mb-3">
-                    <strong>Has Work Experience:</strong>
+                    <strong>{{ __('candidate.has_work_experience') }}:</strong>
                     <p class="mb-0">{{ ucfirst($candidate->has_work_experience ?? '-') }}</p>
                 </div>
 
@@ -529,34 +529,34 @@
                             <h6 class="text-primary">{{ $exp['title'] }}</h6>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <strong>Organization:</strong>
+                                    <strong>{{ __('candidate.organization') }}:</strong>
                                     <p>{{ $exp['org'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Position:</strong>
+                                    <strong>{{ __('candidate.position') }}:</strong>
                                     <p>{{ $exp['pos'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Start Date:</strong>
+                                    <strong>{{ __('candidate.start_date') }}:</strong>
                                     <p>{{ $exp['start'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>End Date:</strong>
+                                    <strong>{{ __('candidate.end_date') }}:</strong>
                                     <p>{{ $exp['end'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Years:</strong>
+                                    <strong>{{ __('candidate.years') }}:</strong>
                                     <p>{{ $exp['years'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Document:</strong>
+                                    <strong>{{ __('candidate.document') }}:</strong>
                                     <p>{!! showDoc($exp['doc']) !!}</p>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 @else
-                    <p class="text-muted">No work experience records.</p>
+                    <p class="text-muted">{{ __('candidate.no_work_experience_records') }}</p>
                 @endif
 
                 <div class="d-flex justify-content-between">
@@ -567,37 +567,37 @@
 
             {{-- STEP 6: Documents --}}
             <div class="step d-none" id="step6">
-                <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
+                <h5 class="mb-4 text-dark">Step 6 - {{ __('candidate.uploaded_documents') }}</h5>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Passport Size Photo:</strong>
+                        <strong>{{ __('candidate.passport_size_photo') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->passport_size_photo ?? null) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Citizenship/ID Document:</strong>
+                        <strong>{{ __('candidate.citizenship_id_document') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->citizenship_id_document ?? null) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Character Certificate:</strong>
+                        <strong>{{ __('candidate.character_certificate') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->character_certificate ?? ($candidate->character ?? null)) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Equivalency Certificate:</strong>
+                        <strong>{{ __('candidate.equivalency_certificate') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->equivalency_certificate ?? ($candidate->equivalent ?? null)) !!}</p>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Signature:</strong>
+                        <strong>{{ __('candidate.signature') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->signature ?? null) !!}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Transcript Certificate:</strong>
+                        <strong>{{ __('candidate.transcript_certificate') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->transcript ?? null) !!}</p>
                     </div>
                 </div>
@@ -605,7 +605,7 @@
                 <div class="row mb-3">
                     
                     <div class="col-md-6 mb-3">
-                        <strong>NOC ID Card:</strong>
+                        <strong>{{ __('candidate.noc_id_card') }}:</strong>
                         <p class="mb-0">{!! showDoc($candidate->noc_id_card ?? null) !!}</p>
                     </div>
                 </div>
@@ -623,7 +623,7 @@
                 <h5 class="mb-4 text-dark">Step 7 — Payment Details</h5>
 
                 <div class="alert alert-info py-2">
-                    Payment information is not part of My Profile.
+                    {{ __('candidate.payment_not_part_profile') }}
                     Please check “My Applications” to view payment details for a submitted application.
                 </div>
 
@@ -632,11 +632,11 @@
                 <h6 class="mb-3 text-secondary">Profile Status</h6>
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3">
-                        <strong>Profile ID:</strong>
+                        <strong>{{ __('candidate.profile_id') }}:</strong>
                         <p class="mb-0">{{ $candidate->id ?? '-' }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <strong>Updated At:</strong>
+                        <strong>{{ __('candidate.updated_at') }}:</strong>
                         <p class="mb-0">
                             @if(!empty($candidate?->updated_at))
                                 {{ is_string($candidate->updated_at) ? \Carbon\Carbon::parse($candidate->updated_at)->format('F d, Y h:i A') : $candidate->updated_at->format('F d, Y h:i A') }}

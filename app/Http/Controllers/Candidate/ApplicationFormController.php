@@ -38,7 +38,7 @@ class ApplicationFormController extends Controller
     {
         $candidate = Auth::guard('candidate')->user();
 
-        $forms = ApplicationForm::with('payment')
+        $forms = ApplicationForm::with(['payment', 'candidateRegistration'])
             ->where('citizenship_number', $candidate->citizenship_number)
             ->latest()
             ->paginate(10);
@@ -56,7 +56,9 @@ class ApplicationFormController extends Controller
         $job = null;
         $groupJobs = collect();
         if ($jobId) {
-            $job = JobPosting::find($jobId);
+            $job = JobPosting::live()
+                ->visibleToCandidate($candidate)
+                ->find($jobId);
 
             if (!$job) {
                 return redirect()->route('candidate.jobs.index')
@@ -76,14 +78,8 @@ class ApplicationFormController extends Controller
             }
 
             // Load all sibling jobs sharing the same position + level + service_group
-            $groupJobs = JobPosting::where('status', 'active')
-                ->where(function ($q) {
-                    $q->where('deadline', '>=', now())
-                        ->orWhere(function ($inner) {
-                            $inner->whereNotNull('double_dastur_date')
-                                ->where('double_dastur_date', '>=', now());
-                        });
-                })
+            $groupJobs = JobPosting::live()
+                ->visibleToCandidate($candidate)
                 ->where('position', $job->position)
                 ->where('level', $job->level)
                 ->where('service_group', $job->service_group)
@@ -448,7 +444,9 @@ class ApplicationFormController extends Controller
 
         // Check job eligibility if applying for a job
         if ($request->has('job_posting_id')) {
-            $job = JobPosting::find($request->job_posting_id);
+            $job = JobPosting::live()
+                ->visibleToCandidate($candidate)
+                ->find($request->job_posting_id);
 
             if (!$job) {
                 return redirect()->back()
@@ -557,6 +555,8 @@ class ApplicationFormController extends Controller
                 ->withErrors(['error' => 'Unauthorized access']);
         }
 
+        $applicationform->load(['candidateRegistration', 'experiences']);
+
         return view('candidate.applications.show', compact('applicationform'));
     }
 
@@ -590,14 +590,8 @@ class ApplicationFormController extends Controller
         if ($applicationform->job_posting_id) {
             $job = JobPosting::find($applicationform->job_posting_id);
             if ($job) {
-                $groupJobs = JobPosting::where('status', 'active')
-                    ->where(function ($q) {
-                        $q->where('deadline', '>=', now())
-                            ->orWhere(function ($inner) {
-                                $inner->whereNotNull('double_dastur_date')
-                                    ->where('double_dastur_date', '>=', now());
-                            });
-                    })
+                $groupJobs = JobPosting::live()
+                    ->visibleToCandidate($candidate)
                     ->where('position', $job->position)
                     ->where('level', $job->level)
                     ->where('service_group', $job->service_group)
@@ -708,7 +702,9 @@ class ApplicationFormController extends Controller
             ], 401);
         }
 
-        $job = JobPosting::find($jobId);
+        $job = JobPosting::live()
+            ->visibleToCandidate($candidate)
+            ->find($jobId);
 
         if (!$job) {
             return response()->json([

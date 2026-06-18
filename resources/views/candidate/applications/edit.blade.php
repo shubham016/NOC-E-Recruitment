@@ -1,34 +1,34 @@
 @extends('layouts.app')
-@section('title', 'Edit Application Form')
+@section('title', __('candidate.edit_application_form'))
 @section('content')
 @section('sidebar-menu')
 <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
     <i class="bi bi-speedometer2"></i>
-    <span>Dashboard</span>
+    <span>{{ __('candidate.dashboard') }}</span>
 </a>
 <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item">
     <i class="bi bi-person"></i>
-    <span>My Profile</span>
+    <span>{{ __('candidate.my_profile') }}</span>
 </a>
 <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
     <i class="bi bi-search"></i>
-    <span>Vacancy</span>
+    <span>{{ __('candidate.vacancy') }}</span>
 </a>
 <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item active">
     <i class="bi bi-file-earmark-text"></i>
-    <span>My Applications</span>
+    <span>{{ __('candidate.my_applications') }}</span>
 </a>
 <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
     <i class="bi bi-file-earmark-check"></i>
-    <span>View Result</span>
+    <span>{{ __('candidate.view_result') }}</span>
 </a>
 <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
     <i class="bi bi-box-arrow-down"></i>
-    <span>Download Admit Card</span>
+    <span>{{ __('candidate.download_admit_card') }}</span>
 </a>
 <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
     <i class="bi bi-lock"></i>
-    <span>Change Password</span>
+    <span>{{ __('candidate.change_password') }}</span>
 </a>
 @endsection
 

@@ -1,28 +1,28 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Profile')
+@section('title', __('candidate.edit_profile'))
 
 @section('sidebar-menu')
     <a href="{{ route('candidate.dashboard') }}" class="sidebar-menu-item">
-        <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+        <i class="bi bi-speedometer2"></i><span>{{ __('candidate.dashboard') }}</span>
     </a>
     <a href="{{ route('candidate.my-profile') }}" class="sidebar-menu-item active">
-        <i class="bi bi-person"></i><span>My Profile</span>
+        <i class="bi bi-person"></i><span>{{ __('candidate.my_profile') }}</span>
     </a>
     <a href="{{ route('candidate.jobs.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-search"></i><span>Vacancy</span>
+        <i class="bi bi-search"></i><span>{{ __('candidate.vacancy') }}</span>
     </a>
     <a href="{{ route('candidate.applications.index') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-text"></i><span>My Applications</span>
+        <i class="bi bi-file-earmark-text"></i><span>{{ __('candidate.my_applications') }}</span>
     </a>
     <a href="{{ route('candidate.viewresult') }}" class="sidebar-menu-item">
-        <i class="bi bi-file-earmark-check"></i><span>View Result</span>
+        <i class="bi bi-file-earmark-check"></i><span>{{ __('candidate.view_result') }}</span>
     </a>
     <a href="{{ route('candidate.admit-card') }}" class="sidebar-menu-item">
-        <i class="bi bi-box-arrow-down"></i><span>Download Admit Card</span>
+        <i class="bi bi-box-arrow-down"></i><span>{{ __('candidate.download_admit_card') }}</span>
     </a>
     <a href="{{ route('candidate.change-password') }}" class="sidebar-menu-item">
-        <i class="bi bi-lock"></i><span>Change Password</span>
+        <i class="bi bi-lock"></i><span>{{ __('candidate.change_password') }}</span>
     </a>
 @endsection
 
@@ -69,16 +69,16 @@
 <div class="container my-2">
     <div class="card shadow-lg border-0">
         <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center py-2">
-            <h3 class="mb-0 fw-bold">NOC | Edit My Profile</h3>
+            <h3 class="mb-0 fw-bold">{{ __('candidate.edit_my_profile') }}</h3>
             <a href="{{ route('candidate.my-profile') }}" class="btn btn-secondary btn-sm">
-                <i class="bi bi-eye me-1"></i> View Profile
+                <i class="bi bi-eye me-1"></i> {{ __('candidate.view_profile') }}
             </a>
         </div>
 
         <div class="card-body px-5 pt-3 pb-5">
             @if($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show mb-4">
-                    <strong>Please fix the following errors:</strong>
+                    <strong>{{ __('candidate.please_fix_errors') }}:</strong>
                     <ul class="mb-0 mt-2">
                         @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
                     </ul>
@@ -95,12 +95,12 @@
 
             <div class="step-tabs mb-5">
                 <div class="d-flex justify-content-evenly border-bottom position-relative">
-                    <div class="tab-item active" data-step="1"><span class="tab-circle">1</span><span class="tab-label d-none d-md-inline">Personal</span></div>
-                    <div class="tab-item" data-step="2"><span class="tab-circle">2</span><span class="tab-label d-none d-md-inline">General</span></div>
-                    <div class="tab-item" data-step="3"><span class="tab-circle">3</span><span class="tab-label d-none d-md-inline">Address</span></div>
-                    <div class="tab-item" data-step="4"><span class="tab-circle">4</span><span class="tab-label d-none d-md-inline">Education</span></div>
-                    <div class="tab-item" data-step="5"><span class="tab-circle">5</span><span class="tab-label d-none d-md-inline">Experience</span></div>
-                    <div class="tab-item" data-step="6"><span class="tab-circle">6</span><span class="tab-label d-none d-md-inline">Documents</span></div>
+                    <div class="tab-item active" data-step="1"><span class="tab-circle">1</span><span class="tab-label d-none d-md-inline">{{ __('candidate.personal') }}</span></div>
+                    <div class="tab-item" data-step="2"><span class="tab-circle">2</span><span class="tab-label d-none d-md-inline">{{ __('candidate.general') }}</span></div>
+                    <div class="tab-item" data-step="3"><span class="tab-circle">3</span><span class="tab-label d-none d-md-inline">{{ __('candidate.address') }}</span></div>
+                    <div class="tab-item" data-step="4"><span class="tab-circle">4</span><span class="tab-label d-none d-md-inline">{{ __('candidate.education') }}</span></div>
+                    <div class="tab-item" data-step="5"><span class="tab-circle">5</span><span class="tab-label d-none d-md-inline">{{ __('candidate.experience') }}</span></div>
+                    <div class="tab-item" data-step="6"><span class="tab-circle">6</span><span class="tab-label d-none d-md-inline">{{ __('candidate.documents') }}</span></div>
                     <!-- <div class="tab-item" data-step="7"><span class="tab-circle">7</span><span class="tab-label d-none d-md-inline">Review</span></div> -->
                     <div class="progress-line"></div>
                 </div>
@@ -112,17 +112,17 @@
 
                 {{-- STEP 1: Personal Information --}}
                 <div class="step active" id="step1">
-                    <h5 class="mb-4 text-dark">Step 1 — Personal Information</h5>
+                    <h5 class="mb-4 text-dark">Step 1 - {{ __('candidate.personal_information') }}</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Full Name (English) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.full_name_english') }} <span class="text-danger">*</span></label>
                             <input type="text" name="name_english" id="name_english" class="form-control @error('name_english') is-invalid @enderror"
                                 value="{{ old('name_english', $candidate->name_english ?? '') }}" required>
                             @error('name_english')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Full Name (Nepali) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.full_name_nepali') }} <span class="text-danger">*</span></label>
                             <input type="text" name="name_nepali" id="name_nepali"
                                 class="form-control nepali-only @error('name_nepali') is-invalid @enderror"
                                 placeholder="नेपालीमा नाम लेख्नुहोस्"
@@ -135,7 +135,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label class="form-label">Birth Date (B.S) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.birth_date_bs') }} <span class="text-danger">*</span></label>
                             <div class="ndp-wrapper">
                                 <input type="text" name="birth_date_bs" id="birth_date_bs" class="form-control @error('birth_date_bs') is-invalid @enderror"
                                     placeholder="YYYY-MM-DD" autocomplete="off"
@@ -145,20 +145,20 @@
                             @error('birth_date_bs')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Birth Date (A.D) <small>(auto-filled)</small></label>
+                            <label class="form-label">{{ __('candidate.birth_date_ad') }} <small>(auto-filled)</small></label>
                             <input type="text" id="birth_date_ad_display" class="form-control bg-light" placeholder="YYYY-MMM-DD"
                                 value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-M-d') : '') }}" readonly>
                             <input type="hidden" name="birth_date_ad" id="birth_date_ad"
                                 value="{{ old('birth_date_ad', $candidate->birth_date_ad ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('Y-m-d') : '') }}">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.email') }} <span class="text-danger">*</span></label>
                             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', $candidate->email ?? '') }}" required>
                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.phone_number') }} <span class="text-danger">*</span></label>
                             <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
                                 value="{{ old('phone', $candidate->phone ?? '') }}" required>
                             @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -167,18 +167,18 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Age</label>
+                            <label class="form-label">{{ __('candidate.age') }}</label>
                             <input type="text" name="age" id="age" class="form-control" readonly
                                 value="{{ old('age', $candidate->age ?? '') }}">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Alternate Phone Number</label>
+                            <label class="form-label">{{ __('candidate.alternate_phone_number') }}</label>
                             <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control @error('alternate_phone_number') is-invalid @enderror"
                                 value="{{ old('alternate_phone_number', $candidate->alternate_phone_number ?? '') }}">
                             @error('alternate_phone_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Gender <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.gender') }} <span class="text-danger">*</span></label>
                             <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Male"   {{ old('gender', $candidate->gender ?? '') == 'Male'   ? 'selected' : '' }}>Male / पुरुष</option>
@@ -191,7 +191,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Marital Status <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.marital_status') }} <span class="text-danger">*</span></label>
                             <select name="marital_status" id="marital_status" class="form-select @error('marital_status') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Single"   {{ old('marital_status', $candidate->marital_status ?? '') == 'Single'   ? 'selected' : '' }}>Single</option>
@@ -202,13 +202,13 @@
                             @error('marital_status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Spouse Name (If Married)</label>
+                            <label class="form-label">{{ __('candidate.spouse_name_if_married') }}</label>
                             <input type="text" name="spouse_name_english" id="spouse_name_english" class="form-control @error('spouse_name_english') is-invalid @enderror"
                                 value="{{ old('spouse_name_english', $candidate->spouse_name_english ?? '') }}">
                             @error('spouse_name_english')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Spouse Nationality (If Married)</label>
+                            <label class="form-label">{{ __('candidate.spouse_nationality_if_married') }}</label>
                             <input type="text" name="spouse_nationality" id="spouse_nationality" class="form-control @error('spouse_nationality') is-invalid @enderror"
                                 value="{{ old('spouse_nationality', $candidate->spouse_nationality ?? '') }}">
                             @error('spouse_nationality')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -217,13 +217,13 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Citizenship Number <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.citizenship_number') }} <span class="text-danger">*</span></label>
                             <input type="text" name="citizenship_number" id="citizenship_number" class="form-control @error('citizenship_number') is-invalid @enderror"
                                 value="{{ old('citizenship_number', $candidate->citizenship_number ?? '') }}" required>
                             @error('citizenship_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Citizenship Issue Date (B.S) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.citizenship_issue_date_bs') }} <span class="text-danger">*</span></label>
                             <div class="ndp-wrapper">
                                 <input type="text" name="citizenship_issue_date_bs" id="citizenship_issue_date_bs"
                                     class="form-control @error('citizenship_issue_date_bs') is-invalid @enderror"
@@ -234,7 +234,7 @@
                             @error('citizenship_issue_date_bs')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Citizenship Issue District <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.citizenship_issue_district') }} <span class="text-danger">*</span></label>
                             <input type="text" name="citizenship_issue_district" id="citizenship_issue_district"
                                 class="form-control @error('citizenship_issue_district') is-invalid @enderror"
                                 value="{{ old('citizenship_issue_district', $candidate->citizenship_issue_district ?? $candidate->citizenship_issue_distric ?? '') }}" required>
@@ -244,19 +244,19 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Father Name <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.father_name_english') }} <span class="text-danger">*</span></label>
                             <input type="text" name="father_name_english" id="father_name_english" class="form-control @error('father_name_english') is-invalid @enderror"
                                 value="{{ old('father_name_english', $candidate->father_name_english ?? '') }}" required>
                             @error('father_name_english')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Mother Name <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.mother_name_english') }} <span class="text-danger">*</span></label>
                             <input type="text" name="mother_name_english" id="mother_name_english" class="form-control @error('mother_name_english') is-invalid @enderror"
                                 value="{{ old('mother_name_english', $candidate->mother_name_english ?? '') }}" required>
                             @error('mother_name_english')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Grandfather Name <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.grandfather_name_english') }} <span class="text-danger">*</span></label>
                             <input type="text" name="grandfather_name_english" id="grandfather_name_english" class="form-control @error('grandfather_name_english') is-invalid @enderror"
                                 value="{{ old('grandfather_name_english', $candidate->grandfather_name_english ?? '') }}" required>
                             @error('grandfather_name_english')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -265,21 +265,21 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Father Name (Nepali) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.father_name_nepali') }} <span class="text-danger">*</span></label>
                             <input type="text" name="father_name_nepali" id="father_name_nepali" class="form-control @error('father_name_nepali') is-invalid @enderror"
                                 value="{{ old('father_name_nepali', $candidate->father_name_nepali ?? '') }}" required>
                            <small class="text-muted">Only Devanagari (नेपाली) characters allowed</small>
                                 @error('father_name_nepali')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Mother Name (Nepali) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.mother_name_nepali') }} <span class="text-danger">*</span></label>
                             <input type="text" name="mother_name_nepali" id="mother_name_nepali" class="form-control @error('mother_name_nepali') is-invalid @enderror"
                             value="{{ old('mother_name_nepali', $candidate->mother_name_nepali ?? '') }}" required>
                             <small class="text-muted">Only Devanagari (नेपाली) characters allowed</small>
                             @error('mother_name_nepali')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Grandfather Name (Nepali) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.grandfather_name_nepali') }} <span class="text-danger">*</span></label>
                             <input type="text" name="grandfather_name_nepali" id="grandfather_name_nepali" class="form-control @error('grandfather_name_nepali') is-invalid @enderror"
                             value="{{ old('grandfather_name_nepali', $candidate->grandfather_name_nepali ?? '') }}" required>
                             <small class="text-muted">Only Devanagari (नेपlी) characters allowed</small>
@@ -289,7 +289,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Blood Group <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.blood_group') }} <span class="text-danger">*</span></label>
                             <select name="blood_group" id="blood_group" class="form-select @error('blood_group') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
@@ -299,13 +299,13 @@
                             @error('blood_group')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Nationality <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.nationality') }} <span class="text-danger">*</span></label>
                             <input type="text" name="nationality" id="nationality" class="form-control @error('nationality') is-invalid @enderror"
                                 value="{{ old('nationality', $candidate->nationality ?? '') }}" required>
                             @error('nationality')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Are you NOC Employee? <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.are_you_noc_employee') }} <span class="text-danger">*</span></label>
                             <select name="noc_employee" id="noc_employee" class="form-select @error('noc_employee') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="yes" {{ old('noc_employee', $candidate->noc_employee ?? '') == 'yes' ? 'selected' : '' }}>Yes</option>
@@ -317,7 +317,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" id="noc_id_card_label">NOC ID Card</label>
+                            <label class="form-label" id="noc_id_card_label">{{ __('candidate.noc_id_card') }}</label>
                             @if(!empty($candidate->noc_id_card))
                                 <div class="mb-2">{!! showDoc($candidate->noc_id_card) !!}</div>
                             @endif
@@ -328,7 +328,7 @@
                             @error('noc_id_card')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Physical Disability <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.physical_disability') }} <span class="text-danger">*</span></label>
                             <select name="physical_disability" id="physical_disability" class="form-select @error('physical_disability') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="yes" {{ old('physical_disability', $candidate->physical_disability ?? '') == 'yes' ? 'selected' : '' }}>Yes</option>
@@ -341,7 +341,7 @@
                     <div class="row mb-3" id="disabilityCertWrapper"
                          style="{{ old('physical_disability', $candidate->physical_disability ?? null) == 'yes' ? '' : 'display:none;' }}">
                         <div class="col-md-6">
-                            <label class="form-label" id="disability_certificate_label">Disability Certificate</label>
+                            <label class="form-label" id="disability_certificate_label">{{ __('candidate.disability_certificate') }}</label>
                             @if(!empty($candidate->disability_certificate))
                                 <div class="mb-2">{!! showDoc($candidate->disability_certificate) !!}</div>
                             @endif
@@ -354,7 +354,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                            <label class="form-label">Parent's Occupation <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.parents_occupation') }} <span class="text-danger">*</span></label>
                             <input type="text" name="parents_occupation" id="parents_occupation" class="form-control @error('parents_occupation') is-invalid @enderror"
                                 value="{{ old('parents_occupation', $candidate->parents_occupation ?? '') }}" required>
                             @error('parents_occupation')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -367,11 +367,11 @@
 
                 {{-- STEP 2: General Information --}}
                 <div class="step d-none" id="step2">
-                    <h5 class="mb-4 text-dark">Step 2 — General Information</h5>
+                    <h5 class="mb-4 text-dark">Step 2 - {{ __('candidate.general_information') }}</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Religion <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.religion') }} <span class="text-danger">*</span></label>
                             <select name="religion" id="religion" class="form-select @error('religion') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Hindu"     {{ old('religion', $candidate->religion ?? '') == 'Hindu'     ? 'selected' : '' }}>Hindu / हिन्दू</option>
@@ -388,7 +388,7 @@
                             @error('religion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Community <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.community') }} <span class="text-danger">*</span></label>
                             <select name="community" id="community" class="form-select @error('community') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Male"   {{ old('community', $candidate->community ?? '') == 'Male'   ? 'selected' : '' }}>पुरुष</option>
@@ -403,7 +403,7 @@
                             @error('community')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Ethnic Group <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.ethnic_group') }} <span class="text-danger">*</span></label>
                             <select name="ethnic_group" id="ethnic_group" class="form-select @error('ethnic_group') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Dalit"           {{ old('ethnic_group', $candidate->ethnic_group ?? '') == 'Dalit'           ? 'selected' : '' }}>Dalit</option>
@@ -422,7 +422,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" id="ethnic_certificate_label">Ethnic Certificate</label>
+                            <label class="form-label" id="ethnic_certificate_label">{{ __('candidate.ethnic_certificate') }}</label>
                             @if(!empty($candidate->ethnic_certificate))
                                 <div class="mb-2">{!! showDoc($candidate->ethnic_certificate) !!}</div>
                             @endif
@@ -434,7 +434,7 @@
                             @error('ethnic_certificate')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Mother Tongue <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.mother_tongue') }} <span class="text-danger">*</span></label>
                             <input type="text" name="mother_tongue" id="mother_tongue" class="form-control @error('mother_tongue') is-invalid @enderror"
                                 value="{{ old('mother_tongue', $candidate->mother_tongue ?? '') }}" required>
                             @error('mother_tongue')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -443,7 +443,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Employment Status <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.employment_status') }} <span class="text-danger">*</span></label>
                             <select name="employment_status" id="employment_status" class="form-select @error('employment_status') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="employed"      {{ old('employment_status', $candidate->employment_status ?? '') == 'employed'      ? 'selected' : '' }}>Employed</option>
@@ -463,10 +463,10 @@
 
                 {{-- STEP 3: Address --}}
                 <div class="step d-none" id="step3">
-                    <h5 class="mb-4 text-dark">Step 3 — Permanent Address</h5>
+                    <h5 class="mb-4 text-dark">Step 3 - {{ __('candidate.permanent_address') }}</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Province <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.province') }} <span class="text-danger">*</span></label>
                             <select name="permanent_province" id="permanent_province" class="form-select @error('permanent_province') is-invalid @enderror" required onchange="cascadeDistrict('permanent')">
                                 <option value="">-- Select Province --</option>
                                 @foreach(['Koshi','Madhesh','Bagmati','Gandaki','Lumbini','Karnali','Sudurpashchim'] as $p)
@@ -476,14 +476,14 @@
                             @error('permanent_province')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">District <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.district') }} <span class="text-danger">*</span></label>
                             <select name="permanent_district" id="permanent_district" class="form-select @error('permanent_district') is-invalid @enderror" required onchange="cascadeMunicipality('permanent')" disabled>
                                 <option value="">-- Select District --</option>
                             </select>
                             @error('permanent_district')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Municipality <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.municipality') }} <span class="text-danger">*</span></label>
                             <select name="permanent_municipality" id="permanent_municipality" class="form-select @error('permanent_municipality') is-invalid @enderror" required disabled>
                                 <option value="">-- Select Municipality --</option>
                             </select>
@@ -492,34 +492,34 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Ward No. <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.ward_no') }} <span class="text-danger">*</span></label>
                             <input type="text" name="permanent_ward" id="permanent_ward" class="form-control @error('permanent_ward') is-invalid @enderror"
                                 value="{{ old('permanent_ward', $candidate->permanent_ward ?? '') }}" required>
                             @error('permanent_ward')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Tole</label>
+                            <label class="form-label">{{ __('candidate.tole') }}</label>
                             <input type="text" name="permanent_tole" id="permanent_tole" class="form-control"
                                 value="{{ old('permanent_tole', $candidate->permanent_tole ?? '') }}">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">House Number</label>
+                            <label class="form-label">{{ __('candidate.house_number') }}</label>
                             <input type="text" name="permanent_house_number" id="permanent_house_number" class="form-control"
                                 value="{{ old('permanent_house_number', $candidate->permanent_house_number ?? '') }}">
                         </div>
                     </div>
 
-                    <h5 class="mb-3 mt-4 text-dark">Mailing / Current Address</h5>
+                    <h5 class="mb-3 mt-4 text-dark">{{ __('candidate.mailing_current_address') }}</h5>
                     <div class="form-check mb-3">
                         <input type="checkbox" class="form-check-input" id="same_as_permanent" name="same_as_permanent" value="1"
                             {{ old('same_as_permanent', $candidate->same_as_permanent ?? false) ? 'checked' : '' }} onchange="toggleSameAsPermanent()">
-                        <label class="form-check-label" for="same_as_permanent">Same as Permanent Address</label>
+                        <label class="form-check-label" for="same_as_permanent">{{ __('candidate.same_as_permanent_address') }}</label>
                     </div>
 
                     <div id="mailing_fields">
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label class="form-label">Province <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ __('candidate.province') }} <span class="text-danger">*</span></label>
                                 <select name="mailing_province" id="mailing_province" class="form-select @error('mailing_province') is-invalid @enderror" required onchange="cascadeDistrict('mailing')">
                                     <option value="">-- Select Province --</option>
                                     @foreach(['Koshi','Madhesh','Bagmati','Gandaki','Lumbini','Karnali','Sudurpashchim'] as $p)
@@ -529,14 +529,14 @@
                                 @error('mailing_province')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">District <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ __('candidate.district') }} <span class="text-danger">*</span></label>
                                 <select name="mailing_district" id="mailing_district" class="form-select @error('mailing_district') is-invalid @enderror" required onchange="cascadeMunicipality('mailing')" disabled>
                                     <option value="">-- Select District --</option>
                                 </select>
                                 @error('mailing_district')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Municipality <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ __('candidate.municipality') }} <span class="text-danger">*</span></label>
                                 <select name="mailing_municipality" id="mailing_municipality" class="form-select @error('mailing_municipality') is-invalid @enderror" required disabled>
                                     <option value="">-- Select Municipality --</option>
                                 </select>
@@ -545,18 +545,18 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label class="form-label">Ward No. <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ __('candidate.ward_no') }} <span class="text-danger">*</span></label>
                                 <input type="text" name="mailing_ward" id="mailing_ward" class="form-control @error('mailing_ward') is-invalid @enderror"
                                     value="{{ old('mailing_ward', $candidate->mailing_ward ?? '') }}" required>
                                 @error('mailing_ward')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Tole</label>
+                                <label class="form-label">{{ __('candidate.tole') }}</label>
                                 <input type="text" name="mailing_tole" id="mailing_tole" class="form-control"
                                     value="{{ old('mailing_tole', $candidate->mailing_tole ?? '') }}">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">House Number</label>
+                                <label class="form-label">{{ __('candidate.house_number') }}</label>
                                 <input type="text" name="mailing_house_number" id="mailing_house_number" class="form-control"
                                     value="{{ old('mailing_house_number', $candidate->mailing_house_number ?? '') }}">
                             </div>
@@ -571,10 +571,10 @@
 
                 {{-- STEP 4: Education --}}
                 <div class="step d-none" id="step4">
-                    <h5 class="mb-4 text-dark">Step 4 — Educational Background</h5>
+                    <h5 class="mb-4 text-dark">Step 4 - {{ __('candidate.educational_background') }}</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Highest Education Level <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.highest_education_level') }} <span class="text-danger">*</span></label>
                             <select name="education_level" id="education_level" class="form-select @error('education_level') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 @foreach(['Under SLC','SLC/SEE','+2/Intermediate','Bachelor','Master','PhD','Other'] as $el)
@@ -584,7 +584,7 @@
                             @error('education_level')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Field of Study <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.field_of_study') }} <span class="text-danger">*</span></label>
                             <input type="text" name="field_of_study" id="field_of_study" class="form-control @error('field_of_study') is-invalid @enderror"
                                 value="{{ old('field_of_study', $candidate->field_of_study ?? '') }}" required>
                             @error('field_of_study')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -592,20 +592,20 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Institution Name <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.institution_name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="institution_name" id="institution_name" class="form-control @error('institution_name') is-invalid @enderror"
                                 value="{{ old('institution_name', $candidate->institution_name ?? '') }}" required>
                             @error('institution_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Passed Year (B.S) <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.passed_year_bs') }} <span class="text-danger">*</span></label>
                             <input type="text" name="graduation_year" id="graduation_year" class="form-control @error('graduation_year') is-invalid @enderror"
                                 placeholder="YYYY" maxlength="4" inputmode="numeric"
                                 value="{{ old('graduation_year', $candidate->graduation_year ?? '') }}" required>
                             @error('graduation_year')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Passed Year (A.D)</label>
+                            <label class="form-label">{{ __('candidate.passed_year_ad') }}</label>
                             <input type="text" name="graduation_year_english" id="graduation_year_english" class="form-control @error('graduation_year_english') is-invalid @enderror"
                                 placeholder="YYYY" maxlength="4" inputmode="numeric"
                                 value="{{ old('graduation_year_english', $candidate->graduation_year_english ?? '') }}">
@@ -614,13 +614,13 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">University Name <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.university_name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="university" id="university" class="form-control @error('university') is-invalid @enderror"
                                 value="{{ old('university', $candidate->university ?? '') }}" required>
                             @error('university')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Transcript Certificate <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.transcript_certificate') }} <span class="text-danger">*</span></label>
                             @if(!empty($candidate->transcript))
                                 <div class="mb-2">{!! showDoc($candidate->transcript) !!}</div>
                             @endif
@@ -633,7 +633,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Character Certificate <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.character_certificate') }} <span class="text-danger">*</span></label>
                             @if(!empty($candidate->character_certificate ?? $candidate->character))
                                 <div class="mb-2">{!! showDoc($candidate->character_certificate ?? $candidate->character) !!}</div>
                             @endif
@@ -644,7 +644,7 @@
                             @error('character_certificate')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Equivalency Certificate <small>(If degree is from outside Nepal)</small></label>
+                            <label class="form-label">{{ __('candidate.equivalency_certificate') }} <small>(If degree is from outside Nepal)</small></label>
                             @if(!empty($candidate->equivalency_certificate ?? $candidate->equivalent))
                                 <div class="mb-2">{!! showDoc($candidate->equivalency_certificate ?? $candidate->equivalent) !!}</div>
                             @endif
@@ -664,10 +664,10 @@
 
                 {{-- STEP 5: Work Experience --}}
                 <div class="step d-none" id="step5">
-                    <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
+                    <h5 class="mb-4 text-dark">Step 5 - {{ __('candidate.work_experience') }}</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Do you have work experience? <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.has_work_experience') }} <span class="text-danger">*</span></label>
                             <select name="has_work_experience" id="has_work_experience" class="form-select @error('has_work_experience') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="Yes" {{ old('has_work_experience', $candidate->has_work_experience ?? '') == 'Yes' ? 'selected' : '' }}>Yes</option>
@@ -689,36 +689,36 @@
                                 </div>
                                 <div class="row g-2">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Organization</label>
+                                        <label class="form-label small">{{ __('candidate.organization') }}</label>
                                         <input type="text" name="exp1_organization" class="form-control form-control-sm"
                                             value="{{ old('exp1_organization', $candidate->exp1_organization ?? '') }}">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Position</label>
+                                        <label class="form-label small">{{ __('candidate.position') }}</label>
                                         <input type="text" name="exp1_position" class="form-control form-control-sm"
                                             value="{{ old('exp1_position', $candidate->exp1_position ?? '') }}">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Start Date (B.S)</label>
+                                        <label class="form-label small">{{ __('candidate.start_date_bs') }}</label>
                                         <input type="text" name="exp1_start_date_bs" class="form-control form-control-sm exp-nepali-date"
                                             placeholder="YYYY-MM-DD" data-target="exp1_start_date" autocomplete="off"
                                             value="{{ old('exp1_start_date_bs', $candidate->exp1_start_date_bs ?? '') }}">
                                         <input type="hidden" name="exp1_start_date" value="{{ $candidate->exp1_start_date ?? '' }}">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">End Date (B.S)</label>
+                                        <label class="form-label small">{{ __('candidate.end_date_bs') }}</label>
                                         <input type="text" name="exp1_end_date_bs" class="form-control form-control-sm exp-nepali-date"
                                             placeholder="YYYY-MM-DD" data-target="exp1_end_date" autocomplete="off"
                                             value="{{ old('exp1_end_date_bs', $candidate->exp1_end_date_bs ?? '') }}">
                                         <input type="hidden" name="exp1_end_date" value="{{ $candidate->exp1_end_date ?? '' }}">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="form-label small">Years</label>
+                                        <label class="form-label small">{{ __('candidate.years') }}</label>
                                         <input type="number" step="0.5" name="exp1_years" class="form-control form-control-sm"
                                             value="{{ old('exp1_years', $candidate->exp1_years ?? '') }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small">Document</label>
+                                        <label class="form-label small">{{ __('candidate.document') }}</label>
                                         @if(!empty($candidate->exp1_document))
                                             <div class="mb-1">{!! showDoc($candidate->exp1_document) !!}</div>
                                         @endif
@@ -737,12 +737,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp2_organization" class="form-control form-control-sm" value="{{ old('exp2_organization', $candidate->exp2_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp2_position" class="form-control form-control-sm" value="{{ old('exp2_position', $candidate->exp2_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp2_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp2_start_date" autocomplete="off" value="{{ old('exp2_start_date_bs', $candidate->exp2_start_date_bs ?? '') }}"><input type="hidden" name="exp2_start_date" value="{{ $candidate->exp2_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp2_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp2_end_date" autocomplete="off" value="{{ old('exp2_end_date_bs', $candidate->exp2_end_date_bs ?? '') }}"><input type="hidden" name="exp2_end_date" value="{{ $candidate->exp2_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp2_years" class="form-control form-control-sm" value="{{ old('exp2_years', $candidate->exp2_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp2_document))<div class="mb-1">{!! showDoc($candidate->exp2_document) !!}</div>@endif<input type="file" name="exp2_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp2_organization" class="form-control form-control-sm" value="{{ old('exp2_organization', $candidate->exp2_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp2_position" class="form-control form-control-sm" value="{{ old('exp2_position', $candidate->exp2_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp2_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp2_start_date" autocomplete="off" value="{{ old('exp2_start_date_bs', $candidate->exp2_start_date_bs ?? '') }}"><input type="hidden" name="exp2_start_date" value="{{ $candidate->exp2_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp2_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp2_end_date" autocomplete="off" value="{{ old('exp2_end_date_bs', $candidate->exp2_end_date_bs ?? '') }}"><input type="hidden" name="exp2_end_date" value="{{ $candidate->exp2_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp2_years" class="form-control form-control-sm" value="{{ old('exp2_years', $candidate->exp2_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp2_document))<div class="mb-1">{!! showDoc($candidate->exp2_document) !!}</div>@endif<input type="file" name="exp2_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -757,12 +757,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp3_organization" class="form-control form-control-sm" value="{{ old('exp3_organization', $candidate->exp3_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp3_position" class="form-control form-control-sm" value="{{ old('exp3_position', $candidate->exp3_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp3_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp3_start_date" autocomplete="off" value="{{ old('exp3_start_date_bs', $candidate->exp3_start_date_bs ?? '') }}"><input type="hidden" name="exp3_start_date" value="{{ $candidate->exp3_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp3_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp3_end_date" autocomplete="off" value="{{ old('exp3_end_date_bs', $candidate->exp3_end_date_bs ?? '') }}"><input type="hidden" name="exp3_end_date" value="{{ $candidate->exp3_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp3_years" class="form-control form-control-sm" value="{{ old('exp3_years', $candidate->exp3_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp3_document))<div class="mb-1">{!! showDoc($candidate->exp3_document) !!}</div>@endif<input type="file" name="exp3_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp3_organization" class="form-control form-control-sm" value="{{ old('exp3_organization', $candidate->exp3_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp3_position" class="form-control form-control-sm" value="{{ old('exp3_position', $candidate->exp3_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp3_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp3_start_date" autocomplete="off" value="{{ old('exp3_start_date_bs', $candidate->exp3_start_date_bs ?? '') }}"><input type="hidden" name="exp3_start_date" value="{{ $candidate->exp3_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp3_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp3_end_date" autocomplete="off" value="{{ old('exp3_end_date_bs', $candidate->exp3_end_date_bs ?? '') }}"><input type="hidden" name="exp3_end_date" value="{{ $candidate->exp3_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp3_years" class="form-control form-control-sm" value="{{ old('exp3_years', $candidate->exp3_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp3_document))<div class="mb-1">{!! showDoc($candidate->exp3_document) !!}</div>@endif<input type="file" name="exp3_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -777,12 +777,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp4_organization" class="form-control form-control-sm" value="{{ old('exp4_organization', $candidate->exp4_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp4_position" class="form-control form-control-sm" value="{{ old('exp4_position', $candidate->exp4_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp4_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp4_start_date" autocomplete="off" value="{{ old('exp4_start_date_bs', $candidate->exp4_start_date_bs ?? '') }}"><input type="hidden" name="exp4_start_date" value="{{ $candidate->exp4_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp4_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp4_end_date" autocomplete="off" value="{{ old('exp4_end_date_bs', $candidate->exp4_end_date_bs ?? '') }}"><input type="hidden" name="exp4_end_date" value="{{ $candidate->exp4_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp4_years" class="form-control form-control-sm" value="{{ old('exp4_years', $candidate->exp4_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp4_document))<div class="mb-1">{!! showDoc($candidate->exp4_document) !!}</div>@endif<input type="file" name="exp4_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp4_organization" class="form-control form-control-sm" value="{{ old('exp4_organization', $candidate->exp4_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp4_position" class="form-control form-control-sm" value="{{ old('exp4_position', $candidate->exp4_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp4_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp4_start_date" autocomplete="off" value="{{ old('exp4_start_date_bs', $candidate->exp4_start_date_bs ?? '') }}"><input type="hidden" name="exp4_start_date" value="{{ $candidate->exp4_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp4_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp4_end_date" autocomplete="off" value="{{ old('exp4_end_date_bs', $candidate->exp4_end_date_bs ?? '') }}"><input type="hidden" name="exp4_end_date" value="{{ $candidate->exp4_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp4_years" class="form-control form-control-sm" value="{{ old('exp4_years', $candidate->exp4_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp4_document))<div class="mb-1">{!! showDoc($candidate->exp4_document) !!}</div>@endif<input type="file" name="exp4_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -797,12 +797,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp5_organization" class="form-control form-control-sm" value="{{ old('exp5_organization', $candidate->exp5_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp5_position" class="form-control form-control-sm" value="{{ old('exp5_position', $candidate->exp5_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp5_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp5_start_date" autocomplete="off" value="{{ old('exp5_start_date_bs', $candidate->exp5_start_date_bs ?? '') }}"><input type="hidden" name="exp5_start_date" value="{{ $candidate->exp5_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp5_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp5_end_date" autocomplete="off" value="{{ old('exp5_end_date_bs', $candidate->exp5_end_date_bs ?? '') }}"><input type="hidden" name="exp5_end_date" value="{{ $candidate->exp5_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp5_years" class="form-control form-control-sm" value="{{ old('exp5_years', $candidate->exp5_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp5_document))<div class="mb-1">{!! showDoc($candidate->exp5_document) !!}</div>@endif<input type="file" name="exp5_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp5_organization" class="form-control form-control-sm" value="{{ old('exp5_organization', $candidate->exp5_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp5_position" class="form-control form-control-sm" value="{{ old('exp5_position', $candidate->exp5_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp5_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp5_start_date" autocomplete="off" value="{{ old('exp5_start_date_bs', $candidate->exp5_start_date_bs ?? '') }}"><input type="hidden" name="exp5_start_date" value="{{ $candidate->exp5_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp5_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp5_end_date" autocomplete="off" value="{{ old('exp5_end_date_bs', $candidate->exp5_end_date_bs ?? '') }}"><input type="hidden" name="exp5_end_date" value="{{ $candidate->exp5_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp5_years" class="form-control form-control-sm" value="{{ old('exp5_years', $candidate->exp5_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp5_document))<div class="mb-1">{!! showDoc($candidate->exp5_document) !!}</div>@endif<input type="file" name="exp5_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -817,12 +817,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp6_organization" class="form-control form-control-sm" value="{{ old('exp6_organization', $candidate->exp6_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp6_position" class="form-control form-control-sm" value="{{ old('exp6_position', $candidate->exp6_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp6_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp6_start_date" autocomplete="off" value="{{ old('exp6_start_date_bs', $candidate->exp6_start_date_bs ?? '') }}"><input type="hidden" name="exp6_start_date" value="{{ $candidate->exp6_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp6_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp6_end_date" autocomplete="off" value="{{ old('exp6_end_date_bs', $candidate->exp6_end_date_bs ?? '') }}"><input type="hidden" name="exp6_end_date" value="{{ $candidate->exp6_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp6_years" class="form-control form-control-sm" value="{{ old('exp6_years', $candidate->exp6_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp6_document))<div class="mb-1">{!! showDoc($candidate->exp6_document) !!}</div>@endif<input type="file" name="exp6_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp6_organization" class="form-control form-control-sm" value="{{ old('exp6_organization', $candidate->exp6_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp6_position" class="form-control form-control-sm" value="{{ old('exp6_position', $candidate->exp6_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp6_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp6_start_date" autocomplete="off" value="{{ old('exp6_start_date_bs', $candidate->exp6_start_date_bs ?? '') }}"><input type="hidden" name="exp6_start_date" value="{{ $candidate->exp6_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp6_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp6_end_date" autocomplete="off" value="{{ old('exp6_end_date_bs', $candidate->exp6_end_date_bs ?? '') }}"><input type="hidden" name="exp6_end_date" value="{{ $candidate->exp6_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp6_years" class="form-control form-control-sm" value="{{ old('exp6_years', $candidate->exp6_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp6_document))<div class="mb-1">{!! showDoc($candidate->exp6_document) !!}</div>@endif<input type="file" name="exp6_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -837,12 +837,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp7_organization" class="form-control form-control-sm" value="{{ old('exp7_organization', $candidate->exp7_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp7_position" class="form-control form-control-sm" value="{{ old('exp7_position', $candidate->exp7_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp7_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp7_start_date" autocomplete="off" value="{{ old('exp7_start_date_bs', $candidate->exp7_start_date_bs ?? '') }}"><input type="hidden" name="exp7_start_date" value="{{ $candidate->exp7_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp7_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp7_end_date" autocomplete="off" value="{{ old('exp7_end_date_bs', $candidate->exp7_end_date_bs ?? '') }}"><input type="hidden" name="exp7_end_date" value="{{ $candidate->exp7_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp7_years" class="form-control form-control-sm" value="{{ old('exp7_years', $candidate->exp7_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp7_document))<div class="mb-1">{!! showDoc($candidate->exp7_document) !!}</div>@endif<input type="file" name="exp7_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp7_organization" class="form-control form-control-sm" value="{{ old('exp7_organization', $candidate->exp7_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp7_position" class="form-control form-control-sm" value="{{ old('exp7_position', $candidate->exp7_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp7_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp7_start_date" autocomplete="off" value="{{ old('exp7_start_date_bs', $candidate->exp7_start_date_bs ?? '') }}"><input type="hidden" name="exp7_start_date" value="{{ $candidate->exp7_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp7_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp7_end_date" autocomplete="off" value="{{ old('exp7_end_date_bs', $candidate->exp7_end_date_bs ?? '') }}"><input type="hidden" name="exp7_end_date" value="{{ $candidate->exp7_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp7_years" class="form-control form-control-sm" value="{{ old('exp7_years', $candidate->exp7_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp7_document))<div class="mb-1">{!! showDoc($candidate->exp7_document) !!}</div>@endif<input type="file" name="exp7_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -857,12 +857,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp8_organization" class="form-control form-control-sm" value="{{ old('exp8_organization', $candidate->exp8_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp8_position" class="form-control form-control-sm" value="{{ old('exp8_position', $candidate->exp8_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp8_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp8_start_date" autocomplete="off" value="{{ old('exp8_start_date_bs', $candidate->exp8_start_date_bs ?? '') }}"><input type="hidden" name="exp8_start_date" value="{{ $candidate->exp8_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp8_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp8_end_date" autocomplete="off" value="{{ old('exp8_end_date_bs', $candidate->exp8_end_date_bs ?? '') }}"><input type="hidden" name="exp8_end_date" value="{{ $candidate->exp8_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp8_years" class="form-control form-control-sm" value="{{ old('exp8_years', $candidate->exp8_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp8_document))<div class="mb-1">{!! showDoc($candidate->exp8_document) !!}</div>@endif<input type="file" name="exp8_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp8_organization" class="form-control form-control-sm" value="{{ old('exp8_organization', $candidate->exp8_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp8_position" class="form-control form-control-sm" value="{{ old('exp8_position', $candidate->exp8_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp8_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp8_start_date" autocomplete="off" value="{{ old('exp8_start_date_bs', $candidate->exp8_start_date_bs ?? '') }}"><input type="hidden" name="exp8_start_date" value="{{ $candidate->exp8_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp8_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp8_end_date" autocomplete="off" value="{{ old('exp8_end_date_bs', $candidate->exp8_end_date_bs ?? '') }}"><input type="hidden" name="exp8_end_date" value="{{ $candidate->exp8_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp8_years" class="form-control form-control-sm" value="{{ old('exp8_years', $candidate->exp8_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp8_document))<div class="mb-1">{!! showDoc($candidate->exp8_document) !!}</div>@endif<input type="file" name="exp8_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -877,12 +877,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp9_organization" class="form-control form-control-sm" value="{{ old('exp9_organization', $candidate->exp9_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp9_position" class="form-control form-control-sm" value="{{ old('exp9_position', $candidate->exp9_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp9_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp9_start_date" autocomplete="off" value="{{ old('exp9_start_date_bs', $candidate->exp9_start_date_bs ?? '') }}"><input type="hidden" name="exp9_start_date" value="{{ $candidate->exp9_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp9_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp9_end_date" autocomplete="off" value="{{ old('exp9_end_date_bs', $candidate->exp9_end_date_bs ?? '') }}"><input type="hidden" name="exp9_end_date" value="{{ $candidate->exp9_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp9_years" class="form-control form-control-sm" value="{{ old('exp9_years', $candidate->exp9_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp9_document))<div class="mb-1">{!! showDoc($candidate->exp9_document) !!}</div>@endif<input type="file" name="exp9_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp9_organization" class="form-control form-control-sm" value="{{ old('exp9_organization', $candidate->exp9_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp9_position" class="form-control form-control-sm" value="{{ old('exp9_position', $candidate->exp9_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp9_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp9_start_date" autocomplete="off" value="{{ old('exp9_start_date_bs', $candidate->exp9_start_date_bs ?? '') }}"><input type="hidden" name="exp9_start_date" value="{{ $candidate->exp9_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp9_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp9_end_date" autocomplete="off" value="{{ old('exp9_end_date_bs', $candidate->exp9_end_date_bs ?? '') }}"><input type="hidden" name="exp9_end_date" value="{{ $candidate->exp9_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp9_years" class="form-control form-control-sm" value="{{ old('exp9_years', $candidate->exp9_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp9_document))<div class="mb-1">{!! showDoc($candidate->exp9_document) !!}</div>@endif<input type="file" name="exp9_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -897,12 +897,12 @@
                                     </button>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp10_organization" class="form-control form-control-sm" value="{{ old('exp10_organization', $candidate->exp10_organization ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp10_position" class="form-control form-control-sm" value="{{ old('exp10_position', $candidate->exp10_position ?? '') }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp10_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp10_start_date" autocomplete="off" value="{{ old('exp10_start_date_bs', $candidate->exp10_start_date_bs ?? '') }}"><input type="hidden" name="exp10_start_date" value="{{ $candidate->exp10_start_date ?? '' }}"></div>
-                                    <div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp10_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp10_end_date" autocomplete="off" value="{{ old('exp10_end_date_bs', $candidate->exp10_end_date_bs ?? '') }}"><input type="hidden" name="exp10_end_date" value="{{ $candidate->exp10_end_date ?? '' }}"></div>
-                                    <div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp10_years" class="form-control form-control-sm" value="{{ old('exp10_years', $candidate->exp10_years ?? '') }}"></div>
-                                    <div class="col-md-6"><label class="form-label small">Document</label>@if(!empty($candidate->exp10_document))<div class="mb-1">{!! showDoc($candidate->exp10_document) !!}</div>@endif<input type="file" name="exp10_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp10_organization" class="form-control form-control-sm" value="{{ old('exp10_organization', $candidate->exp10_organization ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp10_position" class="form-control form-control-sm" value="{{ old('exp10_position', $candidate->exp10_position ?? '') }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp10_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp10_start_date" autocomplete="off" value="{{ old('exp10_start_date_bs', $candidate->exp10_start_date_bs ?? '') }}"><input type="hidden" name="exp10_start_date" value="{{ $candidate->exp10_start_date ?? '' }}"></div>
+                                    <div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp10_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp10_end_date" autocomplete="off" value="{{ old('exp10_end_date_bs', $candidate->exp10_end_date_bs ?? '') }}"><input type="hidden" name="exp10_end_date" value="{{ $candidate->exp10_end_date ?? '' }}"></div>
+                                    <div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp10_years" class="form-control form-control-sm" value="{{ old('exp10_years', $candidate->exp10_years ?? '') }}"></div>
+                                    <div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label>@if(!empty($candidate->exp10_document))<div class="mb-1">{!! showDoc($candidate->exp10_document) !!}</div>@endif<input type="file" name="exp10_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div>
                                 </div>
                             </div>
                             @endif
@@ -924,12 +924,12 @@
 
                 {{-- STEP 6: Documents --}}
                 <div class="step d-none" id="step6">
-                    <h5 class="mb-4 text-dark">Step 6 — Uploaded Documents</h5>
-                    <p class="text-muted mb-4">Leave a field blank to keep the existing file.</p>
+                    <h5 class="mb-4 text-dark">Step 6 - {{ __('candidate.uploaded_documents') }}</h5>
+                    <p class="text-muted mb-4">{{ __('candidate.leave_blank_keep_existing_file') }}</p>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Passport Size Photo <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.passport_size_photo') }} <span class="text-danger">*</span></label>
                             @if(!empty($candidate->passport_size_photo))
                                 <div class="mb-2">{!! showDoc($candidate->passport_size_photo) !!}</div>
                             @endif
@@ -940,21 +940,21 @@
                             @error('passport_size_photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Citizenship / ID Document <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.citizenship_id_document') }} <span class="text-danger">*</span></label>
                             @if(!empty($candidate->citizenship_id_document))
                                 <div class="mb-2">{!! showDoc($candidate->citizenship_id_document) !!}</div>
                             @endif
                             <input type="file" name="citizenship_id_document" id="citizenship_id_document" class="form-control @error('citizenship_id_document') is-invalid @enderror"
                                 accept="image/*,application/pdf"
                                 {{ !empty($candidate->citizenship_id_document) ? 'data-existing-file="1"' : 'required' }}>
-                            <small class="text-muted d-block">Max Size: 700KB</small>
+                            <small class="text-muted d-block">{{ __('candidate.max_size_700kb') }}</small>
                             @error('citizenship_id_document')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Signature <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('candidate.signature') }} <span class="text-danger">*</span></label>
                             @if(!empty($candidate->signature))
                                 <div class="mb-2">{!! showDoc($candidate->signature) !!}</div>
                             @endif
@@ -1268,7 +1268,7 @@ if (ethnicSel && ethnicFile) {
             const div = document.createElement('div');
             div.className = 'experience-row exp-block border rounded p-3 mb-3';
             div.dataset.row = n;
-            div.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-2"><strong class="text-muted" style="font-size:.9rem;">Experience #<span class="row-number">${n}</span></strong><button type="button" class="btn btn-sm btn-outline-danger remove-exp-row"><i class="bi bi-trash"></i> Remove</button></div><div class="row g-2"><div class="col-md-4"><label class="form-label small">Organization</label><input type="text" name="exp${n}_organization" class="form-control form-control-sm"></div><div class="col-md-4"><label class="form-label small">Position</label><input type="text" name="exp${n}_position" class="form-control form-control-sm"></div><div class="col-md-4"><label class="form-label small">Start Date (B.S)</label><input type="text" name="exp${n}_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp${n}_start_date" autocomplete="off"><input type="hidden" name="exp${n}_start_date"></div><div class="col-md-4"><label class="form-label small">End Date (B.S)</label><input type="text" name="exp${n}_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp${n}_end_date" autocomplete="off"><input type="hidden" name="exp${n}_end_date"></div><div class="col-md-2"><label class="form-label small">Years</label><input type="number" step="0.5" name="exp${n}_years" class="form-control form-control-sm"></div><div class="col-md-6"><label class="form-label small">Document</label><input type="file" name="exp${n}_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div></div>`;
+            div.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-2"><strong class="text-muted" style="font-size:.9rem;">Experience #<span class="row-number">${n}</span></strong><button type="button" class="btn btn-sm btn-outline-danger remove-exp-row"><i class="bi bi-trash"></i> Remove</button></div><div class="row g-2"><div class="col-md-4"><label class="form-label small">{{ __('candidate.organization') }}</label><input type="text" name="exp${n}_organization" class="form-control form-control-sm"></div><div class="col-md-4"><label class="form-label small">{{ __('candidate.position') }}</label><input type="text" name="exp${n}_position" class="form-control form-control-sm"></div><div class="col-md-4"><label class="form-label small">{{ __('candidate.start_date_bs') }}</label><input type="text" name="exp${n}_start_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp${n}_start_date" autocomplete="off"><input type="hidden" name="exp${n}_start_date"></div><div class="col-md-4"><label class="form-label small">{{ __('candidate.end_date_bs') }}</label><input type="text" name="exp${n}_end_date_bs" class="form-control form-control-sm exp-nepali-date" placeholder="YYYY-MM-DD" data-target="exp${n}_end_date" autocomplete="off"><input type="hidden" name="exp${n}_end_date"></div><div class="col-md-2"><label class="form-label small">{{ __('candidate.years') }}</label><input type="number" step="0.5" name="exp${n}_years" class="form-control form-control-sm"></div><div class="col-md-6"><label class="form-label small">{{ __('candidate.document') }}</label><input type="file" name="exp${n}_document" class="form-control form-control-sm" accept="image/*,application/pdf"></div></div>`;
             rowsWrap.appendChild(div);
             initNDPOnRow(div);
             updateCounter();
@@ -1466,3 +1466,4 @@ if (ethnicSel && ethnicFile) {
 })();
 </script>
 @endpush
+
