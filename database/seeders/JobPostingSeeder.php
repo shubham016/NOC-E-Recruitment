@@ -8,6 +8,20 @@ use Illuminate\Support\Facades\DB;
 
 class JobPostingSeeder extends Seeder
 {
+    private function normalizePosting(array $posting): array
+    {
+        $level = null;
+        if (!empty($posting['position_level']) && preg_match('/(\d+)/', $posting['position_level'], $matches)) {
+            $level = (int) $matches[1];
+        }
+
+        $posting['position'] = $posting['title'];
+        $posting['level'] = $level;
+        unset($posting['position_level']);
+
+        return array_intersect_key($posting, array_flip((new JobPosting())->getFillable()));
+    }
+
     /**
      * Run the database seeds.
      */
@@ -107,7 +121,12 @@ class JobPostingSeeder extends Seeder
         ];
 
         foreach ($jobPostings as $posting) {
-            JobPosting::create($posting);
+            $posting = $this->normalizePosting($posting);
+
+            JobPosting::updateOrCreate(
+                ['advertisement_no' => $posting['advertisement_no']],
+                $posting
+            );
         }
     }
 }

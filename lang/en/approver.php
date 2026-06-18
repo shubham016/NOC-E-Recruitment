@@ -21,7 +21,7 @@ return [
 
     /* ── Dashboard Page ──────────────────────────────────── */
     'welcome'                        => 'Welcome',
-    'pending_applications'           => 'Pending Applications',
+    'pending_applications'           => 'Reviewed Applications',
     'edit_given'                     => 'Edit Given',
     'application_edited'             => 'Application Edited',
     'approved'                       => 'Approved Applications',

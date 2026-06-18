@@ -168,7 +168,6 @@ class CandidateController extends Controller
     public function editProfile()
     {
         $candidate = CandidateRegistration::find(Auth::guard('candidate')->id());
-        dd($candidate);
 
         return view('candidate.edit-profile', compact('candidate'));
     }
@@ -176,7 +175,6 @@ class CandidateController extends Controller
     public function updateProfile(Request $request)
     {
         $candidate = Auth::guard('candidate')->user();
-      //  dd($candidate);
 
         $validator = Validator::make($request->all(), [
             // Personal
@@ -241,13 +239,11 @@ class CandidateController extends Controller
             'disability_certificate'      => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:700',
             'ethnic_certificate'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:700',
         ]);
-// dd($validator);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
         }
-       // dd($request->all());
 
         // ── Build data array ──────────────────────────────────────────────
         $data = [

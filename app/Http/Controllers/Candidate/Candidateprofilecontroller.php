@@ -58,7 +58,6 @@ class CandidateProfileController extends Controller
         $candidate = CandidateRegistration::findOrFail(
             Auth::guard('candidate')->id()
         );
-        //  dd($candidate);
 
         $validated = $this->validateProfile($request, $candidate);
         $validated = $this->handleFileUploads($request, $validated, $candidate);
@@ -80,7 +79,6 @@ class CandidateProfileController extends Controller
         if (empty($validated['age'])) {
             $validated['age'] = $candidate->age;
         }
-        // dd($validated);
         $candidate->update($validated);
 
          // ← Save experiences to application_experiences with candidate_id
@@ -393,7 +391,8 @@ class CandidateProfileController extends Controller
             'character_certificate'   => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:700'],
             'equivalency_certificate' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:700'],
         ]);
-        dd($validated);
+
+        return $validated;
     }
 
     // ── File Upload Helper ────────────────────────────────────────────────

@@ -518,7 +518,21 @@
                                 // Sum fee once per unique advertisement number
                                 var seenAdvNos = {};
                                 var total = 0;
-                                cbs.forEach(function(cb) {
+                                var hasOpen = cbs.some(function(cb) {
+                                    return cb.value === 'open' || cb.value === 'internal_open';
+                                });
+                                var hasInclusive = cbs.some(function(cb) {
+                                    return cb.value === 'inclusive' || cb.value === 'internal_inclusive';
+                                });
+                                var feeBoxes = cbs;
+                                if (hasInclusive && !hasOpen) {
+                                    var openBoxes = Array.from(document.querySelectorAll('.category-cb[value="open"], .category-cb[value="internal_open"]'));
+                                    var nonInclusiveChecked = cbs.filter(function(cb) {
+                                        return cb.value !== 'inclusive' && cb.value !== 'internal_inclusive';
+                                    });
+                                    feeBoxes = nonInclusiveChecked.concat(openBoxes);
+                                }
+                                feeBoxes.forEach(function(cb) {
                                     var opt = cb.closest('.category-option');
                                     if (!opt) return;
                                     var advNo = opt.getAttribute('data-adv-no') || cb.id;
@@ -1788,26 +1802,26 @@
 
                             <!-- eSewa -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('esewa')">
+                                <a class="payment-box payment-gateway-btn text-decoration-none text-dark" href="{{ route('candidate.payment.esewa.start', $applicationform->id) }}" data-gateway="esewa">
                                     <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
                                     <div>Pay with eSewa</div>
-                                </div>
+                                </a>
                             </div>
 
                             <!-- Khalti -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('khalti')">
+                                <a class="payment-box payment-gateway-btn text-decoration-none text-dark" href="{{ route('candidate.payment.khalti.start', $applicationform->id) }}" data-gateway="khalti">
                                     <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
                                     <div>Pay with Khalti</div>
-                                </div>
+                                </a>
                             </div>
 
                             <!-- ConnectIPS -->
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="startPayment('connectips')">
+                                <a class="payment-box payment-gateway-btn text-decoration-none text-dark" href="{{ route('candidate.payment.connectips.start', $applicationform->id) }}" data-gateway="connectips">
                                     <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
                                     <div>Pay with ConnectIPS</div>
-                                </div>
+                                </a>
                             </div>
 
                             <div class="d-flex justify-content-between mt-4">

@@ -41,9 +41,10 @@
 
     <div class="card-body">
         @php
-            $doubleDasturDrafts = $forms->filter(function($form) {
+            $paidStatuses = ['paid', 'completed'];
+            $doubleDasturDrafts = $forms->filter(function($form) use ($paidStatuses) {
                 if (!in_array($form->status, ['draft', 'edit'])) return false;
-                if ($form->payment && $form->payment->status === 'paid') return false;
+                if ($form->payment && in_array($form->payment->status, $paidStatuses)) return false;
                 $job = $form->jobPosting;
                 if (!$job) return false;
                 return $job->deadline
@@ -102,7 +103,7 @@
                                             && $fJob->double_dastur_date
                                             && now()->lte($fJob->double_dastur_date)
                                             && in_array($form->status, ['draft', 'edit'])
-                                            && (!$form->payment || $form->payment->status !== 'paid');
+                                            && (!$form->payment || !in_array($form->payment->status, $paidStatuses));
                                     @endphp
                                     @if($fInDoubleDastur)
                                         <br><small class="fw-semibold" style="color: #664d03;">Double Dastur

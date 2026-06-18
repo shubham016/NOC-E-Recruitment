@@ -7,10 +7,13 @@
 <body>
 <div class="container mt-5">
     <div class="alert alert-danger">
-        <h4>Payment Failed!</h4>
-        <p>Something went wrong with your payment. Please try again.</p>
+        <h4>Payment Failed{{ isset($gateway) ? ' - ' . strtoupper($gateway) : '' }}</h4>
+        <p>{{ $message ?? session('error') ?? 'Something went wrong with your payment. Please try again.' }}</p>
     </div>
-    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">Back to Dashboard</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('candidate.applications.index') }}" class="btn btn-danger">Back to Applications</a>
+        <a href="{{ route('candidate.dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
+    </div>
 </div>
 </body>
 </html>

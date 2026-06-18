@@ -21,7 +21,7 @@ return [
 
     /* ── Dashboard Page ──────────────────────────────────── */
     'welcome'                        => 'स्वागत छ',
-    'pending_applications'           => 'बाँकी आवेदनहरू',
+    'pending_applications'           => 'समीक्षा आवेदनहरू',
     'edit_given'                     => 'सच्याउन दिइएको',
     'application_edited'             => 'सच्याइएका आवेदनहरू',
     'approved'                       => 'स्वीकृत गरिएका आवेदनहरू',

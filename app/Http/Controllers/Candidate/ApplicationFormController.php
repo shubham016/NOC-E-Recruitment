@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
+use App\Models\Payment;
 use App\Models\JobPosting;
 use App\Models\ApplicationExperience;
 use Illuminate\Http\Request;
@@ -51,7 +52,6 @@ class ApplicationFormController extends Controller
     public function create($jobId = null)
     {
         $candidate = Auth::guard('candidate')->user();
-        // dd($candidate);
 
         $job = null;
         $groupJobs = collect();
@@ -221,6 +221,11 @@ class ApplicationFormController extends Controller
                 $data['job_posting_id'] = $request->job_posting_id;
             }
 
+            $data['total_fee'] = $this->calculateTotalFee(
+                (int) ($data['job_posting_id'] ?? 0),
+                $this->selectedCategories($request)
+            );
+
             // Remove empty values
             $data = array_filter($data, function ($value) {
                 return !is_null($value) && $value !== '';
@@ -295,6 +300,137 @@ class ApplicationFormController extends Controller
             }
         }
         return false;
+    }
+
+    private function selectedCategories(Request $request): array
+    {
+        $categories = $request->input('applied_category', []);
+
+        if (!is_array($categories)) {
+            $categories = [$categories];
+        }
+
+        return array_values(array_filter($categories));
+    }
+
+    private function effectiveApplicationFee(JobPosting $job): float
+    {
+        $isDoubleDastur = $job->deadline && now()->gt($job->deadline)
+            && $job->double_dastur_fee
+            && $job->double_dastur_date
+            && now()->lte($job->double_dastur_date);
+
+        return (float) ($isDoubleDastur ? $job->double_dastur_fee : ($job->application_fee ?? 0));
+    }
+
+    private function feeOptionsForJob(JobPosting $job): array
+    {
+        $options = [];
+        $fee = $this->effectiveApplicationFee($job);
+        $advNo = $job->advertisement_no ?: (string) $job->id;
+
+        if ($job->category === 'internal_appraisal') {
+            $options[] = ['category' => 'internal_appraisal', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->category === 'open' || $job->has_open) {
+            $options[] = ['category' => 'open', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->category === 'inclusive' || $job->has_inclusive) {
+            $options[] = ['category' => 'inclusive', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->has_internal_open) {
+            $options[] = ['category' => 'internal_open', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->has_internal_inclusive) {
+            $options[] = ['category' => 'internal_inclusive', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        return $options;
+    }
+
+    private function calculateTotalFee(?int $jobId, array $selectedCategories): float
+    {
+        if (!$jobId || empty($selectedCategories)) {
+            return 0;
+        }
+
+        $job = JobPosting::find($jobId);
+        if (!$job) {
+            return 0;
+        }
+
+        $groupJobs = JobPosting::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('deadline', '>=', now())
+                    ->orWhere(function ($inner) {
+                        $inner->whereNotNull('double_dastur_date')
+                            ->where('double_dastur_date', '>=', now());
+                    });
+            })
+            ->where('position', $job->position)
+            ->where('level', $job->level)
+            ->where('service_group', $job->service_group)
+            ->orderBy('advertisement_no', 'asc')
+            ->get();
+
+        if ($groupJobs->isEmpty()) {
+            $groupJobs = collect([$job]);
+        }
+
+        $options = $groupJobs
+            ->flatMap(fn (JobPosting $groupJob) => $this->feeOptionsForJob($groupJob))
+            ->values();
+
+        $hasOpen = in_array('open', $selectedCategories, true)
+            || in_array('internal_open', $selectedCategories, true);
+        $hasInclusive = in_array('inclusive', $selectedCategories, true)
+            || in_array('internal_inclusive', $selectedCategories, true);
+
+        $feeCategories = $selectedCategories;
+        if ($hasInclusive && !$hasOpen) {
+            $feeCategories = array_values(array_filter(
+                $selectedCategories,
+                fn ($category) => !in_array($category, ['inclusive', 'internal_inclusive'], true)
+            ));
+
+            if ($options->contains('category', 'open')) {
+                $feeCategories[] = 'open';
+            }
+
+            if ($options->contains('category', 'internal_open')) {
+                $feeCategories[] = 'internal_open';
+            }
+        }
+
+        $total = $this->sumFeesForCategories($options, $feeCategories);
+
+        if ($total <= 0 && $feeCategories !== $selectedCategories) {
+            $total = $this->sumFeesForCategories($options, $selectedCategories);
+        }
+
+        return $total;
+    }
+
+    private function sumFeesForCategories($options, array $categories): float
+    {
+        $selected = array_flip(array_unique($categories));
+        $seenAdvNos = [];
+        $total = 0;
+
+        foreach ($options as $option) {
+            if (!isset($selected[$option['category']]) || isset($seenAdvNos[$option['adv_no']])) {
+                continue;
+            }
+
+            $seenAdvNos[$option['adv_no']] = true;
+            $total += (float) $option['fee'];
+        }
+
+        return $total;
     }
 
     /**
@@ -379,6 +515,11 @@ class ApplicationFormController extends Controller
             $data['job_posting_id'] = $request->job_posting_id;
         }
 
+        $data['total_fee'] = $this->calculateTotalFee(
+            (int) ($data['job_posting_id'] ?? 0),
+            $this->selectedCategories($request)
+        );
+
         $data['citizenship_number'] = $candidate->citizenship_number;
         $data['status'] = 'submitted'; // Final submission
 
@@ -439,8 +580,8 @@ class ApplicationFormController extends Controller
 
         $applicationform->load('experiences');
 
-        $payment = \App\Models\Payment::where('draft_id', $applicationform->id)
-            ->where('status', 'paid')
+        $payment = Payment::where('draft_id', $applicationform->id)
+            ->whereIn('status', Payment::SUCCESS_STATUSES)
             ->latest()
             ->first();
 
@@ -501,6 +642,11 @@ class ApplicationFormController extends Controller
         if ($request->boolean('same_as_permanent')) {
             $data = array_merge($data, $this->copyPermanentToMailing($request));
         }
+
+        $data['total_fee'] = $this->calculateTotalFee(
+            (int) $request->input('job_posting_id', $applicationform->job_posting_id),
+            $this->selectedCategories($request)
+        );
 
         // If the form is in a post-payment edit state, mark it as 'edited'
         if (in_array($applicationform->status, ['edit', 'edited'])) {

@@ -18,8 +18,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
      
     <style>
+        /* ── Color Variables (Navy Blue Government Palette) ───────── */
+        :root {
+            --navy-primary:   #1a3a6b;
+            --navy-dark:      #122a52;
+            --navy-light:     #2a5298;
+            --navy-pale:      #e8eef6;
+            --navy-border:    #c8d4e8;
+            --navy-border-lt: #d0daea;
+            --sidebar-bg1:    #f0f4f9;
+            --sidebar-bg2:    #e8eef6;
+            --navbar-bg:      #f5f8fc;
+        }
+
         .nav-tabs .nav-link {
-        color: #a07828 !important;
+        color: var(--navy-primary) !important;
          }
             /* Make circles smaller */
         .tab-circle {
@@ -100,14 +113,14 @@
             transform: translate(-128%, 44%) !important;
         }
 
-        /* Top Navbar - light warm white with gold bottom border */
+        /* Top Navbar - light cool white with navy bottom shadow */
         .navbar {
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             position: sticky;
             top: 0;
             z-index: 1030;
             transition: padding-left 0.3s ease;
-            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%) !important;
+            background: linear-gradient(90deg, #ffffff 0%, var(--navbar-bg) 100%) !important;
         }
 
         /* NOC Logo and Brand Styles */
@@ -139,7 +152,7 @@
 
         .noc-info small {
             font-size: 11px;
-            color: #c9a84c;
+            color: var(--navy-light);
             font-style: italic;
             display: block;
             margin-top: 2px;
@@ -147,9 +160,9 @@
 
         /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
-            background: rgba(201, 168, 76, 0.1);
-            border: 1px solid rgba(201, 168, 76, 0.35);
-            color: #a07828;
+            background: rgba(26, 58, 107, 0.1);
+            border: 1px solid rgba(26, 58, 107, 0.35);
+            color: var(--navy-primary);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
@@ -159,7 +172,7 @@
         }
 
         .sidebar-toggle-btn:hover {
-            background: rgba(201, 168, 76, 0.2);
+            background: rgba(26, 58, 107, 0.2);
         }
 
         /* Layout Container */
@@ -169,10 +182,10 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Sidebar - light warm grey */
+        /* Sidebar - light cool grey-blue */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #f7f5f0 0%, #f0ede6 100%);
+            background: linear-gradient(180deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #2c2c2c;
             position: fixed;
             left: 0;
@@ -185,7 +198,7 @@
             flex-direction: column;
             transition: transform 0.3s ease;
             z-index: 1020;
-            border-right: 1px solid #e8e2d4;
+            border-right: 1px solid var(--navy-border-lt);
         }
 
         .sidebar.hidden {
@@ -194,8 +207,8 @@
 
         .sidebar-header {
             padding: 1rem 1.25rem;
-            background: rgba(201, 168, 76, 0.1);
-            border-bottom: 1px solid #e0d5b8;
+            background: rgba(26, 58, 107, 0.1);
+            border-bottom: 1px solid var(--navy-border);
             flex-shrink: 0;
         }
 
@@ -209,7 +222,7 @@
             width: 36px; 
             height: 36px; 
             border-radius: 50%;
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -232,7 +245,7 @@
 
         .user-info small {
             font-size: 0.75rem; 
-            color: #a07828;
+            color: var(--navy-light);
             display: block;
         }
 
@@ -255,22 +268,22 @@
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(201, 168, 76, 0.1);
+            background: rgba(26, 58, 107, 0.1);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
         }
 
         .sidebar-menu-item.active {
-            background: rgba(201, 168, 76, 0.15);
+            background: rgba(26, 58, 107, 0.15);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
             font-weight: 500;
         }
 
         .sidebar-menu-item i {
             font-size: 1.15rem; 
             width: 22px;
-            color: #a07828;
+            color: var(--navy-primary);
         }
 
         /* Main Content Area */
@@ -287,9 +300,9 @@
             margin-left: 0;
         }
 
-        /* Footer - light warm tone with gold top border */
+        /* Footer - light cool tone with navy top border */
         footer {
-            background: linear-gradient(90deg, #f7f5f0 0%, #f0ede6 100%);
+            background: linear-gradient(90deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #555;
             padding: 20px 0;
             margin-left: 260px;
@@ -330,7 +343,7 @@
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 8px 20px rgba(26, 58, 107, 0.12) !important;
         }
 
         .stat-icon {
@@ -359,6 +372,10 @@
 
         .stat-icon.slate {
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        .stat-icon.navy {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
         }
 
         /* Responsive */
@@ -419,12 +436,12 @@
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(201, 168, 76, 0.3);
+            background: rgba(26, 58, 107, 0.3);
             border-radius: 3px;
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(201, 168, 76, 0.5);
+            background: rgba(26, 58, 107, 0.5);
         }
 
     </style>

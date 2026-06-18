@@ -6,9 +6,177 @@ use Illuminate\Http\Request;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
 use App\Models\ApplicationForm;
+use App\Models\JobPosting;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    private function findCandidateApplication($draftId): ?ApplicationForm
+    {
+        $candidate = Auth::guard('candidate')->user();
+
+        if (!$candidate) {
+            return null;
+        }
+
+        return ApplicationForm::where('id', $draftId)
+            ->where('citizenship_number', $candidate->citizenship_number)
+            ->first();
+    }
+
+    private function paymentBelongsToCurrentCandidate(Payment $payment): bool
+    {
+        $candidate = Auth::guard('candidate')->user();
+
+        if (!$candidate) {
+            return false;
+        }
+
+        $application = $payment->application;
+
+        return $application
+            && $application->citizenship_number === $candidate->citizenship_number;
+    }
+
+    private function clearPendingPaymentAttempts(ApplicationForm $application, string $gateway): void
+    {
+        Payment::where('draft_id', $application->id)
+            ->where('gateway', $gateway)
+            ->where('status', Payment::STATUS_PENDING)
+            ->delete();
+    }
+
+    private function missingConfigKeys(string $prefix, array $values): array
+    {
+        return collect($values)
+            ->filter(fn ($value) => blank($value))
+            ->keys()
+            ->map(fn ($key) => $prefix . '.' . $key)
+            ->all();
+    }
+
+    private function effectiveApplicationFee(JobPosting $job): float
+    {
+        $isDoubleDastur = $job->deadline && now()->gt($job->deadline)
+            && $job->double_dastur_fee
+            && $job->double_dastur_date
+            && now()->lte($job->double_dastur_date);
+
+        return (float) ($isDoubleDastur ? $job->double_dastur_fee : ($job->application_fee ?? 0));
+    }
+
+    private function feeOptionsForJob(JobPosting $job): array
+    {
+        $options = [];
+        $fee = $this->effectiveApplicationFee($job);
+        $advNo = $job->advertisement_no ?: (string) $job->id;
+
+        if ($job->category === 'internal_appraisal') {
+            $options[] = ['category' => 'internal_appraisal', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->category === 'open' || $job->has_open) {
+            $options[] = ['category' => 'open', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->category === 'inclusive' || $job->has_inclusive) {
+            $options[] = ['category' => 'inclusive', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->has_internal_open) {
+            $options[] = ['category' => 'internal_open', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        if ($job->has_internal_inclusive) {
+            $options[] = ['category' => 'internal_inclusive', 'adv_no' => $advNo, 'fee' => $fee];
+        }
+
+        return $options;
+    }
+
+    private function sumFeesForCategories($options, array $categories): float
+    {
+        $selected = array_flip(array_unique($categories));
+        $seenAdvNos = [];
+        $total = 0;
+
+        foreach ($options as $option) {
+            if (!isset($selected[$option['category']]) || isset($seenAdvNos[$option['adv_no']])) {
+                continue;
+            }
+
+            $seenAdvNos[$option['adv_no']] = true;
+            $total += (float) $option['fee'];
+        }
+
+        return $total;
+    }
+
+    private function calculateGroupedFee(ApplicationForm $application): float
+    {
+        $job = $application->jobPosting;
+        $selectedCategories = $application->applied_category ?? [];
+
+        if (!$job || empty($selectedCategories)) {
+            return 0;
+        }
+
+        $groupJobs = JobPosting::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('deadline', '>=', now())
+                    ->orWhere(function ($inner) {
+                        $inner->whereNotNull('double_dastur_date')
+                            ->where('double_dastur_date', '>=', now());
+                    });
+            })
+            ->where('position', $job->position)
+            ->where('level', $job->level)
+            ->where('service_group', $job->service_group)
+            ->orderBy('advertisement_no', 'asc')
+            ->get();
+
+        if ($groupJobs->isEmpty()) {
+            $groupJobs = collect([$job]);
+        }
+
+        $options = $groupJobs
+            ->flatMap(fn (JobPosting $groupJob) => $this->feeOptionsForJob($groupJob))
+            ->values();
+
+        $hasOpen = in_array('open', $selectedCategories, true)
+            || in_array('internal_open', $selectedCategories, true);
+        $hasInclusive = in_array('inclusive', $selectedCategories, true)
+            || in_array('internal_inclusive', $selectedCategories, true);
+
+        $feeCategories = $selectedCategories;
+        if ($hasInclusive && !$hasOpen) {
+            $feeCategories = array_values(array_filter(
+                $selectedCategories,
+                fn ($category) => !in_array($category, ['inclusive', 'internal_inclusive'], true)
+            ));
+
+            if ($options->contains('category', 'open')) {
+                $feeCategories[] = 'open';
+            }
+
+            if ($options->contains('category', 'internal_open')) {
+                $feeCategories[] = 'internal_open';
+            }
+        }
+
+        $total = $this->sumFeesForCategories($options, $feeCategories);
+
+        if ($total <= 0 && $feeCategories !== $selectedCategories) {
+            $total = $this->sumFeesForCategories($options, $selectedCategories);
+        }
+
+        return $total;
+    }
+
+    private function paymentFailure(string $message = 'Something went wrong with your payment. Please try again.', ?string $gateway = null)
+    {
+        return view('candidate.payment.failure', compact('message', 'gateway'));
+    }
 
 
     // =======================
@@ -17,54 +185,18 @@ class PaymentController extends Controller
 
     /**
      * Calculate the correct payable amount for an application.
-     * In double dastur period: sums each selected category's double_dastur_fee
-     * across all sibling jobs (mirrors JS updateTotalFee logic).
-     * In normal period: uses stored total_fee, falls back to application_fee.
+     * Mirrors the category summary rule used by the candidate application form.
      */
     private function calculateAmount(ApplicationForm $application): float
     {
-        $job = $application->jobPosting;
-
-        $inDoubleDastur = $job
-            && $job->deadline && now()->gt($job->deadline)
-            && $job->double_dastur_fee && $job->double_dastur_date
-            && now()->lte($job->double_dastur_date);
-
-        if ($inDoubleDastur) {
-            $selectedCategories = $application->applied_category ?? [];
-            if (!is_array($selectedCategories)) {
-                $selectedCategories = json_decode($selectedCategories, true) ?? [];
-            }
-
-            $siblingJobs = \App\Models\JobPosting::where('status', 'active')
-                ->where('position', $job->position)
-                ->where('level', $job->level)
-                ->where('service_group', $job->service_group)
-                ->where('double_dastur_date', '>=', now())
-                ->get();
-
-            $amount = 0;
-            foreach ($selectedCategories as $cat) {
-                $match = null;
-                foreach ($siblingJobs as $sj) {
-                    if ($cat === 'open'              && ($sj->has_open || $sj->category === 'open'))           { $match = $sj; break; }
-                    if ($cat === 'inclusive'          && ($sj->has_inclusive || $sj->category === 'inclusive')) { $match = $sj; break; }
-                    if ($cat === 'internal_open'      && $sj->has_internal_open)                               { $match = $sj; break; }
-                    if ($cat === 'internal_inclusive' && $sj->has_internal_inclusive)                          { $match = $sj; break; }
-                    if ($cat === 'internal_appraisal' && $sj->category === 'internal_appraisal')               { $match = $sj; break; }
-                }
-                if ($match) {
-                    $amount += (float) ($match->double_dastur_fee ?: $match->application_fee);
-                }
-            }
-
-            return $amount > 0 ? $amount : (float) $job->double_dastur_fee;
+        $groupedFee = $this->calculateGroupedFee($application);
+        if ($groupedFee > 0) {
+            return $groupedFee;
         }
 
-        // Normal period
         return ((float) $application->total_fee > 0)
             ? (float) $application->total_fee
-            : (float) (optional($job)->application_fee ?? 0);
+            : (float) (optional($application->jobPosting)->application_fee ?? 0);
     }
 
     // =======================
@@ -73,7 +205,13 @@ class PaymentController extends Controller
     // ESEWA START
         public function startEsewa($draftId)
         {
-            $application = ApplicationForm::findOrFail($draftId);
+            $application = $this->findCandidateApplication($draftId);
+
+            if (!$application) {
+                return redirect()->route('candidate.applications.index')
+                    ->with('error', 'Application not found or unauthorized.');
+            }
+
             $amount = $this->calculateAmount($application);
 
             if ($amount <= 0) {
@@ -85,13 +223,27 @@ class PaymentController extends Controller
             $amount       = (string) (int) round($amount);
             $total_amount = (string) ((int) $amount + $tax_amount);
             $transaction_uuid = uniqid('txn_');
-            $product_code = 'EPAYTEST'; // sandbox
+            $product_code = config('services.esewa.merchant_id');
+            $secret = config('services.esewa.secret_key');
+            $esewaBaseUrl = rtrim(config('services.esewa.base_url'), '/');
             $successUrl = route('candidate.payment.esewa.success');
             $failureUrl = route('candidate.payment.esewa.failure');
 
+            $missingConfig = $this->missingConfigKeys('services.esewa', [
+                'merchant_id' => $product_code,
+                'secret_key' => $secret,
+                'base_url' => $esewaBaseUrl,
+            ]);
+
+            if ($missingConfig) {
+                return redirect()->back()->with('error', 'eSewa is not configured. Missing: ' . implode(', ', $missingConfig));
+            }
+
+            $this->clearPendingPaymentAttempts($application, 'esewa');
+
             // Create pending payment
             $payment = Payment::create([
-                'draft_id' => $draftId,
+                'draft_id' => $application->id,
                 'gateway' => 'esewa',
                 'amount' => $amount,
                 'status' => 'pending',
@@ -101,12 +253,13 @@ class PaymentController extends Controller
             // Generate signature according to eSewa doc (HMAC SHA256)
             $signed_field_names = 'total_amount,transaction_uuid,product_code';
             $string_to_sign = "total_amount=$total_amount,transaction_uuid=$transaction_uuid,product_code={$product_code}";
-            $secret = env('ESEWA_SECRET_KEY'); // add your secret key to .env
             $signature = base64_encode(hash_hmac('sha256', $string_to_sign, $secret, true));
+            $esewaUrl = $esewaBaseUrl . '/api/epay/main/v2/form';
 
             return view('payment.esewa', compact(
                 'payment', 'amount', 'tax_amount', 'total_amount', 'transaction_uuid',
-                'product_code', 'successUrl', 'failureUrl', 'signed_field_names', 'signature'
+                'product_code', 'successUrl', 'failureUrl', 'signed_field_names', 'signature',
+                'esewaUrl'
             ));
         }
 
@@ -114,44 +267,59 @@ class PaymentController extends Controller
        public function esewaSuccess(Request $request)
             {
                 if (!$request->has('data')) {
-                    return view('candidate.payment.failure');
+                    return $this->paymentFailure('eSewa did not return payment data.', 'esewa');
                 }
 
                 $decoded = json_decode(base64_decode($request->data), true);
 
                 if (!$decoded) {
-                    return view('candidate.payment.failure');
+                    return $this->paymentFailure('Invalid eSewa payment response.', 'esewa');
                 }
 
-                $transaction_uuid = $decoded['transaction_uuid'];
-                $signature = $decoded['signature'];
-                $signed_field_names = $decoded['signed_field_names'];
+                $transaction_uuid = $decoded['transaction_uuid'] ?? null;
+                $signature = $decoded['signature'] ?? null;
+                $signed_field_names = $decoded['signed_field_names'] ?? null;
+
+                if (!$transaction_uuid || !$signature || !$signed_field_names) {
+                    return $this->paymentFailure('Incomplete eSewa payment response.', 'esewa');
+                }
 
                 $fields = explode(',', $signed_field_names);
 
                 $string_to_sign = "";
 
                 foreach ($fields as $field) {
+                    if (!array_key_exists($field, $decoded)) {
+                        return $this->paymentFailure('eSewa response is missing signed field: ' . $field, 'esewa');
+                    }
                     $string_to_sign .= $field . "=" . $decoded[$field] . ",";
                 }
 
                 $string_to_sign = rtrim($string_to_sign, ",");
 
-                $secret = env('ESEWA_SECRET_KEY');
+                $secret = config('services.esewa.secret_key');
+
+                if (!$secret) {
+                    return $this->paymentFailure('eSewa secret key is not configured.', 'esewa');
+                }
 
                 $generated_signature = base64_encode(hash_hmac('sha256', $string_to_sign, $secret, true));
 
                 if ($generated_signature !== $signature) {
-                    return view('candidate.payment.failure');
+                    return $this->paymentFailure('eSewa payment signature verification failed.', 'esewa');
                 }
 
                 $payment = Payment::where('txRef', $transaction_uuid)->first();
 
                 if (!$payment) {
-                    return view('candidate.payment.failure');
+                    return $this->paymentFailure('Payment record was not found for this eSewa transaction.', 'esewa');
                 }
 
-            if ($decoded['status'] === "COMPLETE") {
+                if (!$this->paymentBelongsToCurrentCandidate($payment)) {
+                    return $this->paymentFailure('Unauthorized eSewa payment verification.', 'esewa');
+                }
+
+            if (($decoded['status'] ?? '') === "COMPLETE") {
             $payment->status = 'paid';
             $payment->transaction_id = $decoded['transaction_code'] ?? null;
             $payment->save();
@@ -161,14 +329,14 @@ class PaymentController extends Controller
             return $this->paymentSuccess($payment, $decoded);
             }
 
-            return view('candidate.payment.failure'); // outside the if block
+            return $this->paymentFailure('eSewa payment was not completed.', 'esewa'); // outside the if block
 
          }
 
 // ESEWA FAILURE
             public function esewaFailure()
             {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('eSewa payment was cancelled or failed.', 'esewa');
             }
 
 
@@ -180,7 +348,13 @@ class PaymentController extends Controller
 
         public function startKhalti($draftId)
         {
-            $application = ApplicationForm::findOrFail($draftId);
+            $application = $this->findCandidateApplication($draftId);
+
+            if (!$application) {
+                return redirect()->route('candidate.applications.index')
+                    ->with('error', 'Application not found or unauthorized.');
+            }
+
             $amount = $this->calculateAmount($application);
 
             if ($amount <= 0) {
@@ -191,39 +365,64 @@ class PaymentController extends Controller
             $amount_in_paisa = (int) round($amount * 100);
             $txRef = uniqid('khalti_');
 
-            // Create pending payment
-            $payment = Payment::create([
-                'draft_id' => $draftId,
-                'gateway' => 'khalti',
-                'amount' => $amount,
-                'status' => 'pending',
-                'txRef' => $txRef
+            $secretKey = config('services.khalti.secret_key');
+            $khaltiBaseUrl = rtrim(config('services.khalti.base_url', 'https://dev.khalti.com/api/v2'), '/');
+
+            $missingConfig = $this->missingConfigKeys('services.khalti', [
+                'secret_key' => $secretKey,
+                'base_url' => $khaltiBaseUrl,
             ]);
+
+            if ($missingConfig) {
+                return redirect()->back()->with('error', 'Khalti is not configured. Missing: ' . implode(', ', $missingConfig));
+            }
 
             $candidateName  = $application->name_english ?? 'Candidate';
             $candidateEmail = $application->email ?? 'candidate@example.com';
+            $candidatePhone = $application->phone ?? '9800000000';
 
-            $response = Http::withHeaders([
-                'Authorization' => 'Key ' . env('KHALTI_SECRET_KEY'),
-                'Content-Type' => 'application/json',
-            ])->post('https://dev.khalti.com/api/v2/epayment/initiate/', [
-                "return_url" => route('candidate.payment.khalti.success'),
-                "website_url" => url('/'),
-                "amount" => $amount_in_paisa,
-                "purchase_order_id" => $txRef,
-                "purchase_order_name" => "Application Fee",
-                "customer_info" => [
-                    "name" => $candidateName,
-                    "email" => $candidateEmail,
-                    "phone" => "9800000000"
-                ]
-            ]);
-
-            if ($response->successful() && isset($response['payment_url'])) {
-                return redirect($response['payment_url']);
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => 'Key ' . $secretKey,
+                    'Content-Type' => 'application/json',
+                ])->post($khaltiBaseUrl . '/epayment/initiate/', [
+                    "return_url" => route('candidate.payment.khalti.success'),
+                    "website_url" => url('/'),
+                    "amount" => $amount_in_paisa,
+                    "purchase_order_id" => $txRef,
+                    "purchase_order_name" => "Application Fee",
+                    "customer_info" => [
+                        "name" => $candidateName,
+                        "email" => $candidateEmail,
+                        "phone" => $candidatePhone
+                    ]
+                ]);
+            } catch (\Throwable $e) {
+                return redirect()->back()->with('error', 'Khalti initiation failed: ' . $e->getMessage());
             }
 
             $responseJson = $response->json() ?? [];
+            $paymentUrl = $responseJson['payment_url'] ?? null;
+            $pidx = $responseJson['pidx'] ?? null;
+
+            if ($response->successful() && $paymentUrl && $pidx) {
+                $this->clearPendingPaymentAttempts($application, 'khalti');
+
+                Payment::create([
+                    'draft_id' => $application->id,
+                    'gateway' => 'khalti',
+                    'amount' => $amount,
+                    'status' => 'pending',
+                    'transaction_id' => $pidx,
+                    'txRef' => $txRef
+                ]);
+
+                return redirect()->away($paymentUrl)->withHeaders([
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                    'Pragma' => 'no-cache',
+                ]);
+            }
+
             $khaltiError  = $responseJson['detail']
                 ?? $responseJson['error_key']
                 ?? ($response->body() ?: ('HTTP ' . $response->status()));
@@ -237,33 +436,44 @@ class PaymentController extends Controller
             $pidx = $request->pidx;
 
             if (!$pidx) {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('Khalti did not return a payment reference.', 'khalti');
             }
 
-            // Lookup Khalti payment
-            $response = Http::withHeaders([
-                'Authorization' => 'Key ' . env('KHALTI_SECRET_KEY'),
-                'Content-Type' => 'application/json',
-            ])->post('https://dev.khalti.com/api/v2/epayment/lookup/', [
-                "pidx" => $pidx
-            ]);
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => 'Key ' . config('services.khalti.secret_key'),
+                    'Content-Type' => 'application/json',
+                ])->post(rtrim(config('services.khalti.base_url', 'https://dev.khalti.com/api/v2'), '/') . '/epayment/lookup/', [
+                    "pidx" => $pidx
+                ]);
+            } catch (\Throwable $e) {
+                return $this->paymentFailure('Could not verify Khalti payment: ' . $e->getMessage(), 'khalti');
+            }
 
             $data = $response->json();
 
-            // dd($data);
+            if (!$response->successful() || !is_array($data)) {
+                return $this->paymentFailure('Khalti lookup failed.', 'khalti');
+            }
 
             $purchaseOrderId = $data['purchase_order_id'] ?? $request->purchase_order_id ?? null;
             $status = strtolower($data['status'] ?? $request->status ?? '');
 
             if (!$purchaseOrderId || $status !== 'completed') {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('Khalti payment is not completed.', 'khalti');
             }
 
             // Find payment
-            $payment = Payment::where('txRef', $purchaseOrderId)->first();
+            $payment = Payment::where('transaction_id', $pidx)
+                ->orWhere('txRef', $purchaseOrderId)
+                ->first();
 
             if (!$payment) {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('Payment record was not found for this Khalti transaction.', 'khalti');
+            }
+
+            if (!$this->paymentBelongsToCurrentCandidate($payment)) {
+                return $this->paymentFailure('Unauthorized Khalti payment verification.', 'khalti');
             }
 
             // Update payment
@@ -277,7 +487,12 @@ class PaymentController extends Controller
             }
             public function khaltiFailure()
             {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('Khalti payment was cancelled or failed.', 'khalti');
+            }
+
+            public function verifyKhalti(Request $request)
+            {
+                return $this->khaltiSuccess($request);
             }
 
 
@@ -287,26 +502,40 @@ class PaymentController extends Controller
 
         public function startConnectIps($draftId)
         {
-            $application = ApplicationForm::findOrFail($draftId);
-            $amount = $this->calculateAmount($application);
-            $amountInPaisa = $amount * 100;; // Change if needed
+            $application = $this->findCandidateApplication($draftId);
 
-            $txnId = uniqid('cips_');
+            if (!$application) {
+                return redirect()->route('candidate.applications.index')
+                    ->with('error', 'Application not found or unauthorized.');
+            }
+
+            $amount = $this->calculateAmount($application);
+            if ($amount <= 0) {
+                return redirect()->back()->with('error', 'Invalid payment amount. Please contact support.');
+            }
+
+            $amountInPaisa = (int) round($amount * 100);
+
+            $txnId = 'CIPS' . now()->format('YmdHis') . random_int(1000, 9999);
             $txnDate = now()->format('d-m-Y H:i:s');
             $successUrl = route('candidate.payment.connectips.success');
             $failureUrl = route('candidate.payment.connectips.failure');
 
-            Payment::create([
-                'draft_id' => $draftId,
-                'gateway' => 'connectips',
-                'amount' => $amount,
-                'status' => 'pending',
-                'txRef' => $txnId
-            ]);
-
             $merchantId = config('services.connectips.merchant_id');
             $appId = config('services.connectips.app_id');
             $appName = config('services.connectips.app_name');
+            $txnUrl = config('services.connectips.txn_url');
+
+            $missingConfig = $this->missingConfigKeys('services.connectips', [
+                'merchant_id' => $merchantId,
+                'app_id' => $appId,
+                'app_name' => $appName,
+                'txn_url' => $txnUrl,
+            ]);
+
+            if ($missingConfig) {
+                return redirect()->back()->with('error', 'ConnectIPS is not configured. Missing: ' . implode(', ', $missingConfig));
+            }
 
             $referenceId = $txnId;
             $remarks = trim("Application Fee");
@@ -314,7 +543,21 @@ class PaymentController extends Controller
 
             $tokenString = "MERCHANTID={$merchantId},APPID={$appId},APPNAME={$appName},TXNID={$txnId},TXNDATE={$txnDate},TXNCRNCY=NPR,TXNAMT={$amountInPaisa},REFERENCEID={$referenceId},REMARKS={$remarks},PARTICULARS={$particulars},TOKEN=TOKEN";
 
-            $token = $this->generateConnectIpsToken($tokenString);
+            try {
+                $token = $this->generateConnectIpsToken($tokenString);
+            } catch (\Throwable $e) {
+                return redirect()->back()->with('error', 'ConnectIPS initiation failed: ' . $e->getMessage());
+            }
+
+            $this->clearPendingPaymentAttempts($application, 'connectips');
+
+            Payment::create([
+                'draft_id' => $application->id,
+                'gateway' => 'connectips',
+                'amount' => $amount,
+                'status' => 'pending',
+                'txRef' => $txnId
+            ]);
 
             return view('payment.connectips', compact(
                 'merchantId',
@@ -328,30 +571,55 @@ class PaymentController extends Controller
                 'particulars',
                 'successUrl',
                 'failureUrl',
+                'txnUrl',
                 'token'
             ));
         }
 
         private function generateConnectIpsToken($data)
-{
-    $privateKeyPath = storage_path('app/connectips/private.key');
+        {
+            $privateKey = $this->loadConnectIpsPrivateKey();
+            $keyResource = openssl_pkey_get_private($privateKey);
 
-    if (!file_exists($privateKeyPath)) {
-        throw new \Exception("Private key file not found.");
-    }
+            if (!$keyResource) {
+                throw new \Exception("Invalid ConnectIPS private key.");
+            }
 
-    $privateKey = file_get_contents($privateKeyPath);
+            openssl_sign($data, $signature, $keyResource, OPENSSL_ALGO_SHA256);
 
-    $keyResource = openssl_pkey_get_private($privateKey);
+            return base64_encode($signature);
+        }
 
-    if (!$keyResource) {
-        throw new \Exception("Invalid private key.");
-    }
+        private function loadConnectIpsPrivateKey(): string
+        {
+            $pfxPath = config('services.connectips.pfx_path');
+            if ($pfxPath && file_exists($pfxPath)) {
+                $pfx = file_get_contents($pfxPath);
+                $certificates = [];
 
-    openssl_sign($data, $signature, $keyResource, OPENSSL_ALGO_SHA256);
+                if (!openssl_pkcs12_read($pfx, $certificates, config('services.connectips.pfx_password'))) {
+                    throw new \Exception("Invalid ConnectIPS PFX file or password.");
+                }
 
-    return base64_encode($signature);
-}
+                if (empty($certificates['pkey'])) {
+                    throw new \Exception("ConnectIPS PFX file does not contain a private key.");
+                }
+
+                return $certificates['pkey'];
+            }
+
+            $privateKeyPath = config('services.connectips.private_key_path');
+
+            if (!config('services.connectips.allow_private_key_fallback')) {
+                throw new \Exception("Official ConnectIPS PFX certificate not found. Place it at storage/app/connectips/merchant.pfx or set CONNECTIPS_PFX_PATH.");
+            }
+
+            if (!$privateKeyPath || !file_exists($privateKeyPath)) {
+                throw new \Exception("ConnectIPS private key file not found.");
+            }
+
+            return file_get_contents($privateKeyPath);
+        }
 
         private function validateConnectIps($txnId, $amount)
         {
@@ -359,6 +627,17 @@ class PaymentController extends Controller
             $appId = config('services.connectips.app_id');
             $appPassword = config('services.connectips.app_password');
             $validateUrl = config('services.connectips.validate_url');
+
+            $missingConfig = $this->missingConfigKeys('services.connectips', [
+                'merchant_id' => $merchantId,
+                'app_id' => $appId,
+                'app_password' => $appPassword,
+                'validate_url' => $validateUrl,
+            ]);
+
+            if ($missingConfig) {
+                throw new \RuntimeException('ConnectIPS is not configured. Missing: ' . implode(', ', $missingConfig));
+            }
 
             $tokenString = "MERCHANTID={$merchantId},APPID={$appId},REFERENCEID={$txnId},TXNAMT={$amount}";
             $token = $this->generateConnectIpsToken($tokenString);
@@ -372,7 +651,13 @@ class PaymentController extends Controller
                     "token" => $token
                 ]);
 
-            return $response->json();
+            $data = $response->json();
+
+            if (!$response->successful() || !is_array($data)) {
+                throw new \RuntimeException('ConnectIPS validation request failed.');
+            }
+
+            return $data;
         }
 
         public function connectipsSuccess(Request $request)
@@ -380,20 +665,27 @@ class PaymentController extends Controller
             $txnId = $request->TXNID;
 
             if (!$txnId) {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('ConnectIPS did not return a transaction id.', 'connectips');
             }
 
             $payment = Payment::where('txRef', $txnId)->first();
 
             if (!$payment) {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('Payment record was not found for this ConnectIPS transaction.', 'connectips');
             }
 
-            $validation = $this->validateConnectIps($txnId, $payment->amount * 100);
-              dd($validation);
+            if (!$this->paymentBelongsToCurrentCandidate($payment)) {
+                return $this->paymentFailure('Unauthorized ConnectIPS payment verification.', 'connectips');
+            }
+
+            try {
+                $validation = $this->validateConnectIps($txnId, $payment->amount * 100);
+            } catch (\Throwable $e) {
+                return $this->paymentFailure('Could not verify ConnectIPS payment: ' . $e->getMessage(), 'connectips');
+            }
 
             if (!$validation || ($validation['responseCode'] ?? '') !== '00') {
-                return view('candidate.payment.failure');
+                return $this->paymentFailure('ConnectIPS payment validation failed.', 'connectips');
             }
 
             $payment->status = 'paid';
@@ -408,7 +700,7 @@ class PaymentController extends Controller
 
         public function connectipsFailure()
         {
-            return view('candidate.payment.failure');
+            return $this->paymentFailure('ConnectIPS payment was cancelled or failed.', 'connectips');
         }
 
 

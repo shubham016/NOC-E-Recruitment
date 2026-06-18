@@ -510,7 +510,21 @@
 
                                 var seenAdvNos = {};
                                 var total = 0;
-                                checkedBoxes.forEach(function(cb) {
+                                var hasOpen = checkedBoxes.some(function(cb) {
+                                    return cb.value === 'open' || cb.value === 'internal_open';
+                                });
+                                var hasInclusive = checkedBoxes.some(function(cb) {
+                                    return cb.value === 'inclusive' || cb.value === 'internal_inclusive';
+                                });
+                                var feeBoxes = checkedBoxes;
+                                if (hasInclusive && !hasOpen) {
+                                    var openBoxes = Array.from(document.querySelectorAll('.category-cb[value="open"], .category-cb[value="internal_open"]'));
+                                    var nonInclusiveChecked = checkedBoxes.filter(function(cb) {
+                                        return cb.value !== 'inclusive' && cb.value !== 'internal_inclusive';
+                                    });
+                                    feeBoxes = nonInclusiveChecked.concat(openBoxes);
+                                }
+                                feeBoxes.forEach(function(cb) {
                                     var option = cb.closest('.category-option');
                                     if (!option) return;
                                     var advNo = option.getAttribute('data-adv-no') || cb.id;
@@ -858,6 +872,11 @@
                                 value="{{ old('age', $draftApplication->age ?? '') }}" required readonly>
                             <input type="hidden" id="age_numeric" name="age_numeric" value="">
                         </div>
+                        <!-- <div class="col-md-4">
+                            <label for="alternate_phone_number" class="form-label">Alternate Phone Number <small>(वैकल्पिक फोन नम्बर)</small></label>
+                            <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control"
+                                value="{{ old('alternate_phone_number', $draftApplication->alternate_phone_number ?? $candidate->alternate_phone ?? '') }}">
+                        </div> -->
                         <div class="col-md-4">
                             <label for="alternate_phone_number" class="form-label">Alternate Phone Number <small>(वैकल्पिक फोन नम्बर)</small></label>
                             <input type="text" name="alternate_phone_number" id="alternate_phone_number" class="form-control"
@@ -1748,28 +1767,28 @@
                                 </table>
                             </div>
                         </div>
-                        @if(isset($payment) && $payment->status == 'paid')
+                        @if(isset($payment) && in_array($payment->status, ['paid', 'completed']))
                         <div class="alert alert-success mb-3">✓ Payment already completed via {{ strtoupper($payment->gateway) }}</div>
                         @endif
                         <h6 class="mb-3">Choose Payment Gateway</h6>
                         <div class="row text-center">
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('esewa')" }}">
+                                <button type="button" class="payment-box payment-gateway-btn w-100 bg-white" data-gateway="esewa">
                                     <img src="/images/esewalogo.jpg" alt="eSewa" class="payment-logo">
                                     <div>Pay with eSewa</div>
-                                </div>
+                                </button>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('khalti')" }}">
+                                <button type="button" class="payment-box payment-gateway-btn w-100 bg-white" data-gateway="khalti">
                                     <img src="/images/khaltilogo.jpg" alt="Khalti" class="payment-logo">
                                     <div>Pay with Khalti</div>
-                                </div>
+                                </button>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <div class="payment-box" onclick="{{ isset($payment) && $payment->status == 'paid' ? '' : "startPayment('connectips')" }}">
+                                <button type="button" class="payment-box payment-gateway-btn w-100 bg-white" data-gateway="connectips">
                                     <img src="/images/cipslogo.jpg" alt="ConnectIPS" class="payment-logo">
                                     <div>Pay with ConnectIPS</div>
-                                </div>
+                                </button>
                             </div>
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary prev-btn">Back</button>
@@ -2712,19 +2731,71 @@
         }
 
         // ── Payment ───────────────────────────────────────────────
-        window.startPayment = function(gateway) {
-            const draftId = document.getElementById('draft_id')?.value;
-            if (!draftId) {
-                alert('Application draft not found. Please complete the form properly.');
-                return;
-            }
+        function paymentUrl(gateway, draftId) {
             const urls = {
                 esewa: '/candidate/payment/esewa/start/',
                 khalti: '/candidate/payment/khalti/start/',
                 connectips: '/candidate/payment/connectips/start/'
             };
-            if (urls[gateway]) window.location.href = urls[gateway] + draftId;
+            return urls[gateway] ? urls[gateway] + draftId : null;
+        }
+
+        function saveDraftForPayment() {
+            const fd = new FormData(form);
+            if (draftIdInput?.value) fd.set('draft_id', draftIdInput.value);
+
+            return fetch('{{ route("candidate.applications.saveDraft") }}', {
+                method: 'POST',
+                body: fd,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(response => response.json()).then(data => {
+                if (!data.success || !data.draft_id) {
+                    throw new Error(data.message || 'Could not save application draft.');
+                }
+                draftIdInput.value = data.draft_id;
+                return data.draft_id;
+            });
+        }
+
+        let paymentStartInProgress = false;
+
+        function setPaymentButtonsDisabled(disabled) {
+            document.querySelectorAll('.payment-gateway-btn').forEach(button => {
+                button.disabled = disabled;
+                button.classList.toggle('opacity-50', disabled);
+            });
+        }
+
+        window.startPayment = function(gateway) {
+            if (paymentStartInProgress) return;
+
+            const url = paymentUrl(gateway, draftIdInput?.value);
+            if (url) {
+                window.location.href = url;
+                return;
+            }
+
+            paymentStartInProgress = true;
+            setPaymentButtonsDisabled(true);
+            showAutoSaveStatus('Saving application before payment...', 'info');
+            saveDraftForPayment()
+                .then(draftId => {
+                    window.location.href = paymentUrl(gateway, draftId);
+                })
+                .catch(error => {
+                    paymentStartInProgress = false;
+                    setPaymentButtonsDisabled(false);
+                    showAutoSaveStatus('Payment cannot start: ' + error.message, 'danger');
+                });
         };
+
+        document.querySelectorAll('.payment-gateway-btn').forEach(button => {
+            button.addEventListener('click', () => window.startPayment(button.dataset.gateway));
+        });
     });
 
     // ── Age calculation ───────────────────────────────────────────

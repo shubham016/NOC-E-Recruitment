@@ -319,14 +319,19 @@
                                 <td class="nowrap">{{ $application->id }}</td>
 
                                 <td>
-                                    @if($application->passport_size_photo)
-                                        <img src="{{ asset('storage/' . $application->passport_size_photo) }}"
-                                             alt="Passport Photo"
-                                             class="passport-thumb">
-                                    @else
-                                        <span class="text-muted">N/A</span>
-                                    @endif
-                                </td>
+    @php
+        $photo = $application->passport_size_photo
+            ?? optional($application->candidateRegistration)->passport_size_photo;
+    @endphp
+
+    @if($photo)
+        <img src="{{ asset('storage/' . $photo) }}"
+             alt="Passport Photo"
+             class="passport-thumb">
+    @else
+        <span class="text-muted">N/A</span>
+    @endif
+</td>
 
                                 <td class="text-col">
                                     <strong class="d-block">{{ $application->name_english ?? 'N/A' }}</strong>

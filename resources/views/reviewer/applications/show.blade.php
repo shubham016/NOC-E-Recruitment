@@ -227,14 +227,20 @@
 
             {{-- Candidate Photo & Basic Info --}}
             <div class="candidate-photo-section">
-                @if($application->passport_size_photo)
-                <img src="{{ Storage::url($application->passport_size_photo) }}"
-                    alt="Candidate Photo" class="candidate-photo">
-                @else
-                <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
-                    <i class="bi bi-person" style="font-size: 4rem;"></i>
-                </div>
-                @endif
+                 @php
+        $photo = $application->passport_size_photo
+            ?? optional($application->candidateRegistration)->passport_size_photo;
+    @endphp
+
+    @if($photo)
+        <img src="{{ Storage::url($photo) }}"
+             alt="Candidate Photo"
+             class="candidate-photo">
+    @else
+        <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
+            <i class="bi bi-person" style="font-size: 4rem;"></i>
+        </div>
+    @endif
                 <div class="candidate-basic-info">
                     <h3>{{ $application->name_english ?? 'N/A' }}</h3>
                     <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>

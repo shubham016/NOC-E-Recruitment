@@ -57,6 +57,9 @@ return [
         'txn_url'        => env('CONNECTIPS_TXN_URL', 'https://uat.connectips.com/connectipswebgw/loginpage'),
         'validate_url'   => env('CONNECTIPS_VALIDATE_URL', 'https://uat.connectips.com/connectipswebws/api/creditor/validatetxn'),
         'detail_url'     => env('CONNECTIPS_DETAIL_URL', 'https://uat.connectips.com/connectipswebws/api/creditor/gettxndetail'),
+        'pfx_path'       => env('CONNECTIPS_PFX_PATH', storage_path('app/connectips/merchant.pfx')),
+        'private_key_path' => env('CONNECTIPS_PRIVATE_KEY_PATH', storage_path('app/connectips/private.key')),
+        'allow_private_key_fallback' => env('CONNECTIPS_ALLOW_PRIVATE_KEY_FALLBACK', true),
     ],
 
     'sparrowsms' => [

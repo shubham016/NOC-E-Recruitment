@@ -17,7 +17,6 @@ use App\Http\Controllers\Admin\NotificationController as AdminNotificationContro
 use App\Http\Controllers\Candidate\CandidateDashboardController;
 use App\Http\Controllers\Candidate\VacancyBrowsingController;
 use App\Http\Controllers\Candidate\ApplicationFormController as CandidateApplicationController;
-use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\Candidate\AdmitCardController;
 use App\Http\Controllers\Candidate\CandidateResultController;
 use App\Http\Controllers\Candidate\NotificationController;
@@ -248,15 +247,11 @@ Route::prefix('reviewer')->name('reviewer.')->group(function () {
             Route::get('/{id}', [ApplicationReviewController::class, 'show'])->name('show');
             Route::post('/{id}/status', [ApplicationReviewController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/bulk-update', [ApplicationReviewController::class, 'bulkUpdate'])->name('bulkUpdate');
-            // Export routes
-            Route::get('/export-csv', [ApplicationReviewController::class, 'exportCsv'])->name('exportCsv');
-            Route::get('/export-pdf', [ApplicationReviewController::class, 'exportPdf'])->name('exportPdf');       
-            });
+        });
 
         // My Profile
-        Route::get('/myprofile', [ReviewerMyProfileController::class, 'index'])->name('myprofile');
+        Route::get('/myprofile', [ReviewerMyProfileController::class, 'index'])->name('myprofile.legacy');
         Route::post('/myprofile/update', [ReviewerMyProfileController::class, 'update'])->name('myprofile.update');
-        Route::post('/change-password', [ReviewerMyProfileController::class, 'changePassword'])->name('change.password');
 
     });
 
@@ -274,7 +269,7 @@ Route::prefix('approver')->name('approver.')->group(function () {
     Route::post('/login', [ApproverAuthController::class, 'login'])->name('login.post');
 
     // Protected routes (requires authentication)
-    Route::middleware('auth:approver')->group(function () {
+    Route::middleware('approver')->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [ApproverAuthController::class, 'dashboard'])->name('dashboard');
@@ -292,6 +287,8 @@ Route::prefix('approver')->name('approver.')->group(function () {
 
         // Assigned Applications
         Route::get('/assigned-to-me', [AssignedToMeController::class, 'index'])->name('assignedtome');
+        Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');
+        Route::get('/applications/export-pdf', [AssignedToMeController::class, 'exportPdf'])->name('applications.exportPdf');
         Route::get('/applications/{id}', [AssignedToMeController::class, 'show'])->name('applications.show');
         Route::post('/applications/{id}/status', [AssignedToMeController::class, 'updateStatus'])->name('applications.updateStatus');
 
@@ -300,10 +297,6 @@ Route::prefix('approver')->name('approver.')->group(function () {
 
         // Change Password for Approver
         Route::post('/change-password', [ApproverMyProfileController::class, 'changePassword'])->name('change.password');
-
-        // Export routes
-        Route::get('/applications/export-csv', [AssignedToMeController::class, 'exportCsv'])->name('applications.exportCsv');
-        Route::get('/applications/export-pdf', [AssignedToMeController::class, 'exportPdf'])->name('applications.exportPdf');
 
     });
 
@@ -359,8 +352,8 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         });
 
         // My Profile Rou
-        Route::get('/my-profile/edit',   [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'edit'])->name('edit-profile');
-        Route::put('/my-profile/update', [App\Http\Controllers\Candidate\Candidateprofilecontroller::class, 'update'])->name('my-profile.update');
+        Route::get('/my-profile/edit',   [CandidateProfileController::class, 'edit'])->name('my-profile.edit');
+        Route::put('/my-profile/update', [CandidateProfileController::class, 'update'])->name('my-profile.update');
 
         // Vacancies Browsing (HEAD's VacancyBrowsingController)
         Route::prefix('vacancies')->name('vacancies.')->group(function () {
@@ -406,13 +399,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
 
         // Payment Routes (HEAD's eSewa PaymentController)
         Route::prefix('payment')->name('payment.')->group(function () {
-            Route::get('/{applicationId}/esewa', [PaymentController::class, 'showEsewa'])->name('esewa');
-            Route::get('/esewa/start/{applicationId}', [PaymentController::class, 'showEsewa'])->name('esewa.start');
-            Route::get('/success', [PaymentController::class, 'success'])->name('success');
-            Route::get('/failure', [PaymentController::class, 'failure'])->name('failure');
-
-            // Shradha's extended payment routes (eSewa, Khalti, ConnectIPS)
-            Route::get('/esewa/start/{draftId}', [ShradhaPaymentController::class, 'startEsewa'])->name('esewa.start.shradha');
+            Route::get('/esewa/start/{draftId}', [ShradhaPaymentController::class, 'startEsewa'])->name('esewa.start');
             Route::get('/esewa/success', [ShradhaPaymentController::class, 'esewaSuccess'])->name('esewa.success');
             Route::get('/esewa/failure', [ShradhaPaymentController::class, 'esewaFailure'])->name('esewa.failure');
 
@@ -423,9 +410,6 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             Route::get('/connectips/start/{draftId}', [ShradhaPaymentController::class, 'startConnectIps'])->name('connectips.start');
             Route::get('/connectips/success', [ShradhaPaymentController::class, 'connectipsSuccess'])->name('connectips.success');
             Route::get('/connectips/failure', [ShradhaPaymentController::class, 'connectipsFailure'])->name('connectips.failure');
-
-            // Dev-only bypass (only works in local/development environment)
-            Route::post('/bypass/{draftId}', [PaymentController::class, 'bypass'])->name('bypass');
         });
 
         // Admit Card Routes
@@ -470,70 +454,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::post('/change-password', [CandidateController::class, 'updatePassword'])->name('change-password.post');
         Route::get('/my-profile',      [CandidateProfileController::class, 'show'])->name('my-profile');
         Route::get('/edit-profile',    [CandidateProfileController::class, 'edit'])->name('edit-profile');
-        Route::post('/profile/update', [CandidateProfileController::class, 'update'])->name('profile.update');
-        Route::post('/profile/save-draft', [CandidateProfileController::class, 'saveDraft'])->name('profile.save-draft');
                 // ApplicationForm routes (shradha's flat application routes)
         Route::prefix('applications')->name('applications.')->group(function () {
             Route::post('/save-draft', [CandidateApplicationController::class, 'saveDraft'])->name('saveDraft');
         });
     });
 });
-
-/*
-|--------------------------------------------------------------------------
-| Debug Routes (Only in Local Environment)
-|--------------------------------------------------------------------------
-*/
-if (app()->environment('local')) {
-    Route::get('/debug/notifications', function() {
-        $recent = \App\Models\Notification::latest()->take(20)->get();
-
-        $output = '<html><head><title>Notification Debug</title>';
-        $output .= '<style>body{font-family:monospace;padding:20px;} table{border-collapse:collapse;width:100%;margin:20px 0;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#f2f2f2;} .unread{background:#fff3cd;} .candidate{color:#0056b3;} .reviewer{color:#28a745;}</style>';
-        $output .= '</head><body>';
-        $output .= '<h1>Notification Debug Panel</h1>';
-        $output .= '<p><strong>Total Notifications:</strong> ' . \App\Models\Notification::count() . '</p>';
-        $output .= '<p><strong>Candidate:</strong> ' . \App\Models\Notification::where('user_type', 'candidate')->count() . ' | ';
-        $output .= '<strong>Reviewer:</strong> ' . \App\Models\Notification::where('user_type', 'reviewer')->count() . ' | ';
-        $output .= '<strong>Admin:</strong> ' . \App\Models\Notification::where('user_type', 'admin')->count() . '</p>';
-        $output .= '<p><strong>Unread:</strong> ' . \App\Models\Notification::where('is_read', false)->count() . '</p>';
-        $output .= '<hr><h2>Recent Notifications (Last 20)</h2>';
-        $output .= '<table><thead><tr><th>ID</th><th>User ID</th><th>User Type</th><th>Type</th><th>Title</th><th>Read</th><th>Created</th></tr></thead><tbody>';
-
-        foreach($recent as $n) {
-            $rowClass = !$n->is_read ? 'unread' : '';
-            $typeClass = $n->user_type === 'candidate' ? 'candidate' : ($n->user_type === 'reviewer' ? 'reviewer' : '');
-            $output .= "<tr class='{$rowClass}'>";
-            $output .= "<td>{$n->id}</td>";
-            $output .= "<td>{$n->user_id}</td>";
-            $output .= "<td class='{$typeClass}'><strong>{$n->user_type}</strong></td>";
-            $output .= "<td>{$n->type}</td>";
-            $output .= "<td>{$n->title}</td>";
-            $output .= "<td>" . ($n->is_read ? 'Yes' : '<strong>No</strong>') . "</td>";
-            $output .= "<td>{$n->created_at->diffForHumans()}</td>";
-            $output .= '</tr>';
-        }
-
-        $output .= '</tbody></table>';
-
-        // Check for duplicates
-        $output .= '<hr><h2>Duplicate Check</h2>';
-        $duplicates = \DB::select("
-            SELECT user_id, user_type, type, related_id, COUNT(*) as count
-            FROM notifications
-            GROUP BY user_id, user_type, type, related_id
-            HAVING count > 1
-        ");
-
-        if (count($duplicates) > 0) {
-            $output .= '<p style="color:red;"><strong>Found potential duplicates:</strong></p>';
-            $output .= '<pre>' . print_r($duplicates, true) . '</pre>';
-        } else {
-            $output .= '<p style="color:green;">No duplicates found</p>';
-        }
-
-        $output .= '</body></html>';
-
-        return $output;
-    })->name('debug.notifications');
-}

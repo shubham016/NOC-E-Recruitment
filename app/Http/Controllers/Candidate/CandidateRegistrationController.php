@@ -12,7 +12,6 @@ class CandidateRegistrationController extends Controller
 {
     public function register(Request $request)
     {
-       /// dd($request->all());
         $validated = $request->validate([
         
             
@@ -49,13 +48,8 @@ class CandidateRegistrationController extends Controller
         ]
           
         );
-        //dd($validated);
-
         try {
             CandidateRegistration::create([
-               ///  dd('Creating candidate with data: ' . json_encode($validated));
-
-              //  dd($validated);
                 'name_english'               => $validated['name_english'],
                 'email'                      => $validated['email'],
                 'phone'                      => $validated['phone'],

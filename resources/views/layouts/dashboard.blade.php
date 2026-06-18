@@ -23,8 +23,15 @@
 
     <style>
         :root {
-            --primary-gold: #c9a84c;
-            --secondary-gold: #a07828;
+            --navy-primary:   #1a3a6b;
+            --navy-dark:      #122a52;
+            --navy-light:     #2a5298;
+            --navy-pale:      #e8eef6;
+            --navy-border:    #c8d4e8;
+            --navy-border-lt: #d0daea;
+            --sidebar-bg1:    #f0f4f9;
+            --sidebar-bg2:    #e8eef6;
+            --navbar-bg:      #f5f8fc;
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 80px;
             --sidebar-speed: 0.3s ease;
@@ -55,11 +62,11 @@
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #fffbf4 0%, #faf7f0 100%);
-            border-right: 1px solid #e8e2d4;
+            background: linear-gradient(180deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
+            border-right: 1px solid var(--navy-border-lt);
             padding: 0;
             z-index: 1000;
-            box-shadow: 2px 0 8px rgba(201, 168, 76, 0.08);
+            box-shadow: 2px 0 8px rgba(26, 58, 107, 0.08);
             overflow-y: auto;
             transition: width var(--sidebar-speed);
             display: flex;
@@ -67,12 +74,12 @@
         }
 
         .company-logo-header {
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             padding: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(201, 168, 76, 0.3);
+            border-bottom: 2px solid rgba(26, 58, 107, 0.3);
             transition: all var(--sidebar-speed);
         }
 
@@ -135,8 +142,8 @@
 
         .sidebar-header {
             padding: 1rem 1.25rem;
-            background: rgba(201, 168, 76, 0.1);
-            border-bottom: 1px solid #e0d5b8;
+            background: rgba(26, 58, 107, 0.1);
+            border-bottom: 1px solid var(--navy-border);
             flex-shrink: 0;
         }
 
@@ -149,8 +156,8 @@
         .hamburger-toggle {
             width: 40px;
             height: 40px;
-            background: rgba(201, 168, 76, 0.1);
-            border: 1px solid rgba(201, 168, 76, 0.3);
+            background: rgba(26, 58, 107, 0.1);
+            border: 1px solid rgba(26, 58, 107, 0.3);
             border-radius: 8px;
             color: white;
             font-size: 20px;
@@ -163,12 +170,12 @@
         }
 
         .hamburger-toggle:hover {
-            background: rgba(201, 168, 76, 0.2);
+            background: rgba(26, 58, 107, 0.2);
             transform: scale(1.05);
         }
 
         .hamburger-toggle i {
-            color: #a07828;
+            color: var(--navy-primary);
             transition: transform var(--sidebar-speed);
         }
 
@@ -187,7 +194,7 @@
         .sidebar-brand i {
             font-size: 1.4rem;
             flex-shrink: 0;
-            color: #c9a84c;
+            color: var(--navy-light);
         }
 
         .brand-text {
@@ -264,15 +271,15 @@
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(201, 168, 76, 0.1);
+            background: rgba(26, 58, 107, 0.1);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
         }
 
         .sidebar-menu-item.active {
-            background: rgba(201, 168, 76, 0.15);
+            background: rgba(26, 58, 107, 0.15);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
             font-weight: 500;
         }
 
@@ -280,7 +287,7 @@
             font-size: 1.15rem;
             width: 22px;
             text-align: center;
-            color: #a07828;
+            color: var(--navy-primary);
             flex-shrink: 0;
             transition: all var(--sidebar-speed);
         }
@@ -303,7 +310,7 @@
         }
 
         .top-navbar {
-            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%);
+            background: linear-gradient(90deg, #ffffff 0%, var(--navbar-bg) 100%);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             padding: 0.75rem 1.5rem;
             position: fixed;
@@ -345,7 +352,7 @@
 
         .navbar-company-info small {
             font-size: 11px;
-            color: #c9a84c;
+            color: var(--navy-light);
             font-style: italic;
             display: block;
             margin-top: 2px;
@@ -373,7 +380,7 @@
         }
 
         .navbar-right-section .nav-link:hover {
-            color: #c9a84c;
+            color: var(--navy-light);
         }
 
         .navbar-right-section .nav-link i {
@@ -417,14 +424,14 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+            box-shadow: 0 2px 8px rgba(26, 58, 107, 0.3);
         }
 
         /* User Dropdown Styles */
@@ -459,7 +466,7 @@
         }
 
         .dropdown-menu {
-            border: 1px solid #e8e2d4;
+            border: 1px solid var(--navy-border-lt);
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             padding: 0.5rem 0;
@@ -480,11 +487,11 @@
             width: 18px;
             text-align: center;
             font-size: 1rem;
-            color: #a07828;
+            color: var(--navy-primary);
         }
 
         .dropdown-item:hover {
-            background: rgba(201, 168, 76, 0.1);
+            background: rgba(26, 58, 107, 0.1);
             color: #1a2a4a;
         }
 
@@ -499,7 +506,7 @@
 
         .dropdown-divider {
             margin: 0.5rem 0;
-            border-color: #e8e2d4;
+            border-color: var(--navy-border-lt);
         }
 
         .content-area {
@@ -517,7 +524,7 @@
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(26, 58, 107, 0.12);
         }
 
         .stat-icon {
@@ -549,6 +556,11 @@
         .stat-icon.orange {
             background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
             color: #ea580c;
+        }
+
+        .stat-icon.navy {
+            background: linear-gradient(135deg, var(--navy-pale) 0%, var(--navy-border) 100%);
+            color: var(--navy-primary);
         }
 
         .page-header {
@@ -621,7 +633,7 @@
         /* Footer Styles */
 
         #footer {
-            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             color: white;
             padding: 1.5rem 0;
             margin-top: 3rem;
@@ -691,7 +703,7 @@
                 <form method="POST" action="{{ route('language.switch') }}" style="display:inline;">
                     @csrf
                     <select name="locale" onchange="this.form.submit()"
-                        style="height:32px;padding:0 8px;font-size:0.8rem;border:1px solid #c9a84c;border-radius:6px;background:#fff;color:#1a2a4a;cursor:pointer;outline:none;">
+                        style="height:32px;padding:0 8px;font-size:0.8rem;border:1px solid #1a3a6b;border-radius:6px;background:#fff;color:#1a2a4a;cursor:pointer;outline:none;">
                         <option value="en" {{ app()->getLocale() === 'en' ? 'selected' : '' }}>EN</option>
                         <option value="ne" {{ app()->getLocale() === 'ne' ? 'selected' : '' }}>नेपाली</option>
                     </select>

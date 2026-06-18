@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+.rnd
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -17,6 +18,10 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/app/connectips/private.key
+/storage/app/connectips/*.pfx
+/storage/app/connectips/*.p12
+/storage/app/connectips/*.pem
 /storage/pail
 /vendor
 Homestead.json

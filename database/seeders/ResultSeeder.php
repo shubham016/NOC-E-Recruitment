@@ -70,7 +70,12 @@ class ResultSeeder extends Seeder
             ],
         ];
 
-        DB::table('results')->insert($results);
+        foreach ($results as $result) {
+            DB::table('results')->updateOrInsert(
+                ['roll_number' => $result['roll_number']],
+                $result
+            );
+        }
 
         $this->command->info('Results table seeded successfully!');
     }

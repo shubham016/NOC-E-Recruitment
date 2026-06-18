@@ -21,12 +21,30 @@
     <link href="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/css/nepali.datepicker.v5.0.6.min.css"
         rel="stylesheet" type="text/css" />
 
+    <!-- Noto Sans Devanagari (for Nepali date / text rendering) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        /* ── Color Variables (Navy Blue Government Palette) ───────── */
+        :root {
+            --navy-primary:   #1a3a6b;
+            --navy-dark:      #122a52;
+            --navy-light:     #2a5298;
+            --navy-pale:      #e8eef6;
+            --navy-border:    #c8d4e8;
+            --navy-border-lt: #d0daea;
+            --sidebar-bg1:    #f0f4f9;
+            --sidebar-bg2:    #e8eef6;
+            --navbar-bg:      #f5f8fc;
+        }
+
         /* Raise picker calendar above sidebar (z-index:1020) and navbar (z-index:1030) */
         .ndp-container { z-index: 9999 !important; }
 
         .nav-tabs .nav-link {
-            color: #a07828 !important;
+            color: var(--navy-primary) !important;
         }
 
         /* Make circles smaller */
@@ -98,6 +116,7 @@
         body {
             background-color: #f8f9fa;
             min-height: 100vh;
+            overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
@@ -122,14 +141,22 @@
             margin-bottom: 0.3rem;
         }
 
-        /* Top Navbar - light warm white with gold bottom border */
+        /* Top Navbar - light cool white with navy bottom shadow */
         .navbar {
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 1030;
             transition: padding-left 0.3s ease;
-            background: linear-gradient(90deg, #ffffff 0%, #fdf9f2 100%) !important;
+            background: linear-gradient(90deg, #ffffff 0%, var(--navbar-bg) 100%) !important;
+        }
+
+        .navbar .container-fluid {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 0.5rem;
+            padding-right: 1rem;
         }
 
         /* NOC Logo and Brand Styles */
@@ -137,6 +164,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
         }
 
         .noc-logo {
@@ -144,6 +172,11 @@
             width: auto;
             object-fit: contain;
             display: block;
+            flex-shrink: 0;
+        }
+
+        .noc-info {
+            min-width: 0;
         }
 
         .noc-info h5 {
@@ -152,6 +185,9 @@
             font-weight: 600;
             color: #1a2a4a;
             line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .noc-info p {
@@ -159,31 +195,87 @@
             font-size: 13px;
             color: #555;
             line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
         .noc-info small {
             font-size: 11px;
-            color: #c9a84c;
+            color: var(--navy-light);
             font-style: italic;
             display: block;
             margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Always-visible navbar items (notifications, logout) — replaces Bootstrap's collapsible navbar-nav */
+        .navbar-nav-inline {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .navbar-nav-inline .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav-inline .nav-link,
+        .navbar-nav-inline .btn-link {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 575px) {
+            .navbar-nav-inline .nav-link span,
+            .navbar-nav-inline .btn-link span {
+                display: none;
+            }
+
+            .navbar-nav-inline .nav-link,
+            .navbar-nav-inline .btn-link {
+                padding-left: 0.4rem !important;
+                padding-right: 0.4rem !important;
+            }
         }
 
         /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
-            background: rgba(201, 168, 76, 0.1);
-            border: 1px solid rgba(201, 168, 76, 0.35);
-            color: #a07828;
+            background: rgba(26, 58, 107, 0.1);
+            border: 1px solid rgba(26, 58, 107, 0.35);
+            color: var(--navy-primary);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             transition: background-color 0.2s ease;
             margin-right: 1rem;
+            flex-shrink: 0;
         }
 
         .sidebar-toggle-btn:hover {
-            background: rgba(201, 168, 76, 0.2);
+            background: rgba(26, 58, 107, 0.2);
+        }
+
+        /* Sidebar backdrop (mobile/tablet overlay) */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1019;
+        }
+
+        .sidebar-backdrop.show {
+            display: block;
         }
 
         /* Layout Container */
@@ -193,10 +285,10 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Sidebar - light warm grey */
+        /* Sidebar - light cool grey-blue */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #f7f5f0 0%, #f0ede6 100%);
+            background: linear-gradient(180deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #2c2c2c;
             position: fixed;
             left: 0;
@@ -209,17 +301,21 @@
             flex-direction: column;
             transition: transform 0.3s ease;
             z-index: 1020;
-            border-right: 1px solid #e8e2d4;
+            border-right: 1px solid var(--navy-border-lt);
         }
 
         .sidebar.hidden {
             transform: translateX(-260px);
         }
 
+        .sidebar.mobile-open {
+            transform: translateX(0) !important;
+        }
+
         .sidebar-header {
             padding: 1rem 1.25rem;
-            background: rgba(201, 168, 76, 0.1);
-            border-bottom: 1px solid #e0d5b8;
+            background: rgba(26, 58, 107, 0.1);
+            border-bottom: 1px solid var(--navy-border);
             flex-shrink: 0;
         }
 
@@ -233,7 +329,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -256,7 +352,7 @@
 
         .user-info small {
             font-size: 0.75rem;
-            color: #a07828;
+            color: var(--navy-light);
             display: block;
         }
 
@@ -279,22 +375,22 @@
         }
 
         .sidebar-menu-item:hover {
-            background: rgba(201, 168, 76, 0.1);
+            background: rgba(26, 58, 107, 0.1);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
         }
 
         .sidebar-menu-item.active {
-            background: rgba(201, 168, 76, 0.15);
+            background: rgba(26, 58, 107, 0.15);
             color: #1a2a4a;
-            border-left-color: #c9a84c;
+            border-left-color: var(--navy-primary);
             font-weight: 500;
         }
 
         .sidebar-menu-item i {
             font-size: 1.15rem;
             width: 22px;
-            color: #a07828;
+            color: var(--navy-primary);
         }
 
         /* Main Content Area */
@@ -311,9 +407,9 @@
             margin-left: 0;
         }
 
-        /* Footer - light warm tone with gold top border */
+        /* Footer - light cool tone with navy top border */
         footer {
-            background: linear-gradient(90deg, #f7f5f0 0%, #f0ede6 100%);
+            background: linear-gradient(90deg, var(--sidebar-bg1) 0%, var(--sidebar-bg2) 100%);
             color: #555;
             padding: 20px 0;
             margin-left: 260px;
@@ -354,7 +450,7 @@
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 8px 20px rgba(26, 58, 107, 0.12) !important;
         }
 
         .stat-icon {
@@ -385,6 +481,10 @@
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
         }
 
+        .stat-icon.navy {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
+        }
+
         /* ─── My Profile navbar dropdown ───
         .profile-nav-btn {
             display: inline-flex;
@@ -392,8 +492,8 @@
             gap: 6px;
             padding: 0.4rem 0.75rem;
             border-radius: 6px;
-            border: 1px solid rgba(201, 168, 76, 0.35);
-            background: rgba(201, 168, 76, 0.08);
+            border: 1px solid rgba(26, 58, 107, 0.35);
+            background: rgba(26, 58, 107, 0.08);
             color: #1a2a4a;
             font-size: 0.85rem;
             font-weight: 500;
@@ -406,9 +506,9 @@
         .profile-nav-btn:hover,
         .profile-nav-btn:focus,
         .show > .profile-nav-btn {
-            background: rgba(201, 168, 76, 0.18);
-            border-color: #c9a84c;
-            color: #a07828;
+            background: rgba(26, 58, 107, 0.18);
+            border-color: var(--navy-primary);
+            color: var(--navy-light);
             text-decoration: none;
             outline: none;
         }
@@ -417,7 +517,7 @@
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%);
             color: #fff;
             font-size: 0.75rem;
             font-weight: 700;
@@ -437,7 +537,7 @@
 
         .profile-dropdown-menu {
             min-width: 210px;
-            border: 1px solid #e8e2d4;
+            border: 1px solid var(--navy-border-lt);
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
             border-radius: 8px;
             padding: 0.4rem 0;
@@ -446,7 +546,7 @@
 
         .profile-dropdown-header {
             padding: 0.65rem 1rem;
-            border-bottom: 1px solid #f0ede6;
+            border-bottom: 1px solid var(--sidebar-bg2);
             margin-bottom: 0.25rem;
         }
 
@@ -463,7 +563,7 @@
 
         .profile-dropdown-header .role {
             font-size: 0.72rem;
-            color: #a07828;
+            color: var(--navy-light);
         }
 
         .profile-dropdown-menu .dropdown-item {
@@ -477,40 +577,45 @@
         }
 
         .profile-dropdown-menu .dropdown-item i {
-            color: #a07828;
+            color: var(--navy-light);
             font-size: 0.95rem;
             width: 16px;
         }
 
         .profile-dropdown-menu .dropdown-item:hover {
-            background: rgba(201, 168, 76, 0.1);
+            background: rgba(26, 58, 107, 0.1);
             color: #1a2a4a;
         }
 
         .profile-dropdown-menu .dropdown-divider {
-            border-color: #f0ede6;
+            border-color: var(--sidebar-bg2);
             margin: 0.25rem 0;
         } */
 
         /* Responsive */
         @media (max-width: 991px) {
             .layout-container {
-                flex-direction: column;
+                min-height: calc(100vh - 70px);
             }
 
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
                 top: 0;
-                transform: none !important;
+                height: 100vh;
+                padding-top: 70px;
+                transform: translateX(-260px);
+                z-index: 1025;
             }
 
             .sidebar.hidden {
-                display: none;
+                transform: translateX(-260px);
             }
 
             .main-content {
+                margin-left: 0 !important;
+                padding: 1rem;
+            }
+
+            .main-content.expanded {
                 margin-left: 0 !important;
             }
 
@@ -519,8 +624,9 @@
                 width: 100% !important;
             }
 
-            .main-content {
-                padding: 1rem;
+            footer.expanded {
+                margin-left: 0 !important;
+                width: 100% !important;
             }
 
             .noc-info h5 {
@@ -538,6 +644,77 @@
             .noc-logo {
                 height: 40px;
             }
+
+            .noc-brand-container {
+                flex: 1 1 auto;
+                justify-content: flex-start;
+                gap: 8px;
+            }
+
+            .sidebar-toggle-btn {
+                margin-right: 0;
+            }
+
+            .navbar .container-fluid {
+                gap: 0.4rem;
+                padding-right: 0.6rem;
+            }
+
+            .user-info h6 {
+                max-width: 120px;
+                font-size: 0.85rem;
+            }
+
+            .user-info small {
+                font-size: 0.7rem;
+            }
+
+            /* Stat cards — 2 per row on mobile/tablet */
+            .col-xl-3,
+            .col-lg-3,
+            .col-md-3,
+            .col-md-6 {
+                flex: 0 0 50% !important;
+                max-width: 50% !important;
+            }
+
+            .stat-card {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        /* Phone-only: shrink company name, address, tagline, and logo further so the full text fits */
+        @media (max-width: 575px) {
+            .noc-logo {
+                height: 32px;
+            }
+
+            .noc-brand-container {
+                gap: 6px;
+            }
+
+            .noc-info h5 {
+                font-size: 12px;
+            }
+
+            .noc-info p {
+                font-size: 10px;
+            }
+
+            .noc-info small {
+                font-size: 8.5px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .table-responsive-stack {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .card {
+                border-radius: 8px;
+            }
         }
 
         /* Custom Scrollbar for Sidebar Menu */
@@ -550,12 +727,12 @@
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(201, 168, 76, 0.3);
+            background: rgba(26, 58, 107, 0.3);
             border-radius: 3px;
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(201, 168, 76, 0.5);
+            background: rgba(26, 58, 107, 0.5);
         }
     </style>
     @yield('custom-styles')
@@ -565,8 +742,11 @@
 
 <body>
 
+    <!-- Sidebar backdrop (mobile/tablet overlay) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light" id="topNavbar">
+    <nav class="navbar navbar-light" id="topNavbar">
         <div class="container-fluid">
             <!-- Sidebar Toggle Button -->
             <button class="sidebar-toggle-btn" id="sidebarToggle">
@@ -574,7 +754,7 @@
             </button>
 
             <!-- NOC Logo and Brand -->
-            <div class="noc-brand-container">
+            <div class="noc-brand-container me-auto">
                 <img src="/images/images.png" alt="Nepal Oil Corporation Logo" class="noc-logo"
                     style="height: 50px; width: auto; display: block;">
                 <div class="noc-info">
@@ -584,12 +764,7 @@
                 </div>
             </div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav-inline">
 
                     @if(request()->is('candidate/*'))
 
@@ -677,7 +852,7 @@
                             <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
                                 @csrf
                                 <button class="btn btn-link nav-link text-dark" type="submit" title="Logout">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
                                 </button>
                             </form>
                         </li>
@@ -737,29 +912,28 @@
                             <form method="POST" action="{{ route('reviewer.logout') }}" class="d-inline">
                                 @csrf
                                 <button class="btn btn-link nav-link text-dark" type="submit">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
                                 </button>
                             </form>
                         @elseif(request()->is('approver/*'))
                             <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
                                 @csrf
                                 <button class="btn btn-link nav-link text-dark" type="submit">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
                                 </button>
                             </form>
                         @elseif(request()->is('admin/*'))
                             <form method="POST" action="{{ route('admin.logout') }}" class="d-inline">
                                 @csrf
                                 <button class="btn btn-link nav-link text-dark" type="submit">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
                                 </button>
                             </form>
                         @endif
                     </li>
                     @endif
 
-                </ul>
-            </div>
+            </ul>
         </div>
     </nav>
 
@@ -1076,34 +1250,128 @@
         })();
     </script>
 
-    <!-- Sidebar Toggle Script -->
+    <!-- Header Date Display (English + Nepali, Devanagari script) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const engEl = document.getElementById('english-date');
+            const nepEl = document.getElementById('nepali-date');
+
+            // Only run on pages that actually have these elements
+            if (!engEl && !nepEl) return;
+
+            // Devanagari digit map (0-9 -> ०-९)
+            const NP_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+            function toDevanagariDigits(num) {
+                return String(num).replace(/[0-9]/g, d => NP_DIGITS[+d]);
+            }
+
+            // Nepali month names in Devanagari script (Baisakh -> Chaitra)
+            const NP_MONTHS_DEV = [
+                'बैशाख', 'जेठ', 'असार', 'श्रावण', 'भदौ', 'आश्विन',
+                'कार्तिक', 'मंसिर', 'पुष', 'माघ', 'फाल्गुन', 'चैत्र'
+            ];
+
+            if (nepEl) {
+                nepEl.setAttribute('lang', 'ne');
+                nepEl.style.fontFamily =
+                    "'Noto Sans Devanagari', 'Mangal', 'Kalimati', 'Lohit Devanagari', sans-serif";
+            }
+
+            function updateHeaderDates() {
+                const today = new Date();
+
+                if (engEl) {
+                    engEl.innerText = today.toLocaleDateString('en-US', {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                    });
+                }
+
+                if (nepEl) {
+                    try {
+                        const y = today.getFullYear();
+                        const m = String(today.getMonth() + 1).padStart(2, '0');
+                        const d = String(today.getDate()).padStart(2, '0');
+                        const bsDateStr = window.adToBS(`${y}-${m}-${d}`); // "YYYY-MM-DD" in BS
+
+                        if (bsDateStr) {
+                            const [bsYear, bsMonth, bsDay] = bsDateStr.split('-').map(Number);
+                            const monthDev = NP_MONTHS_DEV[bsMonth - 1];
+                            const dayDev = toDevanagariDigits(bsDay);
+                            const yearDev = toDevanagariDigits(bsYear);
+                            nepEl.innerText = `${dayDev} ${monthDev}, ${yearDev}`;
+                        }
+                    } catch (e) {
+                        console.error('Nepali date display error:', e);
+                    }
+                }
+            }
+
+            updateHeaderDates();
+            setInterval(updateHeaderDates, 60000);
+        });
+    </script>
+
+    <!-- Sidebar Toggle Script (desktop collapse + mobile/tablet overlay drawer) -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
             const footer = document.getElementById('footer');
             const toggleBtn = document.getElementById('sidebarToggle');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const isDesktop = () => window.innerWidth >= 992;
 
-            let isHidden = localStorage.getItem('sidebarHidden') === 'true';
+            let desktopHidden = localStorage.getItem('sidebarHidden') === 'true';
 
-            if (isHidden) {
-                sidebar.classList.add('hidden');
-                mainContent.classList.add('expanded');
-                footer.classList.add('expanded');
-            }
-
-            toggleBtn.addEventListener('click', function () {
-                isHidden = !isHidden;
-                if (isHidden) {
+            function applyDesktop() {
+                if (desktopHidden) {
                     sidebar.classList.add('hidden');
                     mainContent.classList.add('expanded');
-                    footer.classList.add('expanded');
+                    if (footer) footer.classList.add('expanded');
                 } else {
                     sidebar.classList.remove('hidden');
                     mainContent.classList.remove('expanded');
-                    footer.classList.remove('expanded');
+                    if (footer) footer.classList.remove('expanded');
                 }
-                localStorage.setItem('sidebarHidden', isHidden);
+            }
+
+            let mobileOpen = false;
+            function openMobile() {
+                mobileOpen = true;
+                sidebar.classList.add('mobile-open');
+                backdrop.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobile() {
+                mobileOpen = false;
+                sidebar.classList.remove('mobile-open');
+                backdrop.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+
+            if (isDesktop()) applyDesktop();
+
+            toggleBtn.addEventListener('click', function () {
+                if (isDesktop()) {
+                    desktopHidden = !desktopHidden;
+                    localStorage.setItem('sidebarHidden', desktopHidden);
+                    applyDesktop();
+                } else {
+                    mobileOpen ? closeMobile() : openMobile();
+                }
+            });
+
+            backdrop.addEventListener('click', closeMobile);
+
+            window.addEventListener('resize', function () {
+                if (isDesktop()) {
+                    closeMobile();
+                    applyDesktop();
+                } else {
+                    sidebar.classList.remove('hidden');
+                    mainContent.classList.remove('expanded');
+                    if (footer) footer.classList.remove('expanded');
+                }
             });
         });
     </script>

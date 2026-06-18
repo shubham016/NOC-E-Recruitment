@@ -2,21 +2,20 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('admins')->insert([
-            'name'       => 'Super Admin',
-            'email'      => 'admin@recruitment.com',
-            'password'   => Hash::make('password'),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        Admin::updateOrCreate(
+            ['email' => 'admin@recruitment.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+            ]
+        );
     }
 }

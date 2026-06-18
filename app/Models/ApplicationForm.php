@@ -272,10 +272,14 @@ class ApplicationForm extends Model
 
     public function payment()
     {
+        return $this->hasOne(\App\Models\Payment::class, 'draft_id')
+            ->whereIn('status', \App\Models\Payment::SUCCESS_STATUSES)
+            ->latestOfMany('id');
+    }
+
+    public function latestPayment()
+    {
         return $this->hasOne(\App\Models\Payment::class, 'draft_id')->latestOfMany('id');
-        // return $this->hasOne(\App\Models\Payment::class, 'draft_id')
-        //             ->where('status', 'paid')
-        //             ->latestOfMany();  // or ->latest()
     }
 
     public function experiences()

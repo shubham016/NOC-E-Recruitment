@@ -40,6 +40,14 @@
 
 @section('custom-styles')
     <style>
+        .dashboard-header {
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+        border-radius: 10px;
+        padding: 1.5rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(26, 58, 107, 0.3);
+    }
         .job-card {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -86,10 +94,30 @@
 @endsection
 
 @section('content')
-    <!-- Page Header -->
-    <div class="page-header mb-4">
-        <h1 class="page-title">Welcome, {{ $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate' }}!</h1>
+
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-1">
+                    Welcome, {{ $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate' }}!
+                </h2>
+                <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Recruitment Candidate</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <small class="opacity-90">
+                    <span id="english-date"></span><br>
+                    <span id="nepali-date"></span>
+                </small>
+            </div>
+        </div>
     </div>
+
+    <!-- Page Header -->
+    <!-- <div class="page-header mb-4">
+        <h1 class="page-title">Welcome, {{ $candidate->name_english ?? Auth::guard('candidate')->user()->name_english ?? 'Candidate' }}!</h1>
+    </div> -->
 
     <!-- Stats Cards -->
         <div class="row g-4 mb-4">
