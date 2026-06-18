@@ -97,7 +97,8 @@
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transform: translate(-80%, 35%) !important;
+            color: #fff !important;
+            transform: translate(-95%, 45%) !important;
         }
 
         .tab-item {
@@ -257,7 +258,7 @@
         }
 
         .language-toggle-btn.lang-en {
-            transform: translateX(3px);
+            transform: translateX(2px);
         }
 
         .language-toggle-btn:hover,
@@ -275,6 +276,35 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .navbar-action-btn {
+            height: 40px !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+            font-size: 0.9rem !important;
+            font-weight: 400 !important;
+            font-family: inherit !important;
+            line-height: 1 !important;
+            color: #212529 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.25rem !important;
+        }
+
+        .navbar-action-btn span,
+        .navbar-action-btn i {
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            color: inherit !important;
+        }
+
+        .navbar-logout-btn,
+        .navbar-logout-btn span,
+        .navbar-logout-btn i {
+            font-size: 0.95rem !important;
         }
 
         @media (max-width: 575px) {
@@ -831,7 +861,7 @@
 
                         {{-- Notifications --}}
                         <li class="nav-item">
-                            <a class="nav-link text-dark position-relative notification-link"
+                            <a class="nav-link text-dark position-relative notification-link navbar-action-btn"
                                href="{{ route('candidate.notifications.index') }}"
                                title="{{ __('candidate.notifications') }}">
                                 <i class="bi bi-bell"></i>
@@ -909,10 +939,10 @@
                         </li> -->
 
                         {{-- Standalone Logout (always visible for candidates) --}}
-                        <li class="nav-item ms-1">
+                        <li class="nav-item">
                             <form method="POST" action="{{ route('candidate.logout') }}" class="d-inline">
                                 @csrf
-                                <button class="btn btn-link nav-link text-dark" type="submit" title="{{ __('candidate.logout') }}">
+                                <button class="btn btn-link nav-link text-dark navbar-action-btn navbar-logout-btn" type="submit" title="{{ __('candidate.logout') }}">
                                     <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">{{ __('candidate.logout') }}</span>
                                 </button>
                             </form>

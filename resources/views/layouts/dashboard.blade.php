@@ -392,13 +392,15 @@
         .notification-link {
             display: inline-flex !important;
             align-items: center !important;
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
+            justify-content: center !important;
+            height: 40px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
         .notification-link .bi-bell {
             font-size: 1rem !important;
-            line-height: 1.5 !important;
+            line-height: 1 !important;
         }
 
         /* Bell badge: smaller circle, number centered, shifted left */
@@ -411,7 +413,48 @@
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transform: translate(-128%, 44%) !important;
+            transform: translate(-80%, 35%) !important;
+        }
+
+        .language-toggle-btn {
+            min-width: auto;
+            height: 40px;
+            padding: 0 0.4rem;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: #212529;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .language-toggle-btn.lang-en {
+            transform: translateX(3px);
+        }
+
+        .language-toggle-btn:hover,
+        .language-toggle-btn:focus {
+            background: transparent;
+            color: #212529;
+            outline: none;
+        }
+
+        .navbar-separator {
+            color: #212529;
+            height: 40px;
+            padding: 0 0.35rem 0 0.25rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .user-menu {
@@ -700,14 +743,18 @@
 
             <div class="navbar-right-section">
                 <!-- Language Switcher -->
-                <form method="POST" action="{{ route('language.switch') }}" style="display:inline;">
+                <form method="POST" action="{{ route('language.switch') }}" class="d-flex align-items-center">
                     @csrf
-                    <select name="locale" onchange="this.form.submit()"
-                        style="height:32px;padding:0 8px;font-size:0.8rem;border:1px solid #1a3a6b;border-radius:6px;background:#fff;color:#1a2a4a;cursor:pointer;outline:none;">
-                        <option value="en" {{ app()->getLocale() === 'en' ? 'selected' : '' }}>EN</option>
-                        <option value="ne" {{ app()->getLocale() === 'ne' ? 'selected' : '' }}>नेपाली</option>
-                    </select>
+                    @php
+                        $nextLocale = app()->getLocale() === 'ne' ? 'en' : 'ne';
+                    @endphp
+                    <input type="hidden" name="locale" value="{{ $nextLocale }}">
+                    <button type="submit" class="language-toggle-btn {{ $nextLocale === 'en' ? 'lang-en' : '' }}" aria-label="{{ __('admin.language') }}">
+                        {!! $nextLocale === 'ne' ? '&#2344;&#2375;&#2346;&#2366;' : 'Eng' !!}
+                    </button>
                 </form>
+
+                <span class="navbar-separator" aria-hidden="true">|</span>
 
                 <!-- Notifications -->
                 @if(request()->is('admin/*'))

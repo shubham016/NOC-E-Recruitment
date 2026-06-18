@@ -58,10 +58,12 @@
         .notification-link {
             display: inline-flex !important;
             align-items: center !important;
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
+            justify-content: center !important;
+            height: 40px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
-        .notification-link .bi-bell { font-size: 1rem; line-height: 1.5; }
+        .notification-link .bi-bell { font-size: 1rem; line-height: 1; }
         .notification-link .badge.translate-middle {
             width: 14px !important;
             height: 14px !important;
@@ -71,7 +73,78 @@
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transform: translate(-128%, 44%) !important;
+            color: #fff !important;
+            transform: translate(-95%, 45%) !important;
+        }
+
+        .language-toggle-btn {
+            min-width: auto;
+            height: 40px;
+            padding: 0 0.4rem;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: #212529;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .language-toggle-btn:hover,
+        .language-toggle-btn:focus {
+            background: transparent;
+            color: #212529;
+            outline: none;
+        }
+
+        .language-toggle-btn.lang-en {
+            transform: translateX(2px);
+        }
+
+        .navbar-separator {
+            color: #212529;
+            height: 40px;
+            padding: 0 0.35rem 0 0.25rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-action-btn {
+            height: 40px !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+            font-size: 0.9rem !important;
+            font-weight: 400 !important;
+            font-family: inherit !important;
+            line-height: 1 !important;
+            color: #212529 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.25rem !important;
+        }
+
+        .navbar-action-btn span,
+        .navbar-action-btn i {
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            color: inherit !important;
+        }
+
+        .navbar-logout-btn,
+        .navbar-logout-btn span,
+        .navbar-logout-btn i {
+            font-size: 0.95rem !important;
         }
 
         /* ── Navbar ─────────────────────────────────────────────── */
@@ -357,14 +430,18 @@
             <div class="d-flex align-items-center gap-1">
 
                 <!-- Language Switcher -->
-                <form method="POST" action="{{ route('language.switch') }}" style="display:inline;">
+                <form method="POST" action="{{ route('language.switch') }}" class="d-flex align-items-center">
                     @csrf
-                    <select name="locale" onchange="this.form.submit()"
-                        style="height:30px;padding:0 6px;font-size:0.75rem;border:1px solid #1a3a6b;border-radius:6px;background:#fff;color:#1a3a6b;cursor:pointer;outline:none;">
-                        <option value="en" {{ app()->getLocale() === 'en' ? 'selected' : '' }}>EN</option>
-                        <option value="ne" {{ app()->getLocale() === 'ne' ? 'selected' : '' }}>नेपाली</option>
-                    </select>
+                    @php
+                        $nextLocale = app()->getLocale() === 'ne' ? 'en' : 'ne';
+                    @endphp
+                    <input type="hidden" name="locale" value="{{ $nextLocale }}">
+                    <button type="submit" class="language-toggle-btn {{ $nextLocale === 'en' ? 'lang-en' : '' }}" aria-label="Language">
+                        {!! $nextLocale === 'ne' ? '&#2344;&#2375;&#2346;&#2366;' : 'En' !!}
+                    </button>
                 </form>
+
+                <span class="navbar-separator" aria-hidden="true">|</span>
 
                 <!-- Notifications -->
                 @php
@@ -379,10 +456,10 @@
                         $unreadCount = 0;
                     }
                 @endphp
-                <a class="nav-link text-dark position-relative notification-link px-2"
+                <a class="nav-link text-dark position-relative notification-link navbar-action-btn"
                    href="{{ route('approver.notifications.index') }}"
                    title="Notifications">
-                    <i class="bi bi-bell" style="color: #1a3a6b;"></i>
+                    <i class="bi bi-bell"></i>
                     @if($unreadCount > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ $unreadCount > 99 ? '99+' : $unreadCount }}
@@ -393,8 +470,8 @@
                 <!-- Logout -->
                 <form method="POST" action="{{ route('approver.logout') }}" class="d-inline">
                     @csrf
-                    <button class="btn btn-link nav-link text-dark px-2" type="submit"
-                        style="font-size:0.85rem;white-space:nowrap;color:#1a3a6b !important;">
+                    <button class="btn btn-link nav-link text-dark navbar-action-btn navbar-logout-btn" type="submit"
+                        style="white-space:nowrap;">
                         <i class="bi bi-box-arrow-right"></i>
                         <span class="d-none d-sm-inline">{{ __('approver.logout') }}</span>
                     </button>

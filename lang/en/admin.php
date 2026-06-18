@@ -8,6 +8,7 @@ return [
     'company_system'         => 'Online Recruitment Management System',
     'portal_name'            => 'Admin Portal',
     'copyright'              => 'Copyright',
+    'language'               => 'Language',
 
     /* ── Sidebar / Nav ────────────────────────────────────── */
     'dashboard'              => 'Dashboard',
