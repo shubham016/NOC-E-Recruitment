@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Approver;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,6 +32,7 @@ class ApproverAuthController extends Controller
 
         if (!$approver) {
             \Log::info('Approver not found: ' . $request->employee_id);
+            app(AuditLogger::class)->auth($request, 'approver', 'login', 'failed', null, $request->employee_id, 'Approver not found');
             return back()->withErrors([
                 'employee_id' => 'Approver not found with this Employee ID.',
             ])->withInput($request->only('employee_id'));
@@ -38,6 +40,7 @@ class ApproverAuthController extends Controller
 
         if ($approver->status !== 'active') {
             \Log::info('Approver inactive: ' . $request->employee_id);
+            app(AuditLogger::class)->auth($request, 'approver', 'login', 'failed', $approver, $request->employee_id, 'Inactive account');
             return back()->withErrors([
                 'employee_id' => 'Your account is inactive. Please contact administrator.',
             ])->withInput($request->only('employee_id'));
@@ -46,6 +49,7 @@ class ApproverAuthController extends Controller
         // Verify password manually first
         if (!\Hash::check($request->password, $approver->password)) {
             \Log::info('Password mismatch for: ' . $request->employee_id);
+            app(AuditLogger::class)->auth($request, 'approver', 'login', 'failed', $approver, $request->employee_id, 'Invalid password');
             return back()->withErrors([
                 'employee_id' => 'Invalid password.',
             ])->withInput($request->only('employee_id'));
@@ -59,10 +63,12 @@ class ApproverAuthController extends Controller
         ], $request->filled('remember'))) {
             $request->session()->regenerate();
             \Log::info('Approver logged in successfully: ' . $request->employee_id);
+            app(AuditLogger::class)->auth($request, 'approver', 'login', 'success', Auth::guard('approver')->user(), $request->employee_id);
             return redirect()->route('approver.dashboard');
         }
 
         \Log::error('Auth attempt failed for: ' . $request->employee_id);
+        app(AuditLogger::class)->auth($request, 'approver', 'login', 'failed', $approver, $request->employee_id, 'Authentication failed');
         return back()->withErrors([
             'employee_id' => 'Authentication failed. Please try again.',
         ])->withInput($request->only('employee_id'));
@@ -112,8 +118,13 @@ class ApproverAuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $approver = Auth::guard('approver')->user();
+        if ($approver) {
+            app(AuditLogger::class)->auth($request, 'approver', 'logout', 'success', $approver, $approver->employee_id);
+        }
+
         Auth::guard('approver')->logout();
-        $request->session()->invalidate();
+        $request->session()->regenerate();
         $request->session()->regenerateToken();
         return redirect()->route('approver.login');
     }

@@ -38,21 +38,21 @@
         height: 100px;
         border-radius: 10px;
         object-fit: cover;
-        border: 3px solid #1d6df7;
+        border: 3px solid #1a3a6b;
     }
 
     .approver-avatar-placeholder {
         width: 100px;
         height: 100px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: 700;
         font-size: 2.5rem;
-        border: 3px solid #1d6df7;
+        border: 3px solid #1a3a6b;
     }
 
     .approver-info h2 {
@@ -102,12 +102,12 @@
     .info-icon-box {
         width: 48px;
         height: 48px;
-        background: #dbeafe;
+        background: #e8eef6;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #1d6df7;
+        color: #1a3a6b;
         font-size: 1.25rem;
         flex-shrink: 0;
     }
@@ -156,8 +156,8 @@
         margin-bottom: 0.5rem;
     }
 
-    .stat-card.blue .stat-number  { color: #3b82f6; }
-    .stat-card.orange .stat-number { color: #f97316; }
+    .stat-card.blue .stat-number  { color: #1a3a6b; }
+    .stat-card.orange .stat-number { color: #1a3a6b; }
     .stat-card.green .stat-number  { color: #10b981; }
     .stat-card.red .stat-number    { color: #ef4444; }
 
@@ -203,7 +203,7 @@
         gap: 0.5rem;
     }
 
-    .section-header h3 i { color: #1d6df7; font-size: 1.25rem; }
+    .section-header h3 i { color: #1a3a6b; font-size: 1.25rem; }
 
     .section-body { padding: 1.5rem; }
 
@@ -255,7 +255,7 @@
         display: inline-block;
     }
 
-    .app-status-pending  { background: #fed7aa; color: #9a3412; }
+    .app-status-pending  { background: #e8eef6; color: #1a3a6b; }
     .app-status-approved { background: #d1fae5; color: #065f46; }
     .app-status-rejected { background: #fecaca; color: #991b1b; }
 
@@ -264,7 +264,7 @@
         align-items: center;
         gap: 0.25rem;
         padding: 0.5rem 1rem;
-        background: #1d6df7;
+        background: #1a3a6b;
         color: white;
         border-radius: 6px;
         text-decoration: none;
@@ -274,7 +274,7 @@
         border: none;
     }
 
-    .btn-view-sm:hover { background: #1557c0; color: white; transform: translateY(-1px); }
+    .btn-view-sm:hover { background: #122a52; color: white; transform: translateY(-1px); }
 
     .info-table { width: 100%; }
 
@@ -319,8 +319,8 @@
 
     .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 
-    .action-btn-primary { background: #1d6df7; color: white; }
-    .action-btn-warning { background: #f97316; color: white; }
+    .action-btn-primary { background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%); color: white; }
+    .action-btn-warning { background: #1a3a6b; color: white; }
     .action-btn-success { background: #10b981; color: white; }
     .action-btn-danger  { background: #ef4444; color: white; }
 

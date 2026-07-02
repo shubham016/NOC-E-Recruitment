@@ -17,20 +17,66 @@
 @push('styles')
 <style>
     :root {
-        --gold-primary: #c9a84c;
-        --gold-dark: #a07828;
-        --gold-light: #d4af37;
+        --navy-primary: #1a3a6b;
+        --navy-dark: #122a52;
+        --navy-light: #2a5298;
         --spring-smooth: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Page Header — same as jobs index */
     .page-header {
-        background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         border-radius: 12px;
         padding: 1.5rem;
         color: white;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+    }
+
+    .page-header .btn-light {
+        border: 2px solid #ffffff;
+        background: transparent;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.2s;
+        cursor: pointer;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .sms-actions .btn-sms-search,
+    .empty-sms-action.btn-light {
+        background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-primary) 100%) !important;
+        border: 1px solid var(--navy-primary) !important;
+        color: #fff !important;
+    }
+
+    .page-header .btn-light:hover {
+        background: #ffffff;
+        color: var(--navy-primary);
+    }
+
+    .sms-actions .btn-sms-search:hover,
+    .empty-sms-action.btn-light:hover {
+        background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%) !important;
+        border-color: var(--navy-dark) !important;
+        color: #fff !important;
+    }
+
+    .sms-actions .btn-outline-secondary {
+        border-color: var(--navy-primary);
+        color: var(--navy-primary);
+    }
+
+    .sms-actions .btn-outline-secondary:hover {
+        background: #e8eef6;
+        border-color: var(--navy-primary);
+        color: var(--navy-dark);
+    }
+
+    .navy-total-badge {
+        background: var(--navy-dark) !important;
+        color: #fff !important;
     }
 
     /* Stats Grid */
@@ -71,13 +117,13 @@
         to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Gold top border reveal on hover */
+    /* Navy top border reveal on hover */
     .stat-box::after {
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, var(--gold-light), var(--gold-primary), var(--gold-dark), var(--gold-primary), var(--gold-light));
+        background: linear-gradient(90deg, var(--navy-light), var(--navy-primary), var(--navy-dark), var(--navy-primary), var(--navy-light));
         border-radius: 14px 14px 0 0;
         transform: scaleX(0);
         transition: transform 0.4s var(--spring-smooth);
@@ -87,8 +133,8 @@
 
     .stat-box:hover {
         transform: translateY(-6px);
-        box-shadow: 0 12px 32px rgba(201,168,76,0.18), 0 4px 12px rgba(0,0,0,0.08);
-        border-color: rgba(201,168,76,0.35);
+        box-shadow: 0 12px 32px rgba(26,58,107,0.18), 0 4px 12px rgba(0,0,0,0.08);
+        border-color: rgba(26,58,107,0.35);
     }
 
     .stat-value {
@@ -97,7 +143,7 @@
         font-weight: 700;
         line-height: 1;
         margin-bottom: 6px;
-        color: #c9a84c;
+        color: var(--navy-primary);
     }
 
     .stat-label {
@@ -266,8 +312,8 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-grow-1">
+                        <div class="d-flex gap-2 sms-actions">
+                            <button type="submit" class="btn btn-sms-search flex-grow-1">
                                 Search
                             </button>
                             @if(request()->hasAny(['search', 'vacancy', 'status']))
@@ -287,7 +333,7 @@
         <div class="card-header bg-white py-3 ps-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">SMS Logs</h6>
-                <span class="badge bg-primary ms-2">Total {{ $logs->total() }}</span>
+                <span class="badge navy-total-badge ms-2">Total {{ $logs->total() }}</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -341,7 +387,7 @@
                                         @if(request()->hasAny(['search', 'vacancy', 'status']))
                                             <a href="{{ route('admin.sms.index') }}" class="btn btn-sm btn-outline-dark">Clear All Filters</a>
                                         @else
-                                            <a href="{{ route('admin.sms.create') }}" class="btn btn-sm btn-light">Send Your First SMS</a>
+                                            <a href="{{ route('admin.sms.create') }}" class="btn btn-sm btn-light empty-sms-action">Send Your First SMS</a>
                                         @endif
                                     </div>
                                 </td>

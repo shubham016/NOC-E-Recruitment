@@ -553,26 +553,34 @@
                                 }
                                 return $period . ' ' . $toNp(trim($t)) . ' बजे';
                             };
-                            $fallbackVenue = $toNpText($application->exam_venue ?? 'श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास');
-                            $venue1 = $application->exam_venue_first  ? $toNpText($application->exam_venue_first)  : $fallbackVenue;
+                            $fallbackVenue = $application->exam_venue ? $toNpText($application->exam_venue) : null;
+                            $venue1 = $application->exam_venue_first ? $toNpText($application->exam_venue_first) : $fallbackVenue;
                             $venue2 = $application->exam_venue_second ? $toNpText($application->exam_venue_second) : $fallbackVenue;
 
-                            $date1 = $fmtDate($application->exam_date_first) ?? '२०८२-०१-११';
-                            $time1 = $fmtTime($application->exam_time_first) ?? 'दिउँसोको ०२:०० बजे';
-                            $date2 = $fmtDate($application->exam_date_second) ?? '२०८२-०१-११';
-                            $time2 = $fmtTime($application->exam_time_second) ?? 'दिउँसोको ०२:०० बजे';
+                            $date1 = $fmtDate($application->exam_date_first);
+                            $time1 = $fmtTime($application->exam_time_first);
+                            $date2 = $fmtDate($application->exam_date_second);
+                            $time2 = $fmtTime($application->exam_time_second);
                         @endphp
                         <tbody>
                             <tr>
                                 <td>१</td>
                                 <td>प्रथम</td>
-                                <td>{{ $date1 }} / {{ $time1 }} ({{ $venue1 }})</td>
+                                <td>
+                                    {{ implode(' / ', array_filter([$date1, $time1])) ?: '-' }}
+                                    @if($venue1) ({{ $venue1 }}) @endif
+                                </td>
                             </tr>
+                            @if($date2 || $time2 || $application->exam_venue_second)
                             <tr>
                                 <td>२</td>
                                 <td>द्वितिय</td>
-                                <td>{{ $date2 }} / {{ $time2 }} ({{ $venue2 }})</td>
+                                <td>
+                                    {{ implode(' / ', array_filter([$date2, $time2])) ?: '-' }}
+                                    @if($venue2) ({{ $venue2 }}) @endif
+                                </td>
                             </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>

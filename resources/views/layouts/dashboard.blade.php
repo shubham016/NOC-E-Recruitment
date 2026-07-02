@@ -169,6 +169,34 @@
             flex-shrink: 0;
         }
 
+        /* Responsive mobile sidebar toggle */
+        .mobile-sidebar-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--navy-border);
+            border-radius: 8px;
+            background: rgba(26, 58, 107, 0.08);
+            color: var(--navy-primary);
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* Responsive mobile sidebar overlay */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.42);
+            z-index: 998;
+        }
+
+        .sidebar-backdrop.show {
+            display: block;
+        }
+
         .hamburger-toggle:hover {
             background: rgba(26, 58, 107, 0.2);
             transform: scale(1.05);
@@ -307,6 +335,7 @@
             flex-direction: column;
             transition: margin-left var(--sidebar-speed);
             overflow-x: hidden;
+            min-width: 0;
         }
 
         .top-navbar {
@@ -328,6 +357,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
         }
 
         .navbar-company-logo {
@@ -364,6 +394,7 @@
             gap: 0.5rem;
             margin: -3px 8px 0px 0px;
             height: 40px;
+            flex-shrink: 0;
         }
 
         .navbar-right-section .nav-link {
@@ -554,6 +585,7 @@
 
         .content-area {
             padding: 2rem 1.5rem;
+            min-width: 0;
         }
 
         .stat-card {
@@ -597,7 +629,7 @@
         }
 
         .stat-icon.orange {
-            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            background: linear-gradient(135deg, #e8eef6 0%, #d0daea 100%);
             color: #ea580c;
         }
 
@@ -622,13 +654,40 @@
             font-size: 0.95rem;
         }
 
-        @media (max-width: 768px) {
+        /* Responsive mobile and tablet admin layout */
+        @media (max-width: 991.98px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: min(var(--sidebar-width), 86vw);
+                transition: transform var(--sidebar-speed);
             }
 
             .sidebar.show {
                 transform: translateX(0);
+            }
+
+            .sidebar-collapsed .sidebar {
+                width: min(var(--sidebar-width), 86vw);
+            }
+
+            .sidebar-collapsed .sidebar-menu-item span,
+            .sidebar-collapsed .brand-text,
+            .sidebar-collapsed .sidebar-menu-item .badge {
+                display: inline;
+            }
+
+            .sidebar-collapsed .sidebar-menu-item {
+                justify-content: flex-start;
+                padding: 0.7rem 1.25rem;
+                gap: 0.75rem;
+            }
+
+            .sidebar-collapsed .sidebar-menu-item i {
+                width: 22px;
+            }
+
+            .mobile-sidebar-toggle {
+                display: inline-flex;
             }
 
             .main-content {
@@ -637,12 +696,14 @@
 
             .top-navbar {
                 left: 0;
+                padding: 0.6rem 0.75rem;
+                gap: 0.65rem;
             }
 
             .navbar-company-header {
                 min-width: auto;
-                padding: 0.75rem 1rem;
                 flex: 1;
+                overflow: hidden;
             }
 
             .navbar-company-logo {
@@ -659,7 +720,147 @@
             }
 
             .navbar-right-section {
-                padding: 0.75rem 1rem;
+                margin: 0;
+                gap: 0.35rem;
+            }
+
+            .content-area {
+                padding: 1rem 0.75rem;
+                margin-top: 64px;
+            }
+
+            .container-fluid {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .page-header,
+            .gov-page-header,
+            .page-header-card,
+            .admit-header {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .page-header > .d-flex,
+            .gov-page-header > .d-flex,
+            .page-header-card .d-flex,
+            .admit-header.d-flex,
+            .card-header.d-flex,
+            .gov-pagination-footer .d-flex {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                align-items: flex-start !important;
+            }
+
+            .page-header .btn,
+            .gov-page-header .btn,
+            .page-header-card .btn,
+            .admit-header .btn {
+                white-space: nowrap;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-responsive > table {
+                min-width: max-content;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem;
+            }
+
+            .btn-lg {
+                padding: 0.5rem 0.9rem;
+                font-size: 0.95rem;
+            }
+
+            .form-control-lg,
+            .form-select-lg {
+                min-height: 42px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Responsive small mobile admin layout */
+        @media (max-width: 575.98px) {
+            .top-navbar {
+                min-height: 60px;
+            }
+
+            .navbar-company-logo {
+                width: 34px;
+                height: 34px;
+            }
+
+            .navbar-company-info h2 {
+                font-size: 0.78rem;
+                max-width: 44vw;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .navbar-company-info p,
+            .navbar-company-info small,
+            #userDropdown .user-name,
+            .navbar-separator {
+                display: none !important;
+            }
+
+            #userDropdown .toggle-icon {
+                margin-left: 0 !important;
+            }
+
+            .content-area {
+                padding: 0.75rem 0.5rem;
+                margin-top: 60px;
+            }
+
+            .container-fluid {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+
+            .page-title,
+            .gov-page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .page-subtitle,
+            .gov-page-subtitle {
+                font-size: 0.85rem !important;
+            }
+
+            .card-body,
+            .gov-card-body,
+            .form-card,
+            .preview-card {
+                padding: 1rem !important;
+            }
+
+            .d-flex.gap-2,
+            .d-flex.gap-3 {
+                flex-wrap: wrap;
+            }
+
+            .input-group {
+                flex-wrap: wrap;
+            }
+
+            .input-group > .input-group-text {
+                width: 100%;
+                min-width: 0 !important;
+                border-radius: 0.375rem 0.375rem 0 0 !important;
+            }
+
+            .input-group > .form-control,
+            .input-group > .form-select {
+                width: 100%;
+                border-radius: 0 0 0.375rem 0.375rem !important;
             }
         }
 
@@ -694,10 +895,156 @@
             margin-top: 70px; /* Height of fixed navbar */
         }
 
-        @yield('custom-styles');
     </style>
 
+    @yield('custom-styles')
     @stack('styles')
+
+    <style>
+        .btn-warning,
+        .btn-outline-warning:hover,
+        .btn-outline-warning:focus,
+        .btn-outline-warning:active {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%) !important;
+            border-color: var(--navy-primary) !important;
+            color: #fff !important;
+        }
+
+        .btn-warning:hover,
+        .btn-warning:focus,
+        .btn-warning:active {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%) !important;
+            border-color: var(--navy-dark) !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-warning {
+            border-color: var(--navy-primary) !important;
+            color: var(--navy-primary) !important;
+        }
+
+        .bg-warning {
+            background-color: var(--navy-light) !important;
+        }
+
+        .bg-warning.bg-opacity-10 {
+            background-color: rgba(42, 82, 152, 0.12) !important;
+        }
+
+        .text-warning {
+            color: var(--navy-light) !important;
+        }
+
+        .border-warning {
+            border-color: var(--navy-border) !important;
+        }
+
+        .bg-warning.text-dark,
+        .badge.bg-warning {
+            color: #fff !important;
+        }
+
+        .alert-warning {
+            background-color: var(--navy-pale) !important;
+            border-color: var(--navy-border) !important;
+            color: var(--navy-dark) !important;
+        }
+
+        body.mobile-sidebar-open {
+            overflow: hidden;
+        }
+
+        /* Responsive mobile view overrides loaded after page-specific styles */
+        @media (max-width: 991.98px) {
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .top-navbar {
+                left: 0 !important;
+            }
+
+            .content-area {
+                padding: 1rem 0.75rem !important;
+                margin-top: 64px !important;
+            }
+
+            .container-fluid {
+                max-width: 100%;
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .page-header,
+            .gov-page-header,
+            .page-header-card,
+            .admit-header {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+                border-radius: 10px !important;
+            }
+
+            .page-header > .d-flex,
+            .gov-page-header > .d-flex,
+            .page-header-card .d-flex,
+            .admit-header.d-flex,
+            .card-header.d-flex,
+            .gov-pagination-footer .d-flex {
+                flex-wrap: wrap !important;
+                gap: 0.75rem !important;
+                align-items: flex-start !important;
+            }
+
+            .table-responsive {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-responsive > table {
+                min-width: max-content;
+            }
+        }
+
+        /* Responsive small mobile view overrides loaded after page-specific styles */
+        @media (max-width: 575.98px) {
+            .content-area {
+                padding: 0.75rem 0.5rem !important;
+                margin-top: 60px !important;
+            }
+
+            .container-fluid {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+
+            .page-title,
+            .gov-page-title {
+                font-size: 1.25rem !important;
+                line-height: 1.25 !important;
+            }
+
+            .page-subtitle,
+            .gov-page-subtitle {
+                font-size: 0.85rem !important;
+            }
+
+            .card-body,
+            .gov-card-body,
+            .form-card,
+            .preview-card {
+                padding: 1rem !important;
+            }
+
+            .btn-lg {
+                padding: 0.5rem 0.9rem !important;
+                font-size: 0.95rem !important;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="sidebar-collapsed no-transition">
@@ -727,11 +1074,17 @@
             @yield('sidebar-menu')
         </div>
     </div>
+    <!-- Responsive mobile view: sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Navbar -->
         <nav class="top-navbar">
+            <!-- Responsive mobile view: open sidebar button -->
+            <button type="button" class="mobile-sidebar-toggle" id="mobileToggle" aria-label="Open navigation">
+                <i class="bi bi-list"></i>
+            </button>
             <div class="navbar-company-header">
                 <img src="/images/images.png" alt="Nepal Oil Corporation" class="navbar-company-logo">
                 <div class="navbar-company-info">
@@ -1125,18 +1478,67 @@
             if (toggleBtn) {
                 toggleBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
+                    if (window.innerWidth < 992) {
+                        closeMobileSidebar();
+                        return;
+                    }
                     body.classList.toggle('sidebar-collapsed');
                     sessionStorage.setItem('adminSidebarExpanded',
                         !body.classList.contains('sidebar-collapsed'));
                 });
             }
 
+            // Responsive mobile view: sidebar overlay open/close behavior
             const mobileToggle = document.getElementById('mobileToggle');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            function closeMobileSidebar() {
+                if (sidebar) sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+                document.body.classList.remove('mobile-sidebar-open');
+            }
+
+            function openMobileSidebar() {
+                if (sidebar) sidebar.classList.add('show');
+                if (backdrop) backdrop.classList.add('show');
+                document.body.classList.add('mobile-sidebar-open');
+            }
+
             if (mobileToggle) {
-                mobileToggle.addEventListener('click', function () {
-                    document.getElementById('sidebar').classList.toggle('show');
+                mobileToggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        closeMobileSidebar();
+                    } else {
+                        openMobileSidebar();
+                    }
                 });
             }
+
+            if (backdrop) {
+                backdrop.addEventListener('click', closeMobileSidebar);
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeMobileSidebar();
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 992) {
+                    closeMobileSidebar();
+                }
+            });
+
+            document.querySelectorAll('.sidebar-menu-item').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (window.innerWidth < 992) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
         });
     </script>
 

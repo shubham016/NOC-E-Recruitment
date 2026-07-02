@@ -13,12 +13,39 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+    <style>
+        .admit-header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+        }
+
+        .admit-header p {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .admit-total-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .admit-progress-badge {
+            background: #2a5298 !important;
+            color: #fff !important;
+        }
+    </style>
+@endsection
+
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="admit-header d-flex justify-content-between align-items-center">
         <div>
             <h4 class="fw-bold mb-1">{{ __('admin.admit_card_management') }}</h4>
-            <p class="text-muted mb-0">{{ __('admin.bulk_assign_exam') }}</p>
+            <p class="mb-0">{{ __('admin.bulk_assign_exam') }}</p>
         </div>
     </div>
 
@@ -69,12 +96,12 @@
                                     <td class="fw-bold">{{ $group->advertisement_no }}</td>
                                     <td>{{ $group->position }}{{ $group->level ? ' / ' . __('admin.level') . ' ' . $group->level : '' }}</td>
                                     <td>{{ $group->service_group ?? '-' }}</td>
-                                    <td><span class="badge bg-primary">{{ $group->total_candidates }}</span></td>
+                                    <td><span class="badge admit-total-badge">{{ $group->total_candidates }}</span></td>
                                     <td>
                                         @if($allAssigned)
                                             <span class="badge bg-success">{{ $group->assigned_count }} / {{ $group->total_candidates }}</span>
                                         @elseif($group->assigned_count > 0)
-                                            <span class="badge bg-warning text-dark">{{ $group->assigned_count }} / {{ $group->total_candidates }}</span>
+                                            <span class="badge admit-progress-badge">{{ $group->assigned_count }} / {{ $group->total_candidates }}</span>
                                         @else
                                             <span class="badge bg-secondary">0 / {{ $group->total_candidates }}</span>
                                         @endif
@@ -83,7 +110,7 @@
                                     <td>{{ $group->exam_venue ? \Illuminate\Support\Str::limit($group->exam_venue, 40) : '-' }}</td>
                                     <td>
                                         <a href="{{ route('admin.admit-card.assign', $group->job_posting_id) }}"
-                                           class="btn btn-sm" style="background:#c9a84c; color:#fff; border:none;">
+                                           class="btn btn-sm" style="background:#1a3a6b; color:#fff; border:none;">
                                             {{ $allAssigned ? __('admin.reassign') : __('admin.assign_admit_cards') }}
                                         </a>
                                         @if($group->assigned_count > 0)

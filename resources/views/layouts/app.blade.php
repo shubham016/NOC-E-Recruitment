@@ -807,6 +807,7 @@
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
             background: rgba(26, 58, 107, 0.5);
         }
+
     </style>
     @yield('custom-styles')
 
@@ -958,7 +959,7 @@
                                 @php
                                     try {
                                         if (Auth::guard('reviewer')->check()) {
-                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->user()->getKey())
                                                 ->where('user_type', 'reviewer')
                                                 ->where('is_read', false)
                                                 ->count();
@@ -981,7 +982,7 @@
                                 @php
                                     try {
                                         if (Auth::guard('approver')->check()) {
-                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('approver')->id())
+                                            $unreadCount = \App\Models\Notification::where('user_id', Auth::guard('approver')->user()->getKey())
                                                 ->where('user_type', 'approver')
                                                 ->where('is_read', false)
                                                 ->count();

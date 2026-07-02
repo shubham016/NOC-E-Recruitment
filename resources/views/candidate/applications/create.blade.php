@@ -574,6 +574,13 @@
                                 if (cb.checked && advDiv) advDiv.style.display = '';
                                 cb.addEventListener('change', function() {
                                     if (advDiv) advDiv.style.display = this.checked ? '' : 'none';
+                                    var categoryError = document.getElementById('categoryError');
+                                    if (categoryError && document.querySelectorAll('.category-cb:checked').length > 0) {
+                                        categoryError.style.display = 'none';
+                                    }
+                                    document.querySelectorAll('.category-cb.is-invalid').forEach(function(invalidCb) {
+                                        invalidCb.classList.remove('is-invalid');
+                                    });
                                     updateAdvertisementNo();
                                     updateTotalFee();
                                 });
@@ -862,9 +869,9 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="blood_group" class="form-label">Blood Group <span class="text-danger">*</span></label>
+                            <label for="blood_group" class="form-label">Blood Group</label>
                             <input type="text" name="blood_group" id="blood_group" class="form-control"
-                                value="{{ old('blood_group', $draftApplication->blood_group ?? $candidate->blood_group ?? '') }}" required>
+                                value="{{ old('blood_group', $draftApplication->blood_group ?? $candidate->blood_group ?? '') }}">
                         </div>
                         <div class="col-md-4">
                             <label for="age" class="form-label">Age <span class="text-danger">*</span> <small>(उमेर)</small></label>
@@ -1108,9 +1115,9 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="field_of_study" class="form-label">Field of Study <span class="text-danger">*</span></label>
+                            <label for="field_of_study" class="form-label">Field of Study</label>
                             <input type="text" name="field_of_study" id="field_of_study" class="form-control"
-                                value="{{ old('field_of_study', $draftApplication->field_of_study ?? $candidate->field_of_study ?? '') }}" required>
+                                value="{{ old('field_of_study', $draftApplication->field_of_study ?? $candidate->field_of_study ?? '') }}">
                         </div>
                     </div>
                     <div class="row mb-3 align-items-end">
@@ -2485,6 +2492,17 @@
             });
             let isValid = true,
                 firstInvalid = null;
+            const categoryBoxes = Array.from(stepEl.querySelectorAll('.category-cb'));
+            if (categoryBoxes.length > 0 && !categoryBoxes.some(cb => cb.checked)) {
+                const categoryError = document.getElementById('categoryError');
+                isValid = false;
+                categoryBoxes[0].classList.add('is-invalid');
+                if (categoryError) categoryError.style.display = 'block';
+                if (!firstInvalid) firstInvalid = categoryBoxes[0];
+            } else {
+                const categoryError = document.getElementById('categoryError');
+                if (categoryError) categoryError.style.display = 'none';
+            }
             stepEl.querySelectorAll('input[required],select[required],textarea[required]').forEach(field => {
                 if (field.parentElement?.closest('.conditionally-hidden')) return;
                 if (field.type === 'checkbox') {

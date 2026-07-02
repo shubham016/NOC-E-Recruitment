@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Verify Email - OTP')
+@section('title', 'Verify Phone - OTP')
 
 @section('custom-styles')
 <style>
@@ -35,7 +35,7 @@
 
     /* ── Header bar (matches register page sidebar gradient) ── */
     .noc-card-header {
-        background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #c9a84c 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         padding: 2rem;
         text-align: center;
         color: #fff;
@@ -44,15 +44,15 @@
     .noc-card-header .verify-icon {
         width: 70px;
         height: 70px;
-        background: rgba(201,168,76,0.25);
-        border: 2px solid #c9a84c;
+        background: rgba(42,82,152,0.25);
+        border: 2px solid #2a5298;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1rem;
         font-size: 32px;
-        color: #c9a84c;
+        color: #2a5298;
     }
 
     .noc-card-header h2 {
@@ -72,9 +72,9 @@
     .noc-card-header .email-badge {
         display: inline-block;
         margin-top: 0.4rem;
-        background: rgba(201,168,76,0.2);
-        border: 1px solid rgba(201,168,76,0.5);
-        color: #c9a84c;
+        background: rgba(42,82,152,0.2);
+        border: 1px solid rgba(42,82,152,0.5);
+        color: #2a5298;
         font-weight: 600;
         font-size: 0.85rem;
         padding: 0.2rem 0.75rem;
@@ -138,7 +138,7 @@
 
     .otp-input:focus {
         border-color: #1a2a4a;
-        box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+        box-shadow: 0 0 0 3px rgba(42,82,152,0.2);
         background: #fff;
     }
 
@@ -150,13 +150,13 @@
         margin-bottom: 1.5rem;
     }
 
-    .otp-expiry i { color: #c9a84c; }
+    .otp-expiry i { color: #2a5298; }
 
     /* ── Submit button ── */
     .noc-verify-btn {
         width: 100%;
         padding: 0.75rem;
-        background: linear-gradient(135deg, #c9a84c 0%, #b8941f 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         border: none;
         border-radius: 8px;
         color: #fff;
@@ -170,9 +170,9 @@
     }
 
     .noc-verify-btn:hover {
-        background: linear-gradient(135deg, #d4b55a 0%, #c9a84c 100%);
+        background: linear-gradient(135deg, #3b6ab4 0%, #2a5298 100%);
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(201,168,76,0.35);
+        box-shadow: 0 6px 16px rgba(42,82,152,0.35);
     }
 
     /* ── Resend & back links ── */
@@ -187,14 +187,14 @@
         background: none;
         border: none;
         padding: 0;
-        color: #c9a84c;
+        color: #2a5298;
         font-weight: 600;
         cursor: pointer;
         text-decoration: underline;
         font-size: 0.875rem;
     }
 
-    .noc-links .resend-btn:hover { color: #b8941f; }
+    .noc-links .resend-btn:hover { color: #122a52; }
 
     .noc-back-link {
         display: block;
@@ -221,11 +221,11 @@
         {{-- Header --}}
         <div class="noc-card-header">
             <div class="verify-icon">
-                <i class="bi bi-envelope-check"></i>
+                <i class="bi bi-phone"></i>
             </div>
-            <h2>Verify Your Email</h2>
+            <h2>Verify Your Phone</h2>
             <p>We've sent a 6-digit code to</p>
-            <span class="email-badge">{{ $email }}</span>
+            <span class="email-badge">{{ $phone ?? $email }}</span>
         </div>
 
         {{-- Body --}}
@@ -263,7 +263,7 @@
                 </p>
 
                 <button type="submit" class="noc-verify-btn">
-                    <i class="bi bi-check-circle me-2"></i>Verify Email
+                    <i class="bi bi-check-circle me-2"></i>Verify OTP
                 </button>
             </form>
 

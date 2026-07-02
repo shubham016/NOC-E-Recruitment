@@ -143,7 +143,7 @@
                                                 Internal (आन्तरिक परीक्षा)
                                             </span>
                                             @if($gJob->has_internal_open)
-                                                <span class="badge text-white" style="background-color: #f59e0b; font-size: 0.875rem;">
+                                                <span class="badge text-white" style="background-color: #2a5298; font-size: 0.875rem;">
                                                     Internal Open (All NOC Staff)
                                                 </span>
                                             @endif

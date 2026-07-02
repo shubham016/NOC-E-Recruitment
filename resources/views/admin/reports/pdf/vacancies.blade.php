@@ -33,7 +33,7 @@
         th {
             font-weight: bold;
             text-align: center;
-            background: #c9a84c;
+            background: #1a3a6b;
             color: #fff;
         }
         .nowrap { white-space: nowrap; }

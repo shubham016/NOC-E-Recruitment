@@ -16,7 +16,7 @@
 @section('custom-styles')
 <style>
     .preview-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         border-radius: 12px;
         padding: 1.5rem 2rem;
         color: white;
@@ -26,7 +26,7 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 1rem;
-        box-shadow: 0 4px 12px rgba(201,168,76,0.3);
+        box-shadow: 0 4px 12px rgba(42,82,152,0.3);
     }
     .preview-header h5 { margin: 0; font-weight: 700; }
     .preview-header .meta { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
@@ -47,7 +47,7 @@
     .btn-back:hover { background: rgba(255,255,255,0.3); color: #fff; }
     .btn-download-pdf {
         background: #fff;
-        color: #a07828;
+        color: #122a52;
         border: none;
         border-radius: 8px;
         padding: 0.4rem 1.1rem;
@@ -59,7 +59,7 @@
         gap: 0.35rem;
         transition: opacity 0.15s;
     }
-    .btn-download-pdf:hover { opacity: 0.88; color: #a07828; }
+    .btn-download-pdf:hover { opacity: 0.88; color: #122a52; }
     .preview-card {
         background: #fff;
         border-radius: 12px;
@@ -69,7 +69,7 @@
     }
     .preview-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
     .preview-table th {
-        background: #c9a84c;
+        background: #1a3a6b;
         color: #fff;
         font-weight: 700;
         padding: 0.65rem 0.75rem;
@@ -77,7 +77,7 @@
         text-transform: uppercase;
         letter-spacing: 0.03em;
         white-space: nowrap;
-        border: 1px solid #b8923b;
+        border: 1px solid #1a3a6b;
     }
     .preview-table td {
         padding: 0.6rem 0.75rem;
@@ -85,9 +85,9 @@
         color: #374151;
         vertical-align: middle;
     }
-    .preview-table tbody tr:hover { background: #fffbf0; }
+    .preview-table tbody tr:hover { background: #f5f8fc; }
     .preview-table tbody tr:nth-child(even) { background: #fafafa; }
-    .preview-table tbody tr:nth-child(even):hover { background: #fffbf0; }
+    .preview-table tbody tr:nth-child(even):hover { background: #f5f8fc; }
     .text-muted-sm { font-size: 0.78rem; color: #9ca3af; }
     .empty-state { text-align: center; padding: 3rem 1rem; color: #9ca3af; }
 </style>

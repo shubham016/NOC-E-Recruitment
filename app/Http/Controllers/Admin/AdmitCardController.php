@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApplicationForm;
 use App\Models\JobPosting;
+use App\Models\Notification;
+use App\Services\CandidateSmsNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -157,6 +160,8 @@ class AdmitCardController extends Controller
         $counter = 1;
 
         foreach ($applications as $app) {
+            $shouldNotifyAdmitCard = empty($app->roll_number) || $app->status !== 'assigned';
+
             // Preserve existing roll number; only generate new one if not yet assigned
             if (empty($app->roll_number)) {
                 $rollNumber = $prefix . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
@@ -188,6 +193,25 @@ class AdmitCardController extends Controller
                     'status'            => 'assigned',
                     'updated_at'        => now(),
                 ]);
+
+            $updatedApplication = ApplicationForm::with(['candidateRegistration', 'jobPosting'])->find($app->id);
+            if ($shouldNotifyAdmitCard && $updatedApplication) {
+                $candidate = $updatedApplication->candidateRegistration;
+
+                if ($candidate) {
+                    Notification::create([
+                        'user_id'      => $candidate->id,
+                        'user_type'    => 'candidate',
+                        'type'         => 'admit_card_available',
+                        'title'        => 'Admit Card Available',
+                        'message'      => 'Your admit card for "' . ($updatedApplication->jobPosting->title ?? $updatedApplication->applying_position ?? 'your applied post') . '" is now available. Roll No: ' . $updatedApplication->roll_number . '. Please login to view or download it.',
+                        'related_id'   => $updatedApplication->id,
+                        'related_type' => 'application',
+                    ]);
+                }
+
+                app(CandidateSmsNotificationService::class)->admitCardAvailable($updatedApplication);
+            }
 
             $counter++;
         }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
+use App\Models\ApplicationStatusHistory;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\JobPosting;
 use App\Models\ApplicationExperience;
@@ -618,6 +620,8 @@ class ApplicationFormController extends Controller
                 ->withErrors(['error' => 'Unauthorized access']);
         }
 
+        $wasSentBackForEdit = $applicationform->status === 'edit';
+
         $validated = $request->validate(
             $this->validationRules(false),
             $this->validationMessages()
@@ -650,6 +654,11 @@ class ApplicationFormController extends Controller
         $applicationform->update($data);
         $this->saveExperiences($request, $applicationform);
 
+        if ($wasSentBackForEdit) {
+            $applicationform->refresh()->load(['jobPosting']);
+            $this->notifyAssignedReviewersAfterResubmission($applicationform, $candidate);
+        }
+
         // Keep candidate profile birth date in sync
         $this->syncBirthDateToProfile(
             $candidate->id,
@@ -659,6 +668,53 @@ class ApplicationFormController extends Controller
 
         return redirect()->route('candidate.applications.index')
             ->with('success', 'Application updated successfully!');
+    }
+
+    private function notifyAssignedReviewersAfterResubmission(ApplicationForm $application, $candidate): void
+    {
+        $positionTitle = $application->jobPosting?->title
+            ?: $application->applying_position
+            ?: $application->advertisement_no
+            ?: 'assigned application';
+
+        $candidateName = $candidate->name_english
+            ?? $application->name_english
+            ?? 'Candidate';
+
+        $message = $candidateName . ' has submitted corrections for "' . $positionTitle . '". Please review the updated application.';
+
+        if ($application->reviewer_id) {
+            Notification::create([
+                'user_id'      => $application->reviewer_id,
+                'user_type'    => 'reviewer',
+                'type'         => 'application_resubmitted',
+                'title'        => 'Application Resubmitted',
+                'message'      => $message,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
+
+        if ($application->approver_id) {
+            Notification::create([
+                'user_id'      => $application->approver_id,
+                'user_type'    => 'approver',
+                'type'         => 'application_resubmitted',
+                'title'        => 'Application Resubmitted',
+                'message'      => $message,
+                'related_id'   => $application->id,
+                'related_type' => 'application',
+            ]);
+        }
+
+        ApplicationStatusHistory::create([
+            'application_form_id' => $application->id,
+            'stage_name'          => 'Edited',
+            'done_by'             => $candidateName,
+            'done_by_type'        => 'candidate',
+            'done_by_id'          => $candidate->id ?? null,
+            'remarks'             => 'Candidate submitted corrected application.',
+        ]);
     }
 
     /**
@@ -770,7 +826,7 @@ class ApplicationFormController extends Controller
             'mother_qualification' => 'nullable|string',
             'parent_occupation' => 'required|string',
             'nationality' => 'required|string',
-            'blood_group' => 'required|string',
+            'blood_group' => 'nullable|string',
             'marital_status' => 'required|string',
             'religion' => 'required|string',
             'community' => 'required|string',
@@ -778,7 +834,7 @@ class ApplicationFormController extends Controller
             'mother_tongue' => 'required|string',
             'employment_status' => 'required|string',
             'education_level' => 'required|string',
-            'field_of_study' => 'required|string',
+            'field_of_study' => 'nullable|string',
             'institution_name' => 'required|string',
             'graduation_year' => 'required|integer',
             'has_work_experience' => 'required|in:Yes,No',
@@ -787,6 +843,8 @@ class ApplicationFormController extends Controller
             'physical_disability' => 'required|in:yes,no',
             'noc_employee' => 'required|in:yes,no',
             'job_posting_id' => 'nullable|exists:job_postings,id',
+            'applied_category' => 'required|array|min:1',
+            'applied_category.*' => 'required|string|in:open,inclusive,internal_open,internal_inclusive,internal_appraisal',
             'advertisement_no' => 'required|string',
             'department' => 'required|string',
             'applying_position' => 'required|string',
@@ -802,6 +860,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['ethnic_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         } else {
             $rules['citizenship_id_document'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['passport_size_photo'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
@@ -810,6 +869,7 @@ class ApplicationFormController extends Controller
             $rules['work_experience'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['signature'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
             $rules['equivalent'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['ethnic_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         // Conditional validation for NOC ID Card
@@ -826,12 +886,12 @@ class ApplicationFormController extends Controller
             $rules['disability_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
-        // Conditional validation for Ethnic Certificate
-        if ($isStore) {
-            $rules['ethnic_certificate'] = 'required_if:ethnic_group,Dalit,Janajati|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-        } else {
-            $rules['ethnic_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-        }
+        // // Conditional validation for Ethnic Certificate
+        // if ($isStore) {
+        //     $rules['ethnic_certificate'] = 'required_if:ethnic_group,Dalit,Janajati|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        // } else {
+        //     $rules['ethnic_certificate'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        // }
 
         return $rules;
     }
@@ -862,6 +922,9 @@ class ApplicationFormController extends Controller
             'transcript.required' => 'Transcript certificate is required.',
             'character.required' => 'Character certificate is required.',
             'signature.required' => 'Signature is required.',
+            'applied_category.required' => 'Please select at least one application category.',
+            'applied_category.array' => 'Please select at least one application category.',
+            'applied_category.min' => 'Please select at least one application category.',
         ];
     }
 

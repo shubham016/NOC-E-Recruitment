@@ -22,14 +22,14 @@
         }
 
         .notification-card:hover {
-            border-left-color: #c9a84c;
+            border-left-color: #1a3a6b;
             transform: translateX(5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
         }
 
         .notification-card.unread {
-            background-color: #fffbf0;
-            border-left-color: #c9a84c;
+            background-color: #f5f8fc;
+            border-left-color: #1a3a6b;
         }
 
         .notification-icon {
@@ -44,8 +44,8 @@
         }
 
         .notification-icon.info {
-            background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(160, 120, 40, 0.1));
-            color: #a07828;
+            background: linear-gradient(135deg, rgba(26, 58, 107, 0.15), rgba(18, 42, 82, 0.1));
+            color: #122a52;
         }
 
         .notification-icon.success {

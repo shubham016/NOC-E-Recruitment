@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use App\Models\Notification;
+use App\Services\CandidateSmsNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,7 +62,7 @@ class AssignedToMeController extends Controller
     {
         $approver = Auth::guard('approver')->user();
 
-        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver', 'experiences'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'approver', 'experiences', 'candidateRegistration'])
             ->where('approver_id', $approver->id)
             ->findOrFail($id);
 
@@ -110,6 +111,14 @@ class AssignedToMeController extends Controller
                 'related_id'   => $application->id,
                 'related_type' => 'application',
             ]);
+        }
+
+        if ($request->status === 'edit') {
+            app(CandidateSmsNotificationService::class)->applicationSentBack($application, 'approver', $request->approver_notes);
+        } elseif ($request->status === 'rejected') {
+            app(CandidateSmsNotificationService::class)->applicationRejected($application, 'approver', $request->approver_notes);
+        } elseif ($request->status === 'approved') {
+            app(CandidateSmsNotificationService::class)->applicationApproved($application, 'approver');
         }
 
         return redirect()->route('approver.assignedtome')

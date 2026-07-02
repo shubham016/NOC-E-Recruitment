@@ -10,6 +10,7 @@ use App\Models\JobPosting;
 use App\Models\Payment;
 use App\Models\Notification;
 use App\Models\ApplicationStatusHistory;
+use App\Services\CandidateSmsNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,6 +71,9 @@ class AdminApplicationController extends Controller
             ->withCount(['applications' => function ($q) {
                 $q->where('status', '!=', 'draft');
             }])
+            ->orderBy('position')
+            ->orderBy('level')
+            ->orderBy('advertisement_no')
             ->get();
 
         // Compute group-combined counts (siblings sharing same position+level reference point)
@@ -85,6 +89,31 @@ class AdminApplicationController extends Controller
         }
 
         $vacancies = $jobs;
+        $bulkVacancyGroups = $jobs
+            ->groupBy(function ($job) {
+                $position = trim((string) $job->position);
+                $level = trim((string) $job->level);
+
+                return ($position !== '' || $level !== '')
+                    ? $position . '|' . $level
+                    : 'job:' . $job->id;
+            })
+            ->map(function ($group) {
+                $first = $group->first();
+
+                return [
+                    'representative_id' => $first->id,
+                    'advertisement_numbers' => $group
+                        ->pluck('advertisement_no')
+                        ->filter()
+                        ->values()
+                        ->implode(', '),
+                    'position' => $first->position ?: $first->title,
+                    'level' => $first->level,
+                    'applications_count' => $group->sum('applications_count'),
+                ];
+            })
+            ->values();
 
         // Get all active reviewers for filter dropdown
         $reviewers = Reviewer::select('id', 'name', 'email')
@@ -112,6 +141,7 @@ class AdminApplicationController extends Controller
             'applications',
             'jobs',
             'vacancies',
+            'bulkVacancyGroups',
             'reviewers',
             'approvers',
             'statuses',
@@ -447,6 +477,8 @@ class AdminApplicationController extends Controller
                     'related_type' => 'application',
                 ]);
             }
+
+            app(CandidateSmsNotificationService::class)->applicationApproved($application, 'admin');
         } elseif ($request->status == 'edit') {
             if ($candidate) {
                 $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
@@ -460,6 +492,8 @@ class AdminApplicationController extends Controller
                     'related_type' => 'application',
                 ]);
             }
+
+            app(CandidateSmsNotificationService::class)->applicationSentBack($application, 'admin', $request->admin_notes);
         } elseif ($request->status == 'rejected') {
             if ($candidate) {
                 $rejectionReason = $request->admin_notes ? ' Reason: ' . $request->admin_notes : '';
@@ -473,6 +507,8 @@ class AdminApplicationController extends Controller
                     'related_type' => 'application',
                 ]);
             }
+
+            app(CandidateSmsNotificationService::class)->applicationRejected($application, 'admin', $request->admin_notes);
         }
 
         return redirect()->back()->with('success', 'Application status updated successfully!');
@@ -670,6 +706,36 @@ class AdminApplicationController extends Controller
                         'remarks'             => 'Bulk status update',
                     ]);
                 }
+
+                if (in_array($request->status, ['approved', 'edit', 'rejected'], true)) {
+                    $applications = ApplicationForm::whereIn('id', $applicationIds)->get();
+                    foreach ($applications as $app) {
+                        if ($request->status === 'approved') {
+                            $candidateRecord = \DB::table('candidate_registration')
+                                ->where('citizenship_number', $app->citizenship_number)
+                                ->first();
+
+                            if ($candidateRecord) {
+                                Notification::create([
+                                    'user_id'      => $candidateRecord->id,
+                                    'user_type'    => 'candidate',
+                                    'type'         => 'application_approved',
+                                    'title'        => 'Application Approved',
+                                    'message'      => 'Congratulations! Your application for "' . ($app->jobPosting->title ?? $app->applying_position ?? 'your applied post') . '" has been approved by the admin.',
+                                    'related_id'   => $app->id,
+                                    'related_type' => 'application',
+                                ]);
+                            }
+
+                            app(CandidateSmsNotificationService::class)->applicationApproved($app, 'admin');
+                        } elseif ($request->status === 'edit') {
+                            app(CandidateSmsNotificationService::class)->applicationSentBack($app, 'admin');
+                        } else {
+                            app(CandidateSmsNotificationService::class)->applicationRejected($app, 'admin');
+                        }
+                    }
+                }
+
                 $message = 'Status updated for ' . count($applicationIds) . ' application(s) successfully!';
                 break;
 

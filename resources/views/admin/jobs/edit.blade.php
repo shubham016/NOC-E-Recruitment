@@ -30,24 +30,22 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #d0daea;
         }
 
-        .govt-badge {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+        .page-title {
+            color: #1e293b;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 0;
         }
 
         .form-card {
@@ -68,7 +66,7 @@
         }
 
         .form-label .required {
-            color: #dc2626;
+            color: #1a3a6b;
         }
 
         .form-label .nepali-text {
@@ -81,8 +79,8 @@
         .form-control:focus,
         .form-select:focus,
         .form-control:focus-visible {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.15);
             outline: none;
         }
 
@@ -103,8 +101,8 @@
         }
 
         .info-alert {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #e8eef6 0%, #d0daea 100%);
+            border-left: 4px solid #1a3a6b;
             padding: 1rem 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
@@ -117,6 +115,26 @@
             padding: 1.5rem;
             position: sticky;
             top: 20px;
+        }
+
+        .preview-header-icon {
+            color: #122a52 !important;
+        }
+
+        .preview-live-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .preview-navy-badge {
+            background: #1a3a6b !important;
+            color: #fff !important;
+        }
+
+        .preview-soft-navy-badge {
+            background: #e8eef6 !important;
+            color: #1a3a6b !important;
+            border: 1px solid #d0daea;
         }
 
         .preview-table {
@@ -161,7 +179,7 @@
             left: 0;
             width: 60px;
             height: 2px;
-            background: #dc2626;
+            background: #1a3a6b;
         }
 
         .form-text {
@@ -173,14 +191,14 @@
         .invalid-feedback {
             display: block;
             font-size: 0.875rem;
-            color: #dc2626;
+            color: #1a3a6b;
             margin-top: 0.25rem;
         }
 
         /* Radio button styling */
         .form-check-input:checked {
-            background-color: #dc2626;
-            border-color: #dc2626;
+            background-color: #1a3a6b;
+            border-color: #1a3a6b;
         }
 
         .form-check-inline {
@@ -189,13 +207,13 @@
         }
 
         .form-check-inline:hover {
-            background-color: #fef2f2 !important;
-            border-color: #dc2626 !important;
+            background-color: #e8eef6 !important;
+            border-color: #1a3a6b !important;
         }
 
         .form-check-input:focus {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.15);
         }
 
         /* Notice sub-section grouping */
@@ -211,11 +229,28 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.6px;
-            color: #dc2626;
+            color: #1a3a6b;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.4rem;
+        }
+
+        .edit-status-panel {
+            background: #e8eef6 !important;
+        }
+
+        .btn-update-navy {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+            border-color: #1a3a6b;
+            color: #fff;
+        }
+
+        .btn-update-navy:hover,
+        .btn-update-navy:focus {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+            border-color: #122a52;
+            color: #fff;
         }
 
         /* Inclusive sub-category animation */
@@ -246,7 +281,7 @@
             right: 30px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
             color: white;
             border: none;
             border-radius: 50%;
@@ -255,7 +290,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.4);
             opacity: 0;
             transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
                         transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -266,8 +301,8 @@
 
         .stp:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
-            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            box-shadow: 0 6px 20px rgba(26, 58, 107, 0.6);
+            background: linear-gradient(135deg, #122a52 0%, #0f2344 100%);
         }
 
         .stp:active {
@@ -288,19 +323,12 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
             <div>
-                <div class="govt-badge">
-                    <!-- <i class="bi bi-building-fill"></i> -->
-                    <span>{{ __('admin.govt_of_nepal_label') }}</span>
-                </div>
-                <h3 class="fw-bold mb-2">
-                    <!-- <i class="bi bi-pencil-square me-2"></i> -->
-                    {{ __('admin.editing_vacancy') }}
-                </h3>
-                <p class="mb-0 opacity-90">विज्ञापन सम्पादन गर्नुहोस्</p>
+                <h1 class="page-title">{{ __('admin.editing_vacancy') }}</h1>
+                <p class="page-subtitle">विज्ञापन सम्पादन गर्नुहोस्</p>
             </div>
-            <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left me-2"></i>{{ __('admin.back') }}
             </a>
         </div>
@@ -312,7 +340,7 @@
             <!-- <i class="bi bi-info-circle-fill text-primary fs-4"></i> -->
             <div>
                 <strong>{{ __('admin.editing_vacancy') }}</strong> {{ __('admin.advertisement_no') }} <span
-                    class="fw-bold text-primary">{{ $job->advertisement_no }}</span>
+                    class="fw-bold" style="color: #1a3a6b;">{{ $job->advertisement_no }}</span>
                 <br><small class="text-muted">{{ __('admin.edit_notice_body') }}</small>
             </div>
         </div>
@@ -327,7 +355,7 @@
             <!-- Main Form Column -->
             <div class="col-lg-8">
                 <div class="form-card">
-                    <h5 class="fw-bold mb-4 text-danger">
+                    <h5 class="fw-bold mb-4" style="color: #1a3a6b;">
                         <!-- <i class="bi bi-pencil-square me-2"></i> -->
                         {{ __('admin.vacancy_information') }}
                     </h5>
@@ -815,9 +843,9 @@
                             } else if (cbInternal && cbInternal.checked) {
                                 el.innerHTML = '<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>';
                             } else if (cbOpen && cbOpen.checked) {
-                                el.innerHTML = '<span class="badge bg-success">खुल्ला (Open)</span>';
+                                el.innerHTML = '<span class="badge preview-navy-badge">खुल्ला (Open)</span>';
                             } else if (cbInclusiveToggle && cbInclusiveToggle.checked) {
-                                el.innerHTML = '<span class="badge bg-info text-dark">समावेशी (Inclusive)</span>';
+                                el.innerHTML = '<span class="badge preview-soft-navy-badge">समावेशी (Inclusive)</span>';
                             } else {
                                 el.innerHTML = '-';
                             }
@@ -1307,7 +1335,7 @@
                         <div class="row g-3">
                             <!-- Nepali Date (BS) Picker -->
                             <div class="col-md-6">
-                                <label for="deadline_bs" class="form-label small fw-bold text-primary">
+                                <label for="deadline_bs" class="form-label small fw-bold" style="color: #1a3a6b;">
                                     <!-- <i class="bi bi-calendar3 me-1"></i> -->
                                     {{ __('admin.nepali_date_bs') }}
                                 </label>
@@ -1317,7 +1345,7 @@
                                     placeholder="YYYY-MM-DD"
                                     autocomplete="off">
                                 <input type="hidden" name="deadline_bs" id="deadline_bs_hidden" value="{{ old('deadline_bs', $job->deadline_bs) }}">
-                                <small class="form-text text-primary">
+                                <small class="form-text" style="color: #1a3a6b !important;">
                                     <i class="bi bi-info-circle me-1"></i>{{ __('admin.click_nepali_calendar') }}
                                 </small>
                             </div>
@@ -1474,9 +1502,9 @@
             <div class="col-lg-4">
                 <div class="preview-card">
                     <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                        <i class="bi bi-eye-fill text-danger"></i>
+                        <i class="bi bi-eye-fill preview-header-icon"></i>
                         {{ __('admin.live_preview') }}
-                        <span class="badge bg-danger ms-auto">रियल टाइम</span>
+                        <span class="badge preview-live-badge ms-auto">रियल टाइम</span>
                     </h6>
 
                     <table class="preview-table">
@@ -1509,9 +1537,9 @@
                                 <th>{{ __('admin.category') }}</th>
                                 <td id="preview-category" class="fw-semibold">
                                     @if($job->category == 'open')
-                                        <span class="badge bg-success">खुल्ला (Open)</span>
+                                        <span class="badge preview-navy-badge">खुल्ला (Open)</span>
                                     @elseif($job->category == 'inclusive')
-                                        <span class="badge bg-info">समावेशी (Inclusive)</span>
+                                        <span class="badge preview-soft-navy-badge">समावेशी (Inclusive)</span>
                                     @elseif($job->category == 'internal')
                                         <span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>
                                     @else
@@ -1630,7 +1658,7 @@
                                 {{ __('admin.cancel') }}
                             </a>
                             <div class="d-flex gap-3">
-                                <button type="submit" class="btn btn-success btn-lg btn-action px-5"
+                                <button type="submit" class="btn btn-update-navy btn-lg btn-action px-5"
                                     onclick="return confirmUpdate()">
                                     {{ __('admin.update') }} {{ __('admin.vacancy_list') }}
                                 </button>
@@ -2107,7 +2135,7 @@
                     categories.push('<span class="badge bg-danger">आन्तरिक बढुवा (Internal Appraisal)</span>');
                 } else {
                     if (hasOpenCheckbox && hasOpenCheckbox.checked) {
-                        categories.push('<span class="badge bg-success">खुल्ला (Open)</span>');
+                        categories.push('<span class="badge preview-navy-badge">खुल्ला (Open)</span>');
                     }
                     if (hasInternalCheckbox && hasInternalCheckbox.checked) {
                         categories.push('<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>');

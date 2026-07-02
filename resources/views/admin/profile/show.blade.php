@@ -10,6 +10,38 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+<style>
+    .btn-outline-navy {
+        border: 1px solid #1a3a6b;
+        color: #1a3a6b;
+        background: #fff;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-navy:hover,
+    .btn-outline-navy:focus {
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
+    }
+    
+    .btn-outline-navy-secondary {
+        border: 1px solid #6b7280;
+        color: #374151;
+        background: #fff;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-navy-secondary:hover,
+    .btn-outline-navy-secondary:focus {
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
+    }
+</style>
+@endsection
+
 @section('content')
     <div class="page-header">
         <h1 class="page-title">{{ __('admin.my_profile') }}</h1>
@@ -41,7 +73,7 @@
                                 class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
                         @else
                             <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center"
-                                style="width: 120px; height: 120px; background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%); color: white; font-size: 3rem; font-weight: 600;">
+                                style="width: 120px; height: 120px; background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%); color: white; font-size: 3rem; font-weight: 600;">
                                 {{ substr($admin->name, 0, 1) }}
                             </div>
                         @endif
@@ -49,10 +81,10 @@
                     <h4 class="mb-1">{{ $admin->name }}</h4>
                     <p class="text-muted mb-3">{{ __('admin.system_administrator') }}</p>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('admin.profile.edit') }}" class="btn btn-outline-primary">
+                        <a href="{{ route('admin.profile.edit') }}" class="btn btn-outline-navy">
                             <i class="bi bi-pencil me-2"></i>{{ __('admin.edit_profile') }}
                         </a>
-                        <a href="{{ route('admin.change-password') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('admin.change-password') }}" class="btn btn-outline-navy-secondary">
                             <i class="bi bi-lock me-2"></i>{{ __('admin.change_password') }}
                         </a>
                     </div>
@@ -102,7 +134,7 @@
                             <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <div class="flex-shrink-0">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                        style="width: 50px; height: 50px; background: rgba(201, 168, 76, 0.2);">
+                                        style="width: 50px; height: 50px; background: rgba(42, 82, 152, 0.2);">
                                         <i class="bi bi-briefcase text-warning" style="font-size: 1.5rem;"></i>
                                     </div>
                                 </div>

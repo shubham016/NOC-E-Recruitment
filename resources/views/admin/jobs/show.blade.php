@@ -17,24 +17,22 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #d0daea;
         }
 
-        .govt-badge {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+        .page-title {
+            color: #1e293b;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 0;
         }
 
         .detail-card {
@@ -60,7 +58,7 @@
             left: 0;
             width: 60px;
             height: 2px;
-            background: #dc2626;
+            background: #1a3a6b;
         }
 
         .detail-row {
@@ -130,6 +128,37 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .section-title-navy {
+            color: #1a3a6b !important;
+        }
+
+        .navy-text {
+            color: #1a3a6b !important;
+        }
+
+        .navy-badge {
+            background: #1a3a6b !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-navy {
+            border-color: #1a3a6b;
+            color: #1a3a6b;
+            background: #fff;
+        }
+
+        .btn-outline-navy:hover,
+        .btn-outline-navy:focus {
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+            border-color: #122a52;
+            color: #fff;
+        }
+
+        .applicant-avatar-fallback {
+            background: rgba(26, 58, 107, 0.12);
+            color: #1a3a6b;
+        }
+
         /* Modern Table */
         .modern-table {
             width: 100%;
@@ -169,7 +198,7 @@
 
         .qualification-box {
             background: #f9fafb;
-            border-left: 4px solid #dc2626;
+            border-left: 4px solid #1a3a6b;
             padding: 0.5rem 1rem 1rem 1rem;
             border-radius: 6px;
             white-space: normal;
@@ -206,7 +235,7 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #dc2626;
+            background: #1a3a6b;
         }
 
         /* Scroll to Top Button */
@@ -216,7 +245,7 @@
             right: 30px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
             color: white;
             border: none;
             border-radius: 50%;
@@ -225,7 +254,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.4);
             opacity: 0;
             transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
                         transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -236,8 +265,8 @@
 
         .stp:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
-            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            box-shadow: 0 6px 20px rgba(26, 58, 107, 0.6);
+            background: linear-gradient(135deg, #122a52 0%, #0f2344 100%);
         }
 
         .stp:active {
@@ -289,14 +318,14 @@
             .print-header {
                 text-align: center;
                 margin-bottom: 16px;
-                border-bottom: 2px solid #dc2626;
+                border-bottom: 2px solid #1a3a6b;
                 padding-bottom: 12px;
             }
 
             .print-header h4 {
                 font-size: 18px;
                 font-weight: 700;
-                color: #dc2626;
+                color: #1a3a6b;
                 margin: 0 0 4px 0;
             }
 
@@ -332,17 +361,14 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
             <div>
-                <div class="govt-badge">
-                    <span>{{ __('admin.govt_of_nepal_label') }}</span>
-                </div>
-                <h3 class="fw-bold mb-2">
+                <h1 class="page-title">
                     {{ __('admin.vacancy_information') }}
-                </h3>
-                <p class="mb-0 opacity-90">विज्ञापन विवरण</p>
+                </h1>
+                <p class="page-subtitle">विज्ञापन विवरण</p>
             </div>
-            <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-navy">
                 {{ __('admin.back') }}
             </a>
         </div>
@@ -377,7 +403,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <div class="d-flex justify-content-between align-items-start">
-                        <h5 class="fw-bold text-danger mb-0">
+                        <h5 class="fw-bold section-title-navy mb-0">
                             {{ __('admin.vacancy_information') }}
                         </h5>
                         <span
@@ -455,14 +481,14 @@
                                     @endif
                                 </span>
                             @elseif($job->category == 'internal')
-                                <span class="badge bg-warning text-dark" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                <span class="badge navy-badge" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
                                     {{ __('admin.internal') }}
                                 </span>
                                 @php
                                     $internalInclusiveTypes = json_decode($job->internal_inclusive_types ?? '[]', true) ?: [];
                                 @endphp
                                 @foreach($internalInclusiveTypes as $type)
-                                    <span class="badge text-white" style="background-color: #d97706; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                    <span class="badge text-white" style="background-color: #1a3a6b; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
                                         {{ __('admin.internal') }} {{ __('admin.inclusive') }} - {{ $type }}
                                     </span>
                                 @endforeach
@@ -481,7 +507,7 @@
                     <div class="detail-value">
                         <div>
                             {{-- Nepali Date (BS) - Will be populated by JavaScript --}}
-                            <strong class="d-block nepali-date-bs text-danger"
+                            <strong class="d-block nepali-date-bs navy-text"
                                 data-ad-date="{{ $job->deadline->format('Y-m-d') }}">
                                 {{ __('admin.converting') }}
                             </strong>
@@ -496,7 +522,7 @@
                     <div class="detail-label">{{ __('admin.double_dastur_date') }}</div>
                     <div class="detail-value">
                         <div>
-                            <strong class="d-block nepali-date-bs text-danger"
+                            <strong class="d-block nepali-date-bs navy-text"
                                 data-ad-date="{{ $job->double_dastur_date->format('Y-m-d') }}">
                                 {{ __('admin.converting') }}
                             </strong>
@@ -536,22 +562,21 @@
                         </div>
                     @endforeach
                 @endif
-                {{-- Total Application Fee hidden --}}
-                {{-- <div class="detail-row">
-                    <div class="detail-label">Total Application Fee</div>
+                <div class="detail-row">
+                    <div class="detail-label">{{ __('admin.total_application_fee') }}</div>
                     <div class="detail-value">
-                        @if($job->application_fee)
+                        @if($job->application_fee !== null)
                             <strong>{{ __('admin.npr') }} {{ number_format($job->application_fee, ($job->application_fee == floor($job->application_fee) ? 0 : 2)) }}</strong>
                         @else
                             <span class="text-muted">{{ __('admin.not_set') }}</span>
                         @endif
                     </div>
-                </div> --}}
+                </div>
 
                 <div class="detail-row">
                     <div class="detail-label">{{ __('admin.double_dastur_fee') }}</div>
                     <div class="detail-value">
-                        @if($job->double_dastur_fee)
+                        @if($job->double_dastur_fee !== null)
                             {{ __('admin.npr') }} {{ number_format($job->double_dastur_fee, ($job->double_dastur_fee == floor($job->double_dastur_fee) ? 0 : 2)) }}
                         @else
                             <span class="text-muted">{{ __('admin.not_set') }}</span>
@@ -612,7 +637,7 @@
             <!-- Qualification Card -->
             <div class="detail-card">
                 <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">
+                    <h5 class="fw-bold section-title-navy mb-0">
                         {{ __('admin.min_qualification') }}
                     </h5>
                     <small class="text-muted">आवश्यक शिक्षक योग्यता</small>
@@ -651,7 +676,7 @@
             @if(!in_array($job->category, ['internal', 'internal_appraisal']) && ($job->min_age_male || $job->max_age_male || $job->min_age_female || $job->max_age_female || $job->min_age_disabled || $job->max_age_disabled))
             <div class="detail-card no-print">
                 <div class="detail-header">
-                    <h5 class="fw-bold text-danger mb-0">{{ __('admin.age_limit') }}</h5>
+                    <h5 class="fw-bold section-title-navy mb-0">{{ __('admin.age_limit') }}</h5>
                     <small class="text-muted">उमेर हद</small>
                 </div>
                 <div class="table-responsive">
@@ -692,7 +717,7 @@
             <!-- Applications List -->
                 <div class="detail-card">
                     <div class="detail-header">
-                        <h5 class="fw-bold text-danger mb-0">
+                        <h5 class="fw-bold section-title-navy mb-0">
                             {{ __('admin.applications') }}
                         </h5>
                     </div>
@@ -721,12 +746,12 @@
                                                          class="rounded-circle me-2"
                                                          style="width: 55px; height: 55px; object-fit: cover; border: 2px solid #e5e7eb;"
                                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                    <div class="bg-danger bg-opacity-10 rounded-circle align-items-center justify-content-center me-2 fw-bold text-danger"
+                                                    <div class="applicant-avatar-fallback rounded-circle align-items-center justify-content-center me-2 fw-bold"
                                                          style="width: 55px; height: 55px; min-width: 55px; font-size: 1.2rem; display: none;">
                                                         {{ strtoupper(substr($application->name_english ?? 'A', 0, 1)) }}
                                                     </div>
                                                 @else
-                                                    <div class="bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold text-danger"
+                                                    <div class="applicant-avatar-fallback rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold"
                                                          style="width: 55px; height: 55px; min-width: 55px; font-size: 1.2rem;">
                                                         {{ strtoupper(substr($application->name_english ?? 'A', 0, 1)) }}
                                                     </div>
@@ -738,7 +763,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <strong class="d-block nepali-date-bs text-danger"
+                                            <strong class="d-block nepali-date-bs navy-text"
                                                     data-ad-date="{{ $application->created_at->format('Y-m-d') }}">
                                                 {{ __('admin.converting') }}
                                             </strong>
@@ -750,7 +775,7 @@
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <a href="{{ route('admin.applications.show', $application->id) }}"
-                                                   class="btn btn-outline-primary"
+                                                   class="btn btn-outline-navy"
                                                    title="View">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
@@ -782,7 +807,7 @@
 
                     @if($job->applications_count > 5)
                         <div class="text-center mt-3">
-                            <a href="#" class="btn btn-outline-danger">
+                            <a href="#" class="btn btn-outline-navy">
                                 View All {{ $job->applications_count }} Applications
                                 </a>
                         </div>
@@ -805,16 +830,16 @@
                         {{ __('admin.print') }} {{ __('admin.vacancy_list') }}
                     </button>
 
-                    <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-danger action-btn">
+                    <a href="{{ route('admin.jobs.edit', $job->id) }}" class="btn btn-outline-primary action-btn">
                         {{ __('admin.edit') }} {{ __('admin.vacancy_list') }}
                     </a>
 
-                    <form action="{{ route('admin.jobs.duplicate', $job->id) }}" method="POST">
+                    <!-- <form action="{{ route('admin.jobs.duplicate', $job->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-outline-secondary action-btn w-100">
                             {{ __('admin.create') }} {{ __('admin.vacancy_list') }}
                         </button>
-                    </form>
+                    </form> -->
 
                     {{-- Close Vacancy button hidden --}}
                     @if($job->status == 'closed')

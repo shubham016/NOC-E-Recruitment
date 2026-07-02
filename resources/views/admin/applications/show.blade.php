@@ -25,7 +25,7 @@
     }
 
     .detail-card-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 8px 8px 0 0;
@@ -66,7 +66,7 @@
     }
 
     .candidate-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         color: white;
         padding: 2rem;
         border-radius: 8px;
@@ -80,7 +80,7 @@
         font-size: 0.875rem;
     }
 
-    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-pending { background: #e8eef6; color: #1a3a6b; }
     .status-approved { background: #d1fae5; color: #065f46; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
     .status-under_review { background: #dbeafe; color: #1e40af; }
@@ -110,7 +110,7 @@
                          alt="Photo"
                          style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; object-fit: cover;">
                 @else
-                    <div style="width: 100px; height: 100px; border-radius: 50%; background: white; color: #a07828; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold;">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: white; color: #122a52; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold;">
                         {{ strtoupper(substr($application->name_english ?? 'U', 0, 1)) }}
                     </div>
                 @endif

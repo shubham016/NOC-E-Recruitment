@@ -195,7 +195,7 @@
         <!-- Left Column -->
         <div>
             <!-- Today's Progress -->
-            <div class="progress-card mb-4">
+            <!-- <div class="progress-card mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0 fw-bold">
                         <i class="bi text-primary me-2"></i>{{ __('reviewer.todays_progress') }}
@@ -224,7 +224,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
     </div>
 </div>
 @endsection

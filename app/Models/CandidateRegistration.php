@@ -6,6 +6,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * @method bool isProfileComplete()
+ */
 class CandidateRegistration extends Authenticatable
 {
     use Notifiable;
@@ -97,6 +100,44 @@ class CandidateRegistration extends Authenticatable
                 ?? $attributes['email']
                 ?? null,
         );
+    }
+
+    // ── Profile Completeness Check ────────────────────────────────────────
+
+    public function isProfileComplete(): bool
+    {
+        $required = [
+            // Personal
+            'name_english', 'name_nepali', 'birth_date_bs', 'gender',
+            'marital_status', 'nationality', 'mother_tongue',
+            // Citizenship
+            'citizenship_number', 'citizenship_issue_date_bs', 'citizenship_issue_district',
+            // Family
+            'father_name_english', 'mother_name_english', 'grandfather_name_english',
+            // Identity
+            'noc_employee', 'physical_disability',
+            // General / Demographic
+            'religion', 'community', 'ethnic_group',
+            // Employment
+            'employment_status',
+            // Permanent Address
+            'permanent_province', 'permanent_district', 'permanent_municipality', 'permanent_ward',
+            // Education
+            'education_level', 'institution_name', 'graduation_year', 'university',
+            // Experience
+            'has_work_experience',
+            // Documents
+            'passport_size_photo', 'citizenship_id_document', 'signature',
+            'transcript', 'character_certificate',
+        ];
+
+        foreach ($required as $field) {
+            if (empty($this->$field)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // ── Relationships ─────────────────────────────────────────────────────

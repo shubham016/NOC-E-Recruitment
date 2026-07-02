@@ -17,24 +17,22 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #d0daea;
         }
 
-        .govt-badge {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+        .page-title {
+            color: #1e293b;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 0;
         }
 
         .form-card {
@@ -55,7 +53,7 @@
         }
 
         .form-label .required {
-            color: #dc2626;
+            color: #1a3a6b;
         }
 
         .form-label .nepali-text {
@@ -68,8 +66,8 @@
         .form-control:focus,
         .form-select:focus,
         .form-control:focus-visible {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.15);
             outline: none;
         }
 
@@ -89,9 +87,22 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
+        .btn-draft-navy {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+            border-color: #1a3a6b;
+            color: #fff;
+        }
+
+        .btn-draft-navy:hover,
+        .btn-draft-navy:focus {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+            border-color: #122a52;
+            color: #fff;
+        }
+
         .info-alert {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #e8eef6 0%, #d0daea 100%);
+            border-left: 4px solid #1a3a6b;
             padding: 1rem 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
@@ -104,6 +115,15 @@
             padding: 1.5rem;
             position: sticky;
             top: 20px;
+        }
+
+        .preview-header-icon {
+            color: #122a52 !important;
+        }
+
+        .preview-live-badge {
+            background: #122a52 !important;
+            color: #fff !important;
         }
 
         .preview-table {
@@ -148,7 +168,7 @@
             left: 0;
             width: 60px;
             height: 2px;
-            background: #dc2626;
+            background: #1a3a6b;
         }
 
         .form-text {
@@ -160,14 +180,14 @@
         .invalid-feedback {
             display: block;
             font-size: 0.875rem;
-            color: #dc2626;
+            color: #1a3a6b;
             margin-top: 0.25rem;
         }
 
         /* Radio button styling */
         .form-check-input:checked {
-            background-color: #dc2626;
-            border-color: #dc2626;
+            background-color: #1a3a6b;
+            border-color: #1a3a6b;
         }
 
         .form-check-inline {
@@ -176,13 +196,13 @@
         }
 
         .form-check-inline:hover {
-            background-color: #fef2f2 !important;
-            border-color: #dc2626 !important;
+            background-color: #e8eef6 !important;
+            border-color: #1a3a6b !important;
         }
 
         .form-check-input:focus {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.15);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.15);
         }
 
         /* Notice sub-section grouping */
@@ -198,7 +218,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.6px;
-            color: #dc2626;
+            color: #1a3a6b;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -226,7 +246,7 @@
             right: 30px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
             color: white;
             border: none;
             border-radius: 50%;
@@ -235,7 +255,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.4);
             opacity: 0;
             transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
                         transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -246,8 +266,8 @@
 
         .stp:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
-            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            box-shadow: 0 6px 20px rgba(26, 58, 107, 0.6);
+            background: linear-gradient(135deg, #122a52 0%, #0f2344 100%);
         }
 
         .stp:active {
@@ -268,16 +288,12 @@
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
             <div>
-                <div class="govt-badge">
-                    <!-- <i class="bi bi-building-fill"></i> -->
-                    <span>{{ __('admin.govt_of_nepal_label') }}</span>
-                </div>
-                <h3 class="fw-bold mb-2">{{ __('admin.post_new_vacancy') }}</h3>
-                <p class="mb-0 opacity-90">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
+                <h1 class="page-title">{{ __('admin.post_new_vacancy') }}</h1>
+                <p class="page-subtitle">रिक्त पदको लागि विज्ञापन प्रकाशित गर्नुहोस्</p>
             </div>
-            <a href="{{ route('admin.jobs.index') }}" class="btn btn-light btn-lg">
+            <a href="{{ route('admin.jobs.index') }}" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left me-2"></i>{{ __('admin.back') }}
             </a>
         </div>
@@ -286,7 +302,7 @@
     <!-- Information Alert -->
     <div class="info-alert">
         <div class="d-flex align-items-start gap-3">
-            <i class="bi bi-info-circle-fill text-warning fs-4"></i>
+            <i class="bi bi-info-circle-fill fs-4" style="color: #1a3a6b;"></i>
             <div>
                 <strong>{{ __('admin.important_notice') }}</strong> {{ __('admin.notice_fields_mandatory') }}
                 <br><small class="text-muted">{{ __('admin.notice_fields_mandatory_ne') }}</small>
@@ -318,7 +334,7 @@
             <!-- Main Form Column -->
             <div class="col-lg-8">
                 <div class="form-card">
-                    <h5 class="fw-bold mb-4 text-danger">
+                    <h5 class="fw-bold mb-4" style="color: #1a3a6b;">
                         <!-- <i class="bi bi-pencil-square me-2"></i> -->
                         {{ __('admin.vacancy_information') }}
                     </h5>
@@ -877,7 +893,7 @@
                         <div class="row g-3">
                             <!-- Nepali Date (BS) Picker -->
                             <div class="col-md-6">
-                                <label for="deadline_bs" class="form-label small fw-bold text-primary">
+                                <label for="deadline_bs" class="form-label small fw-bold" style="color: #1a3a6b;">
                                     <!-- <i class="bi bi-calendar3 me-1"></i> -->
                                     {{ __('admin.nepali_date_bs') }}
                                 </label>
@@ -887,7 +903,7 @@
                                     placeholder="YYYY-MM-DD"
                                     autocomplete="off">
                                 <input type="hidden" name="deadline_bs" id="deadline_bs_hidden">
-                                <small class="form-text text-primary">
+                                <small class="form-text" style="color: #1a3a6b !important;">
                                     <i class="bi bi-info-circle me-1"></i>
                                     {{ __('admin.click_nepali_calendar') }}
                                 </small>
@@ -1043,9 +1059,9 @@
             <div class="col-lg-4">
                 <div class="preview-card">
                     <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                        <i class="bi bi-eye-fill text-danger"></i>
+                        <i class="bi bi-eye-fill preview-header-icon"></i>
                         {{ __('admin.live_preview') }}
-                        <span class="badge bg-danger ms-auto">रियल टाइम</span>
+                        <span class="badge preview-live-badge ms-auto">रियल टाइम</span>
                     </h6>
 
                     <table class="preview-table">
@@ -1100,19 +1116,19 @@
                             </tr>
                             <tr id="preview-double-dastur-row" style="display: none;">
                                 <th>{{ __('admin.double_dastur_bs_header') }}</th>
-                                <td id="preview-double-dastur-bs" class="fw-semibold text-success">-</td>
+                                <td id="preview-double-dastur-bs" class="fw-semibold" style="color: #1a3a6b;">-</td>
                             </tr>
                             <tr id="preview-double-dastur-ad-row" style="display: none;">
                                 <th>{{ __('admin.double_dastur_ad_header') }}</th>
-                                <td id="preview-double-dastur-ad" class="fw-semibold text-success">-</td>
+                                <td id="preview-double-dastur-ad" class="fw-semibold" style="color: #1a3a6b;">-</td>
                             </tr>
                             <tr id="preview-application-fee-row">
                                 <th>{{ __('admin.total_application_fee') }}</th>
-                                <td id="preview-application-fee" class="fw-semibold text-primary">NPR</td>
+                                <td id="preview-application-fee" class="fw-semibold" style="color: #1a3a6b;">-</td>
                             </tr>
                             <tr id="preview-double-dastur-fee-row" style="display: none;">
                                 <th>{{ __('admin.double_dastur_fee') }}</th>
-                                <td id="preview-double-dastur-fee" class="fw-semibold text-danger">NPR</td>
+                                <td id="preview-double-dastur-fee" class="fw-semibold" style="color: #1a3a6b;">NPR</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1152,7 +1168,7 @@
                                 {{ __('admin.cancel') }}
                             </a>
                             <div class="d-flex gap-2 flex-wrap">
-                                <button type="submit" class="btn btn-warning btn-lg btn-action px-5"
+                                <button type="submit" class="btn btn-lg btn-action px-5 btn-draft-navy"
                                     onclick="return confirmSaveDraft()">
                                     {{ __('admin.save_as_draft') }}
                                 </button>
@@ -1569,7 +1585,7 @@
                             var statusBadge = ad.status === 'active'
                                 ? '<span style="color:#059669;font-weight:600;">' + statusLabelActive + '</span>'
                                 : ad.status === 'closed'
-                                    ? '<span style="color:#dc2626;">' + statusLabelClosed + '</span>'
+                                    ? '<span style="color:#1a3a6b;">' + statusLabelClosed + '</span>'
                                     : '<span style="color:#6b7280;">' + statusLabelDraft + '</span>';
                             return '<div style="padding:2px 0;">'
                                 + '<strong>' + (ad.advertisement_no || '-') + '</strong>'
@@ -1839,7 +1855,7 @@ function initializeCategoryCheckboxes() {
                 categories.push('<span class="badge bg-success">खुल्ला (Open)</span>');
             }
             if (hasInternalCheckbox && hasInternalCheckbox.checked) {
-                categories.push('<span class="badge bg-warning text-dark">आन्तरिक (Internal)</span>');
+                categories.push('<span class="badge bg-primary text-white">आन्तरिक (Internal)</span>');
             }
             if (!hasOpenCheckbox?.checked && !hasInternalCheckbox?.checked &&
                 hasInclusiveToggleCheckbox && hasInclusiveToggleCheckbox.checked) {
@@ -2351,6 +2367,23 @@ function confirmSaveDraft() {
 // ── Category Fee Management ──────────────────────────────────────────────────
 ;(function () {
     var existingFees = @json(old('category_fees', []));
+    var feeCurrency = @json(__('admin.npr'));
+
+    function updateApplicationFeePreview(amount) {
+        var preview = document.getElementById('preview-application-fee');
+        if (!preview) return;
+
+        if (amount === null || amount === '' || !Number.isFinite(Number(amount))) {
+            preview.textContent = '-';
+            return;
+        }
+
+        var value = Number(amount);
+        preview.textContent = feeCurrency + ' ' + value.toLocaleString('en-NP', {
+            minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+            maximumFractionDigits: 2
+        });
+    }
 
     var feeLabels = {
         'open':                              { en: 'Open Application Fee',                    np: 'खुल्ला आवेदन शुल्क' },
@@ -2427,6 +2460,7 @@ function confirmSaveDraft() {
             totalInput.readOnly = false;
             totalInput.placeholder = 'Enter Application Fee';
             if (note) note.textContent = 'Enter the application fee directly for Internal Appraisal.';
+            updateApplicationFeePreview(totalInput.value);
             return;
         }
 
@@ -2438,6 +2472,7 @@ function confirmSaveDraft() {
             totalInput.value = '';
             totalInput.placeholder = "{{ __('admin.ph_total_app_fee') }}";
             if (note) note.textContent = "{{ __('admin.ph_select_category') }}";
+            updateApplicationFeePreview(null);
             return;
         }
 
@@ -2493,20 +2528,13 @@ function confirmSaveDraft() {
 
         totalInput.value = sum > 0 ? sum : '';
 
-        var previewEl = document.getElementById('preview-application-fee');
-        if (previewEl) {
-            previewEl.textContent = sum > 0 ? _tNPR + ' ' + sum.toLocaleString() : '-';
-        }
+        updateApplicationFeePreview(sum > 0 ? sum : null);
     }
 
     // Listen for Total Application Fee direct input (Internal Appraisal)
     document.addEventListener('input', function (e) {
         if (e.target && e.target.id === 'application_fee' && !e.target.readOnly) {
-            var previewEl = document.getElementById('preview-application-fee');
-            if (previewEl) {
-                var val = parseFloat(e.target.value) || 0;
-                previewEl.textContent = val > 0 ? _tNPR + ' ' + val.toLocaleString() : '-';
-            }
+            updateApplicationFeePreview(e.target.value);
         }
     });
 

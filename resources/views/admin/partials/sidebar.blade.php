@@ -44,6 +44,11 @@
     <span>SMS Management</span>
 </a>
 
+<a href="{{ route('admin.audit.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.audit.*') ? 'active' : '' }}">
+    <i class="bi bi-shield-lock"></i>
+    <span>Audit Logs</span>
+</a>
+
 <a href="{{ route('admin.reports.index') }}" class="sidebar-menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
     <i class="bi bi-bar-chart"></i>
     <span>{{ __('admin.reports') }}</span>

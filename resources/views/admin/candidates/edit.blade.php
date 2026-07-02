@@ -37,13 +37,13 @@
 
         .nav-back:hover {
             background: #f8fafc;
-            border-color: #cbd5e0;
-            color: #2c3e50;
+            border-color: #1a3a6b;
+            color: #1a3a6b;
         }
 
         .page-header {
-            background: white;
-            border: 1px solid #e1e8ed;
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+            border: 1px solid #122a52;
             border-radius: 8px;
             padding: 24px 32px;
             margin-bottom: 24px;
@@ -52,12 +52,12 @@
         .page-title {
             font-size: 28px;
             font-weight: 700;
-            color: #1a202c;
+            color: #fff;
             margin: 0 0 8px 0;
         }
 
         .page-subtitle {
-            color: #718096;
+            color: rgba(255,255,255,0.88);
             margin: 0;
         }
 
@@ -86,7 +86,7 @@
         }
 
         .form-card-title i {
-            color: #667eea;
+            color: #1a3a6b;
             font-size: 22px;
         }
 
@@ -129,8 +129,8 @@
 
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.12);
         }
 
         .form-control:disabled {
@@ -184,8 +184,14 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
             color: white;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+            color: #fff;
         }
 
         .btn-secondary {

@@ -1,196 +1,153 @@
 # NOC E-Recruitment System
 
-A comprehensive web-based recruitment management system built with **Laravel 12**, replicating and enhancing the [Nepal Oil Corporation's E-Recruitment Portal](https://erecruitment.nepaloil.org.np). The system streamlines the entire hiring process — from vacancy posting to final approval — with a 5-role authentication hierarchy, Nepal-specific payment integration, Nepali (BS) date support, and bilingual capabilities.
+Laravel-based recruitment management system for vacancy publishing, candidate registration, online applications, reviewer/approver workflows, payments, SMS notifications, admit cards, reports, and audit logs.
 
-![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+This file is the main project guide. Keep it when cleaning the project for transfer to another PC.
 
----
+## Verified Project Stack
 
-## Screenshots
+- Laravel: 12.55.1
+- PHP: 8.2 or newer
+- Database: MySQL/MariaDB
+- Frontend build: Vite
+- Node/NPM: Node 22 LTS or newer recommended
+- PDF: DomPDF/mPDF with Devanagari font files in `storage/fonts`
+- Payments: eSewa, Khalti, ConnectIPS
+- SMS: Sparrow SMS
+- Mail: SMTP
 
-### Candidate Portal
+The project was checked with:
 
-| Login Page | Registration |
-|:---:|:---:|
-| ![Login](screenshots/candidate-login.png) | ![Register](screenshots/candidate-register.png) |
-
-| Browse Vacancies | Application Form |
-|:---:|:---:|
-| ![Vacancies](screenshots/browse-vacancies.png) | ![Application](screenshots/application-form.png) |
-
-| Candidate Dashboard | Application Status |
-|:---:|:---:|
-| ![Dashboard](screenshots/candidate-dashboard.png) | ![Status](screenshots/application-status.png) |
-
-### Admin Panel
-
-| Super Admin Dashboard | Vacancy Management |
-|:---:|:---:|
-| ![Admin Dashboard](screenshots/admin-dashboard.png) | ![Manage Vacancies](screenshots/vacancy-management.png) |
-
-| Application Review | Manage Reviewers |
-|:---:|:---:|
-| ![Review](screenshots/application-review.png) | ![Reviewers](screenshots/manage-reviewers.png) |
-
-| Manage Approvers | Manage HR Administrators |
-|:---:|:---:|
-| ![Approvers](screenshots/manage-approvers.png) | ![HR Admins](screenshots/manage-hr-admins.png) |
-
-### Reviewer & Approver Panels
-
-| Reviewer Dashboard | Approver Dashboard |
-|:---:|:---:|
-| ![Reviewer](screenshots/reviewer-dashboard.png) | ![Approver](screenshots/approver-dashboard.png) |
-
-### Other
-
-| Admit Card (PDF) | Payment Integration |
-|:---:|:---:|
-| ![Admit Card](screenshots/admit-card.png) | ![Payment](screenshots/payment.png) |
-
-> **To add screenshots:** Create a `screenshots/` folder in your repo root, take screenshots from your running local app, and save them with the filenames shown above.
-
----
-
-## Features
-
-### 5-Role Authentication System
-
-The system implements a custom multi-guard authentication architecture (`config/auth.php`) with five distinct user roles, each with a dedicated guard, model, middleware, and dashboard:
-
-| Role | Guard | Responsibilities |
-|------|-------|-----------------|
-| **Super Admin** | `admin` | Full system control — manages all users (HR Admins, Reviewers, Approvers, Candidates), creates/publishes vacancies, assigns reviewers & approvers, views all applications, makes final decisions |
-| **HR Administrator** | `hr_administrator` | Manages vacancies and applications within their department, screens candidates, coordinates recruitment workflow |
-| **Approver** | `approver` | Reviews applications assigned by Admin, provides final approve/reject decisions with notes, receives notifications for assigned applications |
-| **Reviewer** | `reviewer` | Evaluates assigned applications, provides review scores and recommendations, adds reviewer notes |
-| **Candidate** | `candidate` | Registers with OTP email verification, browses vacancies, submits applications, uploads documents, makes payments, tracks application status, downloads admit cards, views results |
-
-### Vacancy Management
-
-- Create, edit, publish, and close vacancies with detailed position information
-- Fields include: title, level, department/service group, category, required qualifications, age limits, education requirements
-- Application deadlines with normal and double-fee (दोब्बर दस्तुर) periods
-- Internal vacancy type and category classification
-- Advertisement number tracking
-- Nepali (BS) date support for deadlines via custom `adToBS()` helper
-
-### Application System
-
-- Multi-step application form with comprehensive fields (personal info, education, work experience, documents)
-- Document uploads: citizenship, certificates, photo, signature
-- Application status workflow: `draft` → `submitted` → `reviewed` → `approved` / `rejected`
-- Reviewer assignment with notes and review timestamp
-- Approver assignment with notes and approval timestamp
-- PDF admit card generation with Devanagari (Nepali) font rendering
-- Exam result publishing and candidate result viewing
-
-### Payment Integration
-
-Nepal-specific payment gateways integrated:
-
-- **eSewa** — Most widely used digital wallet in Nepal
-- **Khalti** — Popular mobile payment platform
-- **ConnectIPS** — Bank-linked payment system
-
-Each with dedicated Blade views (`resources/views/payment/`) and controller logic for transaction reference tracking.
-
-### Notification System
-
-- In-app notification system for all user roles
-- Notification types: application status updates, reviewer/approver assignments, vacancy alerts
-- Mark as read, mark all as read, and delete functionality
-- Dedicated `NotificationController` per role
-
-### Additional Features
-
-- AD to BS (Bikram Sambat) Nepali date conversion helper
-- PDF generation using DomPDF & mPDF with DejaVu Sans font for Devanagari script
-- Email notifications via SMTP (Mailtrap for development)
-- OTP-based email verification for candidates
-- Custom 404 error page
-- Responsive design across all panels
-- Eloquent ORM with proper relationships and 40+ migrations
-- Database seeders for Admin, Vacancies, Reviewers, and Results
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Laravel 12 |
-| Language | PHP 8.2+ |
-| Database | MySQL (InnoDB) |
-| Frontend | Blade Templates, Bootstrap 5, JavaScript, Vite |
-| PDF Generation | DomPDF, mPDF, Laravel Snappy |
-| Mail | SMTP (Mailtrap for development) |
-| Payments | eSewa, Khalti, ConnectIPS APIs |
-| Date Conversion | Custom AD ↔ BS helper (`app/Helpers/helpers.php`) |
-| Database Toolkit | Doctrine DBAL |
-| Dev Environment | XAMPP, VS Code |
-
----
-
-## Installation
-
-### Prerequisites
-
-- PHP 8.2 or higher
-- Composer
-- MySQL 5.7+ or MariaDB
-- Node.js & npm (for Vite frontend assets)
-- XAMPP / WAMP / Laravel Valet (local server)
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/shubham016/NOC-E-Recruitment.git
-cd NOC-E-Recruitment
-
-# Install PHP dependencies
-composer install
-
-# Install frontend dependencies
-npm install && npm run build
-
-# Copy environment file
-cp .env.example .env
-
-# Generate application key
-php artisan key:generate
-
-# Configure your database in .env
-# DB_DATABASE=recruitment_system
-# DB_USERNAME=root
-# DB_PASSWORD=
-
-# Run migrations
-php artisan migrate
-
-# Seed default data (Admin, Vacancies, Reviewers, Results)
-php artisan db:seed
-
-# Start the development server
-php artisan serve
+```powershell
+php artisan about
+php artisan route:list
+php artisan migrate:status
+php artisan test
 ```
 
-Or use the built-in composer script:
+At the time of this README update, the test suite passed: 6 tests, 19 assertions.
 
-```bash
-composer setup
+## Main Folders
+
+```text
+app/                  Controllers, models, middleware, services, helpers
+bootstrap/            Laravel bootstrap files
+config/               Laravel and service configuration
+database/             Migrations, seeders, factories
+lang/                 English and Nepali translation files
+public/               Web root, CSS/JS/images, index.php
+resources/            Blade views, source CSS/JS
+routes/               Route definitions
+storage/app/public/   Uploaded candidate/application files
+storage/fonts/        PDF fonts and font cache
+tests/                Automated tests
 ```
 
-### Environment Configuration
+## Important Runtime Files
 
-Key `.env` variables to configure:
+These files are required to install or recover the project:
+
+```text
+artisan
+composer.json
+composer.lock
+package.json
+package-lock.json
+phpunit.xml
+vite.config.js
+.env.example
+```
+
+For an existing live/local system, also keep or back up:
+
+```text
+.env
+storage/app/public/
+storage/app/connectips/
+storage/fonts/
+database dump file, for example recruitment_system.sql
+```
+
+## Files And Folders Not To Copy
+
+These are generated, local, temporary, or unsafe to transfer as source:
+
+```text
+vendor/
+node_modules/
+public/storage
+public/build
+public/hot
+storage/logs/*.log
+.phpunit.result.cache
+.rnd
+.claude/
+.vscode/
+public/phpinfo.php
+temp_*.txt
+posted_by)
+posted_by_type
+C*events_full.json
+C*issue_events.json
+```
+
+Notes:
+
+- `vendor/` is recreated by `composer install`.
+- `node_modules/` is recreated by `npm.cmd install`.
+- `public/storage` is a symlink and should be recreated with `php artisan storage:link`.
+- `public/phpinfo.php` should be deleted because it exposes PHP/server configuration.
+- `.claude/` is local assistant metadata and is not needed by Laravel.
+
+## Required Software On A New Windows PC
+
+Install these first:
+
+1. XAMPP, WAMP, Laragon, or separate PHP + MySQL/MariaDB.
+2. PHP 8.2 or newer.
+3. Composer.
+4. Node.js 22 LTS or newer.
+5. Git, optional but recommended.
+
+Required PHP extensions:
+
+```text
+bcmath
+curl
+dom
+fileinfo
+gd
+json
+mbstring
+mysqli
+openssl
+pdo_mysql
+pdo_sqlite
+tokenizer
+xml
+xmlreader
+xmlwriter
+zip
+```
+
+On Windows PowerShell, use `npm.cmd` if plain `npm` is blocked by execution policy.
+
+## Environment Configuration
+
+Copy `.env.example` to `.env`, then adjust the values.
+
+Minimum local settings:
 
 ```env
+APP_NAME="NOC E-Recruitment"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_TIMEZONE=Asia/Kathmandu
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -198,245 +155,232 @@ DB_DATABASE=recruitment_system
 DB_USERNAME=root
 DB_PASSWORD=
 
+SESSION_DRIVER=file
+SESSION_LIFETIME=480
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
 MAIL_MAILER=smtp
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=your_mailtrap_username
-MAIL_PASSWORD=your_mailtrap_password
-MAIL_FROM_ADDRESS=noreply@erecruitment.com
-MAIL_FROM_NAME="Recruitment Portal"
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@example.com
+MAIL_FROM_NAME="${APP_NAME}"
 ```
 
----
+Service keys used by the app:
 
-## Project Structure
+```env
+ESEWA_MERCHANT_ID=
+ESEWA_SECRET_KEY=
+ESEWA_BASE_URL=
+ESEWA_SUCCESS_URL=
+ESEWA_FAILURE_URL=
 
-```
-NOC-E-Recruitment/
-├── app/
-│   ├── Helpers/
-│   │   └── helpers.php                    # AD↔BS date conversion
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Admin/                     # Super Admin controllers
-│   │   │   │   ├── AdminDashboardController.php
-│   │   │   │   ├── VacancyManagementController.php
-│   │   │   │   ├── AdminApplicationController.php
-│   │   │   │   ├── ReviewerController.php
-│   │   │   │   ├── ApproverController.php
-│   │   │   │   ├── HRAdministratorController.php
-│   │   │   │   ├── CandidateManagementController.php
-│   │   │   │   └── NotificationController.php
-│   │   │   ├── Approver/                  # Approver controllers
-│   │   │   │   ├── ApproverAuthController.php
-│   │   │   │   ├── AssignedToMeController.php
-│   │   │   │   └── NotificationController.php
-│   │   │   ├── Auth/                      # Auth controllers per role
-│   │   │   │   ├── AdminAuthController.php
-│   │   │   │   ├── CandidateAuthController.php
-│   │   │   │   ├── HRAdministratorAuthController.php
-│   │   │   │   └── ReviewerAuthController.php
-│   │   │   ├── Candidate/                 # Candidate controllers
-│   │   │   │   ├── CandidateDashboardController.php
-│   │   │   │   ├── ApplicationFormController.php
-│   │   │   │   ├── VacancyBrowsingController.php
-│   │   │   │   ├── PaymentController.php
-│   │   │   │   ├── AdmitCardController.php
-│   │   │   │   ├── CandidateResultController.php
-│   │   │   │   ├── ProfileController.php
-│   │   │   │   ├── SettingsController.php
-│   │   │   │   └── NotificationController.php
-│   │   │   ├── HRAdministrator/           # HR Admin controllers
-│   │   │   │   ├── HRAdministratorDashboardController.php
-│   │   │   │   ├── HRVacancyController.php
-│   │   │   │   ├── HRApplicationController.php
-│   │   │   │   ├── HRCandidateController.php
-│   │   │   │   ├── HRReviewerController.php
-│   │   │   │   └── NotificationController.php
-│   │   │   └── Reviewer/                  # Reviewer controllers
-│   │   │       ├── ReviewerDashboardController.php
-│   │   │       ├── ApplicationReviewController.php
-│   │   │       └── NotificationController.php
-│   │   └── Middleware/
-│   │       ├── AdminMiddleware.php
-│   │       ├── ApproverMiddleware.php
-│   │       ├── CandidateMiddleware.php
-│   │       ├── CandidateSessionMiddleware.php
-│   │       ├── HRAdministratorMiddleware.php
-│   │       ├── RedirectIfNotApprover.php
-│   │       └── ReviewerMiddleware.php
-│   ├── Mail/
-│   └── Models/
-│       ├── Admin.php
-│       ├── Approver.php
-│       ├── Candidate.php
-│       ├── CandidateOtp.php
-│       ├── HRAdministrator.php
-│       ├── Reviewer.php
-│       ├── JobPosting.php                 # Vacancy model
-│       ├── Application.php
-│       ├── ApplicationForm.php
-│       ├── Notification.php
-│       ├── Payment.php
-│       ├── Result.php
-│       └── RegistrationForm.php
-├── config/
-│   ├── auth.php                           # 5 guards + providers
-│   └── dompdf.php                         # PDF configuration
-├── database/
-│   ├── migrations/                        # 40+ migration files
-│   ├── seeders/
-│   │   ├── AdminSeeder.php
-│   │   ├── JobPostingSeeder.php
-│   │   ├── ReviewerSeeder.php
-│   │   └── ResultSeeder.php
-│   └── factories/
-├── resources/views/
-│   ├── admin/                             # Admin panel views
-│   │   ├── dashboard.blade.php
-│   │   ├── jobs/                          # Vacancy CRUD views
-│   │   ├── applications/
-│   │   ├── reviewers/
-│   │   ├── approvers/
-│   │   ├── hr-administrators/
-│   │   └── candidates/
-│   ├── approver/                          # Approver views
-│   │   ├── dashboard.blade.php
-│   │   ├── login.blade.php
-│   │   ├── assignedtome.blade.php
-│   │   ├── show.blade.php
-│   │   └── notifications/
-│   ├── auth/                              # Login/register per role
-│   │   ├── admin/
-│   │   ├── approver/
-│   │   ├── candidate/
-│   │   ├── hr-administrator/
-│   │   └── reviewer/
-│   ├── candidate/                         # Candidate portal views
-│   │   ├── dashboard.blade.php
-│   │   ├── login.blade.php
-│   │   ├── register.blade.php
-│   │   ├── applications/
-│   │   ├── vacancies/
-│   │   ├── payment/
-│   │   ├── profile/
-│   │   ├── settings/
-│   │   ├── admit-card.blade.php
-│   │   ├── admit-card-pdf.blade.php
-│   │   └── view-result.blade.php
-│   ├── hr-administrator/                  # HR Admin views
-│   │   ├── dashboard.blade.php
-│   │   └── vacancies/
-│   ├── reviewer/                          # Reviewer views
-│   │   ├── dashboard.blade.php
-│   │   ├── applications/
-│   │   └── notifications/
-│   ├── layouts/                           # Shared Blade layouts
-│   │   ├── app.blade.php
-│   │   ├── apps.blade.php
-│   │   └── dashboard.blade.php
-│   ├── payment/                           # Payment gateway views
-│   │   ├── esewa.blade.php
-│   │   ├── khalti.blade.php
-│   │   └── connectips.blade.php
-│   ├── errors/
-│   │   └── 404.blade.php
-│   └── welcome.blade.php                  # Landing page
-├── public/
-│   ├── css/
-│   ├── js/
-│   └── images/                            # NOC logos, payment logos
-├── routes/
-│   └── web.php                            # All route definitions
-├── storage/
-│   └── fonts/                             # DejaVu Sans for PDF
-└── composer.json
+KHALTI_SECRET_KEY=
+KHALTI_BASE_URL=
+
+CONNECTIPS_MERCHANT_ID=
+CONNECTIPS_APP_ID=
+CONNECTIPS_APP_NAME=
+CONNECTIPS_APP_PASSWORD=
+CONNECTIPS_PFX_PASSWORD=
+CONNECTIPS_TXN_URL=
+CONNECTIPS_VALIDATE_URL=
+CONNECTIPS_DETAIL_URL=
+CONNECTIPS_PFX_PATH=
+CONNECTIPS_PRIVATE_KEY_PATH=
+
+SPARROW_SMS_TOKEN=
+SPARROW_SMS_FROM=
+SPARROW_SMS_BASE_URL=http://api.sparrowsms.com/v2
 ```
 
----
+If you are moving the existing database to a new PC, keep the old `APP_KEY`. Changing `APP_KEY` can break encrypted data, sessions, and stored tokens.
 
-## Role Hierarchy & Workflow
+## New PC Setup With Existing Data
 
-```
-┌─────────────────────────────────────────┐
-│            SUPER ADMIN                  │
-│   Full system control & final authority │
-│   Manages all users & vacancies         │
-└──────────────────┬──────────────────────┘
-                   │
-    ┌──────────────┼──────────────┐
-    │              │              │
-┌───▼────────┐ ┌───▼────────┐ ┌──▼───────────┐
-│ HR ADMIN   │ │ APPROVER   │ │  REVIEWER    │
-│ Dept. mgmt │ │ Final call │ │ Evaluates    │
-│ & screening│ │ approve/   │ │ applications │
-│            │ │ reject     │ │ & scores     │
-└───┬────────┘ └────────────┘ └──────────────┘
-    │
-    └──────────────┐
-                   │
-            ┌──────▼──────┐
-            │  CANDIDATE  │
-            │  Registers, │
-            │  applies &  │
-            │  tracks     │
-            └─────────────┘
+Use this when you want the new PC to have the same applications, users, uploaded documents, and records.
+
+### 1. Export Database On Old PC
+
+```powershell
+mysqldump -u root -p recruitment_system > recruitment_system.sql
 ```
 
-### Application Workflow
+If MySQL is from XAMPP and not in PATH, run from the XAMPP MySQL bin folder or use the full path:
 
-```
-Candidate submits application
-        │
-        ▼
-  Admin assigns Reviewer
-        │
-        ▼
-  Reviewer evaluates & adds notes
-        │
-        ▼
-  Admin assigns Approver
-        │
-        ▼
-  Approver makes final decision
-  (approve / reject with notes)
-        │
-        ▼
-  Candidate receives notification
+```powershell
+C:\xampp\mysql\bin\mysqldump.exe -u root -p recruitment_system > recruitment_system.sql
 ```
 
----
+### 2. Copy Project Files
 
-## Default Login Routes
+Copy the project folder to the new PC, excluding generated/temp folders listed above.
 
-| Role | Login URL |
-|------|----------|
-| Super Admin | `/admin/login` |
-| HR Administrator | `/hr-administrator/login` |
-| Approver | `/approver/login` |
-| Reviewer | `/reviewer/login` |
-| Candidate | `/candidate/login` |
+Make sure these data folders are included if you need existing uploads and PDFs:
 
----
+```text
+storage/app/public/
+storage/app/connectips/
+storage/fonts/
+```
 
-## Contributing
+### 3. Create And Import Database On New PC
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Open a Pull Request
+```powershell
+mysql -u root -p -e "CREATE DATABASE recruitment_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p recruitment_system < recruitment_system.sql
+```
 
----
+With XAMPP full paths:
 
-## License
+```powershell
+C:\xampp\mysql\bin\mysql.exe -u root -p -e "CREATE DATABASE recruitment_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+C:\xampp\mysql\bin\mysql.exe -u root -p recruitment_system < recruitment_system.sql
+```
 
-This project is open-sourced under the [MIT License](LICENSE).
+### 4. Install Dependencies
 
----
+From the project folder:
 
-## Acknowledgements
+```powershell
+composer install
+npm.cmd install
+npm.cmd run build
+```
 
-- Inspired by [Nepal Oil Corporation E-Recruitment Portal](https://erecruitment.nepaloil.org.np)
-- Built with [Laravel](https://laravel.com)
-- PDF rendering powered by [DomPDF](https://github.com/barryvdh/laravel-dompdf) & [mPDF](https://mpdf.github.io/)
+### 5. Configure `.env`
+
+Copy the old `.env` securely or create a new one from `.env.example`.
+
+If using the existing imported database, use the same `APP_KEY` from the old PC.
+
+If this is a fresh empty setup only, generate a new key:
+
+```powershell
+php artisan key:generate
+```
+
+### 6. Clear Cache And Link Storage
+
+```powershell
+php artisan optimize:clear
+php artisan storage:link
+composer dump-autoload
+```
+
+### 7. Verify
+
+```powershell
+php artisan about
+php artisan migrate:status
+php artisan route:list
+php artisan test
+```
+
+### 8. Run
+
+```powershell
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+## Fresh Setup Without Existing Data
+
+Use this only if you do not need old users, applications, uploaded documents, payments, SMS logs, or audit logs.
+
+```powershell
+composer install
+copy .env.example .env
+php artisan key:generate
+npm.cmd install
+npm.cmd run build
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+For this project, importing the existing database is safer than rebuilding from zero because the migration history includes table renames, table recreations, enum changes, and historical data transformations.
+
+## Common Commands
+
+```powershell
+php artisan serve --host=127.0.0.1 --port=8000
+php artisan optimize:clear
+php artisan route:list
+php artisan migrate:status
+php artisan test
+npm.cmd run dev
+npm.cmd run build
+```
+
+If Vite dev server is needed during frontend work:
+
+```powershell
+npm.cmd run dev
+```
+
+In another terminal:
+
+```powershell
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+## Login Routes
+
+```text
+/admin/login
+/reviewer/login
+/approver/login
+/candidate/login
+```
+
+The generic `/login` route redirects users toward the portal login flow.
+
+## Main Functional Areas
+
+- Admin dashboard and management
+- Candidate registration/login with OTP/email flows
+- Vacancy/job posting management
+- Candidate application form with document uploads
+- Reviewer application review workflow
+- Approver final approval/rejection workflow
+- Candidate notifications
+- SMS logs and candidate SMS notifications
+- Payment flows for eSewa, Khalti, and ConnectIPS
+- Admit card assignment, preview, view, and download
+- Reports and exports
+- Audit logs
+- Bilingual UI strings under `lang/en` and `lang/ne`
+
+## Notes Before Cleaning Extra Docs
+
+This README is the main documentation file to keep. Other root Markdown files that are not required to run the project can be archived or deleted after confirming they are no longer needed:
+
+```text
+BEFORE_AFTER_COMPARISON.md
+CHECKBOX_MIGRATION_GUIDE.md
+CHECKBOX_QUICK_REFERENCE.md
+CHECKBOX_VALIDATION_INDEX.md
+CLEAN_DESIGN_SUMMARY.md
+LARAVEL_12_CHECKBOX_VALIDATION.md
+README_CHECKBOX_VALIDATION.md
+```
+
+Do not delete source files, environment files, migrations, uploaded storage, or the database dump unless you have a backup.
+
+## Known Maintenance Items
+
+- Remove `public/phpinfo.php`.
+- Review and clean temporary root files before copying to a new PC.
+- Keep `storage/app/public` backed up together with the database, because database records reference uploaded file paths.

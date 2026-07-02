@@ -21,7 +21,7 @@
     .gov-page-header {
         margin-bottom: 2rem !important;
         padding: 2rem;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         border-radius: 10px;
     }
 
@@ -31,6 +31,19 @@
 
     .gov-page-header .gov-page-subtitle {
         color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .gov-card .gov-btn-primary {
+        background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+        border-color: #1a3a6b;
+        color: #fff;
+    }
+
+    .gov-card .gov-btn-primary:hover,
+    .gov-card .gov-btn-primary:focus {
+        background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
     }
 
     /* Modern Table - Matching Vacancy List Style */
@@ -79,7 +92,7 @@
     }
 
     .app-detail-modal .modal-content {
-        border: 1px solid rgba(201, 168, 76, 0.25);
+        border: 1px solid rgba(26, 58, 107, 0.25);
         border-radius: 14px;
         box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05);
         overflow: hidden;
@@ -92,7 +105,7 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: none;
-        border-top: 4px solid #c9a84c;
+        border-top: 4px solid #1a3a6b;
         padding: 1.1rem 1.75rem;
         position: relative;
     }
@@ -102,7 +115,7 @@
         position: absolute;
         bottom: 0; left: 0; right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+        background: linear-gradient(90deg, transparent, rgba(42,82,152,0.4), transparent);
     }
 
     .app-detail-modal .modal-header .modal-title {
@@ -130,7 +143,7 @@
 
     .app-detail-modal .modal-body::-webkit-scrollbar { width: 5px; }
     .app-detail-modal .modal-body::-webkit-scrollbar-track { background: #f3f4f6; }
-    .app-detail-modal .modal-body::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 4px; }
+    .app-detail-modal .modal-body::-webkit-scrollbar-thumb { background: #1a3a6b; border-radius: 4px; }
 
     /* Profile Hero — centered */
     .app-modal-profile {
@@ -149,7 +162,7 @@
         position: absolute;
         top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #c9a84c, #f0d080, #c9a84c);
+        background: linear-gradient(90deg, #1a3a6b, #d0daea, #1a3a6b);
     }
 
     .app-modal-avatar-wrap {
@@ -163,14 +176,14 @@
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid #fff;
-        box-shadow: 0 0 0 3px #c9a84c, 0 8px 24px rgba(160,120,40,0.2);
+        box-shadow: 0 0 0 3px #1a3a6b, 0 8px 24px rgba(26,58,107,0.2);
     }
 
     .app-modal-avatar-placeholder {
         width: 96px;
         height: 96px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #c9a84c, #a07828);
+        background: linear-gradient(135deg, #1a3a6b, #122a52);
         color: #fff;
         display: flex;
         align-items: center;
@@ -178,14 +191,14 @@
         font-size: 2.25rem;
         font-weight: 700;
         border: 3px solid #fff;
-        box-shadow: 0 0 0 3px #c9a84c, 0 8px 24px rgba(160,120,40,0.2);
+        box-shadow: 0 0 0 3px #1a3a6b, 0 8px 24px rgba(26,58,107,0.2);
     }
 
     .app-modal-appid {
         position: absolute;
         bottom: -4px;
         right: -4px;
-        background: #c9a84c;
+        background: #1a3a6b;
         color: #fff;
         font-size: 0.6rem;
         font-weight: 700;
@@ -242,14 +255,14 @@
         letter-spacing: 0.6px;
     }
 
-    .app-modal-status.pending    { background: #fef3c7; color: #92400e; }
+    .app-modal-status.pending    { background: #e8eef6; color: #1a3a6b; }
     .app-modal-status.submitted  { background: #dbeafe; color: #1e40af; }
     .app-modal-status.assigned   { background: #e0e7ff; color: #3730a3; }
     .app-modal-status.approved   { background: #d1fae5; color: #065f46; }
     .app-modal-status.rejected   { background: #fee2e2; color: #991b1b; }
     .app-modal-status.under_review { background: #dbeafe; color: #1e40af; }
-    .app-modal-status.edited     { background: #fef3c7; color: #92400e; }
-    .app-modal-status.edit       { background: #fef3c7; color: #92400e; }
+    .app-modal-status.edited     { background: #e8eef6; color: #1a3a6b; }
+    .app-modal-status.edit       { background: #e8eef6; color: #1a3a6b; }
     .app-modal-status.reviewed   { background: #e0e7ff; color: #4338ca; }
 
     .app-modal-cat-badge {
@@ -258,9 +271,9 @@
         border-radius: 20px;
         font-size: 0.72rem;
         font-weight: 600;
-        background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(160,120,40,0.1));
-        color: #a07828;
-        border: 1px solid rgba(201,168,76,0.35);
+        background: linear-gradient(135deg, rgba(26,58,107,0.15), rgba(18,42,82,0.1));
+        color: #122a52;
+        border: 1px solid rgba(42,82,152,0.35);
     }
 
     /* Sections */
@@ -282,7 +295,7 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: #a07828;
+        color: #122a52;
         margin-bottom: 0.85rem;
         display: flex;
         align-items: center;
@@ -343,8 +356,8 @@
     }
 
     .app-modal-doc-card:hover {
-        border-color: #c9a84c;
-        box-shadow: 0 4px 12px rgba(201,168,76,0.15);
+        border-color: #1a3a6b;
+        box-shadow: 0 4px 12px rgba(26,58,107,0.15);
         transform: translateY(-2px);
     }
 
@@ -384,7 +397,7 @@
     }
 
     .app-modal-doc-label a:hover {
-        color: #a07828;
+        color: #1a3a6b;
     }
 
     /* Loading */
@@ -401,7 +414,7 @@
     .app-modal-loading .spinner-border {
         width: 2.5rem;
         height: 2.5rem;
-        color: #c9a84c;
+        color: #1a3a6b;
     }
 
     /* Footer */
@@ -517,7 +530,7 @@
         </div>
         <div class="col-xl-3 col-lg-3 col-md-6">
             <div class="gov-stats-card">
-                <div class="gov-stats-icon" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">
+                <div class="gov-stats-icon" style="background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);">
                     <i class="bi bi-clock-history" style="color: white;"></i>
                 </div>
                 <h3 class="gov-stats-number">{{ $stats['pending'] }}</h3>
@@ -1047,9 +1060,9 @@
                         <small class="d-block text-muted mb-2">{{ __('admin.select_adv_to_assign') }} <strong>{{ __('admin.all_its_applications') }}</strong> {{ __('admin.to_the_person_above') }}</small>
                         <select name="job_posting_id" id="jobPostingSelect" class="form-select gov-form-select">
                             <option value="">{{ __('admin.select_adv_no') }}</option>
-                            @foreach($vacancies as $vacancy)
-                                <option value="{{ $vacancy->id }}" data-count="{{ $vacancy->group_applications_count }}">
-                                    {{ $vacancy->advertisement_no }} - {{ $vacancy->title }}{{ $vacancy->level ? ' - ' . __('admin.level') . ' ' . $vacancy->level : '' }}
+                            @foreach($bulkVacancyGroups as $vacancyGroup)
+                                <option value="{{ $vacancyGroup['representative_id'] }}" data-count="{{ $vacancyGroup['applications_count'] }}">
+                                    ({{ $vacancyGroup['advertisement_numbers'] }}) - {{ $vacancyGroup['position'] }}{{ $vacancyGroup['level'] ? ' - ' . __('admin.level') . ' ' . $vacancyGroup['level'] : '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -1072,7 +1085,6 @@
     </div>
 </div>
 
-<!-- Application Detail Modal -->
 <div class="modal fade app-detail-modal" id="applicationDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">

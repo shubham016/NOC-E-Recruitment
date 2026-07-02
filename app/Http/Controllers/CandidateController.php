@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\CandidateRegistration;
+use App\Models\CandidateOtp;
 use App\Models\JobPosting;
+use App\Services\SparrowSmsService;
 
 class CandidateController extends Controller
 {
@@ -33,6 +35,7 @@ class CandidateController extends Controller
         $validator = Validator::make($request->all(), [
             'name_english'               => 'required|string|max:150',
             'email'                      => 'required|email|unique:candidate_registration,email',
+            'phone'                      => 'required|string|max:20',
             'gender'                     => 'required|in:Male,Female,Other',
             'birth_date_bs'           => 'required|string',
             'citizenship_number'         => 'required|string|unique:candidate_registration,citizenship_number',
@@ -51,12 +54,13 @@ class CandidateController extends Controller
         }
 
         try {
-            DB::table('candidate_registration')->insert([
+            $registrationData = [
                 'name_english'               => $request->name_english,
                 'email'                      => $request->email,
                 'phone'                      => $request->phone,
                 'gender'                     => $request->gender,
-                'birth_date_bs'           => $request->birth_date_bs,
+                'birth_date_bs'              => $request->birth_date_bs,
+                'birth_date_ad'              => $request->birth_date_ad ?: null,
                 'citizenship_number'         => $request->citizenship_number,
                 'citizenship_issue_district' => $request->citizenship_issue_district,
                 'citizenship_issue_date_bs'  => $request->citizenship_issue_date_bs,
@@ -64,15 +68,34 @@ class CandidateController extends Controller
                 'noc_employee'               => $request->noc_employee,
                 'employee_id'                => $request->employee_id,
                 'password'                   => Hash::make($request->password),
-                'created_at'                 => now(),
-                'updated_at'                 => now(),
+            ];
+
+            $otpRecord = CandidateOtp::createOTP($request->email, 'registration');
+            $message = "Your NOC E-Recruitment registration OTP is {$otpRecord->otp}. It expires in 10 minutes.";
+            $smsResult = app(SparrowSmsService::class)->send($request->phone, $message);
+
+            if (($smsResult['response_code'] ?? 0) != 200) {
+                Log::warning('Candidate registration OTP SMS failed', [
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'response' => $smsResult,
+                ]);
+
+                return redirect()->back()
+                    ->withErrors(['phone' => 'Could not send OTP SMS. Please check the phone number and try again.'])
+                    ->withInput($request->except('password', 'password_confirmation'));
+            }
+
+            session([
+                'candidate_registration_email' => $request->email,
+                'candidate_pending_registration' => $registrationData,
             ]);
 
-            Log::info('Candidate registered: ' . $request->email);
+            Log::info('Candidate registration OTP sent: ' . $request->email);
 
             return redirect()
-                ->route('candidate.login')
-                ->with('success', 'Registration successful! You can now login to your account.');
+                ->route('candidate.verify.otp')
+                ->with('success', 'OTP has been sent to your mobile number. Please verify it to complete registration.');
 
         } catch (\Exception $e) {
             Log::error('Candidate registration failed: ' . $e->getMessage());
@@ -80,6 +103,119 @@ class CandidateController extends Controller
             return redirect()->back()
                 ->withErrors(['error' => 'Registration failed. Please try again.'])
                 ->withInput($request->except('password', 'password_confirmation'));
+        }
+    }
+
+    public function showVerifyOtpForm()
+    {
+        $pendingRegistration = session('candidate_pending_registration');
+        $email = session('candidate_registration_email');
+
+        if (!$pendingRegistration || !$email) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['error' => 'Registration session expired. Please register again.']);
+        }
+
+        return view('auth.candidate.verify-otp', [
+            'email' => $email,
+            'phone' => $pendingRegistration['phone'] ?? null,
+        ]);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|string|size:6',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $email = session('candidate_registration_email');
+        $pendingRegistration = session('candidate_pending_registration');
+
+        if (!$email || !$pendingRegistration) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['error' => 'Registration session expired. Please register again.']);
+        }
+
+        $otpRecord = CandidateOtp::verifyOTP($email, $request->otp, 'registration');
+
+        if (!$otpRecord) {
+            return redirect()->back()
+                ->withErrors(['otp' => 'Invalid or expired OTP code. Please try again.']);
+        }
+
+        if (CandidateRegistration::where('email', $pendingRegistration['email'])->exists()) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['email' => 'This email is already registered. Please login instead.']);
+        }
+
+        if (CandidateRegistration::where('citizenship_number', $pendingRegistration['citizenship_number'])->exists()) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['citizenship_number' => 'This citizenship number is already registered. Please login instead.']);
+        }
+
+        if (!empty($pendingRegistration['nid']) && CandidateRegistration::where('nid', $pendingRegistration['nid'])->exists()) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['nid' => 'This National ID number is already registered. Please login instead.']);
+        }
+
+        try {
+            DB::transaction(function () use ($pendingRegistration, $otpRecord) {
+                CandidateRegistration::create($pendingRegistration);
+                $otpRecord->markAsUsed();
+            });
+
+            session()->forget(['candidate_registration_email', 'candidate_pending_registration']);
+
+            Log::info('Candidate registered after OTP verification: ' . $email);
+
+            return redirect()
+                ->route('candidate.login')
+                ->with('success', 'Registration completed successfully! You can now login to your account.');
+        } catch (\Exception $e) {
+            Log::error('Candidate OTP verification registration failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Registration could not be completed. Please try again.']);
+        }
+    }
+
+    public function resendOtp()
+    {
+        $email = session('candidate_registration_email');
+        $pendingRegistration = session('candidate_pending_registration');
+
+        if (!$email || !$pendingRegistration) {
+            return redirect()->route('candidate.register')
+                ->withErrors(['error' => 'Registration session expired. Please register again.']);
+        }
+
+        try {
+            $otpRecord = CandidateOtp::createOTP($email, 'registration');
+            $message = "Your NOC E-Recruitment registration OTP is {$otpRecord->otp}. It expires in 10 minutes.";
+            $smsResult = app(SparrowSmsService::class)->send($pendingRegistration['phone'], $message);
+
+            if (($smsResult['response_code'] ?? 0) != 200) {
+                Log::warning('Candidate registration OTP resend SMS failed', [
+                    'email' => $email,
+                    'phone' => $pendingRegistration['phone'],
+                    'response' => $smsResult,
+                ]);
+
+                return redirect()->back()
+                    ->withErrors(['phone' => 'Could not resend OTP SMS. Please try again.']);
+            }
+
+            return redirect()->back()
+                ->with('success', 'A new OTP has been sent to your mobile number.');
+        } catch (\Exception $e) {
+            Log::error('Candidate registration OTP resend failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Could not resend OTP. Please try again.']);
         }
     }
 
@@ -205,7 +341,7 @@ class CandidateController extends Controller
             'grandfather_name_english'    => 'required|string|max:100',
 
             // General
-            'blood_group'                 => 'required|string',
+            'blood_group'                 => 'nullable|string',
             'nationality'                 => 'required|string|max:50',
             'noc_employee'                => 'required|in:yes,no',
             'physical_disability'         => 'required|in:yes,no',
@@ -223,7 +359,7 @@ class CandidateController extends Controller
 
             // Education
             'education_level'             => 'required|string',
-            'field_of_study'              => 'required|string|max:100',
+            'field_of_study'              => 'nullable|string|max:100',
             'institution_name'            => 'required|string|max:150',
             'graduation_year'             => 'required|string|max:4',
             'university'                  => 'required|string|max:150',

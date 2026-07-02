@@ -61,7 +61,7 @@
 
     /* Header */
     .noc-form-header {
-        background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #c9a84c 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         padding: 0.7rem 1.5rem;
         display: flex;
         align-items: center;
@@ -78,7 +78,7 @@
         margin: 0;
     }
 
-    .noc-form-header .header-icon { color: #c9a84c; font-size: 1rem; }
+    .noc-form-header .header-icon { color: #ffffff; font-size: 1rem; }
 
     /* Card body */
     .noc-card-body { background: #fff; }
@@ -231,7 +231,7 @@
     }
 
     .noc-register-btn {
-        background: linear-gradient(135deg, #c9a84c 0%, #b8941f 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         color: #fff;
         border: none;
         height: 36px;
@@ -244,13 +244,13 @@
         border-radius: 2px;
         cursor: pointer;
         transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-        box-shadow: 0 3px 10px rgba(201,168,76,0.3);
+        box-shadow: 0 3px 10px rgba(42,82,152,0.3);
     }
 
     .noc-register-btn:hover {
-        background: linear-gradient(135deg, #d4b55a 0%, #c9a84c 100%);
+        background: linear-gradient(135deg, #3b6ab4 0%, #2a5298 100%);
         transform: translateY(-1px);
-        box-shadow: 0 5px 16px rgba(201,168,76,0.4);
+        box-shadow: 0 5px 16px rgba(42,82,152,0.4);
     }
 
     .noc-register-btn:active { transform: translateY(0); }
@@ -278,7 +278,7 @@
         transition: color 0.2s;
     }
 
-    .noc-form-footer a:hover { color: #c9a84c; text-decoration: underline; }
+    .noc-form-footer a:hover { color: #2a5298; text-decoration: underline; }
 
     /* Responsive */
     @media (max-width: 700px) {

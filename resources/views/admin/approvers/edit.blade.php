@@ -14,10 +14,76 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+<style>
+    .approver-edit-header {
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%) !important;
+    }
+
+    .approver-edit-header .btn-light {
+        border: 2px solid #ffffff;
+        background: transparent;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.2s;
+        cursor: pointer;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .approver-edit-header .btn-light:hover,
+    .approver-edit-header .btn-light:focus {
+        background: #ffffff;
+        color: #1a3a6b;
+        border-color: #ffffff;
+    }
+
+    .approver-edit-form .form-control:focus,
+    .approver-edit-form .form-select:focus {
+        border-color: #1a3a6b;
+        box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.12);
+    }
+
+    .approver-edit-form .btn-primary {
+        background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+        border-color: #1a3a6b;
+    }
+
+    .approver-edit-form .btn-primary:hover,
+    .approver-edit-form .btn-primary:focus {
+        background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
+    }
+
+    .approver-edit-form .btn-warning {
+        background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+        border-color: #1a3a6b;
+        color: #fff;
+    }
+
+    .approver-edit-form .btn-warning:hover,
+    .approver-edit-form .btn-warning:focus {
+        background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
+    }
+
+    .approver-reset-card {
+        border-color: #d0daea !important;
+    }
+
+    .approver-reset-card .card-header {
+        background: #e8eef6 !important;
+        color: #1a3a6b;
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="container-fluid px-4 py-4">
+<div class="container-fluid px-4 py-4 approver-edit-form">
     <!-- Page Header -->
-    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);">
+    <div class="card border-0 shadow-sm mb-4 approver-edit-header">
         <div class="card-body text-white p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -145,7 +211,7 @@
 
             <!-- Reset Password Section -->
             <hr class="my-4">
-            <div class="card border-warning">
+            <div class="card approver-reset-card">
                 <div class="card-header bg-warning bg-opacity-10">
                     <h5 class="mb-0"><i class="bi bi-key me-2"></i>{{ __('admin.reset_password') }}</h5>
                 </div>

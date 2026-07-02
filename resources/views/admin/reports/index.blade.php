@@ -16,12 +16,12 @@
 @section('custom-styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         border-radius: 12px;
         padding: 2rem;
         color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+        box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
     }
     .report-card {
         background: #fff;
@@ -33,8 +33,8 @@
     }
     .report-card-header {
         padding: 0.9rem 1.25rem;
-        border-bottom: 2px solid #c9a84c;
-        background: #fffbf0;
+        border-bottom: 2px solid #1a3a6b;
+        background: #f5f8fc;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -47,7 +47,7 @@
     }
     .report-card-header .total-badge {
         font-size: 0.78rem;
-        background: #c9a84c;
+        background: #1a3a6b;
         color: #fff;
         font-weight: 600;
         padding: 0.25em 0.7em;
@@ -85,12 +85,12 @@
     }
     .filter-group .form-control:focus,
     .filter-group .form-select:focus {
-        border-color: #c9a84c;
-        box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+        border-color: #1a3a6b;
+        box-shadow: 0 0 0 3px rgba(26,58,107,0.15);
         outline: none;
     }
     .btn-preview {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         color: #fff;
         border: none;
         border-radius: 8px;

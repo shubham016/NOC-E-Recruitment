@@ -62,7 +62,7 @@
         transition: background 0.15s;
     }
     .applicant-table tbody tr.row-selected td {
-        background: #fffbf0;
+        background: #f5f8fc;
     }
     .applicant-table tbody tr:hover td {
         background: #eff1f3;
@@ -71,7 +71,7 @@
         background: #fff3d6;
     }
     .credits-badge {
-        background: linear-gradient(135deg, #c9a84c, #a07828);
+        background: linear-gradient(135deg, #1a3a6b, #122a52);
         color: white;
         padding: 0.5rem 1rem;
         border-radius: 8px;
@@ -204,7 +204,7 @@
 
                 {{-- Submit --}}
                 <div class="col-12" id="submitSection" style="display: none;">
-                    <button type="submit" class="btn px-4 py-2" style="background: linear-gradient(135deg, #c9a84c, #a07828); color: white; border: none; border-radius: 6px;">
+                    <button type="submit" class="btn px-4 py-2" style="background: linear-gradient(135deg, #1a3a6b, #122a52); color: white; border: none; border-radius: 6px;">
                         Send SMS to Selected Applicants
                     </button>
                 </div>

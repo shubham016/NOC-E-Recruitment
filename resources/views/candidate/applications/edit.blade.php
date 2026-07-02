@@ -579,6 +579,13 @@
                                 if (cb.checked && adv) adv.style.display = '';
                                 cb.addEventListener('change', function() {
                                     if (adv) adv.style.display = this.checked ? '' : 'none';
+                                    var categoryError = document.getElementById('categoryError');
+                                    if (categoryError && document.querySelectorAll('.category-cb:checked').length > 0) {
+                                        categoryError.style.display = 'none';
+                                    }
+                                    document.querySelectorAll('.category-cb.is-invalid').forEach(function(invalidCb) {
+                                        invalidCb.classList.remove('is-invalid');
+                                    });
                                     updateAdvertisementNo();
                                     updateTotalFee();
                                 });
@@ -869,8 +876,8 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="blood_group" class="form-label">Blood Group <span class="text-danger">*</span></label>
-                            <input type="text" name="blood_group" id="blood_group" class="form-control" value="{{ old('blood_group', $applicationform->blood_group) }}" required>
+                            <label for="blood_group" class="form-label">Blood Group</label>
+                            <input type="text" name="blood_group" id="blood_group" class="form-control" value="{{ old('blood_group', $applicationform->blood_group) }}">
                         </div>
                         <div class="col-md-4">
                             <label for="age" class="form-label">Age <span class="text-danger">*</span> <small>(उमेर)</small></label>
@@ -1088,8 +1095,8 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="field_of_study" class="form-label">Field of Study<span class="text-danger">*</span></label>
-                            <input type="text" name="field_of_study" id="field_of_study" class="form-control" value="{{ old('field_of_study', $applicationform->field_of_study) }}" required>
+                            <label for="field_of_study" class="form-label">Field of Study</label>
+                            <input type="text" name="field_of_study" id="field_of_study" class="form-control" value="{{ old('field_of_study', $applicationform->field_of_study) }}">
                         </div>
                     </div>
                     <div class="row mb-3 align-items-end">
@@ -1215,7 +1222,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 5: Work Experience -->
+                 <!-- STEP 5: Work Experience -->
                 <div class="step d-none" id="step5">
                     <h5 class="mb-4 text-dark">Step 5 — Work Experience</h5>
 
@@ -1226,8 +1233,15 @@
                             </label>
                             <select name="has_work_experience" id="has_work_experience" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="Yes" {{ old('has_work_experience', $applicationform->has_work_experience) == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('has_work_experience', $applicationform->has_work_experience) == 'No'  ? 'selected' : '' }}>No</option>
+                                @php
+                                $hasWorkExpValue = old('has_work_experience',
+                                $applicationform->has_work_experience // saved on the application
+                                ?? $candidate->has_work_experience // fallback to candidate profile
+                                ?? ($applicationform->experiences && $applicationform->experiences->count() > 0 ? 'Yes' : '')
+                                );
+                                @endphp
+                                <option value="Yes" {{ $hasWorkExpValue == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="No" {{ $hasWorkExpValue == 'No'  ? 'selected' : '' }}>No</option>
                             </select>
                         </div>
                     </div>
@@ -1341,7 +1355,6 @@
                         <button type="button" class="btn btn-light next-btn">Next</button>
                     </div>
                 </div>
-
                 <!-- STEP 6: Upload Documents -->
                 <div class="step d-none" id="step6">
                     <h5 class="mb-4 text-dark">Step 6 — Upload Documents</h5>
@@ -2373,12 +2386,12 @@ $deptFallback = $job
                     document.getElementById('disability_certificate')?.closest('.col-md-4')?.querySelector('label'),
                     ['yes']
                 );
-                conditionalFile(
-                    document.getElementById('ethnic_group'),
-                    document.getElementById('ethnic_certificate'),
-                    document.getElementById('ethnic_certificate')?.closest('.col-md-6')?.querySelector('label'),
-                    ['Dalit', 'Janajati', 'Madhesi']
-                );
+                // conditionalFile(
+                //     document.getElementById('ethnic_group'),
+                //     document.getElementById('ethnic_certificate'),
+                //     document.getElementById('ethnic_certificate')?.closest('.col-md-6')?.querySelector('label'),
+                //     ['Dalit', 'Janajati', 'Madhesi']
+                // );
 
                 // ── Tabs & progress ───────────────────────────────────────
                 let currentStep = 1;
@@ -2443,6 +2456,17 @@ $deptFallback = $job
                     });
                     let isValid = true,
                         firstInvalid = null;
+                    const categoryBoxes = Array.from(stepEl.querySelectorAll('.category-cb'));
+                    if (categoryBoxes.length > 0 && !categoryBoxes.some(cb => cb.checked)) {
+                        const categoryError = document.getElementById('categoryError');
+                        isValid = false;
+                        categoryBoxes[0].classList.add('is-invalid');
+                        if (categoryError) categoryError.style.display = 'block';
+                        if (!firstInvalid) firstInvalid = categoryBoxes[0];
+                    } else {
+                        const categoryError = document.getElementById('categoryError');
+                        if (categoryError) categoryError.style.display = 'none';
+                    }
                     stepEl.querySelectorAll('input[required],select[required],textarea[required]').forEach(field => {
                         if (field.disabled) return;
                         const hiddenParent = field.parentElement?.closest('.d-none');

@@ -441,7 +441,7 @@
                     $notifRoute = null;
 
                     if (Auth::guard('reviewer')->check()) {
-                        $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                        $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->user()->getKey())
                             ->where('user_type', 'reviewer')
                             ->where('is_read', false)
                             ->count();

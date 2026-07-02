@@ -85,7 +85,7 @@
 
     /* Header bar */
     .noc-form-header {
-        background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 60%, #c9a84c 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         padding: 1.2rem 2rem;
         display: flex;
         align-items: center;
@@ -103,7 +103,7 @@
     }
 
     .noc-form-header .header-icon {
-        color: #c9a84c;
+        color: #ffffff;
         font-size: 1.2rem;
     }
 
@@ -149,13 +149,13 @@
 
     /* Session message (logged out etc.) */
     .noc-session-msg {
-        background: #fff8e1;
-        border-left: 4px solid #c9a84c;
+        background: #e8eef6;
+        border-left: 4px solid #2a5298;
         border-radius: 2px;
         padding: 0.65rem 1rem;
         margin-bottom: 1.5rem;
         font-size: 0.85rem;
-        color: #856404;
+        color: #1a3a6b;
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -271,7 +271,7 @@
     }
 
     .noc-login-btn {
-        background: linear-gradient(135deg, #c9a84c 0%, #b8941f 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #122a52 100%);
         color: #fff;
         border: none;
         height: 42px;
@@ -284,13 +284,13 @@
         border-radius: 2px;
         cursor: pointer;
         transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-        box-shadow: 0 3px 12px rgba(201,168,76,0.35);
+        box-shadow: 0 3px 12px rgba(42,82,152,0.35);
     }
 
     .noc-login-btn:hover {
-        background: linear-gradient(135deg, #d4b55a 0%, #c9a84c 100%);
+        background: linear-gradient(135deg, #3b6ab4 0%, #2a5298 100%);
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(201,168,76,0.45);
+        box-shadow: 0 6px 20px rgba(42,82,152,0.45);
     }
 
     .noc-login-btn:active {
@@ -321,7 +321,7 @@
     }
 
     .noc-form-footer a:hover {
-        color: #c9a84c;
+        color: #2a5298;
         text-decoration: underline;
     }
 

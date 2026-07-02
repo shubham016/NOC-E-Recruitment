@@ -30,16 +30,6 @@ class Approver extends Authenticatable
     ];
 
     /**
-     * Get the name of the unique identifier for the user.
-     *
-     * @return string
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'employee_id';
-    }
-
-    /**
      * Get the username used for authentication (for login form)
      *
      * @return string

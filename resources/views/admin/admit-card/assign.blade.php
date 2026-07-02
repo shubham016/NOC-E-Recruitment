@@ -13,12 +13,55 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+    <style>
+        .admit-header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+        }
+
+        .admit-header p {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .admit-header .btn-outline-secondary {
+            border-color: rgba(255, 255, 255, 0.75);
+            color: #fff;
+            background: transparent;
+        }
+
+        .admit-header .btn-outline-secondary:hover {
+            background: #fff;
+            color: #1a3a6b;
+            border-color: #fff;
+        }
+
+        .admit-count-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .admit-roll-badge {
+            background: #2a5298 !important;
+            color: #fff !important;
+        }
+
+        .text-primary {
+            color: #1a3a6b !important;
+        }
+    </style>
+@endsection
+
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="admit-header d-flex justify-content-between align-items-center">
         <div>
             <h4 class="fw-bold mb-1">{{ __('admin.assign_admit_cards_title') }}</h4>
-            <p class="text-muted mb-0">
+            <p class="mb-0">
                 {{ __('admin.adv_no_colon') }} <strong>{{ $job->advertisement_no }}</strong>
                 &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / ' . __('admin.level') . ' ' . $job->level : '' }}
                 @if($job->service_group) &nbsp;/ {{ $job->service_group }} @endif
@@ -165,7 +208,7 @@
         {{-- Candidates Table --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold mb-0">{{ __('admin.candidates') }} <span class="badge bg-primary ms-2">{{ $applications->count() }}</span></h6>
+                <h6 class="fw-bold mb-0">{{ __('admin.candidates') }} <span class="badge admit-count-badge ms-2">{{ $applications->count() }}</span></h6>
                 <small class="text-muted">{{ __('admin.already_assigned_preserved') }}</small>
             </div>
             <div class="card-body p-0">
@@ -223,7 +266,7 @@
                                     </td>
                                     <td>
                                         @if($app->roll_number)
-                                            <span class="badge bg-info text-dark">{{ $app->roll_number }}</span>
+                                            <span class="badge admit-roll-badge">{{ $app->roll_number }}</span>
                                             <small class="text-muted d-block">({{ __('admin.preserved') }})</small>
                                         @else
                                             <span class="text-muted">{{ __('admin.auto_roll') }}</span>
@@ -238,7 +281,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <button type="submit" class="btn px-4 fw-semibold" style="background:#c9a84c; color:#fff; border:none;">
+            <button type="submit" class="btn px-4 fw-semibold" style="background:#1a3a6b; color:#fff; border:none;">
                 {{ __('admin.assign_admit_cards') }}
             </button>
             <a href="{{ route('admin.admit-card.index') }}" class="btn btn-outline-secondary px-4">{{ __('admin.cancel') }}</a>

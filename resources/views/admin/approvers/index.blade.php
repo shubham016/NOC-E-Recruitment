@@ -114,13 +114,50 @@
             border-color: #dc2626;
             color: #dc2626;
         }
+
+        .page-header-card {
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%) !important;
+        }
+
+        .page-header-card .btn-light {
+            border: 2px solid #ffffff;
+            background: transparent;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .approver-filter-actions .btn-primary {
+            background: #2a5298;
+            border-color: #2a5298;
+            color: #fff;
+        }
+
+        .page-header-card .btn-light:hover {
+            background: #ffffff;
+            color: #1a3a6b;
+        }
+
+        .approver-filter-actions .btn-primary:hover {
+            background: #1f467f;
+            border-color: #1f467f;
+            color: #fff;
+        }
+
+        .navy-total-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
     </style>
 @endsection
 
 @section('content')
 <div class="container-fluid px-4 py-4">
     <!-- Page Header -->
-    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);">
+    <div class="card border-0 shadow-sm mb-4 page-header-card">
         <div class="card-body text-white p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -216,8 +253,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="col-md-2 d-flex align-items-end approver-filter-actions">
+                    <button type="submit" class="btn approver-search-btn w-100">
                         <!-- <i class="bi bi-funnel me-1"></i> -->
                         {{ __('admin.search') }}
                     </button>
@@ -234,7 +271,7 @@
                     <!-- <i class="bi bi-people-fill text-primary me-2"></i> -->
                     {{ __('admin.approvers_list') }}
                 </h6>
-                <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $approvers->total() }}</span>
+                <span class="badge navy-total-badge ms-2">{{ __('admin.total') }} {{ $approvers->total() }}</span>
             </div>
         </div>
         <div class="card-body p-0">

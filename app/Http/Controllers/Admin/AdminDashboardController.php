@@ -20,7 +20,9 @@ class AdminDashboardController extends Controller
             'closed_vacancies' => JobPosting::where('status', 'closed')->count(),
             'draft_vacancies' => JobPosting::where('status', 'draft')->count(),
             'total_applications' => ApplicationForm::count(),
-            'pending_applications' => ApplicationForm::where('status', 'pending')->count(),
+            'pending_applications' => ApplicationForm::whereNotNull('reviewer_id')
+                ->whereIn('status', ['assigned', 'edited'])
+                ->count(),
             'approved' => ApplicationForm::where('status', 'approved')->count(),
             'rejected' => ApplicationForm::where('status', 'rejected')->count(),
             'total_candidates' => DB::table('candidate_registration')->count(),

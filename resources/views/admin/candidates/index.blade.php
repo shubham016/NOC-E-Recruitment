@@ -81,6 +81,37 @@
             padding: 1.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+
+        .search-section .btn-primary {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+            border-color: #1a3a6b;
+            color: #fff;
+        }
+
+        .search-section .btn-primary:hover,
+        .search-section .btn-primary:focus {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+            border-color: #122a52;
+            color: #fff;
+        }
+
+        .navy-total-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .btn-view-navy {
+            border-color: #1a3a6b !important;
+            color: #1a3a6b !important;
+            background: #fff !important;
+        }
+
+        .btn-view-navy:hover,
+        .btn-view-navy:focus {
+            background: #1a3a6b !important;
+            border-color: #1a3a6b !important;
+            color: #fff !important;
+        }
     </style>
 @endsection
 
@@ -187,7 +218,7 @@
                     <h6 class="mb-0 fw-bold">
                         <i class="bi bi-list-ul text-primary me-2"></i>{{ __('admin.candidates_list') }}
                     </h6>
-                    <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $candidates->total() }}</span>
+                    <span class="badge navy-total-badge ms-2">{{ __('admin.total') }} {{ $candidates->total() }}</span>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -226,7 +257,7 @@
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ route('admin.candidates.show', $candidate->id) }}"
-                                                class="btn btn-outline-primary" title="View">
+                                                class="btn btn-view-navy" title="View">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a href="{{ route('admin.candidates.edit', $candidate->id) }}"

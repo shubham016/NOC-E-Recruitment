@@ -313,16 +313,22 @@
         <!-- Main Content -->
         <div class="col-12 mt-4">
             <!-- Candidate Photo & Basic Info -->
-            <div class="candidate-photo-section">
-                @if($application->passport_size_photo)
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                         alt="Candidate Photo"
-                         class="candidate-photo">
+                    <div class="candidate-photo-section">
+                @php
+                    $photo = $application->passport_size_photo
+                        ?? $application->candidateRegistration?->passport_size_photo;
+                @endphp
+
+                @if($photo)
+                    <img src="{{ Storage::url($photo) }}"
+                        alt="Candidate Photo"
+                        class="candidate-photo">
                 @else
                     <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
-                        <i class="" style="font-size: 4rem;"></i>
+                        <i class="bi bi-person" style="font-size: 4rem;"></i>
                     </div>
                 @endif
+
                 <div class="candidate-basic-info">
                     <h3>{{ $application->name_english ?? 'N/A' }}</h3>
                     <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>
@@ -340,14 +346,12 @@
                         <i class=""></i>
                         {{ $application->permanent_municipality }}, {{ $application->permanent_district }}
                     </p>
-                     <p class="mb-0 opacity-75">
-                    <i class=""></i>
-                    @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
-                    Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
-                </p>
-                 
+                    <p class="mb-0 opacity-75">
+                        <i class=""></i>
+                        @php $submittedDate = $application->submitted_at ?: $application->created_at; @endphp
+                        Submitted: {{ $submittedDate ? adToBS($submittedDate) . ' BS, ' . \Carbon\Carbon::parse($submittedDate)->format('h:i A') : 'N/A' }}
+                    </p>
                 </div>
-                
             </div>
 
             <!-- Vacancy Information -->
@@ -834,69 +838,151 @@
             @endif
             </div>
 
-             <!-- Work Experience -->
-                <div class="info-card">
-                    <h5>{{ __('approver.work_experience') }}</h5>
+           <!-- Work Experience -->
+<div class="info-card">
+    <h5>{{ __('approver.work_experience') }}</h5>
 
-                    <div class="mb-3">
-                        <strong>{{ __('approver.has_work_experience') }}:</strong>
-                        <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
+    @php $hasExperiences = $application->experiences->isNotEmpty(); @endphp
+
+    @if(strtolower($application->has_work_experience ?? '') == 'yes' || $hasExperiences)
+
+        <div class="mb-3">
+            <strong>{{ __('approver.has_work_experience') }}:</strong>
+            <p class="mb-0">{{ $hasExperiences ? 'Yes' : ucfirst($application->has_work_experience) }}</p>
+        </div>
+
+        @forelse($application->experiences as $exp)
+            <div class="border rounded p-3 mb-3">
+                <h6 class="text-primary">{{ __('approver.experience_label') }} {{ $exp->exp_number }}</h6>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>{{ __('approver.organization') }}:</strong>
+                        <p>{{ $exp->organization ?? '-' }}</p>
                     </div>
-
-                    @forelse($application->experiences as $exp)
-                        <div class="border rounded p-3 mb-3">
-                            <h6 class="text-primary">{{ __('approver.experience') }} {{ $exp->exp_number }}</h6>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <strong>{{ __('approver.organization') }}:</strong>
-                                    <p>{{ $exp->organization ?? '-' }}</p>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <strong>{{ __('approver.position') }}:</strong>
-                                    <p>{{ $exp->position ?? '-' }}</p>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <strong>{{ __('approver.start_date') }} (B.S):</strong>
-                                    <p>{{ $exp->start_date_bs ?? '-' }}</p>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <strong>{{ __('approver.end_date') }} (B.S):</strong>
-                                    <p>{{ $exp->end_date_bs ?? '-' }}</p>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <strong>{{ __('approver.years') }}:</strong>
-                                    <p>{{ $exp->years ?? '-' }}</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <strong>{{ __('approver.document') }}:</strong>
-                                @if($exp->document)
-                                    @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
-                                    @if(in_array($ext, ['jpg','jpeg','png','webp']))
-                                        <img src="{{ asset('storage/' . $exp->document) }}"
-                                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                                    @else
-                                        <a href="{{ asset('storage/' . $exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
-                                    @endif
-                                @else
-                                    <div class="alert alert-primary">{{ __('approver.no_document_uploaded') }}</div>
-                                @endif
-                            </div>
-                        </div>
-                    @empty
-                        <div class="alert alert-primary">
-                            {{ __('approver.no_work_experience') }}
-                        </div>
-                    @endforelse
+                    <div class="col-md-6">
+                        <strong>{{ __('approver.position') }}:</strong>
+                        <p>{{ $exp->position ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>{{ __('approver.start_date_bs') }}</strong>
+                        <p>{{ $exp->start_date_bs ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>{{ __('approver.end_date_bs') }} </strong>
+                        <p>{{ $exp->end_date_bs ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>{{ __('approver.years') }}:</strong>
+                        <p>{{ $exp->years ?? '-' }}</p>
+                    </div>
                 </div>
 
-            <!-- Payment Information -->
+                @php
+                    $docCol   = 'exp' . $exp->exp_number . '_document';
+                    $document = $exp->document
+                        ?? ($application->candidateRegistration?->{$docCol} ?? null);
+                @endphp
+
+                <div>
+                    <strong>{{ __('approver.document') }}:</strong>
+                    @if($document)
+                        @php $ext = strtolower(pathinfo($document, PATHINFO_EXTENSION)); @endphp
+                        @if(in_array($ext, ['jpg','jpeg','png','webp']))
+                            <img src="{{ Storage::url($document) }}"
+                                 style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                        @elseif($ext === 'pdf')
+                            <a href="{{ Storage::url($document) }}" target="_blank"
+                               class="btn btn-sm btn-outline-danger mt-2">
+                                <i class="fas fa-file-pdf me-1"></i> View PDF
+                            </a>
+                        @else
+                            <a href="{{ Storage::url($document) }}" target="_blank"
+                               class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
+                        @endif
+                    @else
+                        <div class="alert alert-primary mt-2">{{ __('approver.no_document_uploaded') }}</div>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="alert alert-primary">{{ __('approver.no_work_experience') }}</div>
+        @endforelse
+
+    @else
+        <div class="alert alert-primary">{{ __('approver.no_work_experience') }}</div>
+    @endif
+</div>
+
+            
+
+            <!-- Cover Letter -->
+            <!-- @if($application->cover_letter)
+            <div class="info-card">
+                <h5><i class=""></i>Cover Letter</h5>
+                <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
+                </div>
+            </div>
+            @endif -->
+
+             
+
+            <!-- Uploaded Documents -->
+<div class="info-card">
+    <h5><i class=""></i>{{ __('approver.uploaded_documents') }}</h5>
+
+    @php
+        $cr = $application->candidateRegistration;
+
+        $docs = [
+            'passport_size_photo'     => ['label' => __('approver.passport_size_photo'),     'file' => $application->passport_size_photo     ?? $cr?->passport_size_photo],
+            'signature'               => ['label' => __('approver.signature'),               'file' => $application->signature               ?? $cr?->signature],
+            'citizenship_id_document' => ['label' => __('approver.citizenship_id'), 'file' => $application->citizenship_id_document  ?? $cr?->citizenship_id_document],
+            'noc_id_card'             => ['label' => __('approver.noc_id_card'),             'file' => $application->noc_id_card             ?? $cr?->noc_id_card],
+            'ethnic_certificate'      => ['label' => __('approver.ethnic_certificate'),      'file' => $application->ethnic_certificate       ?? $cr?->ethnic_certificate],
+            'disability_certificate'  => ['label' => __('approver.disability_certificate'),  'file' => $application->disability_certificate   ?? $cr?->disability_certificate],
+            'transcript'              => ['label' => __('approver.academic_transcripts'),              'file' => $application->transcript              ?? $cr?->transcript],
+            'character'               => ['label' => __('approver.character_certificate'),   'file' => $application->character               ?? $cr?->character_certificate],
+            'equivalent'              => ['label' => __('approver.equivalency_certificate'), 'file' => $application->equivalent              ?? $cr?->equivalency_certificate],
+            'work_experience'         => ['label' => __('approver.work_experience_doc'),     'file' => $application->work_experience],
+            'additional_documents'    => ['label' => __('approver.additional_documents'),    'file' => $application->additional_documents],
+        ];
+
+        $hasAny = collect($docs)->contains(fn($d) => !empty($d['file']));
+    @endphp
+
+    @if($hasAny)
+        @foreach($docs as $doc)
+            @if(!empty($doc['file']))
+                <div class="document-item mb-3">
+                    <div class="document-info">
+                        <p class="document-name"><strong>{{ $doc['label'] }}</strong></p>
+                        @php $ext = strtolower(pathinfo($doc['file'], PATHINFO_EXTENSION)); @endphp
+                        @if(in_array($ext, ['jpg','jpeg','png','webp']))
+                            <img src="{{ Storage::url($doc['file']) }}"
+                                 style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                        @elseif($ext === 'pdf')
+                            <a href="{{ Storage::url($doc['file']) }}" target="_blank"
+                               class="btn btn-sm btn-outline-danger mt-2">
+                                <i class="fas fa-file-pdf me-1"></i> View PDF
+                            </a>
+                        @else
+                            <a href="{{ Storage::url($doc['file']) }}" target="_blank"
+                               class="btn btn-sm btn-outline-secondary mt-2">
+                                <i class="fas fa-file me-1"></i> View Document
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @endforeach
+    @else
+        <div class="alert alert-warning">{{ __('approver.no_documents_uploaded') }}</div>
+    @endif
+</div>
+
+        <!-- Payment Information -->
             <div class="info-card">
                 <h5>{{ __('approver.payment_information') }}</h5>
                 <div class="row">
@@ -929,206 +1015,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Cover Letter -->
-            <!-- @if($application->cover_letter)
-            <div class="info-card">
-                <h5><i class=""></i>Cover Letter</h5>
-                <div class="p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <p style="white-space: pre-wrap;">{{ $application->cover_letter }}</p>
-                </div>
-            </div>
-            @endif -->
-
-             
-
-             <!-- Uploaded Documents -->
-            <div class="info-card">
-            <h5><i class=""></i>{{ __('approver.uploaded_documents') }}</h5>
-
-
-             @if($application->passport_size_photo)
-            <div class="document-item">
-                <div class="document-info">
-                    <p class="document-name">{{ __('approver.passport_size_photo') }}</p>
-                    <p class="document-size">{{ __('approver.passport_size_photo') }}</p>
-
-                    <img src="{{ Storage::url($application->passport_size_photo) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-             
-
-           
-
-            @if($application->signature)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">{{ __('approver.signature') }}</p>
-                    <p class="document-size">{{ __('approver.signature') }}</p>
-
-                    <img src="{{ Storage::url($application->signature) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->ethnic_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">{{ __('approver.ethnic_certificate') }}</p>
-                    <p class="document-size">{{ __('approver.ethnic_certificate') }}</p>
-
-                    <img src="{{ Storage::url($application->ethnic_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-             @if($application->disability_certificate)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">{{ __('approver.disability_certificate') }}</p>
-                    <p class="document-size">{{ __('approver.disability_certificate') }}</p>
-
-                    <img src="{{ Storage::url($application->disability_certificate) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-            @if($application->noc_id_card)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">{{ __('approver.noc_id_card') }}</p>
-                    <p class="document-size">{{ __('approver.noc_id_card') }}</p>
-
-                    <img src="{{ Storage::url($application->noc_id_card) }}"
-                    style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                </div>
-            </div>
-            @endif
-
-        
-
-
-
-
-            <!-- @if($application->cover_letter_file)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Cover Letter (File)</p>
-                    <p class="document-size">Uploaded cover letter document</p>
-
-                    <iframe src="{{ Storage::url($application->cover_letter_file) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-          
-
-
-            <!-- @if($application->other_documents)
-            <div class="document-item">
-                
-
-                <div class="document-info">
-                    <p class="document-name">Other Documents</p>
-                    <p class="document-size">Additional supporting documents</p>
-
-                    <iframe src="{{ Storage::url($application->other_documents) }}"
-                            style="width:100%; height:200px; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </iframe>
-                </div>
-            </div>
-            @endif -->
-
-
-            @if(
-                !$application->passport_size_photo &&
-                !$application->resume &&
-                !$application->work_experience &&
-                !$application->citizenship_certificate &&
-                !$application->citizenship_id_document &&
-                !$application->educational_certificates &&
-                !$application->transcript &&
-                !$application->experience_certificates &&
-                !$application->character_certificate &&
-                !$application->character &&
-                !$application->equivalency_certificate &&
-                !$application->equivalent &&
-                !$application->ethnic_certificate &&
-                !$application->disability_certificate &&
-                !$application->noc_id_card &&
-                !$application->cover_letter_file &&
-                !$application->signature &&
-                !$application->other_documents
-            )
-            <div class="alert alert-warning">
-                {{ __('approver.no_documents_uploaded') }}
-            </div>
-            @endif
-        </div>
-            <!-- Reviewed Details -->
-            <!-- <div class="info-card">
-                <h5>
-                    <i class="text-primary me-2"></i>Reviewed Details
-                </h5>
-                <div class="timeline">
-                    <div class="info-row">
-                            <div class="info-label">Reviewer:</div>
-                            <div class="info-value">{{ $application->reviewer->name ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Reviewed Date:</div>
-                            <div class="info-value">{{ $application->reviewed_at ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Reviewer Note:</div>
-                            <div class="info-value">{{ $application->reviewer_notes?? 'N/A' }}</div>
-                        </div>
-                    
-                </div>
-
-            </div> -->
-
-           
-
-            <!-- Admin Notes (if any) -->
-            <!-- @if($application->admin_notes)
-            <div class="info-card">
-                <h5>Admin Notes</h5>
-                <div class="alert alert-info-custom">
-                    <p class="mb-0"><strong>Admin's Note:</strong></p>
-                    <p class="mb-0 mt-2">{{ $application->admin_notes }}</p>
-                </div>
-            </div>
-            @endif
-
-            @if($application->priority_note)
-            <div class="info-card">
-                <h5>Priority Note</h5>
-                <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
-                    <p class="mb-0">{{ $application->priority_note }}</p>
-                </div>
-            </div>
-            @endif
-        </div> -->
 
         <!-- Right Column -->
         <div class="col-12 mt-4">
@@ -1183,8 +1069,8 @@
     @if($histories->isEmpty())
         <div class="alert alert-info-custom">{{ __('approver.no_history_available') }}</div>
     @else
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle mb-0">
+         <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 text-center">
                 <thead class="table-light">
                     <tr>
                         <th style="width:50px">S.N</th>
@@ -1199,7 +1085,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                <span >
+                                <span>
                                     {{ $history->stage_name }}
                                 </span>
                             </td>
@@ -1209,7 +1095,10 @@
                                     {{ ucfirst($history->done_by_type) }}
                                 </small>
                             </td>
-                            <td>{{ $history->created_at->format('F d, Y') }}</td>
+                            <td>
+                                {{ adToBS($history->created_at->format('Y-m-d')) }} BS,
+                                {{ $history->created_at->format('h:i A') }}
+                            </td>
                             <td>{{ $history->remarks ?: '—' }}</td>
                         </tr>
                     @endforeach

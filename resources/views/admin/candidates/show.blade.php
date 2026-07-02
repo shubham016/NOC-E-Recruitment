@@ -72,7 +72,7 @@
         .profile-avatar {
             width: 120px;
             height: 120px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -152,7 +152,7 @@
         .profile-id-value {
             font-size: 24px;
             font-weight: 700;
-            color: #667eea;
+            color: #1a3a6b;
             font-family: 'Courier New', monospace;
         }
 
@@ -171,12 +171,12 @@
         .info-icon {
             width: 44px;
             height: 44px;
-            background: #f7fafc;
+            background: #e8eef6;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #667eea;
+            color: #1a3a6b;
             font-size: 20px;
             flex-shrink: 0;
         }
@@ -222,7 +222,7 @@
         }
 
         .stat-box.blue .stat-number {
-            color: #667eea;
+            color: #1a3a6b;
         }
 
         .stat-box.orange .stat-number {
@@ -274,7 +274,7 @@
         }
 
         .card-title i {
-            color: #667eea;
+            color: #1a3a6b;
             font-size: 22px;
         }
 
@@ -314,7 +314,7 @@
         }
 
         .info-table .value a {
-            color: #667eea;
+            color: #1a3a6b;
             text-decoration: none;
         }
 
@@ -364,7 +364,12 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
             color: white;
         }
 
@@ -388,7 +393,7 @@
             padding: 20px;
             margin-bottom: 16px;
             background: #f7fafc;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #1a3a6b;
             border-radius: 4px;
         }
 
@@ -453,7 +458,7 @@
             align-items: center;
             gap: 6px;
             padding: 10px 20px;
-            background: #667eea;
+            background: #1a3a6b;
             color: white;
             border-radius: 6px;
             font-size: 14px;
@@ -463,7 +468,7 @@
         }
 
         .btn-view:hover {
-            background: #5a67d8;
+            background: #122a52;
             color: white;
             transform: translateY(-1px);
         }

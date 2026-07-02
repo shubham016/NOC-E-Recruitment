@@ -38,8 +38,7 @@ class AdminProfileController extends Controller
      */
     public function edit()
     {
-        $admin = Auth::guard('admin')->user();
-        return view('admin.profile.edit', compact('admin'));
+        return redirect()->route('admin.settings', ['tab' => 'profile']);
     }
 
     /**
@@ -77,7 +76,13 @@ class AdminProfileController extends Controller
     public function settings()
     {
         $admin = Auth::guard('admin')->user();
-        return view('admin.settings.index', compact('admin'));
+        $activeTab = request()->query('tab', 'profile');
+
+        if (! in_array($activeTab, ['profile', 'password'], true)) {
+            $activeTab = 'profile';
+        }
+
+        return view('admin.settings.index', compact('admin', 'activeTab'));
     }
 
     /**
@@ -85,8 +90,7 @@ class AdminProfileController extends Controller
      */
     public function showChangePasswordForm()
     {
-        $admin = Auth::guard('admin')->user();
-        return view('admin.profile.change-password', compact('admin'));
+        return redirect()->route('admin.settings', ['tab' => 'password']);
     }
 
     /**
@@ -103,14 +107,16 @@ class AdminProfileController extends Controller
 
         // Verify current password
         if (!Hash::check($validated['current_password'], $admin->password)) {
-            return back()->with('error', 'Current password is incorrect!');
+            return redirect()->route('admin.settings', ['tab' => 'password'])
+                ->withInput()
+                ->with('error', 'Current password is incorrect!');
         }
 
         $admin->update([
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('admin.settings')
+        return redirect()->route('admin.settings', ['tab' => 'password'])
             ->with('success', 'Password changed successfully!');
     }
 }

@@ -227,20 +227,20 @@
 
             {{-- Candidate Photo & Basic Info --}}
             <div class="candidate-photo-section">
-                 @php
-        $photo = $application->passport_size_photo
-            ?? optional($application->candidateRegistration)->passport_size_photo;
-    @endphp
+                @php
+                $photo = $application->passport_size_photo
+                ?? optional($application->candidateRegistration)->passport_size_photo;
+                @endphp
 
-    @if($photo)
-        <img src="{{ Storage::url($photo) }}"
-             alt="Candidate Photo"
-             class="candidate-photo">
-    @else
-        <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
-            <i class="bi bi-person" style="font-size: 4rem;"></i>
-        </div>
-    @endif
+                @if($photo)
+                <img src="{{ Storage::url($photo) }}"
+                    alt="Candidate Photo"
+                    class="candidate-photo">
+                @else
+                <div class="candidate-photo d-flex align-items-center justify-content-center bg-secondary text-white">
+                    <i class="bi bi-person" style="font-size: 4rem;"></i>
+                </div>
+                @endif
                 <div class="candidate-basic-info">
                     <h3>{{ $application->name_english ?? 'N/A' }}</h3>
                     <p class="detail"><strong>{{ $application->name_nepali ?? '' }}</strong></p>
@@ -693,11 +693,16 @@
             {{-- ── Work Experience ── --}}
             <div class="info-card">
                 <h5>{{ __('reviewer.work_experience') }}</h5>
-                @if(strtolower($application->has_work_experience ?? '') == 'yes')
+
+                @php $hasExperiences = $application->experiences->isNotEmpty(); @endphp
+
+                @if(strtolower($application->has_work_experience ?? '') == 'yes' || $hasExperiences)
+
                 <div class="mb-3">
                     <strong>{{ __('reviewer.has_work_experience') }}:</strong>
-                    <p class="mb-0">{{ ucfirst($application->has_work_experience ?? '-') }}</p>
+                    <p class="mb-0">{{ $hasExperiences ? 'Yes' : ucfirst($application->has_work_experience) }}</p>
                 </div>
+
                 @forelse($application->experiences as $exp)
                 <div class="border rounded p-3 mb-3">
                     <h6 class="text-primary">Experience {{ $exp->exp_number }}</h6>
@@ -711,11 +716,11 @@
                             <p>{{ $exp->position ?? '-' }}</p>
                         </div>
                         <div class="col-md-6">
-                            <strong>{{ __('reviewer.start_date') }} (B.S):</strong>
+                            <strong>{{ __('reviewer.start_date_bs') }}:</strong>
                             <p>{{ $exp->start_date_bs ?? '-' }}</p>
                         </div>
                         <div class="col-md-6">
-                            <strong>{{ __('reviewer.end_date') }} (B.S):</strong>
+                            <strong>{{ __('reviewer.end_date_bs') }}:</strong>
                             <p>{{ $exp->end_date_bs ?? '-' }}</p>
                         </div>
                         <div class="col-md-6">
@@ -723,15 +728,23 @@
                             <p>{{ $exp->years ?? '-' }}</p>
                         </div>
                     </div>
+
+                    @php
+                    $docCol = 'exp' . $exp->exp_number . '_document';
+                    $document = $exp->document
+                    ?? ($application->candidateRegistration?->{$docCol} ?? null);
+                    @endphp
+
                     <div>
                         <strong>{{ __('reviewer.document') }}:</strong>
-                        @if($exp->document)
-                        @php $ext = strtolower(pathinfo($exp->document, PATHINFO_EXTENSION)); @endphp
+                        @if($document)
+                        @php $ext = strtolower(pathinfo($document, PATHINFO_EXTENSION)); @endphp
                         @if(in_array($ext, ['jpg','jpeg','png','webp']))
-                        <img src="{{ Storage::url($exp->document) }}"
+                        <img src="{{ Storage::url($document) }}"
                             style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
                         @else
-                        <a href="{{ Storage::url($exp->document) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
+                        <a href="{{ Storage::url($document) }}" target="_blank"
+                            class="btn btn-sm btn-outline-secondary mt-2">View Document</a>
                         @endif
                         @else
                         <div class="alert alert-primary mt-2">{{ __('reviewer.no_document_uploaded') }}</div>
@@ -741,6 +754,7 @@
                 @empty
                 <div class="alert alert-success">{{ __('reviewer.no_experience_records') }}</div>
                 @endforelse
+
                 @else
                 <div class="alert alert-primary">{{ __('reviewer.no_work_experience') }}</div>
                 @endif
@@ -750,63 +764,54 @@
             {{-- ── Uploaded Documents ── --}}
             <div class="info-card">
                 <h5>{{ __('reviewer.uploaded_documents') }}</h5>
-                @if($application->passport_size_photo)
-                <div class="document-item">
+
+                @php
+                $cr = $application->candidateRegistration; // shorthand
+
+                $docs = [
+                'passport_size_photo' => ['label' => __('reviewer.passport_size_photo'), 'file' => $application->passport_size_photo ?? $cr?->passport_size_photo, 'type' => 'image'],
+                'signature' => ['label' => __('reviewer.signature'), 'file' => $application->signature ?? $cr?->signature, 'type' => 'image'],
+                'citizenship_id_document'=> ['label' => __('reviewer.citizenship_id'),'file' => $application->citizenship_id_document ?? $cr?->citizenship_id_document,'type' => 'file'],
+                'noc_id_card' => ['label' => __('reviewer.noc_id_card'), 'file' => $application->noc_id_card ?? $cr?->noc_id_card, 'type' => 'file'],
+                'ethnic_certificate' => ['label' => __('reviewer.ethnic_certificate'), 'file' => $application->ethnic_certificate ?? $cr?->ethnic_certificate, 'type' => 'file'],
+                'disability_certificate' => ['label' => __('reviewer.disability_certificate'), 'file' => $application->disability_certificate ?? $cr?->disability_certificate, 'type' => 'file'],
+                'transcript' => ['label' => __('reviewer.academic_transcripts'), 'file' => $application->transcript ?? $cr?->transcript, 'type' => 'file'],
+                'character' => ['label' => __('reviewer.character_certificate'), 'file' => $application->character ?? $cr?->character_certificate, 'type' => 'file'],
+                'equivalent' => ['label' => __('reviewer.equivalency_certificate'),'file' => $application->equivalent ?? $cr?->equivalency_certificate, 'type' => 'file'],
+                'work_experience' => ['label' => __('reviewer.work_experience_doc'), 'file' => $application->work_experience, 'type' => 'file'],
+                'additional_documents' => ['label' => __('reviewer.additional_documents'), 'file' => $application->additional_documents, 'type' => 'file'],
+                ];
+
+                $hasAny = collect($docs)->contains(fn($d) => !empty($d['file']));
+                @endphp
+
+                @if($hasAny)
+                @foreach($docs as $doc)
+                @if(!empty($doc['file']))
+                <div class="document-item mb-3">
                     <div class="document-info">
-                        <p class="document-name">{{ __('reviewer.passport_size_photo') }}</p>
-                        <img src="{{ Storage::url($application->passport_size_photo) }}"
+                        <p class="document-name"><strong>{{ $doc['label'] }}</strong></p>
+                        @php $ext = strtolower(pathinfo($doc['file'], PATHINFO_EXTENSION)); @endphp
+                        @if(in_array($ext, ['jpg','jpeg','png','webp']))
+                        <img src="{{ Storage::url($doc['file']) }}"
                             style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
+                        @elseif($ext === 'pdf')
+                        <a href="{{ Storage::url($doc['file']) }}" target="_blank"
+                            class="btn btn-sm btn-outline-danger mt-2">
+                            <i class="fas fa-file-pdf me-1"></i> View PDF
+                        </a>
+                        @else
+                        <a href="{{ Storage::url($doc['file']) }}" target="_blank"
+                            class="btn btn-sm btn-outline-secondary mt-2">
+                            <i class="fas fa-file me-1"></i> View Document
+                        </a>
+                        @endif
                     </div>
                 </div>
                 @endif
-                @if($application->signature)
-                <div class="document-item">
-                    <div class="document-info">
-                        <p class="document-name">{{ __('reviewer.signature') }}</p>
-                        <img src="{{ Storage::url($application->signature) }}"
-                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </div>
-                </div>
-                @endif
-                @if($application->ethnic_certificate)
-                <div class="document-item">
-                    <div class="document-info">
-                        <p class="document-name">{{ __('reviewer.ethnic_certificate') }}</p>
-                        <img src="{{ Storage::url($application->ethnic_certificate) }}"
-                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </div>
-                </div>
-                @endif
-                @if($application->disability_certificate)
-                <div class="document-item">
-                    <div class="document-info">
-                        <p class="document-name">{{ __('reviewer.disability_certificate') }}</p>
-                        <img src="{{ Storage::url($application->disability_certificate) }}"
-                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </div>
-                </div>
-                @endif
-                @if($application->noc_id_card)
-                <div class="document-item">
-                    <div class="document-info">
-                        <p class="document-name">{{ __('reviewer.noc_id_card') }}</p>
-                        <img src="{{ Storage::url($application->noc_id_card) }}"
-                            style="width:100%; max-height:520px; object-fit:contain; border:1px solid #ddd; border-radius:8px; margin-top:8px;">
-                    </div>
-                </div>
-                @endif
-                @if(
-                !$application->passport_size_photo && !$application->resume &&
-                !$application->work_experience && !$application->citizenship_certificate &&
-                !$application->citizenship_id_document && !$application->educational_certificates &&
-                !$application->transcript && !$application->experience_certificates &&
-                !$application->character_certificate && !$application->character &&
-                !$application->equivalency_certificate && !$application->equivalent &&
-                !$application->ethnic_certificate && !$application->disability_certificate &&
-                !$application->noc_id_card && !$application->cover_letter_file &&
-                !$application->signature && !$application->other_documents
-                )
-                <div class="alert alert-warning">{{ __('reviewer.no_documents_uploaded') }}</div>
+                @endforeach
+                @else
+                <div class="alert alert-primary">{{ __('reviewer.no_documents_uploaded') }}</div>
                 @endif
             </div>
             {{-- /Uploaded Documents --}}
@@ -823,14 +828,14 @@
             @endif
 
             {{-- ── Priority Note ── --}}
-            @if($application->priority_note)
+            <!-- @if($application->priority_note)
             <div class="info-card">
                 <h5>{{ __('reviewer.priority_note') }}</h5>
                 <div class="alert" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
                     <p class="mb-0">{{ $application->priority_note }}</p>
                 </div>
             </div>
-            @endif
+            @endif -->
 
             {{-- ── Payment ── --}}
             @php $payment = \App\Models\Payment::where('draft_id', $application->id)->first(); @endphp
@@ -887,20 +892,6 @@
                             required>{{ $application->reviewer_notes }}</textarea>
                         <small class="text-muted" id="notesHelp">{{ __('reviewer.please_provide_detailed_feedback') }}</small>
                     </div>
-                    <div id="smsPreview" style="display:none;" class="mb-3">
-                        <div class="alert alert-warning" style="background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-left:4px solid #f59e0b;">
-                            <strong>{{ __('reviewer.sms_notification_preview') }}:</strong>
-                            <p class="mt-2 mb-0 small" style="font-family:monospace;background:white;padding:0.75rem;border-radius:6px;">
-                                <strong>{{ __('reviewer.nepal_oil_corporation') }}</strong><br>
-                                {{ __('reviewer.your_application_has_been_rejected') }}<br><br>
-                                <strong>{{ __('reviewer.reason') }}:</strong>
-                                <span id="smsReasonPreview">[Your rejection reason will appear here]</span><br><br>
-                                {{ __('reviewer.please_review_and_reapply') }}<br>
-                                - NOC E-Recruitment
-                            </p>
-                            <small class="text-muted mt-2 d-block">{{ __('reviewer.sms_will_be_sent_to') }} <strong>{{ $application->phone ?? 'N/A' }}</strong></small>
-                        </div>
-                    </div>
                     <div class="d-grid gap-2">
                         <button type="submit" id="submitBtn" class="btn btn-lg" style="background:#64748b;color:white;">
                             {{ __('reviewer.submit_action') }}
@@ -923,32 +914,35 @@
                 <div class="alert alert-info-custom">{{ __('reviewer.no_history_available') }}</div>
                 @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width:50px">S.N</th>
-                                <th>{{ __('reviewer.stage_name') }}</th>
-                                <th>{{ __('reviewer.done_by') }}</th>
-                                <th>{{ __('reviewer.date_time') }}</th>
-                                <th>{{ __('reviewer.remarks') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($histories as $index => $history)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $history->stage_name }}</td>
-                                <td>
-                                    {{ $history->done_by }}
-                                    <small class="d-block text-muted">{{ ucfirst($history->done_by_type) }}</small>
-                                </td>
-                                <td>{{ $history->created_at->format('F d, Y') }}</td>
-                                <td>{{ $history->remarks ?: '—' }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            <table class="table table-bordered table-hover align-middle mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:50px">S.N</th>
+                                        <th>{{ __('reviewer.stage_name') }}</th>
+                                        <th>{{ __('reviewer.done_by') }}</th>
+                                        <th>{{ __('reviewer.date_time') }}</th>
+                                        <th>{{ __('reviewer.remarks') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($histories as $index => $history)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $history->stage_name }}</td>
+                                        <td>
+                                            {{ $history->done_by }}
+                                            <small class="d-block text-muted">{{ ucfirst($history->done_by_type) }}</small>
+                                        </td>
+                                        <td>
+                                            {{ adToBS($history->created_at->format('Y-m-d')) }} BS,
+                                            {{ $history->created_at->format('h:i A') }}
+                                        </td>
+                                        <td>{{ $history->remarks ?: '—' }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                 @endif
             </div>
             {{-- /Status History --}}
@@ -967,7 +961,6 @@
         const notesHelp = document.getElementById('notesHelp');
         const reviewerNotes = document.getElementById('reviewerNotes');
         const submitBtn = document.getElementById('submitBtn');
-        const smsPreview = document.getElementById('smsPreview');
 
         if (status === 'reviewed') {
             notesLabel.textContent = 'Review Comments';
@@ -976,7 +969,6 @@
             submitBtn.className = 'btn btn-success btn-lg';
             submitBtn.style.background = '';
             submitBtn.textContent = '{{ __("reviewer.submit_action") }}';
-            smsPreview.style.display = 'none';
         } else if (status === 'rejected') {
             notesLabel.textContent = 'Rejection Reason';
             notesHelp.innerHTML = '<strong>Important:</strong> Clearly explain what is missing or incorrect. This will be sent to the candidate via SMS.';
@@ -984,19 +976,10 @@
             submitBtn.className = 'btn btn-danger btn-lg';
             submitBtn.style.background = '';
             submitBtn.textContent = 'Reject Application';
-            smsPreview.style.display = 'block';
         } else {
             submitBtn.className = 'btn btn-lg';
             submitBtn.style.background = '#64748b';
             submitBtn.style.color = 'white';
-            smsPreview.style.display = 'none';
-        }
-    });
-
-    document.getElementById('reviewerNotes').addEventListener('input', function() {
-        if (document.getElementById('reviewStatus').value === 'rejected') {
-            document.getElementById('smsReasonPreview').textContent =
-                this.value.trim() || '[Your rejection reason will appear here]';
         }
     });
 

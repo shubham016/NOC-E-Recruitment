@@ -38,21 +38,21 @@
         height: 100px;
         border-radius: 10px;
         object-fit: cover;
-        border: 3px solid #1d6df7;
+        border: 3px solid #1a3a6b;
     }
 
     .reviewer-avatar-placeholder {
         width: 100px;
         height: 100px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #1d6df7 0%, #1557c0 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: 700;
         font-size: 2.5rem;
-        border: 3px solid #1d6df7;
+        border: 3px solid #1a3a6b;
     }
 
     .reviewer-info h2 {
@@ -88,8 +88,8 @@
     }
 
     .reviewer-id-badge {
-        background: #dbeafe;
-        color: #1e40af;
+        background: #e8eef6;
+        color: #1a3a6b;
         padding: 0.375rem 0.875rem;
         border-radius: 6px;
         font-size: 0.813rem;
@@ -112,12 +112,12 @@
     .info-icon-box {
         width: 48px;
         height: 48px;
-        background: #dbeafe;
+        background: #e8eef6;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #1d6df7;
+        color: #1a3a6b;
         font-size: 1.25rem;
         flex-shrink: 0;
     }
@@ -168,11 +168,11 @@
     }
 
     .stat-card.blue .stat-number {
-        color: #3b82f6;
+        color: #1a3a6b;
     }
 
     .stat-card.orange .stat-number {
-        color: #f97316;
+        color: #1a3a6b;
     }
 
     .stat-card.green .stat-number {
@@ -227,7 +227,7 @@
     }
 
     .section-header h3 i {
-        color: #1d6df7;
+        color: #1a3a6b;
         font-size: 1.25rem;
     }
 
@@ -301,8 +301,8 @@
     }
 
     .app-status-pending {
-        background: #fed7aa;
-        color: #9a3412;
+        background: #e8eef6;
+        color: #1a3a6b;
     }
 
     .app-status-approved {
@@ -320,7 +320,7 @@
         align-items: center;
         gap: 0.25rem;
         padding: 0.5rem 1rem;
-        background: #1d6df7;
+        background: #1a3a6b;
         color: white;
         border-radius: 6px;
         text-decoration: none;
@@ -331,7 +331,7 @@
     }
 
     .btn-view-sm:hover {
-        background: #1557c0;
+        background: #122a52;
         color: white;
         transform: translateY(-1px);
     }
@@ -396,12 +396,12 @@
     }
 
     .action-btn-primary {
-        background: #1d6df7;
+        background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
         color: white;
     }
 
     .action-btn-warning {
-        background: #f97316;
+        background: #1a3a6b;
         color: white;
     }
 

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Candidate;
 use App\Models\ApplicationForm;
+use App\Models\CandidateRegistration;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class CandidateManagementController extends Controller
 {
@@ -18,34 +18,27 @@ class CandidateManagementController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
 
-        // Get unique candidates from application_form table
-        $candidates = ApplicationForm::query()
-            ->select([
-                \DB::raw('MIN(id) as id'),
-                'email',
-                \DB::raw('MAX(name_english) as name_english'),
-                \DB::raw('MAX(citizenship_number) as citizenship_number'),
-                \DB::raw('MAX(phone) as phone'),
-                \DB::raw('MAX(created_at) as created_at'),
-                \DB::raw('COUNT(*) as applications_count')
-            ])
-            ->groupBy('email')
+        // Candidate list must come from registered candidate accounts.
+        // Applications are optional and are counted through citizenship number.
+        $candidates = CandidateRegistration::query()
+            ->withCount(['applicationForms as applications_count'])
             ->when($search, function ($query, $search) {
-                $query->havingRaw('MAX(name_english) like ?', ["%{$search}%"])
-                    ->orHavingRaw('email like ?', ["%{$search}%"])
-                    ->orHavingRaw('MAX(phone) like ?', ["%{$search}%"])
-                    ->orHavingRaw('MAX(citizenship_number) like ?', ["%{$search}%"]);
+                $query->where(function ($q) use ($search) {
+                    $q->where('name_english', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('citizenship_number', 'like', "%{$search}%");
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         $stats = [
-            'total' => ApplicationForm::distinct('email')->count('email'),
-            'this_month' => ApplicationForm::whereMonth('created_at', now()->month)
+            'total' => CandidateRegistration::count(),
+            'this_month' => CandidateRegistration::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
-                ->distinct('email')
-                ->count('email'),
-            'with_applications' => ApplicationForm::distinct('email')->count('email'),
+                ->count(),
+            'with_applications' => CandidateRegistration::has('applicationForms')->count(),
         ];
 
         return view('admin.candidates.index', compact('candidates', 'stats', 'search'));
@@ -56,46 +49,26 @@ class CandidateManagementController extends Controller
      */
     public function show($id)
     {
-        // Get the specific application form record
-        $application = ApplicationForm::findOrFail($id);
+        $registration = CandidateRegistration::findOrFail($id);
 
-        // Get all applications with the same email (same candidate)
-        $applications = ApplicationForm::where('email', $application->email)
+        $applications = ApplicationForm::where(function ($query) use ($registration) {
+                if ($registration->citizenship_number) {
+                    $query->where('citizenship_number', $registration->citizenship_number);
+                }
+
+                if ($registration->email) {
+                    $query->orWhere('email', $registration->email);
+                }
+            })
             ->with('vacancy', 'reviewer')
             ->latest()
             ->get();
 
-        // Parse the full name into parts
-        $nameParts = explode(' ', trim($application->name_english));
-        $firstName = $nameParts[0] ?? '';
-        $lastName = count($nameParts) > 1 ? array_pop($nameParts) : '';
-        $middleName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
-
-        // Create a candidate object from the application form data
-        $candidate = (object) [
-            'id' => $application->id,
-            'first_name' => $firstName,
-            'middle_name' => $middleName,
-            'last_name' => $lastName,
-            'name' => $application->name_english,
-            'username' => $application->citizenship_number ?? $application->email,
-            'email' => $application->email,
-            'mobile_number' => $application->phone,
-            'city' => $application->temporary_municipality ?? '',
-            'state' => $application->temporary_province ?? '',
-            'country' => 'Nepal',
-            'qualification' => $application->education_level ?? '',
-            'status' => 'active',
-            'email_verified_at' => null,
-            'photo' => $application->passport_size_photo,
-            'created_at' => $application->created_at,
-            'updated_at' => $application->updated_at,
-            'applications_count' => $applications->count(),
-        ];
+        $candidate = $this->candidateViewData($registration, $applications->count());
 
         $applicationStats = [
             'total' => $applications->count(),
-            'pending' => $applications->where('status', 'pending')->count(),
+            'pending' => $applications->whereIn('status', ['pending', 'assigned', 'edited'])->count(),
             'approved' => $applications->where('status', 'approved')->count(),
             'rejected' => $applications->where('status', 'rejected')->count(),
             'selected' => $applications->where('status', 'selected')->count(),
@@ -104,36 +77,42 @@ class CandidateManagementController extends Controller
         return view('admin.candidates.show', compact('candidate', 'applications', 'applicationStats'));
     }
 
+    private function candidateViewData(CandidateRegistration $registration, int $applicationsCount = 0): object
+    {
+        $nameParts = explode(' ', trim((string) $registration->name_english));
+        $firstName = $nameParts[0] ?? '';
+        $lastName = count($nameParts) > 1 ? array_pop($nameParts) : '';
+        $middleName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
+
+        return (object) [
+            'id' => $registration->id,
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
+            'name' => $registration->name_english ?: $registration->email,
+            'username' => $registration->citizenship_number ?? $registration->email,
+            'email' => $registration->email,
+            'mobile_number' => $registration->phone,
+            'city' => $registration->mailing_municipality ?? $registration->permanent_municipality ?? '',
+            'state' => $registration->mailing_province ?? $registration->permanent_province ?? '',
+            'country' => 'Nepal',
+            'qualification' => $registration->education_level ?? '',
+            'status' => 'active',
+            'email_verified_at' => null,
+            'photo' => $registration->passport_size_photo,
+            'created_at' => $registration->created_at,
+            'updated_at' => $registration->updated_at,
+            'applications_count' => $applicationsCount,
+        ];
+    }
+
     /**
      * Show edit form
      */
     public function edit($id)
     {
-        // Get the specific application form record
-        $application = ApplicationForm::findOrFail($id);
-
-        // Parse the full name into parts
-        $nameParts = explode(' ', trim($application->name_english));
-        $firstName = $nameParts[0] ?? '';
-        $lastName = count($nameParts) > 1 ? array_pop($nameParts) : '';
-        $middleName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
-
-        // Create a candidate object from the application form data
-        $candidate = (object) [
-            'id' => $application->id,
-            'first_name' => $firstName,
-            'middle_name' => $middleName,
-            'last_name' => $lastName,
-            'username' => $application->citizenship_number ?? $application->email,
-            'email' => $application->email,
-            'mobile_number' => $application->phone,
-            'city' => $application->temporary_municipality ?? '',
-            'state' => $application->temporary_province ?? '',
-            'country' => 'Nepal',
-            'qualification' => $application->education_level ?? '',
-            'status' => 'active',
-            'created_at' => $application->created_at,
-        ];
+        $registration = CandidateRegistration::findOrFail($id);
+        $candidate = $this->candidateViewData($registration);
 
         return view('admin.candidates.edit', compact('candidate'));
     }
@@ -143,25 +122,25 @@ class CandidateManagementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $application = ApplicationForm::findOrFail($id);
+        $registration = CandidateRegistration::findOrFail($id);
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'mobile_number' => 'required|string|max:10',
+            'email' => 'required|email|unique:candidate_registration,email,' . $registration->id,
+            'mobile_number' => 'required|string|max:20',
             'qualification' => 'nullable|string|max:255',
+            'status' => 'nullable|in:active,inactive',
         ]);
 
-        // Update the application form with the new data
         $fullName = trim($validated['first_name'] . ' ' . ($validated['middle_name'] ?? '') . ' ' . $validated['last_name']);
 
-        $application->update([
+        $registration->update([
             'name_english' => $fullName,
             'email' => $validated['email'],
             'phone' => $validated['mobile_number'],
-            'education_level' => $validated['qualification'] ?? $application->education_level,
+            'education_level' => $validated['qualification'] ?? $registration->education_level,
         ]);
 
         return redirect()
@@ -182,14 +161,26 @@ class CandidateManagementController extends Controller
      */
     public function destroy($id)
     {
-        $application = ApplicationForm::findOrFail($id);
-        $email = $application->email;
+        $registration = CandidateRegistration::findOrFail($id);
+        $email = $registration->email;
+        $citizenshipNumber = $registration->citizenship_number;
 
-        // Get count of all applications with this email
-        $count = ApplicationForm::where('email', $email)->count();
+        $applicationsQuery = ApplicationForm::where(function ($query) use ($email, $citizenshipNumber) {
+            if ($citizenshipNumber) {
+                $query->where('citizenship_number', $citizenshipNumber);
+            }
 
-        // Delete all applications with this email
-        ApplicationForm::where('email', $email)->delete();
+            if ($email) {
+                $query->orWhere('email', $email);
+            }
+        });
+
+        $count = $applicationsQuery->count();
+
+        DB::transaction(function () use ($applicationsQuery, $registration) {
+            $applicationsQuery->delete();
+            $registration->delete();
+        });
 
         return redirect()
             ->route('admin.candidates.index')

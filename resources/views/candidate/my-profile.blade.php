@@ -72,10 +72,10 @@
                         <span class="tab-circle">6</span>
                         <span class="tab-label d-none d-md-inline">{{ __('candidate.documents') }}</span>
                     </div>
-                    <!-- <div class="tab-item" data-step="7">
-                        <span class="tab-circle">7</span>
-                        <span class="tab-label d-none d-md-inline">Payment</span>
-                    </div> -->
+                    <div class="tab-item" data-step="7">
+    <span class="tab-circle">7</span>
+    <span class="tab-label d-none d-md-inline">Preview</span>
+</div>
                 </div>
             </div>
 
@@ -611,49 +611,427 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
-                        <i class="fas fa-arrow-left"></i> Back to Dashboard
-                    </a>
-                </div>
+    <button type="button" class="btn btn-secondary prev-btn">Back</button>
+    <button type="button" class="btn btn-light next-btn">Next</button>
+</div>
             </div>
 
-            {{-- STEP 7: Payment (kept for UI consistency) --}}
-            <!-- <div class="step d-none" id="step7">
-                <h5 class="mb-4 text-dark">Step 7 — Payment Details</h5>
+            {{-- STEP 7: Preview --}}
+<div class="step d-none" id="step7">
+    <h5 class="mb-4 text-dark">Step 7 — Profile Preview</h5>
 
-                <div class="alert alert-info py-2">
-                    {{ __('candidate.payment_not_part_profile') }}
-                    Please check “My Applications” to view payment details for a submitted application.
-                </div>
+    {{-- Section 1: Personal --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">Personal Information</h6>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.full_name_english') }}</span>
+                <span class="preview-value">{{ $candidate->name_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.full_name_nepali') }}</span>
+                <span class="preview-value">{{ $candidate->name_nepali ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.birth_date_bs') }}</span>
+                <span class="preview-value">{{ $candidate->birth_date_bs ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.birth_date_ad') }}</span>
+                <span class="preview-value">
+                    @if(!empty($candidate->birth_date_ad))
+                        {{ is_string($candidate->birth_date_ad) ? \Carbon\Carbon::parse($candidate->birth_date_ad)->format('F d, Y') : $candidate->birth_date_ad->format('F d, Y') }}
+                    @else
+                        -
+                    @endif
+                </span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.age') }}</span>
+                <span class="preview-value">{{ $candidate->age ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.gender') }}</span>
+                <span class="preview-value">{{ ucfirst($candidate->gender ?? '-') }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.email') }}</span>
+                <span class="preview-value">{{ $candidate->email ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.phone_number') }}</span>
+                <span class="preview-value">{{ $candidate->phone ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.alternate_phone_number') }}</span>
+                <span class="preview-value">{{ $candidate->alternate_phone_number ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.marital_status') }}</span>
+                <span class="preview-value">{{ ucfirst($candidate->marital_status ?? '-') }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.spouse_name_english') }}</span>
+                <span class="preview-value">{{ $candidate->spouse_name_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.spouse_nationality') }}</span>
+                <span class="preview-value">{{ $candidate->spouse_nationality ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.citizenship_number') }}</span>
+                <span class="preview-value">{{ $candidate->citizenship_number ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.citizenship_issue_date_bs') }}</span>
+                <span class="preview-value">{{ $candidate->citizenship_issue_date_bs ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.citizenship_issue_district') }}</span>
+                <span class="preview-value">{{ $candidate->citizenship_issue_district ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.father_name_english') }}</span>
+                <span class="preview-value">{{ $candidate->father_name_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.mother_name_english') }}</span>
+                <span class="preview-value">{{ $candidate->mother_name_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.grandfather_name_english') }}</span>
+                <span class="preview-value">{{ $candidate->grandfather_name_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.father_name_nepali') }}</span>
+                <span class="preview-value">{{ $candidate->father_name_nepali ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.mother_name_nepali') }}</span>
+                <span class="preview-value">{{ $candidate->mother_name_nepali ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.grandfather_name_nepali') }}</span>
+                <span class="preview-value">{{ $candidate->grandfather_name_nepali ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.blood_group') }}</span>
+                <span class="preview-value">{{ $candidate->blood_group ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.nationality') }}</span>
+                <span class="preview-value">{{ $candidate->nationality ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.are_you_noc_employee') }}</span>
+                <span class="preview-value">{{ ucfirst($candidate->noc_employee ?? '-') }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.parents_occupation') }}</span>
+                <span class="preview-value">{{ $candidate->parents_occupation ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.noc_id_card') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->noc_id_card ?? null) !!}</span>
+            </div>
+        </div>
+    </div>
 
-                <hr class="my-4">
+    <hr class="my-3">
 
-                <h6 class="mb-3 text-secondary">Profile Status</h6>
-                <div class="row mb-3">
-                    <div class="col-md-6 mb-3">
-                        <strong>{{ __('candidate.profile_id') }}:</strong>
-                        <p class="mb-0">{{ $candidate->id ?? '-' }}</p>
+    {{-- Section 2: General --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">General Information</h6>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.religion') }}</span>
+                <span class="preview-value">
+                    {{ $candidate->religion ?? '-' }}
+                    @if(($candidate->religion ?? null) === 'Other' && !empty($candidate->religion_other))
+                        ({{ $candidate->religion_other }})
+                    @endif
+                </span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.community') }}</span>
+                <span class="preview-value">
+                    {{ $candidate->community ?? '-' }}
+                    @if(($candidate->community ?? null) === 'Other' && !empty($candidate->community_other))
+                        ({{ $candidate->community_other }})
+                    @endif
+                </span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.ethnic_group') }}</span>
+                <span class="preview-value">
+                    {{ $candidate->ethnic_group ?? '-' }}
+                    @if(($candidate->ethnic_group ?? null) === 'Other' && !empty($candidate->ethnic_group_other))
+                        ({{ $candidate->ethnic_group_other }})
+                    @endif
+                </span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.mother_tongue') }}</span>
+                <span class="preview-value">{{ $candidate->mother_tongue ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.employment_status') }}</span>
+                <span class="preview-value">{{ ucfirst($candidate->employment_status ?? '-') }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.physical_disability') }}</span>
+                <span class="preview-value">{{ ucfirst($candidate->physical_disability ?? '-') }}</span>
+            </div>
+            @if(!empty($candidate->disability_other))
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.disability_details') }}</span>
+                <span class="preview-value">{{ $candidate->disability_other }}</span>
+            </div>
+            @endif
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.ethnic_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->ethnic_certificate ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.disability_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->disability_certificate ?? null) !!}</span>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-3">
+
+    {{-- Section 3: Address --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">Address Information</h6>
+            
+        </div>
+        <p class="fw-semibold text-secondary mb-2">{{ __('candidate.permanent_address') }}</p>
+        <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.province') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_province ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.district') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_district ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.municipality') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_municipality ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.ward_no') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_ward ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.tole') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_tole ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.house_number') }}</span>
+                <span class="preview-value">{{ $candidate->permanent_house_number ?? '-' }}</span>
+            </div>
+        </div>
+        <p class="fw-semibold text-secondary mb-2">{{ __('candidate.mailing_current_address') }}</p>
+        @if(!empty($candidate->same_as_permanent))
+            <p class="text-info mb-2"><i class="bi bi-info-circle me-1"></i>{{ __('candidate.same_as_permanent_address') }}</p>
+        @endif
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.province') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_province ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.district') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_district ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.municipality') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_municipality ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.ward_no') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_ward ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.tole') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_tole ?? '-' }}</span>
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="preview-label">{{ __('candidate.house_number') }}</span>
+                <span class="preview-value">{{ $candidate->mailing_house_number ?? '-' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-3">
+
+    {{-- Section 4: Education --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">Educational Background</h6>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.highest_education_level') }}</span>
+                <span class="preview-value">{{ $candidate->education_level ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.field_of_study') }}</span>
+                <span class="preview-value">{{ $candidate->field_of_study ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.institution_name') }}</span>
+                <span class="preview-value">{{ $candidate->institution_name ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.graduation_year') }} (BS)</span>
+                <span class="preview-value">{{ $candidate->graduation_year ?? '-' }}</span>
+            </div>
+            <div class="col-md-3 mb-2">
+                <span class="preview-label">{{ __('candidate.graduation_year') }} (AD)</span>
+                <span class="preview-value">{{ $candidate->graduation_year_english ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.university_name') }}</span>
+                <span class="preview-value">{{ $candidate->university ?? '-' }}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.transcript_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->transcript ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.character_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->character_certificate ?? ($candidate->character ?? null)) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.equivalency_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->equivalency_certificate ?? ($candidate->equivalent ?? null)) !!}</span>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-3">
+
+    {{-- Section 5: Experience --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">Work Experience</h6>
+            
+        </div>
+        <div class="mb-2">
+            <span class="preview-label">{{ __('candidate.has_work_experience') }}</span>
+            <span class="preview-value">{{ ucfirst($candidate->has_work_experience ?? '-') }}</span>
+        </div>
+        @php
+            $previewExps = [
+                ['title'=>'Experience 1','org'=>$candidate->exp1_organization??null,'pos'=>$candidate->exp1_position??null,'start'=>$candidate->exp1_start_date_bs??null,'end'=>$candidate->exp1_end_date_bs??null,'years'=>$candidate->exp1_years??null,'doc'=>$candidate->exp1_document??null],
+                ['title'=>'Experience 2','org'=>$candidate->exp2_organization??null,'pos'=>$candidate->exp2_position??null,'start'=>$candidate->exp2_start_date_bs??null,'end'=>$candidate->exp2_end_date_bs??null,'years'=>$candidate->exp2_years??null,'doc'=>$candidate->exp2_document??null],
+                ['title'=>'Experience 3','org'=>$candidate->exp3_organization??null,'pos'=>$candidate->exp3_position??null,'start'=>$candidate->exp3_start_date_bs??null,'end'=>$candidate->exp3_end_date_bs??null,'years'=>$candidate->exp3_years??null,'doc'=>$candidate->exp3_document??null],
+                ['title'=>'Experience 4','org'=>$candidate->exp4_organization??null,'pos'=>$candidate->exp4_position??null,'start'=>$candidate->exp4_start_date_bs??null,'end'=>$candidate->exp4_end_date_bs??null,'years'=>$candidate->exp4_years??null,'doc'=>$candidate->exp4_document??null],
+                ['title'=>'Experience 5','org'=>$candidate->exp5_organization??null,'pos'=>$candidate->exp5_position??null,'start'=>$candidate->exp5_start_date_bs??null,'end'=>$candidate->exp5_end_date_bs??null,'years'=>$candidate->exp5_years??null,'doc'=>$candidate->exp5_document??null],
+                ['title'=>'Experience 6','org'=>$candidate->exp6_organization??null,'pos'=>$candidate->exp6_position??null,'start'=>$candidate->exp6_start_date_bs??null,'end'=>$candidate->exp6_end_date_bs??null,'years'=>$candidate->exp6_years??null,'doc'=>$candidate->exp6_document??null],
+                ['title'=>'Experience 7','org'=>$candidate->exp7_organization??null,'pos'=>$candidate->exp7_position??null,'start'=>$candidate->exp7_start_date_bs??null,'end'=>$candidate->exp7_end_date_bs??null,'years'=>$candidate->exp7_years??null,'doc'=>$candidate->exp7_document??null],
+                ['title'=>'Experience 8','org'=>$candidate->exp8_organization??null,'pos'=>$candidate->exp8_position??null,'start'=>$candidate->exp8_start_date_bs??null,'end'=>$candidate->exp8_end_date_bs??null,'years'=>$candidate->exp8_years??null,'doc'=>$candidate->exp8_document??null],
+                ['title'=>'Experience 9','org'=>$candidate->exp9_organization??null,'pos'=>$candidate->exp9_position??null,'start'=>$candidate->exp9_start_date_bs??null,'end'=>$candidate->exp9_end_date_bs??null,'years'=>$candidate->exp9_years??null,'doc'=>$candidate->exp9_document??null],
+                ['title'=>'Experience 10','org'=>$candidate->exp10_organization??null,'pos'=>$candidate->exp10_position??null,'start'=>$candidate->exp10_start_date_bs??null,'end'=>$candidate->exp10_end_date_bs??null,'years'=>$candidate->exp10_years??null,'doc'=>$candidate->exp10_document??null],
+            ];
+            $hasPreviewExp = collect($previewExps)->contains(fn($e) => !empty($e['org']) || !empty($e['pos']));
+        @endphp
+        @if($hasPreviewExp)
+            @foreach($previewExps as $pexp)
+                @continue(empty($pexp['org']) && empty($pexp['pos']))
+                <div class="border rounded p-3 mb-2 bg-light">
+                    <p class="fw-semibold text-secondary mb-2">{{ $pexp['title'] }}</p>
+                    <div class="row">
+                        <div class="col-md-6 mb-1">
+                            <span class="preview-label">{{ __('candidate.organization') }}</span>
+                            <span class="preview-value">{{ $pexp['org'] ?? '-' }}</span>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <span class="preview-label">{{ __('candidate.position') }}</span>
+                            <span class="preview-value">{{ $pexp['pos'] ?? '-' }}</span>
+                        </div>
+                        <div class="col-md-3 mb-1">
+                            <span class="preview-label">{{ __('candidate.start_date') }}</span>
+                            <span class="preview-value">{{ $pexp['start'] ?? '-' }}</span>
+                        </div>
+                        <div class="col-md-3 mb-1">
+                            <span class="preview-label">{{ __('candidate.end_date') }}</span>
+                            <span class="preview-value">{{ $pexp['end'] ?? '-' }}</span>
+                        </div>
+                        <div class="col-md-3 mb-1">
+                            <span class="preview-label">{{ __('candidate.years') }}</span>
+                            <span class="preview-value">{{ $pexp['years'] ?? '-' }}</span>
+                        </div>
+                        <div class="col-md-3 mb-1">
+                            <span class="preview-label">{{ __('candidate.document') }}</span>
+                            <span class="preview-value">{!! showDoc($pexp['doc']) !!}</span>
+                        </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>{{ __('candidate.updated_at') }}:</strong>
-                        <p class="mb-0">
-                            @if(!empty($candidate?->updated_at))
-                                {{ is_string($candidate->updated_at) ? \Carbon\Carbon::parse($candidate->updated_at)->format('F d, Y h:i A') : $candidate->updated_at->format('F d, Y h:i A') }}
-                            @else
-                                -
-                            @endif
-                        </p>
-                    </div>
                 </div>
+            @endforeach
+        @else
+            <p class="text-muted">{{ __('candidate.no_work_experience_records') }}</p>
+        @endif
+    </div>
 
-                <div class="d-flex justify-content-between">
-                    <button type="button" class="btn btn-secondary prev-btn">Back</button>
-                    <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
-                        <i class="fas fa-arrow-left"></i> Back to Dashboard
-                    </a>
-                </div>
-            </div> -->
+    <hr class="my-3">
+
+    {{-- Section 6: Documents --}}
+    <div class="preview-section mb-4">
+        <div class="preview-section-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-primary">{{ __('candidate.uploaded_documents') }}</h6>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.passport_size_photo') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->passport_size_photo ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.citizenship_id_document') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->citizenship_id_document ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.character_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->character_certificate ?? ($candidate->character ?? null)) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.equivalency_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->equivalency_certificate ?? ($candidate->equivalent ?? null)) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.signature') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->signature ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.transcript_certificate') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->transcript ?? null) !!}</span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="preview-label">{{ __('candidate.noc_id_card') }}</span>
+                <span class="preview-value">{!! showDoc($candidate->noc_id_card ?? null) !!}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary prev-btn">Back</button>
+        <a href="{{ route('candidate.dashboard') }}" class="btn btn-danger">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
 
         </div>
     </div>
@@ -736,6 +1114,28 @@
     }
 
     .border-bottom { border-bottom: 2px solid #dee2e6 !important; }
+
+    /* ===== STEP 7 PREVIEW STYLES ===== */
+.preview-section { }
+.preview-section-header { border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; }
+.preview-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 2px;
+}
+.preview-value {
+    display: block;
+    font-size: 0.95rem;
+    color: #212529;
+    padding: 0.35rem 0.5rem;
+    background: #f8f9fa;
+    border-radius: 0.25rem;
+    min-height: 2rem;
+}
 </style>
 @endpush
 
@@ -743,7 +1143,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
-    const totalSteps = 6;
+    const totalSteps = 7;
 
     function updateTabsAndProgress() {
         document.querySelectorAll('.tab-item').forEach((tab, index) => {
@@ -755,6 +1155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showStep(step) {
+        window.goToStep = function(step) { showStep(step); };
         document.querySelectorAll('.step').forEach(s => s.classList.add('d-none'));
         const el = document.getElementById('step' + step);
         if (el) {
@@ -892,6 +1293,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 })();
+
+
 </script>
 @endpush
 @endsection

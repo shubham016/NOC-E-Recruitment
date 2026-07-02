@@ -33,7 +33,7 @@
     }
 
     .settings-nav .nav-link.active {
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         color: #fff !important;
     }
 
@@ -59,21 +59,21 @@
         height: 90px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1a3a6b;
     }
 
     .avatar-placeholder {
         width: 90px;
         height: 90px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
         color: #fff;
         font-size: 2rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 3px solid #c9a84c;
+        border: 3px solid #1a3a6b;
     }
 
     .password-strength-bar {
@@ -81,12 +81,33 @@
         border-radius: 2px;
         transition: width 0.3s, background 0.3s;
     }
+
+    .page-header {
+        background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+    }
+
+    .settings-card .btn-primary {
+        background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+        border-color: #1a3a6b;
+        color: #fff;
+    }
+
+    .settings-card .btn-primary:hover {
+        background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+        border-color: #122a52;
+        color: #fff;
+    }
 </style>
 @endsection
 
 @section('content')
 
-    <div class="page-header" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border-radius: 12px; padding: 1.5rem; color: white; margin-bottom: 1.5rem;">
+    <div class="page-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="fw-bold mb-1"><i class="bi bi-gear me-2"></i>{{ __('admin.system_settings') }}</h4>
@@ -115,10 +136,10 @@
         <div class="col-lg-3">
             <div class="settings-card p-2">
                 <nav class="settings-nav nav flex-column gap-1" id="settingsTabs" role="tablist">
-                    <button class="nav-link active" id="tab-profile" data-bs-toggle="tab" data-bs-target="#pane-profile" type="button" role="tab">
+                    <button class="nav-link {{ ($activeTab ?? 'profile') === 'profile' ? 'active' : '' }}" id="tab-profile" data-bs-toggle="tab" data-bs-target="#pane-profile" type="button" role="tab">
                         <i class="bi bi-person-circle"></i> {{ __('admin.profile') }}
                     </button>
-                    <button class="nav-link" id="tab-password" data-bs-toggle="tab" data-bs-target="#pane-password" type="button" role="tab">
+                    <button class="nav-link {{ ($activeTab ?? 'profile') === 'password' ? 'active' : '' }}" id="tab-password" data-bs-toggle="tab" data-bs-target="#pane-password" type="button" role="tab">
                         <i class="bi bi-shield-lock"></i> {{ __('admin.change_password') }}
                     </button>
                 </nav>
@@ -130,7 +151,7 @@
             <div class="tab-content">
 
                 {{-- ── Profile Tab ── --}}
-                <div class="tab-pane fade show active" id="pane-profile" role="tabpanel">
+                <div class="tab-pane fade {{ ($activeTab ?? 'profile') === 'profile' ? 'show active' : '' }}" id="pane-profile" role="tabpanel">
                     <div class="settings-card">
                         <div class="card-header">
                             <h6 class="fw-bold mb-0">{{ __('admin.profile_information') }}</h6>
@@ -209,7 +230,7 @@
                 </div>
 
                 {{-- ── Change Password Tab ── --}}
-                <div class="tab-pane fade" id="pane-password" role="tabpanel">
+                <div class="tab-pane fade {{ ($activeTab ?? 'profile') === 'password' ? 'show active' : '' }}" id="pane-password" role="tabpanel">
                     <div class="settings-card">
                         <div class="card-header">
                             <h6 class="fw-bold mb-0">{{ __('admin.change_password') }}</h6>
@@ -341,7 +362,7 @@
         if (/[0-9]/.test(val))                    score++;
         if (/[^A-Za-z0-9]/.test(val))             score++;
 
-        const colors  = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
+        const colors  = ['#ef4444', '#3b82f6', '#1a3a6b', '#22c55e'];
         const labels  = ["{{ __('admin.weak') }}", "{{ __('admin.fair') }}", "{{ __('admin.good') }}", "{{ __('admin.strong') }}"];
         const bars    = ['bar1','bar2','bar3','bar4'];
 

@@ -41,14 +41,14 @@
         }
 
         .notification-card:hover {
-            border-left-color: #c9a84c;
+            border-left-color: #2a5298;
             transform: translateX(5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
         }
 
         .notification-card.unread {
-            background-color: #fffbf0;
-            border-left-color: #c9a84c;
+            background-color: #f5f8fc;
+            border-left-color: #2a5298;
         }
 
         .notification-icon {
@@ -64,8 +64,8 @@
         }
 
         .notification-icon.info {
-            background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(160, 120, 40, 0.1));
-            color: #a07828;
+            background: linear-gradient(135deg, rgba(42, 82, 152, 0.15), rgba(18, 42, 82, 0.1));
+            color: #122a52;
         }
 
         .notification-icon.success {
@@ -101,7 +101,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ $tab === 'unseen' ? 'active fw-semibold' : 'text-muted' }}"
                    href="{{ route('candidate.notifications.index', ['tab' => 'unseen']) }}"
-                   style="{{ $tab === 'unseen' ? 'color:#c9a84c !important; border-bottom: 2px solid #c9a84c; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
+                   style="{{ $tab === 'unseen' ? 'color:#2a5298 !important; border-bottom: 2px solid #2a5298; border-top:none; border-left:none; border-right:none; background:none;' : '' }}">
                     Unseen
                     @if($unseenCount > 0)
                         <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $unseenCount }}</span>

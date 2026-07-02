@@ -444,6 +444,55 @@
             background: rgba(26, 58, 107, 0.5);
         }
 
+        .btn-warning,
+        .btn-outline-warning:hover,
+        .btn-outline-warning:focus,
+        .btn-outline-warning:active {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-dark) 100%) !important;
+            border-color: var(--navy-primary) !important;
+            color: #fff !important;
+        }
+
+        .btn-warning:hover,
+        .btn-warning:focus,
+        .btn-warning:active {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%) !important;
+            border-color: var(--navy-dark) !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-warning {
+            border-color: var(--navy-primary) !important;
+            color: var(--navy-primary) !important;
+        }
+
+        .bg-warning {
+            background-color: var(--navy-light) !important;
+        }
+
+        .bg-warning.bg-opacity-10 {
+            background-color: rgba(42, 82, 152, 0.12) !important;
+        }
+
+        .text-warning {
+            color: var(--navy-light) !important;
+        }
+
+        .border-warning {
+            border-color: var(--navy-border) !important;
+        }
+
+        .bg-warning.text-dark,
+        .badge.bg-warning {
+            color: #fff !important;
+        }
+
+        .alert-warning {
+            background-color: var(--navy-pale) !important;
+            border-color: var(--navy-border) !important;
+            color: var(--navy-dark) !important;
+        }
+
     </style>
     @yield('custom-styles')
 
@@ -483,7 +532,7 @@
                         $notifRoute = null;
 
                         if (Auth::guard('reviewer')->check()) {
-                            $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->id())
+                            $notifCount = \App\Models\Notification::where('user_id', Auth::guard('reviewer')->user()->getKey())
                                 ->where('user_type', 'reviewer')
                                 ->where('is_read', false)
                                 ->count();

@@ -32,14 +32,6 @@ class Reviewer extends Authenticatable
     ];
 
     /**
-     * Get the name of the unique identifier for the user.
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'employee_id';
-    }
-
-    /**
      * Get the username used for authentication (for login form)
      */
     public function username()

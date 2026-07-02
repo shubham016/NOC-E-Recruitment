@@ -22,14 +22,14 @@
         }
 
         :root {
-            /* Gold Brand Colors */
-            --gold-primary: #c9a84c;
-            --gold-dark: #a07828;
-            --gold-light: #d4af37;
+            /* Navy Brand Colors */
+            --brand-primary: var(--navy-primary);
+            --brand-dark: var(--navy-dark);
+            --brand-light: var(--navy-light);
 
             /* Status Colors */
             --success: #10b981;
-            --warning: #f59e0b;
+            --warning: var(--navy-light);
             --info: #3b82f6;
             --danger: #ef4444;
             --purple: #8b5cf6;
@@ -105,8 +105,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(201, 168, 76, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(160, 120, 40, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(26, 58, 107, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(18, 42, 82, 0.15) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -129,20 +129,20 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 12px;
-            margin-top: -22px;
+            /* margin-top: -22px; */
             margin-bottom: 30px;
             position: relative;
             z-index: 1;
         }
 
-        /* Premium Glassmorphism Stat Cards */
+        /* Navy Stat Cards */
         .stat-box {
             background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.25),
-                    rgba(255, 255, 255, 0.15));
+                    rgba(240, 244, 249, 0.96),
+                    rgba(232, 238, 246, 0.92));
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--navy-border-lt);
             border-radius: 14px;
             padding: 12px 10px;
             text-align: center;
@@ -157,8 +157,8 @@
             position: relative;
             overflow: hidden;
             box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+                0 10px 30px rgba(18, 42, 82, 0.10),
+                inset 0 1px 1px rgba(255, 255, 255, 0.75);
             transform: translateY(30px);
             opacity: 0;
             animation: cardEntrance 0.8s var(--spring-smooth) forwards;
@@ -208,7 +208,7 @@
             width: 100%;
             height: 100%;
             background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                    rgba(201, 168, 76, 0.2),
+                    rgba(42, 82, 152, 0.18),
                     transparent 40%);
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -219,7 +219,7 @@
             opacity: 1;
         }
 
-        /* Gold Gradient Top Border */
+        /* Navy Gradient Top Border */
         .stat-box::after {
             content: '';
             position: absolute;
@@ -227,7 +227,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--gold-light), var(--gold-primary), var(--gold-dark), var(--gold-primary), var(--gold-light));
+            background: linear-gradient(90deg, var(--navy-light), var(--navy-primary), var(--navy-dark), var(--navy-primary), var(--navy-light));
             border-radius: 20px 20px 0 0;
             transform: scaleX(0);
             transition: transform 0.5s var(--spring-smooth);
@@ -241,14 +241,14 @@
         /* Hover State */
         .stat-box:hover {
             background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.35),
-                    rgba(255, 255, 255, 0.25));
+                    rgba(232, 238, 246, 1),
+                    rgba(208, 218, 234, 0.96));
             transform: translateY(-12px) scale(1.02);
             box-shadow:
-                0 20px 60px rgba(201, 168, 76, 0.25),
-                0 12px 40px rgba(0, 0, 0, 0.15),
-                inset 0 1px 1px rgba(255, 255, 255, 0.5);
-            border-color: rgba(201, 168, 76, 0.4);
+                0 20px 54px rgba(18, 42, 82, 0.18),
+                0 12px 34px rgba(26, 58, 107, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.85);
+            border-color: var(--navy-primary);
             text-decoration: none;
             transition-duration: 0.3s;
         }
@@ -258,7 +258,7 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: linear-gradient(145deg, var(--gold-primary), var(--gold-dark));
+            background: linear-gradient(145deg, var(--brand-primary), var(--brand-dark));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -266,7 +266,7 @@
             margin: 0 auto 10px;
             color: white;
             box-shadow:
-                0 4px 16px rgba(201, 168, 76, 0.35),
+                0 4px 16px rgba(26, 58, 107, 0.28),
                 inset 0 1px 1px rgba(255, 255, 255, 0.2);
             transition: transform 0.4s var(--spring-smooth);
         }
@@ -282,11 +282,10 @@
             font-weight: 700;
             line-height: 1;
             margin-bottom: 5px;
-            color: var(--gray-900);
+            color: var(--navy-dark);
             text-shadow:
-                0 2px 12px rgba(255, 255, 255, 0.8),
-                0 4px 20px rgba(255, 255, 255, 0.4),
-                0 1px 3px rgba(0, 0, 0, 0.15);
+                0 2px 10px rgba(255, 255, 255, 0.85),
+                0 1px 2px rgba(18, 42, 82, 0.12);
             position: relative;
             z-index: 1;
         }
@@ -294,7 +293,7 @@
         /* Label Text */
         .stat-label {
             font-size: 16px;
-            color: var(--gray-700);
+            color: var(--navy-primary);
             font-weight: 600;
             margin-bottom: 0;
             text-transform: uppercase;
@@ -302,7 +301,7 @@
             line-height: 1.4;
             text-shadow:
                 0 2px 8px rgba(255, 255, 255, 0.9),
-                0 1px 3px rgba(0, 0, 0, 0.1);
+                0 1px 2px rgba(18, 42, 82, 0.08);
             position: relative;
             z-index: 1;
         }
@@ -373,7 +372,7 @@
             margin-bottom: 4px;
         }
         .job-mid-level i {
-            color: #c9a84c;
+            color: #1a3a6b;
             margin-right: 4px;
         }
         .job-mid-date {
@@ -415,7 +414,7 @@
         .tag-closed   { background: #fee2e2; color: #991b1b; }
         .tag-open, .tag-inclusive { background: #dbeafe; color: #1e40af; }
         .tag-internal { background: #ede9fe; color: #4c1d95; }
-        .tag-internal-appraisal, .tag-internal\ appraisal { background: #fef3c7; color: #92400e; }
+        .tag-internal-appraisal, .tag-internal\ appraisal { background: #e8eef6; color: #1a3a6b; }
         .tag-deadline { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
 
         /* Card Component */
@@ -448,12 +447,12 @@
         .card-link {
             font-size: 14px;
             font-weight: 500;
-            color: #1565C0;
+            color: var(--navy-primary);
             text-decoration: none;
         }
 
         .card-link:hover {
-            color: #1976d2;
+            color: var(--navy-dark);
         }
 
         .card-body {
@@ -534,8 +533,8 @@
         }
 
         .badge-pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #e8eef6;
+            color: #1a3a6b;
         }
 
         .badge-approved {
@@ -610,7 +609,7 @@
         .job-count {
             font-size: 28px;
             font-weight: 700;
-            color: #1976d2;
+            color: var(--navy-primary);
             line-height: 1;
             margin: 0 0 4px 0;
         }
@@ -999,9 +998,9 @@
 
         /* Accessibility: Focus States */
         .stat-box:focus-visible {
-            outline: 3px solid var(--gold-primary);
+            outline: 3px solid var(--navy-primary);
             outline-offset: 4px;
-            border-color: var(--gold-primary);
+            border-color: var(--navy-primary);
         }
 
         /* Dark Mode Support (Optional Enhancement) */
@@ -1250,7 +1249,7 @@
                         <div class="job-middle">
                             <div>
                                 <div style="font-size:11px; font-weight:600; color:var(--gray-700); margin-bottom:4px; overflow:hidden; text-overflow:ellipsis;">
-                                    <!-- <i class="bi bi-mortarboard" style="color:#c9a84c; margin-right:3px;"></i> -->
+                                    <!-- <i class="bi bi-mortarboard" style="color:#1a3a6b; margin-right:3px;"></i> -->
                                     {{ $vacancy->minimum_qualification ?? 'N/A' }}
                                 </div>
                                 @if($vacancy->deadline_bs)

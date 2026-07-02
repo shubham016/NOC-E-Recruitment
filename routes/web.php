@@ -212,6 +212,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/applicants', [AdminSmsController::class, 'getApplicants'])->name('applicants');
             Route::get('/{smsLog}', [AdminSmsController::class, 'show'])->name('show');
         });
+
+        /*
+        | Audit Logs
+        */
+        Route::get('/audit', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit.index');
     });
 });
 
@@ -321,6 +326,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     // Registration
     Route::get('/register', [CandidateController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [CandidateController::class, 'register'])->name('register.post');
+    Route::get('/verify-otp', [CandidateController::class, 'showVerifyOtpForm'])->name('verify.otp');
+    Route::post('/verify-otp', [CandidateController::class, 'verifyOtp'])->name('verify.otp.post');
+    Route::post('/resend-otp', [CandidateController::class, 'resendOtp'])->name('resend.otp');
 
     // Forgot Password
     Route::get('/forgot-password', [CandidateController::class, 'showForgotPasswordForm'])->name('forgot.password');

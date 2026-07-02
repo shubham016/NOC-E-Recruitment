@@ -48,12 +48,12 @@
         }
 
         .warning {
-            background: #fef3c7;
-            color: #92400e;
+            background: #e8eef6;
+            color: #1a3a6b;
             padding: 15px;
             border-radius: 6px;
             margin: 20px 0;
-            border-left: 4px solid #f59e0b;
+            border-left: 4px solid #2a5298;
         }
 
         .footer {

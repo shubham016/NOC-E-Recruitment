@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,12 +27,14 @@ class ReviewerAuthController extends Controller
         $reviewer = \App\Models\Reviewer::where('employee_id', $request->employee_id)->first();
 
         if (!$reviewer) {
+            app(AuditLogger::class)->auth($request, 'reviewer', 'login', 'failed', null, $request->employee_id, 'Reviewer not found');
             return back()->withErrors([
                 'employee_id' => 'Reviewer not found with this Employee ID.',
             ])->withInput($request->only('employee_id'));
         }
 
         if ($reviewer->status !== 'active') {
+            app(AuditLogger::class)->auth($request, 'reviewer', 'login', 'failed', $reviewer, $request->employee_id, 'Inactive account');
             return back()->withErrors([
                 'employee_id' => 'Your account is inactive. Please contact administrator.',
             ])->withInput($request->only('employee_id'));
@@ -39,6 +42,7 @@ class ReviewerAuthController extends Controller
 
         // Verify password manually first
         if (!\Hash::check($request->password, $reviewer->password)) {
+            app(AuditLogger::class)->auth($request, 'reviewer', 'login', 'failed', $reviewer, $request->employee_id, 'Invalid password');
             return back()->withErrors([
                 'employee_id' => 'Invalid password.',
             ])->withInput($request->only('employee_id'));
@@ -51,8 +55,11 @@ class ReviewerAuthController extends Controller
             'status' => 'active'
         ], $request->filled('remember'))) {
             $request->session()->regenerate();
+            app(AuditLogger::class)->auth($request, 'reviewer', 'login', 'success', Auth::guard('reviewer')->user(), $request->employee_id);
             return redirect()->route('reviewer.dashboard');
         }
+
+        app(AuditLogger::class)->auth($request, 'reviewer', 'login', 'failed', $reviewer, $request->employee_id, 'Authentication failed');
 
         return back()->withErrors([
             'employee_id' => 'Authentication failed. Please try again.',
@@ -62,8 +69,15 @@ class ReviewerAuthController extends Controller
     // Handle logout
     public function logout(Request $request)
     {
+        $reviewer = Auth::guard('reviewer')->user();
+        if ($reviewer) {
+            app(AuditLogger::class)->auth($request, 'reviewer', 'logout', 'success', $reviewer, $reviewer->employee_id);
+        }
+
         Auth::guard('reviewer')->logout();
-        $request->session()->invalidate();
+        // Other portals use the same Laravel session cookie. Rotating the
+        // session preserves their guard data while safely ending this guard.
+        $request->session()->regenerate();
         $request->session()->regenerateToken();
         return redirect()->route('reviewer.login');
     }

@@ -17,12 +17,71 @@
 @section('custom-styles')
     <style>
         .page-header {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
             border-radius: 12px;
             padding: 1.5rem;
             color: white;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+        }
+
+        .page-header .btn-light {
+            border: 2px solid #ffffff;
+            background: transparent;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .jobs-actions .btn-job-search,
+        .empty-state-actions.btn-primary {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%) !important;
+            border: 1px solid #1a3a6b !important;
+            color: #fff !important;
+        }
+
+        .page-header .btn-light:hover {
+            background: #ffffff;
+            color: #1a3a6b;
+        }
+
+        .jobs-actions .btn-job-search:hover,
+        .empty-state-actions.btn-primary:hover {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%) !important;
+            border-color: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .jobs-actions .btn-outline-secondary {
+            border-color: #1a3a6b;
+            color: #1a3a6b;
+        }
+
+        .jobs-actions .btn-outline-secondary:hover {
+            background: #e8eef6;
+            border-color: #1a3a6b;
+            color: #122a52;
+        }
+
+        .navy-total-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
+
+        .btn-view-navy {
+            border-color: #1a3a6b !important;
+            color: #1a3a6b !important;
+            background: #fff !important;
+        }
+
+        .btn-view-navy:hover,
+        .btn-view-navy:focus {
+            background: #1a3a6b !important;
+            border-color: #1a3a6b !important;
+            color: #fff !important;
         }
 
         .stat-card {
@@ -226,8 +285,8 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-grow-1">
+                        <div class="d-flex gap-2 jobs-actions">
+                            <button type="submit" class="btn btn-job-search flex-grow-1">
                                 <i class="bi bi-search me-2"></i>{{ __('admin.search') }}
                             </button>
                             @if(request()->hasAny(['search', 'status']))
@@ -249,7 +308,7 @@
                 <h6 class="mb-0 fw-bold">
                     {{ __('admin.vacancy_list') }}
                 </h6>
-                <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $jobs->total() }}</span>
+                <span class="badge navy-total-badge ms-2">{{ __('admin.total') }} {{ $jobs->total() }}</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -566,7 +625,7 @@
 
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-outline-primary"
+                                        <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn btn-view-navy"
                                             title="{{ __('admin.view') }}">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -587,7 +646,7 @@
                                     <i class="bi bi-inbox display-1 text-muted"></i>
                                     <h5 class="text-muted mt-3">{{ __('admin.no_vacancy_found') }}</h5>
                                     <p class="text-muted">{{ __('admin.start_post_vacancy') }}</p>
-                                    <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary mt-2">
+                                    <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary mt-2 empty-state-actions">
                                         <i class="bi bi-plus-circle me-2"></i>{{ __('admin.post_new_vacancy') }}
                                     </a>
                                 </td>

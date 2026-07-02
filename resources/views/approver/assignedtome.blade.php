@@ -211,7 +211,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-success w-100">
+                        <button type="submit" class="btn w-100" style="background-color: #173361; border-color: #173361; color: #fff;">
                             <i class="me-1"></i> {{ __('approver.search') }}
                         </button>
                     </div>
@@ -300,14 +300,14 @@
                                 <td class="text-col">{{ $application->jobPosting->advertisement_no ?? 'N/A' }}</td>
                                 <td class="text-col">{{ $application->id ?? 'N/A' }}</td>
                                 <td class="text-col">
-                                    @if($application->passport_size_photo)
-                                        <img
-                                            src="{{ asset('storage/' . $application->passport_size_photo) }}"
-                                            alt="Passport Photo"
-                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid #e5e7eb;">
-                                    @else
-                                        <span class="text-muted">N/A</span>
-                                    @endif
+                                  @if($application->passport_size_photo || $application->candidateRegistration?->passport_size_photo)
+    <img
+        src="{{ asset('storage/' . ($application->passport_size_photo ?: $application->candidateRegistration?->passport_size_photo)) }}"
+        alt="Passport Photo"
+        style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid #e5e7eb;">
+@else
+    <span>No Photo</span>
+@endif
                                 </td>
                                 <td class="text-col">
                                     <span class="d-block">{{ $application->name_english ?? 'N/A' }}</span>
@@ -319,8 +319,9 @@
                                     <small class="text-muted">Rs. {{ $application->payment->amount ?? 'N/A' }}</small>
                                 </td>
                                 <td class="nowrap">
-                                    <span class="d-block">{{ ($application->submitted_at ?? $application->created_at)->format('M d, Y') }}</span>
-                                    <small class="text-muted">{{ ($application->submitted_at ?? $application->created_at)->format('h:i A') }}</small>
+                                    @php $appliedDate = $application->submitted_at ?? $application->created_at; @endphp
+                                    <spam class="d-block">{{ adToBS($appliedDate) }}</spam>
+                                    <small class="d-blocktext-muted">{{ \Carbon\Carbon::parse($appliedDate)->format('h:i A') }}</small>
                                 </td>
                                 <td class="nowrap">
                                     <span >{{ ucfirst($application->status) }}</span>

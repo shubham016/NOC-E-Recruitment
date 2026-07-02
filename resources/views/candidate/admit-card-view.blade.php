@@ -64,8 +64,8 @@
                 </div>
                 <div class="header-right">
                     <div class="photo-wrapper">
-                        @if(isset($application->passport_size_photo) && $application->passport_size_photo)
-                            <img src="{{ asset('storage/' . $application->passport_size_photo) }}" alt="Photo" class="candidate-photo">
+                        @if($photoUrl)
+                            <img src="{{ $photoUrl }}" alt="Photo" class="candidate-photo">
                         @else
                             <div class="photo-placeholder">फोटो</div>
                         @endif
@@ -176,6 +176,31 @@
                     </div>
 
                     <!-- Exam Schedule Table -->
+                    @php
+                        $formatExamTime = function ($time) use ($toNp) {
+                            if (!$time) return null;
+
+                            $upper = strtoupper($time);
+                            if (str_contains($upper, 'AM')) {
+                                $period = 'बिहान';
+                                $time = trim(str_ireplace('AM', '', $time));
+                            } elseif (str_contains($upper, 'PM')) {
+                                $period = 'दिउँसोको';
+                                $time = trim(str_ireplace('PM', '', $time));
+                            } else {
+                                $period = null;
+                            }
+
+                            return trim(($period ? $period . ' ' : '') . $toNp($time) . ' बजे');
+                        };
+                        $fallbackVenue = $application->exam_venue ?: null;
+                        $dateFirst = $application->exam_date_first ? $toNp($application->exam_date_first) : null;
+                        $timeFirst = $formatExamTime($application->exam_time_first);
+                        $venueFirst = $application->exam_venue_first ?: $fallbackVenue;
+                        $dateSecond = $application->exam_date_second ? $toNp($application->exam_date_second) : null;
+                        $timeSecond = $formatExamTime($application->exam_time_second);
+                        $venueSecond = $application->exam_venue_second ?: $fallbackVenue;
+                    @endphp
                     <table class="schedule-table">
                         <thead>
                             <tr>
@@ -188,13 +213,21 @@
                             <tr>
                                 <td>१</td>
                                 <td>प्रथम</td>
-                                <td>{{ $application->exam_date_first ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                                <td>
+                                    {{ implode(' / ', array_filter([$dateFirst, $timeFirst])) ?: '-' }}
+                                    @if($venueFirst) ({{ $venueFirst }}) @endif
+                                </td>
                             </tr>
+                            @if($dateSecond || $timeSecond || $application->exam_venue_second)
                             <tr>
                                 <td>२</td>
                                 <td>द्वितीय</td>
-                                <td>{{ $application->exam_date_second ?? '२०८२-०१-११ / दिउँसोको ०२:०० बजे' }} (श्री खेत्रि स्याम्पू मा.बि., पिल्खुवाबास)</td>
+                                <td>
+                                    {{ implode(' / ', array_filter([$dateSecond, $timeSecond])) ?: '-' }}
+                                    @if($venueSecond) ({{ $venueSecond }}) @endif
+                                </td>
                             </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -202,8 +235,8 @@
                 <!-- Right: Citizenship and Signature -->
                 <div class="details-right">
                     <div class="citizenship-wrapper">
-                        @if(isset($application->citizenship_id_document) && $application->citizenship_id_document)
-                            <img src="{{ asset('storage/' . $application->citizenship_id_document) }}" alt="Citizenship" class="citizenship-image">
+                        @if($citizenshipUrl)
+                            <img src="{{ $citizenshipUrl }}" alt="Citizenship" class="citizenship-image">
                         @else
                             <div class="citizenship-placeholder">
                                 <p>नागरिकता प्रमाणपत्र</p>
@@ -216,9 +249,8 @@
                 <!-- Candidate Signature (from storage) -->
                 <div class="signature-container text-center">
                     <div class="signature-box">
-                        @if(isset($application->signature) && $application->signature)
-                            <img src="{{ asset('storage/' . $application->signature) }}" 
-                                class="signature-image">
+                        @if($signatureUrl)
+                            <img src="{{ $signatureUrl }}" alt="Candidate Signature" class="signature-image">
                         @endif
                     </div>
                     <p class="signature-label">उम्मेदवार दस्तखत</p>
@@ -227,8 +259,8 @@
                 <!-- Official Signature -->
                 <div class="signature-container text-center">
                     <div class="signature-box">
-                        @if(isset($job) && $job && $job->official_signature && \Illuminate\Support\Facades\Storage::disk('public')->exists($job->official_signature))
-                            <img src="{{ asset('storage/' . $job->official_signature) }}" class="signature-image">
+                        @if($officialSignatureUrl)
+                            <img src="{{ $officialSignatureUrl }}" alt="Official Signature" class="signature-image">
                         @elseif(file_exists(public_path('images/official-signature.png')))
                             <img src="{{ asset('images/official-signature.png') }}" class="signature-image">
                         @endif

@@ -17,10 +17,15 @@ class JobBrowsingController extends Controller
     public function index(Request $request)
     {
         $candidate = Auth::guard('candidate')->user();
-
+        
         $query = JobPosting::live()
             ->visibleToCandidate($candidate);
-
+        // ── Profile check ──────────────────────────────────────────
+    if (!$candidate->isProfileComplete()) {
+        return redirect()->route('candidate.my-profile.edit')
+            ->with('warning', 'Please complete your profile before browsing vacancies.');
+    }
+    // ──────────────────────────────────────────────────────────
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
@@ -97,7 +102,29 @@ class JobBrowsingController extends Controller
             'appliedJobIds'
         ));
     }
+    // app/Models/CandidateRegistration.php
 
+public function isProfileComplete(): bool
+{
+    $required = [
+        'name_english', 'name_nepali', 'birth_date_bs', 'gender',
+        'marital_status', 'citizenship_number', 'citizenship_issue_date_bs',
+        'citizenship_issue_district', 'father_name_english', 'mother_name_english',
+        'grandfather_name_english', 'nationality', 'noc_employee',
+        'physical_disability', 'religion', 'community', 'ethnic_group',
+        'mother_tongue', 'employment_status', 'permanent_province',
+        'permanent_district', 'permanent_municipality', 'permanent_ward',
+        'education_level', 'institution_name', 'graduation_year', 'university',
+        'has_work_experience', 'passport_size_photo', 'citizenship_id_document',
+        'signature', 'transcript', 'character_certificate',
+    ];
+
+    foreach ($required as $field) {
+        if (empty($this->$field)) return false;
+    }
+
+    return true;
+}
     /**
      * Display job details
      */

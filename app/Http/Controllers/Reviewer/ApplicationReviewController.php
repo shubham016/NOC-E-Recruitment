@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ApplicationForm;
 use App\Models\JobPosting;
 use App\Models\Notification;
+use App\Services\CandidateSmsNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -149,7 +150,7 @@ class ApplicationReviewController extends Controller
         $reviewer = Auth::guard('reviewer')->user();
 
         // Only show applications assigned to this reviewer
-        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'experiences'])
+        $application = ApplicationForm::with(['jobPosting', 'reviewer', 'experiences','candidateRegistration'])
             ->where('reviewer_id', $reviewer->id)
             ->findOrFail($id);
 
@@ -297,13 +298,19 @@ class ApplicationReviewController extends Controller
             }
         }
 
+        if ($request->status === 'edit') {
+            app(CandidateSmsNotificationService::class)->applicationSentBack($application, 'reviewer', $request->reviewer_notes);
+        } elseif ($request->status === 'rejected') {
+            app(CandidateSmsNotificationService::class)->applicationRejected($application, 'reviewer', $request->reviewer_notes);
+        }
+
         // Prepare response message based on status
         if ($request->status === 'reviewed') {
             $message = 'Application reviewed successfully! It will now be sent to the Approver Portal for final decision.';
         } elseif ($request->status === 'edit') {
             $message = 'Application sent back to candidate for correction successfully!';
         } else {
-            $message = 'Application rejected successfully! Candidate will be notified via SMS when Sparrow SMS is integrated.';
+            $message = 'Application rejected successfully! Candidate has been notified via SMS.';
         }
 
         // If request is AJAX / fetch, return JSON
@@ -348,13 +355,27 @@ class ApplicationReviewController extends Controller
             ], 422);
         }
 
+        if (in_array($request->status, ['edit', 'rejected'], true)) {
+            $applications = ApplicationForm::whereIn('id', $request->application_ids)
+                ->where('reviewer_id', $reviewer->id)
+                ->get();
+
+            foreach ($applications as $application) {
+                if ($request->status === 'edit') {
+                    app(CandidateSmsNotificationService::class)->applicationSentBack($application, 'reviewer');
+                } else {
+                    app(CandidateSmsNotificationService::class)->applicationRejected($application, 'reviewer');
+                }
+            }
+        }
+
         // Prepare response message
         if ($request->status === 'reviewed') {
             $message = $updatedCount . ' applications marked as reviewed and sent to Approver Portal!';
         } elseif ($request->status === 'edit') {
             $message = $updatedCount . ' applications sent back to candidates for correction!';
         } else {
-            $message = $updatedCount . ' applications rejected! Candidates will be notified via SMS when integrated.';
+            $message = $updatedCount . ' applications rejected! Candidates have been notified via SMS.';
         }
 
         return response()->json([

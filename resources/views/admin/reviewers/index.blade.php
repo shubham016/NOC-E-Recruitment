@@ -119,6 +119,37 @@
             background: #f3f4f6;
             color: #6b7280;
         }
+
+        .btn-view-navy {
+            border-color: #1a3a6b !important;
+            color: #1a3a6b !important;
+            background: #fff !important;
+        }
+
+        .btn-view-navy:hover,
+        .btn-view-navy:focus {
+            background: #1a3a6b !important;
+            border-color: #1a3a6b !important;
+            color: #fff !important;
+        }
+
+        .btn-reviewer-navy {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6b 100%);
+            border-color: #1a3a6b;
+            color: #fff;
+        }
+
+        .btn-reviewer-navy:hover,
+        .btn-reviewer-navy:focus {
+            background: linear-gradient(135deg, #1f467f 0%, #122a52 100%);
+            border-color: #122a52;
+            color: #fff;
+        }
+
+        .navy-total-badge {
+            background: #122a52 !important;
+            color: #fff !important;
+        }
     </style>
 @endsection
 
@@ -130,7 +161,7 @@
                 <h1 class="h3 mb-1">{{ __('admin.manage_reviewers') }}</h1>
                 <p class="text-muted mb-0">{{ __('admin.view_manage_reviewers') }}</p>
             </div>
-            <a href="{{ route('admin.reviewers.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.reviewers.create') }}" class="btn btn-reviewer-navy">
                 <i class="bi bi-plus-circle me-2"></i>{{ __('admin.add_new_reviewer') }}
             </a>
         </div>
@@ -227,7 +258,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-reviewer-navy w-100">
                         <i class="bi bi-search me-1"></i> {{ __('admin.search') }}
                     </button>
                 </div>
@@ -241,7 +272,7 @@
                     <h6 class="mb-0 fw-bold">
                         <i class="bi bi-list-ul text-primary me-2"></i>{{ __('admin.reviewers_list') }}
                     </h6>
-                    <span class="badge bg-primary ms-2">{{ __('admin.total') }} {{ $reviewers->total() }}</span>
+                    <span class="badge navy-total-badge ms-2">{{ __('admin.total') }} {{ $reviewers->total() }}</span>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -291,7 +322,7 @@
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ route('admin.reviewers.show', $reviewer->id) }}"
-                                                class="btn btn-outline-primary" title="View">
+                                                class="btn btn-view-navy" title="View">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a href="{{ route('admin.reviewers.edit', $reviewer->id) }}"

@@ -13,18 +13,52 @@
     @include('admin.partials.sidebar')
 @endsection
 
+@section('custom-styles')
+    <style>
+        .admit-header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #122a52 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(26, 58, 107, 0.22);
+        }
+
+        .admit-header p {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .admit-header .btn-outline-secondary {
+            border-color: rgba(255, 255, 255, 0.75);
+            color: #fff;
+            background: transparent;
+        }
+
+        .admit-header .btn-outline-secondary:hover {
+            background: #fff;
+            color: #1a3a6b;
+            border-color: #fff;
+        }
+
+        .admit-roll-badge {
+            background: #2a5298 !important;
+            color: #fff !important;
+        }
+    </style>
+@endsection
+
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="admit-header d-flex justify-content-between align-items-center">
         <div>
             <h4 class="fw-bold mb-1">{{ __('admin.assigned_admit_cards') }}</h4>
-            <p class="text-muted mb-0">
+            <p class="mb-0">
                 {{ __('admin.adv_no_colon') }} <strong>{{ $job->advertisement_no }}</strong>
                 &nbsp;&mdash;&nbsp; {{ $job->position }}{{ $job->level ? ' / Level ' . $job->level : '' }}
             </p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.admit-card.assign', $job->id) }}" class="btn btn-sm" style="background:#c9a84c;color:#fff;border:none;">{{ __('admin.reassign') }}</a>
+            <a href="{{ route('admin.admit-card.assign', $job->id) }}" class="btn btn-sm" style="background:#1a3a6b;color:#fff;border:none;">{{ __('admin.reassign') }}</a>
             <a href="{{ route('admin.admit-card.index') }}" class="btn btn-sm btn-outline-secondary">{{ __('admin.back') }}</a>
         </div>
     </div>
@@ -60,7 +94,7 @@
                         <tbody>
                             @foreach($applications as $app)
                                 <tr>
-                                    <td><span class="badge bg-info text-dark fw-bold">{{ $app->roll_number }}</span></td>
+                                    <td><span class="badge admit-roll-badge fw-bold">{{ $app->roll_number }}</span></td>
                                     <td class="text-start">
                                         <div class="fw-semibold">{{ $app->name_english }}</div>
                                         <div class="text-muted" style="font-size:0.82rem;">{{ $app->name_nepali }}</div>
